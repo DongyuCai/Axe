@@ -1,0 +1,29 @@
+##### ignore auto-generated files by eclipse #####  
+.classpath
+.DS_Store
+.settings/
+.idea/
+##### ignore all folder except source codes #####
+build/
+node_modules/
+_build/
+
+
+bin/
+bower_components/
+classes/
+test-classes/
+.sass-cache/
+style.css.map
+target/
+##### ignore fixed files #####
+*.class
+/lngiot-service/lngiot-api/.classpath
+/lngiot-service/lngiot-api/.classpath
+/lngiot-service/lngiot-api/.project
+dist/
+*.project
+.gitignore
+*.iml
+
+log/
