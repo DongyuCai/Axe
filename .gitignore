@@ -18,9 +18,9 @@ style.css.map
 target/
 ##### ignore fixed files #####
 *.class
-/lngiot-service/lngiot-api/.classpath
-/lngiot-service/lngiot-api/.classpath
-/lngiot-service/lngiot-api/.project
+#/lngiot-service/lngiot-api/.classpath
+#/lngiot-service/lngiot-api/.classpath
+#/lngiot-service/lngiot-api/.project
 dist/
 *.project
 .gitignore
