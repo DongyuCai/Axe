@@ -46,7 +46,7 @@ public final class ConfigHelper {
      * 获取应用基础包路径
      */
     public static String getAppBasePackage() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_BASE_PACKAGE);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_BASE_PACKAGE,null);
     }
 
     /**

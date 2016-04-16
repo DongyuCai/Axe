@@ -1,9 +1,6 @@
 package org.smart4j.framework;
 
-import org.smart4j.framework.helper.BeanHelper;
-import org.smart4j.framework.helper.ClassHelper;
-import org.smart4j.framework.helper.ControllerHelper;
-import org.smart4j.framework.helper.IocHelper;
+import org.smart4j.framework.helper.*;
 import org.smart4j.framework.util.ClassUtil;
 
 /**
@@ -14,8 +11,9 @@ public final class HelperLoader {
 
     public static void init(){
         Class<?>[] classList = {
-                ClassHelper.class,
-                BeanHelper.class,
+                ClassHelper.class,//加载package下所有class到CLASS_SET
+                BeanHelper.class,//实例化CLASS_SET里的类，放到BEAN_MAP里
+                AopHelper.class,//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
                 IocHelper.class,
                 ControllerHelper.class
         };

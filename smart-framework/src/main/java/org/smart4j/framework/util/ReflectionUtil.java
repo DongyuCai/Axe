@@ -17,9 +17,8 @@ public final class ReflectionUtil {
 
     /**
      * 创建实例
-     * TODO:这里只是简单实例化，涉及切面的话，还需要代理
      */
-    public static Object newInstance(Class<?> cls){
+    public static <T> T newInstance(Class<?> cls){
         Object instance;
         try {
             instance = cls.newInstance();
@@ -27,7 +26,7 @@ public final class ReflectionUtil {
             LOGGER.error("new instance failure",e);
             throw new RuntimeException(e);
         }
-        return instance;
+        return (T)instance;
     }
 
     /**
