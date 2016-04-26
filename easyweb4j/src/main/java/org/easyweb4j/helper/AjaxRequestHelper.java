@@ -15,9 +15,9 @@ import org.easyweb4j.util.RequestUtil;
  * Created by CaiDongYu on 2016/4/25.
  */
 public class AjaxRequestHelper {
-    public static Param createParam(HttpServletRequest request)throws IOException{
+    public static Param createParam(HttpServletRequest request,String requestPath)throws IOException{
         List<FormParam> formParamList = new ArrayList<>();
-        formParamList.addAll(RequestUtil.parseParameter(request));
+        formParamList.addAll(RequestUtil.parseParameter(request,requestPath));
         formParamList.addAll(RequestUtil.parsePayload(request));
         return new Param(formParamList);
     }

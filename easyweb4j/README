@@ -4,14 +4,14 @@
 2.事务
 3.文件上传（多文件、单文件）
 4.主动规避重复action（如果定义了相同的action，框架初始化会报错）
-5.开发进度：ControllerHelper //TODO:nodeName中占位符与请求的匹配
+5.路径参数，多拼参数，类似 /get/{id}_{name} 这样
 
 待加入特性列表
 2.HttpRequest HttpResponse管理
 3.权限验证
 4.文件下载
 5.TODO列表
-6.pathParam
+6.pathParam [doing]
 
 
 注意：

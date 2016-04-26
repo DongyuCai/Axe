@@ -9,8 +9,13 @@ import org.easyweb4j.util.RequestUtil;
 public class Test {
 
     public static void main(String[] args) {
+    	
+//    	String nodeName = "ssabc1_other";
+//    	String pathParamNodeName = "?_?";
+//    	System.out.println(RequestUtil.compareNodeNameAndPathParamNodeName(nodeName, pathParamNodeName));
+    	
     	System.out.println(ControllerHelper.ACTION_MAP);
-    	System.out.println(ControllerHelper.getHandler("GET", "/getOne/?_other").getActionMethod());
+    	System.out.println(ControllerHelper.getHandler("GET", "/getOne/abc").getActionMethod());
     	
 //        Pattern paramDefFlag = Pattern.compile("\\{([A-Za-z0-9]*)\\}");
 //        Matcher paramDefMatcher = paramDefFlag.matcher(path);
@@ -58,5 +63,10 @@ public class Test {
 //
 //        TestService ts = BeanHelper.getBean(TestService.class);
 //        ts.testNoTns();
+    }
+    
+    
+    public static void changeStr(String str){
+    	str = str+"###";
     }
 }

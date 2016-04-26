@@ -25,7 +25,7 @@ public class TestController {
         return data;
     }
     
-    @Request(value="/getOne/{otherId}_other",method=RequestMethod.GET)
+    @Request(value="/getOne/{otherId}/other",method=RequestMethod.GET)
     public Data getOtherOne(Param param){
     	Data data = analysisParam(param);
         return data;
@@ -67,10 +67,6 @@ public class TestController {
         Map<String,Object>  model = new HashMap<>();
         
         fieldMap.entrySet().forEach(entry->model.put(entry.getKey(),entry.getValue()));
-        fileMap.entrySet().forEach(entry->model.put(entry.getKey(),
-        			entry.getValue()
-        			));
-        
         for(Map.Entry<String, List<FileParam>> file:fileMap.entrySet()){
         	String fieldName = file.getKey();
         	List<FileParam> fileParamList = file.getValue();

@@ -38,8 +38,8 @@ public class Param {
                 Object fieldValue = formParam.getFieldValue();
                 if(fieldMap.containsKey(fieldName)){
                     Object firstValue = fieldMap.get(fieldName);
-                    if(fieldValue instanceof List){
-                        List<Object> values = (List<Object>)fieldMap.get(fieldName);
+                    if(firstValue instanceof List){
+                        List<Object> values = (List<Object>)firstValue;
                         values.add(fieldValue);
                     }else{
                         List<Object> values = new ArrayList<>();

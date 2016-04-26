@@ -26,11 +26,18 @@ public final class RequestUtil {
 	 * 检查action url是否合法
 	 * 只支持字母、斜杠、数字、下划线、$符
 	 * 以及占位变量符号{}
+	 * 占位符花括号不可以紧挨着，否则语意不明
 	 */
 	public static boolean checkUrl(String path){
-		Pattern reg = Pattern.compile("^[A-Za-z0-9_\\$\\{\\}/]*$");
-		Matcher matcher = reg.matcher(path);
-		return matcher.find();
+		do{
+			Pattern reg = Pattern.compile("^[A-Za-z0-9_\\$\\{\\}/]*$");
+			Matcher matcher = reg.matcher(path);
+			if(!matcher.find()) return false;
+			
+			path = castPathParam(path);
+			if(path.contains("??")) return false;
+		}while(false);
+		return true;
 	}
 	
 	/**
@@ -39,6 +46,24 @@ public final class RequestUtil {
 	public static String castPathParam(String nodeName){
 		nodeName = nodeName.replaceAll("\\{[A-Za-z0-9_\\$]*\\}", "?");
 		return nodeName;
+	}
+	
+	/**
+	 * 查看 ACTION_MAP中的nodeName，是不是包含占位符的
+	 */
+	public static boolean containsPathParam(String nodeName){
+		return nodeName.contains("?");
+	}
+	
+	/**
+	 * 比较请求的nodeName和action_map中带参的pathParamNodeName是否可以匹配
+	 */
+	public static boolean compareNodeNameAndPathParamNodeName(String nodeName,String pathParamNodeName){
+		pathParamNodeName = pathParamNodeName.replaceAll("\\?", "[A-Za-z0-9_\\$]*");
+		pathParamNodeName = "^"+pathParamNodeName+"$";
+		Pattern reg = Pattern.compile(pathParamNodeName);
+		Matcher matcher = reg.matcher(nodeName);
+		return matcher.find();
 	}
 	
 	/**
@@ -56,7 +81,7 @@ public final class RequestUtil {
         return path;
 	}
 	
-	public static List<FormParam> parseParameter(HttpServletRequest request){
+	public static List<FormParam> parseParameter(HttpServletRequest request,String requestPath){
     	List<FormParam> formParamList = new ArrayList<>();
         Enumeration<String> paramNames = request.getParameterNames();
         while(paramNames.hasMoreElements()){
@@ -84,5 +109,13 @@ public final class RequestUtil {
             }
         }
         return formParamList;
+    }
+    
+    public static String getRequestMethod(HttpServletRequest request){
+    	return request.getMethod().toUpperCase();
+    }
+    
+    public static String getRequestPath(HttpServletRequest request){
+    	return request.getServletPath();
     }
 }

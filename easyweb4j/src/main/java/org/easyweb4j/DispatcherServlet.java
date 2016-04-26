@@ -26,6 +26,7 @@ import org.easyweb4j.helper.ControllerHelper;
 import org.easyweb4j.helper.FormRequestHelper;
 import org.easyweb4j.util.JsonUtil;
 import org.easyweb4j.util.ReflectionUtil;
+import org.easyweb4j.util.RequestUtil;
 import org.easyweb4j.util.StringUtil;
 
 /**
@@ -56,11 +57,9 @@ public class DispatcherServlet extends HttpServlet{
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //获取请求方法与请求路径
-        String requestMethod = request.getMethod().toLowerCase();
-        String requestPath = request.getServletPath();
-//        if(StringUtil.isNotEmpty(contextPath) && !"/".equals(contextPath.trim())){
-//        	requestPath = requestPath.substring(requestPath.indexOf(contextPath)+contextPath.length());
-//        }
+        String requestMethod = RequestUtil.getRequestMethod(request);
+        String requestPath = RequestUtil.getRequestPath(request);
+
         if(requestPath != null && requestPath.equals("/favicon.ico")){
             return;
         }
@@ -76,10 +75,10 @@ public class DispatcherServlet extends HttpServlet{
             Param param;
             if(FormRequestHelper.isMultipart(request)){
                 //如果是文件上传
-                param = FormRequestHelper.createParam(request);
+                param = FormRequestHelper.createParam(request,requestPath);
             }else{
                 //如果不是
-                param = AjaxRequestHelper.createParam(request);
+                param = AjaxRequestHelper.createParam(request,requestPath);
             }
             //调用 Action方法
             Method actionMethod = handler.getActionMethod();

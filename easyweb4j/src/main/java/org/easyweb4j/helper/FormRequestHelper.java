@@ -60,7 +60,7 @@ public class FormRequestHelper {
     /**
      * 创建请求对象
      */
-    public static Param createParam(HttpServletRequest request){
+    public static Param createParam(HttpServletRequest request,String requestPath){
         List<FormParam> formParamList = new ArrayList<>();
         List<FileParam> fileParamList = new ArrayList<>();
         try {
@@ -90,7 +90,7 @@ public class FormRequestHelper {
             }
             
             //解析url请求参数
-            formParamList.addAll(RequestUtil.parseParameter(request));
+            formParamList.addAll(RequestUtil.parseParameter(request,requestPath));
         }catch (Exception e){
             LOGGER.error("create param failed",e);
             throw new RuntimeException(e);

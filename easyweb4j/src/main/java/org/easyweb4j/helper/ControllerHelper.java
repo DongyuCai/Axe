@@ -1,7 +1,9 @@
 package org.easyweb4j.helper;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -120,11 +122,11 @@ public final class ControllerHelper {
     
     @SuppressWarnings("unchecked")
 	private static Handler findNodeFromActionMap(String nodeName,Map<String,Object> node,String[] subNodeNameLineAry,String requestMethod){
-    	//TODO:nodeName中占位符与请求的匹配
-    	
     	if(subNodeNameLineAry.length > 0){
+    		//TODO:这里将压力放在了每次的请求解析，但愿节点下的分支不多，还不至于影响性能
+    		nodeName = findNodeName(nodeName, node);
     		Object nodeValue = null;
-    		if(node.containsKey(nodeName)){
+    		if(nodeName != null){//此处必能用StringUtil.isEmpty，因为""空串是根节点
     			nodeValue = node.get(nodeName);
     			String nodeName_next = subNodeNameLineAry[0];
             	String[] subNodeNameLineAry_next = new String[subNodeNameLineAry.length-1];
@@ -138,7 +140,8 @@ public final class ControllerHelper {
     		}
     	}else{
     		nodeName = requestMethod+":"+nodeName;
-    		if(node.containsKey(nodeName)){
+    		nodeName = findNodeName(nodeName, node);
+    		if(nodeName != null){
     			return (Handler)node.get(nodeName);
     		}else{
     			return null;
@@ -146,4 +149,32 @@ public final class ControllerHelper {
     	}
     }
     
+    
+    private static String findNodeName(String nodeName,Map<String,Object> node){
+    	boolean findNode = false;
+		List<String> pathParamNodeNameList = new ArrayList<>();
+    	for(String subNodeName:node.keySet()){
+    		if(!RequestUtil.containsPathParam(subNodeName)){
+    			if(subNodeName.equals(nodeName)){
+    				findNode = true;
+    				break;
+    			}
+    		}else{
+    			//拥有pathParam的节点，放在固定字符串之后比对
+    			pathParamNodeNameList.add(subNodeName);
+    		}
+    	}
+    	if(!findNode){
+    		//如果固定字符串的subNode里没有找到节点，就匹配路径参数
+    		for(String pathParamNodeName:pathParamNodeNameList){
+    			if(RequestUtil.compareNodeNameAndPathParamNodeName(nodeName, pathParamNodeName)){
+    				findNode = true;
+    				nodeName = pathParamNodeName;
+    				break;
+    			}
+    		}
+    	}
+    	
+    	return findNode?nodeName:null;
+    }
 }
