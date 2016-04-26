@@ -1,0 +1,20 @@
+版本 1.0
+支持特性：
+1.restful
+2.事务
+3.文件上传（多文件、单文件）
+4.主动规避重复action（如果定义了相同的action，框架初始化会报错）
+5.开发进度：ControllerHelper //TODO:nodeName中占位符与请求的匹配
+
+待加入特性列表
+2.HttpRequest HttpResponse管理
+3.权限验证
+4.文件下载
+5.TODO列表
+6.pathParam
+
+
+注意：
+1.Request.value 也就是url 只支持字母加数字，理论上也够用了
+1.url的 pathParam 变量名只支持 字母数字。
+2.post请求的payload 只支持json格式，key必须用英文双引号包围，value 必须区分数字字符串，如果是字符串纯字母，必须双引号包围。
