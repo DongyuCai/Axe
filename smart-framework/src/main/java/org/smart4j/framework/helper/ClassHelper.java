@@ -23,8 +23,11 @@ public final class ClassHelper {
     private static final Set<Class<?>> CLASS_SET;
 
     static{
+        //客户自定义应用扫描包路径
         String basePackage = ConfigHelper.getAppBasePackage();
         CLASS_SET = ClassUtil.getClassSet(basePackage);
+        //增加smart4j框架包路径
+        CLASS_SET.addAll(ClassUtil.getClassSet("org.smart4j"));
     }
 
     /**

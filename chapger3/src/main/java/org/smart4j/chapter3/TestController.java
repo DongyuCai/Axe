@@ -12,10 +12,17 @@ import org.smart4j.framework.bean.View;
 @Controller
 public class TestController {
 
-    @Action("get:/get")
+    @Action("get:/test")
     public Data get(Param param){
-        System.out.println(param.getParamMap().get("param"));
-        Data data = new Data(param.getParamMap().get("param")+" success");
+        System.out.println(param.getFieldMap().get("param"));
+        Data data = new Data(param.getFieldMap().get("param")+" success");
+        return data;
+    }
+
+    @Action("post:/test")
+    public Data test(Param param){
+        System.out.println(param.getFieldMap().get("param"));
+        Data data = new Data(param.getFieldMap().get("param")+" success");
         return data;
     }
 

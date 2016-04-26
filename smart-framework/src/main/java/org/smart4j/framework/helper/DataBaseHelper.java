@@ -101,14 +101,20 @@ public class DataBaseHelper {
      */
     public static <T> List<T> queryEntityList(Class<T> entityClass, String sql, Object... params) {
         List<T> entityList;
+        Connection conn = getConnection();
         try {
-            Connection conn = getConnection();
             entityList = QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
             throw new RuntimeException(e);
         } finally {
-            closeConnection();
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return entityList;
     }
@@ -118,31 +124,44 @@ public class DataBaseHelper {
      */
     public static <T> T queryEntity(Class<T> entityClass, String sql, Object... params) {
         T entity;
+        Connection conn = getConnection();
         try {
-            Connection conn = getConnection();
             entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
             throw new RuntimeException(e);
         } finally {
-            closeConnection();
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return entity;
     }
 
     /**
      * 执行查询
+     * TODO:不支持 in ? 操作（不支持 list）
      */
     public static List<Map<String, Object>> executeQuery(String sql, Object... params) {
         List<Map<String, Object>> result;
+        Connection conn = getConnection();
         try {
-            Connection conn = getConnection();
             result = QUERY_RUNNER.query(conn, sql, new MapListHandler(), params);
         } catch (Exception e) {
             LOGGER.error("execute query failure", e);
             throw new RuntimeException(e);
         } finally {
-            closeConnection();
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return result;
     }
@@ -152,14 +171,20 @@ public class DataBaseHelper {
      */
     public static int executeUpdate(String sql, Object... params) {
         int rows = 0;
+        Connection conn = getConnection();
         try {
-            Connection conn = getConnection();
             rows = QUERY_RUNNER.update(conn, sql, params);
         } catch (SQLException e) {
             LOGGER.error("execute update failure", e);
             throw new RuntimeException(e);
         } finally {
-            closeConnection();
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return rows;
     }
@@ -181,7 +206,7 @@ public class DataBaseHelper {
             values.append("?, ");
         }
         columns.replace(columns.lastIndexOf(", "), columns.length(), ")");
-        values.replace(columns.lastIndexOf(", "), columns.length(), ")");
+        values.replace(values.lastIndexOf(", "), values.length(), ")");
         sql += columns + " VALUES " + values;
 
         Object[] params = fieldMap.values().toArray();
@@ -225,5 +250,60 @@ public class DataBaseHelper {
      */
     private static String getTableName(Class<?> entityClass) {
         return entityClass.getSimpleName();
+    }
+
+    /**
+     * 开启事务
+     */
+    public static void beginTransaction(){
+        Connection conn = getConnection();
+        if(conn != null){
+            try {
+                conn.setAutoCommit(false);
+            } catch (SQLException e){
+                LOGGER.error("begin transaction failure",e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * 提交事务
+     */
+    public static void commitTransaction(){
+        Connection conn = getConnection();
+        if(conn != null){
+            try {
+                conn.commit();
+            } catch (SQLException e){
+                LOGGER.error("commit transaction failure",e);
+                throw new RuntimeException(e);
+            }finally {
+                try {
+                    if(!conn.getAutoCommit()){
+                        closeConnection();
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * 回滚事务
+     */
+    public static void rollbackTransaction(){
+        Connection conn = getConnection();
+        if (conn != null){
+            try {
+                conn.rollback();
+            } catch (SQLException e){
+                LOGGER.error("rollback transaction failure",e);
+                throw new RuntimeException(e);
+            } finally {
+                closeConnection();
+            }
+        }
     }
 }

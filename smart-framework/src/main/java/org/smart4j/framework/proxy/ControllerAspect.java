@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * Controller 拦截
  * Created by CaiDongYu on 2016/4/14.
  */
-@Aspect(Controller.class)
+//@Aspect(Controller.class)
 public class ControllerAspect extends AspectProxy{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerAspect.class);

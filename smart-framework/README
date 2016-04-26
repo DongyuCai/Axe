@@ -1,0 +1,11 @@
+版本 1.0
+支持特性：
+1.restful
+2.事务
+
+待加入特性列表
+1.文件上传
+2.HttpRequest HttpResponse管理
+3.权限验证
+4.文件下载
+5.TODO列表

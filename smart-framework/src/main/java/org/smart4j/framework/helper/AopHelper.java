@@ -45,7 +45,7 @@ public final class AopHelper {
         //找到切面抽象类的实现类，就是说，都是切面类
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
         for(Class<?> proxyClass : proxyClassSet){
-            //继承了AspectProxy不算，还得是有指定了切面目标类
+            //继承了 AspectProxy 不算，还得是有指定了切面目标类
             if(proxyClass.isAnnotationPresent(Aspect.class)){
                 Aspect aspect = proxyClass.getAnnotation(Aspect.class);
                 //TODO:目前AOP实现，还只是针对有目标注解的类做切面，不能细化到方法，这样一旦拦截，会拦截所有方法
@@ -59,11 +59,15 @@ public final class AopHelper {
     private static Set<Class<?>> createTargetClassSet(Aspect aspect) throws Exception{
         Set<Class<?>> targetClassSet = new HashSet<>();
         //切面目标的指定，依然是通过注解来匹配
-        Class<? extends Annotation> annotation = aspect.value();
+        Class<? extends Annotation>[] annotations = aspect.value();
         //排除Aspect注解本身，因为Aspect注解就是用来指定目标切面注解的
-        if(annotation != null && !annotation.equals(Aspect.class)){
-            //取出含有目标注解的类，作为目标类
-            targetClassSet.addAll(ClassHelper.getClassSetByAnnotation(annotation));
+        if(annotations != null){
+            for(Class<? extends Annotation> annotation:annotations){
+                if(!annotation.equals(Aspect.class)){
+                    //取出含有目标注解的类，作为目标类
+                    targetClassSet.addAll(ClassHelper.getClassSetByAnnotation(annotation));
+                }
+            }
         }
         return targetClassSet;
     }

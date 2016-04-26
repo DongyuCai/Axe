@@ -1,13 +1,17 @@
 package test;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.smart4j.chapter3.TestService;
 import org.smart4j.framework.HelperLoader;
 import org.smart4j.framework.bean.Request;
+import org.smart4j.framework.helper.BeanHelper;
 import org.smart4j.framework.helper.ClassHelper;
 import org.smart4j.framework.helper.ControllerHelper;
 import org.smart4j.framework.helper.DataBaseHelper;
 import org.smart4j.framework.util.ClassUtil;
 import org.smart4j.framework.util.ReflectionUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,10 +52,13 @@ public class Test {
 //        String str = "aaa";
 //        System.out.println(str + buf);
 
-        HelperLoader.init();
-        String sql = "select * from just4test";
-        Object[] params = new Object[0];
-        List<Map<String,Object>> result = DataBaseHelper.executeQuery(sql,params);
-        System.out.println(result);
+          HelperLoader.init();
+//        String sql = "select * from just4test where id in (?,?) and name like ?";
+//        Object[] params = {1,2,"%asd%"};
+//        List<Map<String,Object>> result = DataBaseHelper.executeQuery(sql,params);
+//        System.out.println(result);
+//
+        TestService ts = BeanHelper.getBean(TestService.class);
+        ts.testNoTns();
     }
 }
