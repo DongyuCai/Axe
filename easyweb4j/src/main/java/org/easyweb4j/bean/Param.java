@@ -14,42 +14,30 @@ import org.easyweb4j.util.CollectionUtil;
 public class Param {
     private List<FormParam> formParamList;
     private List<FileParam> fileParamList;
+    private List<BodyParam> bodyParamList;
 //    private Map<String,Object> paramMap;
 
 
-    public Param(List<FormParam> formParamList) {
-        this.formParamList = formParamList;
-    }
-
-    public Param(List<FormParam> formParamList, List<FileParam> fileParamList) {
+    public Param(List<FormParam> formParamList, List<FileParam> fileParamList, List<BodyParam> bodyParamList) {
         this.formParamList = formParamList;
         this.fileParamList = fileParamList;
+        this.bodyParamList = bodyParamList;
     }
 
     /**
      * 获取请求参数的映射
      */
-    @SuppressWarnings("unchecked")
-	public Map<String,Object> getFieldMap(){
-        Map<String,Object> fieldMap = new HashMap<>();
+	public Map<String,List<FormParam>> getFieldMap(){
+        Map<String,List<FormParam>> fieldMap = new HashMap<>();
         if(CollectionUtil.isNotEmpty(formParamList)){
             for(FormParam formParam:formParamList){
                 String fieldName = formParam.getFieldName();
-                Object fieldValue = formParam.getFieldValue();
-                if(fieldMap.containsKey(fieldName)){
-                    Object firstValue = fieldMap.get(fieldName);
-                    if(firstValue instanceof List){
-                        List<Object> values = (List<Object>)firstValue;
-                        values.add(fieldValue);
-                    }else{
-                        List<Object> values = new ArrayList<>();
-                        values.add(firstValue);
-                        values.add(fieldValue);
-                        fieldMap.put(fieldName,values);
-                    }
-                }else{
-                    fieldMap.put(fieldName,fieldValue);
+                List<FormParam> formParamList = fieldMap.get(fieldName);
+                if(formParamList == null){
+                	formParamList = new ArrayList<FormParam>();
+                    fieldMap.put(fieldName,formParamList);
                 }
+                formParamList.add(formParam);
             }
         }
         return fieldMap;
@@ -60,20 +48,36 @@ public class Param {
         if(CollectionUtil.isNotEmpty(fileParamList)){
             for(FileParam fileParam:fileParamList){
                 String fieldName = fileParam.getFieldName();
-                List<FileParam> fileParamList;
-                if(fileMap.containsKey(fieldName)){
-                    fileParamList = fileMap.get(fieldName);
-                }else{
+                List<FileParam> fileParamList = fileMap.get(fieldName);
+                if(fileParamList == null){
                     fileParamList = new ArrayList<>();
+                    fileMap.put(fieldName,fileParamList);
                 }
                 fileParamList.add(fileParam);
-                fileMap.put(fieldName,fileParamList);
             }
         }
         return fileMap;
     }
 
+    public Map<String,List<BodyParam>> getBodyMap(){
+        Map<String,List<BodyParam>> bodyMap = new HashMap<>();
+        if(CollectionUtil.isNotEmpty(bodyParamList)){
+            for(BodyParam bodyParam:bodyParamList){
+                String fieldName = bodyParam.getFieldName();
+                List<BodyParam> fileParamList = bodyMap.get(fieldName);
+                if(fileParamList == null){
+                    fileParamList = new ArrayList<>();
+                    bodyMap.put(fieldName,fileParamList);
+                }
+                fileParamList.add(bodyParam);
+            }
+        }
+        return bodyMap;
+    }
+
     public boolean isEmpty(){
-        return CollectionUtil.isEmpty(formParamList) && CollectionUtil.isEmpty(fileParamList);
+        return CollectionUtil.isEmpty(formParamList) && 
+        		CollectionUtil.isEmpty(fileParamList) && 
+        		CollectionUtil.isEmpty(bodyParamList);
     }
 }

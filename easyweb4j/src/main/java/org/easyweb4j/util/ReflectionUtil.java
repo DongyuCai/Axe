@@ -15,6 +15,10 @@ public final class ReflectionUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
 
+    public static boolean compareType(Class<?> cls1,Class<?> cls2){
+    	return cls1.getName().equals(cls2.getName());
+    }
+    
     /**
      * 创建实例
      */

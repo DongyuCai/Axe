@@ -8,6 +8,15 @@ import java.lang.reflect.Method;
  */
 public class Handler {
 
+	/**
+	 * 接受请求的类型
+	 */
+	private String requestMethod;
+	/**
+	 * Action rest 串
+	 */
+	private String mappingPath;
+	
     /**
      * Controller 类
      */
@@ -18,9 +27,11 @@ public class Handler {
      */
     private Method actionMethod;
 
-    public Handler(Class<?> controllerClass, Method actionMethod){
+    public Handler(Class<?> controllerClass, Method actionMethod,String requestMethod, String mappingPath){
         this.controllerClass = controllerClass;
         this.actionMethod = actionMethod;
+        this.requestMethod = requestMethod;
+        this.mappingPath = mappingPath;
     }
 
     public Class<?> getControllerClass() {
@@ -30,4 +41,12 @@ public class Handler {
     public Method getActionMethod() {
         return actionMethod;
     }
+    
+    public String getRequestMethod() {
+		return requestMethod;
+	}
+    
+    public String getMappingPath() {
+		return mappingPath;
+	}
 }

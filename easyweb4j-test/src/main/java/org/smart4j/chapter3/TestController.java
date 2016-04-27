@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.easyweb4j.annotation.Request;
 import org.easyweb4j.annotation.Controller;
+import org.easyweb4j.annotation.Request;
+import org.easyweb4j.annotation.RequestParam;
 import org.easyweb4j.bean.Data;
 import org.easyweb4j.bean.FileParam;
+import org.easyweb4j.bean.FormParam;
 import org.easyweb4j.bean.Param;
 import org.easyweb4j.bean.View;
 import org.easyweb4j.constant.RequestMethod;
@@ -19,14 +21,30 @@ import org.easyweb4j.constant.RequestMethod;
 @Controller
 public class TestController {
 
-    @Request(value="/getOne/{id}",method=RequestMethod.GET)
-    public Data getOne(Param param){
+    @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
+    public Data postPathParam(@RequestParam("money")Integer money,Param param,@RequestParam("ids")List<String> ids,@RequestParam("name")String name){
+    	System.out.println("postPathParam");
+//    	Data data = analysisParam(param);
+        return null;
+    }
+    
+
+    @Request(value="/post100/4{id}_{name}",method=RequestMethod.POST)
+    public Data postPathParam2(Param param){
+    	System.out.println("postPathParam2");
     	Data data = analysisParam(param);
         return data;
     }
     
-    @Request(value="/getOne/{otherId}/other",method=RequestMethod.GET)
-    public Data getOtherOne(Param param){
+    @Request(value="/post100/4id_name",method=RequestMethod.POST)
+    public Data postPathParam3(Param param){
+    	System.out.println("postPathParam3");
+    	Data data = analysisParam(param);
+        return data;
+    }
+    
+    @Request(value="/getOne/{addr}/{id}_{name}/detail",method=RequestMethod.GET)
+    public Data getOneDetail(Param param){
     	Data data = analysisParam(param);
         return data;
     }
@@ -38,6 +56,13 @@ public class TestController {
     }
     
     //==================== postman success ================//
+    @Request(value="/getOne/{id}",method=RequestMethod.GET)
+    public Data getOne(Param param){
+    	Data data = analysisParam(param);
+        return data;
+    }
+    
+    
     @Request(value="/get",method=RequestMethod.GET)
     public Data get(Param param){
     	Data data = analysisParam(param);
@@ -62,7 +87,7 @@ public class TestController {
     }
     
     public Data analysisParam(Param param){
-        Map<String,Object> fieldMap = param.getFieldMap();
+        Map<String,List<FormParam>> fieldMap = param.getFieldMap();
         Map<String,List<FileParam>> fileMap = param.getFileMap();
         Map<String,Object>  model = new HashMap<>();
         

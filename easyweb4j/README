@@ -5,6 +5,7 @@
 3.文件上传（多文件、单文件）
 4.主动规避重复action（如果定义了相同的action，框架初始化会报错）
 5.路径参数，多拼参数，类似 /get/{id}_{name} 这样
+6.actionMethod 方法参数的随意化
 
 待加入特性列表
 2.HttpRequest HttpResponse管理
@@ -14,7 +15,11 @@
 6.pathParam [doing]
 
 
-注意：
-1.Request.value 也就是url 只支持字母加数字，理论上也够用了
-1.url的 pathParam 变量名只支持 字母数字。
-2.post请求的payload 只支持json格式，key必须用英文双引号包围，value 必须区分数字字符串，如果是字符串纯字母，必须双引号包围。
+约定(玩游戏，熟悉了按键操作，才能玩的起来，好的约定，是为了更加的方便)：
+1.Request.value 也就是url 只支持字母加数字，理论上也够用了，因此，url的 pathParam 变量名只支持 字母数字。
+2.post请求的payload 只支持json格式，key必须用英文双引号包围，value 必须区分数字字符串，如果是字符串纯字母，必须双引号包围。总之按规范来。
+3.下面的请求作为例子
+这样是可以的(查询参数可以是中文，随意)：http://localhost:8080/getOne/zhangjiagang/123_zhangsan/detail?p1=123&p2=张家港
+这样是不可以的(404，路径请不要含有非字母、数字、下划线、$以外的字符)：http://localhost:8080/getOne/张家港/123_zhangsan/detail?p1=123&p2=张家港
+第二种匹配是什么鬼!
+4.controller中的action处理方法，也就是加了@Request注解的方法，携带的参数，如果请求中能够取到，就自动赋值，如果请求中没有，默认为null。有些框架是会强制参数个数的，easyweb4j不做参数个数强制。

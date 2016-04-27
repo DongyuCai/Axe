@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.easyweb4j.bean.BodyParam;
 import org.easyweb4j.bean.FileParam;
 import org.easyweb4j.bean.FormParam;
 import org.easyweb4j.bean.Param;
@@ -60,7 +61,7 @@ public class FormRequestHelper {
     /**
      * 创建请求对象
      */
-    public static Param createParam(HttpServletRequest request,String requestPath){
+    public static Param createParam(HttpServletRequest request,String requestPath,String mappingPath){
         List<FormParam> formParamList = new ArrayList<>();
         List<FileParam> fileParamList = new ArrayList<>();
         try {
@@ -90,12 +91,12 @@ public class FormRequestHelper {
             }
             
             //解析url请求参数
-            formParamList.addAll(RequestUtil.parseParameter(request,requestPath));
+            formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));
         }catch (Exception e){
             LOGGER.error("create param failed",e);
             throw new RuntimeException(e);
         }
-        return new Param(formParamList,fileParamList);
+        return new Param(formParamList,fileParamList,null);
     }
 
     /**

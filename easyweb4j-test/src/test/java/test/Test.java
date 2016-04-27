@@ -1,21 +1,64 @@
 package test;
 
-import org.easyweb4j.helper.ControllerHelper;
-import org.easyweb4j.util.RequestUtil;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.easyweb4j.bean.FileParam;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
  */
-public class Test {
+public class Test{
 
     public static void main(String[] args) {
+    	List<Test> list = new ArrayList<>();
+    	list.add(new Test());
+    	list.add(new Test());
+    	list.add(new Test());
     	
+    	Test[] ary = new Test[0];
+    	ary = list.toArray(ary);
+    	System.out.println(ary.length);
+    	
+    	System.out.println(list.getClass());
+    	
+    	
+    	
+//    	Method[] methodAry = Test.class.getDeclaredMethods();
+//    	for(Method actionMethod:methodAry){
+//
+//        	Parameter[] parameterAry = actionMethod.getParameters();
+//        	parameterAry = parameterAry == null?new Parameter[0]:parameterAry;
+//        	Class<?>[] parameterTypes = actionMethod.getParameterTypes();
+//        	parameterTypes = parameterTypes == null?new Class<?>[0]:parameterTypes;
+//        	//按顺序来，塞值
+//        	List<Object> parameterValue = new ArrayList<>();
+//        	for(int i=0;i<parameterAry.length && parameterAry.length == parameterTypes.length;i++){
+//    			Parameter parameter = parameterAry[i];
+//    			Class<?> parameterType = parameterTypes[i];
+//    			System.out.println(parameterType+"\t"+parameterType.isArray()+"\t"+parameterType.getComponentType());
+//        	}
+//    	}
+//    	
+    	
+//    	List<Object> list = new ArrayList<>();
+//    	list.add(null);
+//    	list.add(null);
+//    	list.add(new Test());
+//    	list.add(null);
+//    	
+//    	for(Object obj:list){
+//    		System.out.println(obj);
+//    	}
+//    	
 //    	String nodeName = "ssabc1_other";
 //    	String pathParamNodeName = "?_?";
 //    	System.out.println(RequestUtil.compareNodeNameAndPathParamNodeName(nodeName, pathParamNodeName));
     	
-    	System.out.println(ControllerHelper.ACTION_MAP);
-    	System.out.println(ControllerHelper.getHandler("GET", "/getOne/abc").getActionMethod());
+//    	System.out.println(ControllerHelper.ACTION_MAP);
+//    	System.out.println(ControllerHelper.getHandler("GET", "/getOne/abc").getActionMethod());
     	
 //        Pattern paramDefFlag = Pattern.compile("\\{([A-Za-z0-9]*)\\}");
 //        Matcher paramDefMatcher = paramDefFlag.matcher(path);
@@ -65,8 +108,12 @@ public class Test {
 //        ts.testNoTns();
     }
     
+    public static void testParameter(List<FileParam> files,int p1,Integer p2,double p3,Double p4,boolean p5,Boolean p6,char p7,Character p8){
+    	
+    }
     
     public static void changeStr(String str){
     	str = str+"###";
     }
+    
 }

@@ -6,9 +6,9 @@ package org.easyweb4j.bean;
  */
 public class FormParam {
     private String fieldName;
-    private Object fieldValue;
+    private String fieldValue;
 
-    public FormParam(String fieldName, Object fieldValue) {
+    public FormParam(String fieldName, String fieldValue) {
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
     }
@@ -17,7 +17,7 @@ public class FormParam {
         return fieldName;
     }
 
-    public Object getFieldValue() {
+    public String getFieldValue() {
         return fieldValue;
     }
 }

@@ -40,8 +40,13 @@ public final class ControllerHelper {
                             String requestMethod = action.method().REQUEST_METHOD;
                             
                             //检查mappingPath是否合规
-                            if(!RequestUtil.checkUrl(mappingPath)){
+                            if(!RequestUtil.checkMappingPath(mappingPath)){
                             	throw new RuntimeException("invalid @Request.value ["+mappingPath+"] of action: "+method);
+                            }
+                            
+                            //检查actionMethod是否合规
+                            if(!RequestUtil.checkActionMethod(method)){
+                            	throw new RuntimeException("action method 不允许使用 primitive 类型参数: "+method);
                             }
                             
                             //格式化
@@ -57,7 +62,7 @@ public final class ControllerHelper {
                             		subNodeNameLineAry[i] = nodeNames[i+1];
                             	}
                             }
-                            generateActionMap(nodeName, ACTION_MAP, controllerClass, method, subNodeNameLineAry,requestMethod);
+                            generateActionMap(nodeName, ACTION_MAP, controllerClass, method, subNodeNameLineAry,requestMethod,mappingPath);
                         }
                     }
                 }
@@ -67,7 +72,7 @@ public final class ControllerHelper {
 
     
     @SuppressWarnings("unchecked")
-	private static void generateActionMap(String nodeName,Map<String,Object> node,Class<?> controllerClass,Method method,String[] subNodeNameLineAry,String requestMethod){
+	private static void generateActionMap(String nodeName,Map<String,Object> node,Class<?> controllerClass,Method actionMethod,String[] subNodeNameLineAry,String requestMethod,String mappingPath){
     	//如果nodeName中有pathParam，全部替换成占位符?
     	nodeName = RequestUtil.castPathParam(nodeName);
     	
@@ -84,16 +89,16 @@ public final class ControllerHelper {
         	for(int i=0;i<subNodeNameLineAry_next.length;i++){
         		subNodeNameLineAry_next[i] = subNodeNameLineAry[i+1];
         	}
-    		generateActionMap(nodeName_next, (Map<String,Object>)nodeValue, controllerClass, method, subNodeNameLineAry_next, requestMethod);
+    		generateActionMap(nodeName_next, (Map<String,Object>)nodeValue, controllerClass, actionMethod, subNodeNameLineAry_next, requestMethod, mappingPath);
     	}else{
     		//到最后了
     		nodeName = requestMethod+":"+nodeName;
     		if(!node.containsKey(nodeName)){
-    			Handler handler = new Handler(controllerClass, method);
+    			Handler handler = new Handler(controllerClass, actionMethod,requestMethod,mappingPath);
     			node.put(nodeName, handler);
     		}else{
     			Handler handler = (Handler)node.get(nodeName);
-    			throw new RuntimeException("find two same action: "+method+" === "+handler.getActionMethod());
+    			throw new RuntimeException("find two same action: "+actionMethod+" === "+handler.getActionMethod());
     		}
     	}
     }
