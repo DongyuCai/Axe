@@ -2,7 +2,9 @@ package org.easyweb4j.helper;
 
 import org.easyweb4j.annotation.Controller;
 import org.easyweb4j.annotation.Service;
+import org.easyweb4j.filter.Filter;
 import org.easyweb4j.util.ClassUtil;
+import org.easyweb4j.util.ReflectionUtil;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -53,6 +55,13 @@ public final class ClassHelper {
      */
     public static Set<Class<?>> getControllerClassSet(){
         Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> cls.isAnnotationPresent(Controller.class)).collect(Collectors.toSet());
+        return classSet;
+    }
+    
+    public static Set<Class<?>> getFilterClassSet(){
+    	Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> 
+    		{if(Filter.class.isAssignableFrom(cls) && !ReflectionUtil.compareType(cls, Filter.class)) return true;return false;}
+    			).collect(Collectors.toSet());
         return classSet;
     }
 

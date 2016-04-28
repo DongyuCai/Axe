@@ -50,17 +50,17 @@ public final class ConfigHelper {
     }
 
     /**
-     * 获取应用 JSP 路径（默认 /WEB-INF/view/ ）
+     * 获取应用 JSP 路径（建议 /WEB-INF/view/ ）
      */
     public static String getAppJspPath() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_JSP_PATH, "/WEB-INF/view/");
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_JSP_PATH, null);
     }
 
     /**
-     * 获取应用 静态资源 路径（默认 /asset/）
+     * 获取应用 静态资源 路径（建议 /asset/）
      */
     public static String getAppAssetPath() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_ASSET_PATH, "/asset/");
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_ASSET_PATH, null);
     }
 
     /**

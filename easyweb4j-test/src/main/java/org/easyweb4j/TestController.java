@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easyweb4j.annotation.Controller;
+import org.easyweb4j.annotation.FilterFuckOff;
+import org.easyweb4j.annotation.Inject;
 import org.easyweb4j.annotation.Request;
 import org.easyweb4j.annotation.RequestParam;
 import org.easyweb4j.bean.Data;
@@ -23,6 +25,9 @@ import org.easyweb4j.constant.RequestMethod;
  */
 @Controller(basePath = "test")
 public class TestController {
+	
+	@Inject
+	private TestService testService;
 
     @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
     public Data postPathParam(
@@ -79,13 +84,14 @@ public class TestController {
         return data;
     }
     
-    
+    @FilterFuckOff(TestFilter1.class)
     @Request(value="/get",method=RequestMethod.GET)
     public Data get(Param param){
     	Data data = analysisParam(param);
         return data;
     }
 
+    @FilterFuckOff
     @Request(value="/post",method=RequestMethod.POST)
     public Data post(Param param){
     	Data data = analysisParam(param);

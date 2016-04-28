@@ -1,6 +1,9 @@
 package org.easyweb4j.bean;
 
 import java.lang.reflect.Method;
+import java.util.List;
+
+import org.easyweb4j.filter.Filter;
 
 /**
  * 封装 Action 信息
@@ -26,12 +29,18 @@ public class Handler {
      * Action 方法
      */
     private Method actionMethod;
+    
+    /**
+     * Filter 链
+     */
+    private List<Filter> filterList;
 
-    public Handler(Class<?> controllerClass, Method actionMethod,String requestMethod, String mappingPath){
+    public Handler(String requestMethod, String mappingPath,Class<?> controllerClass, Method actionMethod, List<Filter> filterList){
+    	this.requestMethod = requestMethod;
+    	this.mappingPath = mappingPath;
         this.controllerClass = controllerClass;
         this.actionMethod = actionMethod;
-        this.requestMethod = requestMethod;
-        this.mappingPath = mappingPath;
+        this.filterList = filterList;
     }
 
     public Class<?> getControllerClass() {
@@ -48,5 +57,9 @@ public class Handler {
     
     public String getMappingPath() {
 		return mappingPath;
+	}
+    
+    public List<Filter> getFilterList() {
+		return filterList;
 	}
 }

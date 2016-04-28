@@ -1,11 +1,11 @@
 package test;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.easyweb4j.TestFilter1;
 import org.easyweb4j.bean.FileParam;
+import org.easyweb4j.filter.Filter;
+import org.easyweb4j.util.ReflectionUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -13,7 +13,11 @@ import org.easyweb4j.bean.FileParam;
 public class Test{
 
     public static void main(String[] args) {
-    	List<Test> list = new ArrayList<>();
+//    	cls.isAssignableFrom(Filter.class) && !
+    	System.out.println(Filter.class.isAssignableFrom(TestFilter1.class));
+    	System.out.println(ReflectionUtil.compareType(TestFilter1.class, Filter.class));
+    	
+    	/*List<Test> list = new ArrayList<>();
     	list.add(new Test());
     	list.add(new Test());
     	list.add(new Test());
@@ -23,7 +27,7 @@ public class Test{
     	System.out.println(ary.length);
     	
     	System.out.println(list.getClass());
-    	
+    	*/
     	
     	
 //    	Method[] methodAry = Test.class.getDeclaredMethods();

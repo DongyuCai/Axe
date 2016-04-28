@@ -6,12 +6,12 @@
 4.主动规避重复action（如果定义了相同的action，框架初始化会报错）
 5.路径参数pathParam，多拼参数，类似 /get/{id}_{name} 这样
 6.actionMethod 方法参数的随意化，支持HttpRequest、HttpResponse、Param 管理
+7.过滤器 filter，支持filter链（有序），支持FilterFuckOff排除Filter
 
 待加入特性列表
 3.权限验证
 4.文件下载
 5.TODO列表
-6.过滤器filter
 7.多数据源
 
 约定(玩游戏，熟悉了按键操作，才能玩的起来，好的约定，是为了更加的方便)：

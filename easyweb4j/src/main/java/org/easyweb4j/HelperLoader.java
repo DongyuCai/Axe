@@ -18,6 +18,7 @@ public final class HelperLoader {
         Class<?>[] classList = {
                 ClassHelper.class,//加载package下所有class到CLASS_SET
                 BeanHelper.class,//实例化CLASS_SET里的类，放到BEAN_MAP里
+                FilterHelper.class,//实例化所有Filter，并按层级排好序
                 AopHelper.class,//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
                 IocHelper.class,
                 ControllerHelper.class

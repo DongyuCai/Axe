@@ -5,10 +5,12 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easyweb4j.annotation.Controller;
+import org.easyweb4j.annotation.FilterFuckOff;
 import org.easyweb4j.annotation.Request;
 import org.easyweb4j.constant.RequestMethod;
 
-@Controller(basePath = "test")
+@FilterFuckOff
+@Controller(basePath = "test2")
 public class TestController2 {
 
     @Request(value="page",method=RequestMethod.GET)

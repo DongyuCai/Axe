@@ -6,12 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.easyweb4j.annotation.Controller;
+import org.easyweb4j.annotation.FilterFuckOff;
 import org.easyweb4j.annotation.Request;
 import org.easyweb4j.bean.Handler;
+import org.easyweb4j.filter.Filter;
 import org.easyweb4j.util.ArrayUtil;
 import org.easyweb4j.util.CollectionUtil;
+import org.easyweb4j.util.ReflectionUtil;
 import org.easyweb4j.util.RequestUtil;
 
 /**
@@ -96,7 +100,44 @@ public final class ControllerHelper {
     		//到最后了
     		nodeName = requestMethod+":"+nodeName;
     		if(!node.containsKey(nodeName)){
-    			Handler handler = new Handler(controllerClass, actionMethod,requestMethod,mappingPath);
+    			List<Filter> filterList = new ArrayList<>();
+    			for(Filter filter:FilterHelper.getSortedFilterList()){
+    				//首先判断是否匹配mappingPath
+    				Matcher mappingPathMatcher = filter.setMappingPathPattern().matcher(mappingPath);
+    				if(!mappingPathMatcher.find()) continue;
+    				
+    				//其次，说明匹配上了，判断controller是否排除了这个Filter
+    				if(controllerClass.isAnnotationPresent(FilterFuckOff.class)){
+    					FilterFuckOff filterFuckOff = controllerClass.getAnnotation(FilterFuckOff.class);
+    					if(filterFuckOff.value().length == 0) continue;
+    					boolean findFuckOffFilter = false;
+    					for(Class<?> filterClass:filterFuckOff.value()){
+    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
+    							findFuckOffFilter = true;
+    							break;
+    						}
+    					}
+    					if(findFuckOffFilter) continue;
+    				}
+    				
+    				//最后，说明Controller上没有排除此Filter，需要判断方法上是否排除
+    				if(actionMethod.isAnnotationPresent(FilterFuckOff.class)){
+    					FilterFuckOff filterFuckOff = actionMethod.getAnnotation(FilterFuckOff.class);
+    					if(filterFuckOff.value().length == 0) continue;
+    					boolean findFuckOffFilter = false;
+    					for(Class<?> filterClass:filterFuckOff.value()){
+    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
+    							findFuckOffFilter = true;
+    							break;
+    						}
+    					}
+    					if(findFuckOffFilter) continue;
+    				}
+    				
+    				//到这里，说明此过滤器匹配上了这个actionMethod，而且没被排除
+    				filterList.add(filter);
+    			}
+    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass, actionMethod,filterList);
     			node.put(nodeName, handler);
     		}else{
     			Handler handler = (Handler)node.get(nodeName);

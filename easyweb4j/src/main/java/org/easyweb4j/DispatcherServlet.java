@@ -24,6 +24,8 @@ import org.easyweb4j.bean.FormParam;
 import org.easyweb4j.bean.Handler;
 import org.easyweb4j.bean.Param;
 import org.easyweb4j.bean.View;
+import org.easyweb4j.exception.RestException;
+import org.easyweb4j.filter.Filter;
 import org.easyweb4j.helper.AjaxRequestHelper;
 import org.easyweb4j.helper.BeanHelper;
 import org.easyweb4j.helper.ClassHelper;
@@ -54,11 +56,19 @@ public class DispatcherServlet extends HttpServlet{
         //获取 ServletContext 对象（用于注册servlet）
         ServletContext servletContext = servletConfig.getServletContext();
         //注册处理JSP的Servlet
-        ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
-        jspServlet.addMapping(ConfigHelper.getAppJspPath()+"*");
+        String appJspPath = ConfigHelper.getAppJspPath();
+        if(StringUtil.isNotEmpty(appJspPath)){
+        	appJspPath = appJspPath.endsWith("/") ? appJspPath : appJspPath+"/";
+        	ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
+        	jspServlet.addMapping(appJspPath+"*");
+        }
         //注册处理静态资源的默认Servlet
-        ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
-        defaultServlet.addMapping(ConfigHelper.getAppAssetPath()+"*");
+        String appAssetPath = ConfigHelper.getAppAssetPath();
+        if(StringUtil.isNotEmpty(appAssetPath)){
+        	appAssetPath = appAssetPath.endsWith("/") ? appAssetPath : appAssetPath+"/";
+        	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
+        	defaultServlet.addMapping(appAssetPath+"*");
+        }
 
         //初始化框架相关 helper 类
         HelperLoader.init(servletContext);
@@ -95,19 +105,31 @@ public class DispatcherServlet extends HttpServlet{
                     //如果不是
                     param = AjaxRequestHelper.createParam(request,requestPath,handler.getMappingPath());
                 }
-                //调用 Action方法
-                Method actionMethod = handler.getActionMethod();
-                Object result = this.invokeActionMethod(controllerBean, actionMethod, param, request, response);
-
-                if(result instanceof View){
-                    handleViewResult((View)result,request,response);
-                } else if (result instanceof Data){
-                    handleDataResult((Data)result,response);
+                
+                //先执行Filter链
+                List<Filter> filterList = handler.getFilterList();
+                boolean doFilterSuccess = true;
+                for(Filter filter:filterList){
+                	doFilterSuccess = filter.doFilter(request, response, param, handler);
+                	if(!doFilterSuccess) break;
+                }
+                if(doFilterSuccess){
+                	//调用 Action方法
+                	Method actionMethod = handler.getActionMethod();
+                	Object result = this.invokeActionMethod(controllerBean, actionMethod, param, request, response);
+                	
+                	if(result instanceof View){
+                		handleViewResult((View)result,request,response);
+                	} else if (result instanceof Data){
+                		handleDataResult((Data)result,response);
+                	}
                 }
             }else{
             	//404
-    			writeBackToClient(HttpServletResponse.SC_NOT_FOUND, "404 Not Found", response);
+    			throw new RestException(RestException.SC_NOT_FOUND, "404 Not Found");
             }
+		} catch (RestException e){
+			writeBackToClient(e.getStatus(), e.getMessage(), response);
 		} catch (Exception e) {
 			//500
 			writeBackToClient(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response);
