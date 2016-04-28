@@ -15,77 +15,127 @@ public final class  CastUtil {
 		Object result = null;
 		try {
 			if(ReflectionUtil.compareType(type, List.class)){
-				Class<?> returnType = type.getDeclaredMethod("get").getReturnType();
-				if(ReflectionUtil.compareType(returnType, Object.class)){
-					//如果是List<Object>
-					List<Object> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						list.add(formParam.getFieldValue());
+				//TODO:现在只支持List<?>这样的参数，其实就是List<String>，需要开发自己在Controller里判断，或者直接接值时候用List<String>
+				List<Object> list = new ArrayList<>();
+				for(FormParam formParam:formParamList){
+					list.add(formParam.getFieldValue());
+				}
+				result = list.size()>0?list:null;
+			} else if(type.isArray()){
+				if(ReflectionUtil.compareType(type.getComponentType(), String.class)){
+					String[] list = new String[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						String value =  castString(formParamList.get(i).getFieldValue(), null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, String.class)){
-					List<String> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						String value =  castString(formParam.getFieldValue(), null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Byte.class)){
+					Byte[] list = new Byte[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Byte value =  castByte(formParamList.get(i).getFieldValue(),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Byte.class)){
-					List<Byte> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Byte value =  castByte(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Boolean.class)){
+					Boolean[] list = new Boolean[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Boolean value =  castBoolean(formParamList.get(i),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Boolean.class)){
-					List<Boolean> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Boolean value =  castBoolean(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Short.class)){
+					Short[] list = new Short[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Short value =  castShort(formParamList.get(i).getFieldValue(),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Short.class)){
-					List<Short> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Short value =  castShort(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Character.class)){
+					Character[] list = new Character[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Character value =  castCharacter(formParamList.get(i).getFieldValue());
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Character.class)){
-					List<Character> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Character value =  castCharacter(formParam.getFieldValue());
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Integer.class)){
+					Integer[] list = new Integer[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Integer value =  castInteger(formParamList.get(i).getFieldValue(),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Integer.class)){
-					List<Integer> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Integer value =  castInteger(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Long.class)){
+					Long[] list = new Long[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Long value =  castLong(formParamList.get(i).getFieldValue(),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Long.class)){
-					List<Long> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Long value =  castLong(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Float.class)){
+					Float[] list = new Float[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Float value =  castFloat(formParamList.get(i).getFieldValue(),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Float.class)){
-					List<Float> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Float value =  castFloat(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}else if(ReflectionUtil.compareType(type.getComponentType(), Double.class)){
+					Double[] list = new Double[formParamList.size()];
+					for(int i=0;i<formParamList.size();i++){
+						Double value =  castDouble(formParamList.get(i).getFieldValue(),null);
+						list[i] = value;
 					}
-					result = list.size()>0?list:null;
-				}else if(ReflectionUtil.compareType(returnType, Double.class)){
-					List<Double> list = new ArrayList<>();
-					for(FormParam formParam:formParamList){
-						Double value =  castDouble(formParam.getFieldValue(),null);
-						list.add(value);
+					result = list.length>0?list:null;
+				}
+			}else{
+				if(ReflectionUtil.compareType(type, String.class)){
+					StringBuffer list = new StringBuffer("");
+					for(int i=0;i<formParamList.size();i++){
+						String value =  castString(formParamList.get(i).getFieldValue(), null);
+						if(value != null){
+							list.append(value).append(",");
+						}
 					}
-					result = list.size()>0?list:null;
+					result = list.length()>0?list.substring(0, list.length()-1):null;
+				}else if(ReflectionUtil.compareType(type, Byte.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Byte value =  castByte(formParamList.get(i).getFieldValue(),null);
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Boolean.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Boolean value =  castBoolean(formParamList.get(i),null);
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Short.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Short value =  castShort(formParamList.get(i).getFieldValue(),null);
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Character.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Character value =  castCharacter(formParamList.get(i).getFieldValue());
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Integer.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Integer value =  castInteger(formParamList.get(i).getFieldValue(),null);
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Long.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Long value =  castLong(formParamList.get(i).getFieldValue(),null);
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Float.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Float value =  castFloat(formParamList.get(i).getFieldValue(),null);
+						result = value;
+					}
+				}else if(ReflectionUtil.compareType(type, Double.class)){
+					for(int i=0;i<formParamList.size();i++){
+						Double value =  castDouble(formParamList.get(i).getFieldValue(),null);
+						result = value;
+					}
 				}
 			}
 		} catch (Exception e) {

@@ -11,11 +11,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 事务代理
+ * 代理所有 @Service注解的类
+ * 只增强 @Tns注解的方法
  * Created by CaiDongYu on 2016/4/19.
  */
 @Aspect(Service.class)
-public class TransactionProxy extends AspectProxy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionProxy.class);
+public class TransactionAspect extends AspectProxy {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionAspect.class);
 
     private static final ThreadLocal<Boolean> FLAG_HOLDER = new ThreadLocal<Boolean>(){
         @Override

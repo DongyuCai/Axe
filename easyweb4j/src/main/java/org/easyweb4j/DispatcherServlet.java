@@ -30,6 +30,7 @@ import org.easyweb4j.helper.ClassHelper;
 import org.easyweb4j.helper.ConfigHelper;
 import org.easyweb4j.helper.ControllerHelper;
 import org.easyweb4j.helper.FormRequestHelper;
+import org.easyweb4j.util.CastUtil;
 import org.easyweb4j.util.CollectionUtil;
 import org.easyweb4j.util.JsonUtil;
 import org.easyweb4j.util.ReflectionUtil;
@@ -164,7 +165,7 @@ public class DispatcherServlet extends HttpServlet{
     					if(fileMap.containsKey(fieldName)){
     						List<FileParam> fileParamList = fileMap.get(fieldName);
     						if(CollectionUtil.isNotEmpty(fileParamList)){
-    							parameterValue = fileParamList.get(0);
+    							parameterValue = fileParamList.get(fileParamList.size()-1);
     						}
     					}
     				}else{
@@ -173,7 +174,8 @@ public class DispatcherServlet extends HttpServlet{
     					Map<String,List<FormParam>> fieldMap = param.getFieldMap();
     					Map<String,List<FileParam>> fileMap = param.getFileMap();
     					if(fieldMap.containsKey(fieldName)){
-    						parameterValue = fieldMap.get(fieldName);
+    						List<FormParam> formParamList = fieldMap.get(fieldName);
+    						parameterValue = CastUtil.smartCast(formParamList, parameterType);
     					}else if(fileMap.containsKey(fieldName)){
     						parameterValue = fileMap.get(fieldName);
     					}
@@ -196,7 +198,7 @@ public class DispatcherServlet extends HttpServlet{
     				break;
     			}
     			
-    			//#其他杂七杂八类型，只能给予默认值，框架不管
+    			//#其他杂七杂八类型，只能给null，框架不管
     		}while(false);
     		parameterValueList.add(parameterValue);
     	}

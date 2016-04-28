@@ -1,4 +1,4 @@
-package org.smart4j.chapter3;
+package org.easyweb4j;
 
 /**
  * Created by CaiDongYu on 2016/4/19.

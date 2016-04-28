@@ -1,9 +1,12 @@
-package org.smart4j.chapter3;
+package org.easyweb4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.easyweb4j.annotation.Controller;
 import org.easyweb4j.annotation.Request;
@@ -18,11 +21,25 @@ import org.easyweb4j.constant.RequestMethod;
 /**
  * Created by Administrator on 2016/4/8.
  */
-@Controller
+@Controller(basePath = "test")
 public class TestController {
 
     @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
-    public Data postPathParam(@RequestParam("money")Integer money,Param param,@RequestParam("ids")List<String> ids,@RequestParam("name")String name){
+    public Data postPathParam(
+    		@RequestParam("money")Integer money,//如果money是整数，这里就有值，如果是别的，甚至是字符串，就会是null
+    		@RequestParam("file")FileParam file,//单个文件，如果上传的是多文件，只会拿到最后一个
+    		@RequestParam("file")List<FileParam> filesList,
+    		@RequestParam("file")FileParam[] filesAry,
+    		Param param,
+    		@RequestParam("ids")Integer ids,//如果传递的参数是多个，只会拿到最后一个
+    		@RequestParam("ids")List<String> idsList,
+    		@RequestParam("ids")String[] idsAry,//如果传递的参数是多个，会用","拼接
+    		@RequestParam("ids")Integer[] ids2Ary,
+    		@RequestParam("ids")Double[] ids3Ary,
+    		@RequestParam("name")String name,
+    		HttpServletRequest request,
+    		HttpServletResponse response,
+    		String otherParam){//这里总是null，如果有人这么写，那只能在别的地方手工调用这个方法时候传值了，框架不会映射的。
     	System.out.println("postPathParam");
 //    	Data data = analysisParam(param);
         return null;

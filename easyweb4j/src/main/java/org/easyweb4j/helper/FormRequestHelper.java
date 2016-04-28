@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.easyweb4j.bean.BodyParam;
 import org.easyweb4j.bean.FileParam;
 import org.easyweb4j.bean.FormParam;
 import org.easyweb4j.bean.Param;

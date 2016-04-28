@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.easyweb4j.annotation.Controller;
 import org.easyweb4j.annotation.Request;
 import org.easyweb4j.bean.Handler;
 import org.easyweb4j.util.ArrayUtil;
@@ -30,13 +31,14 @@ public final class ControllerHelper {
         Set<Class<?>> controllerClassSet = ClassHelper.getControllerClassSet();
         if (CollectionUtil.isNotEmpty(controllerClassSet)) {
             for (Class<?> controllerClass : controllerClassSet) {
+            	String basePath = controllerClass.getAnnotation(Controller.class).basePath();
                 Method[] methods = controllerClass.getDeclaredMethods();
                 if (ArrayUtil.isNotEmpty(methods)) {
                     for (Method method : methods) {
                         //判断方法是否带有 Action 注解
                         if (method.isAnnotationPresent(Request.class)) {
                         	Request action = method.getAnnotation(Request.class);
-                            String mappingPath = action.value();
+                            String mappingPath = basePath+"/"+action.value();
                             String requestMethod = action.method().REQUEST_METHOD;
                             
                             //检查mappingPath是否合规

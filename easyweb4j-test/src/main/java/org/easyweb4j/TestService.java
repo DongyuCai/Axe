@@ -1,4 +1,4 @@
-package org.smart4j.chapter3;
+package org.easyweb4j;
 
 import org.easyweb4j.annotation.Service;
 import org.easyweb4j.annotation.Tns;
