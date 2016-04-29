@@ -13,6 +13,9 @@ import java.util.Map;
 @Service
 public class TestService {
 
+	public just4test get(long id){
+	}
+	
     @Tns
     public void testTns(){
         Map<String,Object> fieldMap = new HashMap<String,Object>();

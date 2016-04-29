@@ -1,4 +1,4 @@
-package org.easyweb4j.proxy;
+package org.easyweb4j.proxy.aspect;
 
 import java.lang.reflect.Method;
 
@@ -6,6 +6,8 @@ import org.easyweb4j.annotation.Aspect;
 import org.easyweb4j.annotation.Service;
 import org.easyweb4j.annotation.Tns;
 import org.easyweb4j.helper.DataBaseHelper;
+import org.easyweb4j.proxy.AspectProxy;
+import org.easyweb4j.proxy.ProxyChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

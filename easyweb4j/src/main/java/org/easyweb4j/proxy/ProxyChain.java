@@ -45,11 +45,15 @@ public class ProxyChain {
 
     public Object doProxyChain() throws Throwable{
         Object methodResult;
-        if(proxyIndex < proxyList.size()){
+        if(!isLastProxy()){
             methodResult = proxyList.get(proxyIndex++).doProxy(this);
         } else {
             methodResult = methodProxy.invokeSuper(targetObject, methodParams);
         }
         return methodResult;
+    }
+    
+    public boolean isLastProxy(){
+    	return proxyIndex >= proxyList.size();
     }
 }

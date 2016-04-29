@@ -1,6 +1,6 @@
 package org.easyweb4j.helper;
 
-import org.easyweb4j.ConfigConstant;
+import org.easyweb4j.constant.ConfigConstant;
 import org.easyweb4j.util.PropsUtil;
 
 import java.util.Properties;

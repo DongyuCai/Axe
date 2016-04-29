@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.easyweb4j.annotation.Controller;
 import org.easyweb4j.annotation.FilterFuckOff;
-import org.easyweb4j.annotation.Inject;
+import org.easyweb4j.annotation.Autowired;
 import org.easyweb4j.annotation.Request;
 import org.easyweb4j.annotation.RequestParam;
 import org.easyweb4j.bean.Data;
@@ -26,7 +26,7 @@ import org.easyweb4j.constant.RequestMethod;
 @Controller(basePath = "test")
 public class TestController {
 	
-	@Inject
+	@Autowired
 	private TestService testService;
 
     @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)

@@ -1,4 +1,4 @@
-package org.easyweb4j;
+package org.easyweb4j.constant;
 
 /**
  * 框架配置的相关常量

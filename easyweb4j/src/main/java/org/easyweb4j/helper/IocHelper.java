@@ -3,7 +3,7 @@ package org.easyweb4j.helper;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import org.easyweb4j.annotation.Inject;
+import org.easyweb4j.annotation.Autowired;
 import org.easyweb4j.util.ArrayUtil;
 import org.easyweb4j.util.CollectionUtil;
 import org.easyweb4j.util.ReflectionUtil;
@@ -28,7 +28,7 @@ public final class IocHelper {
                 if (ArrayUtil.isNotEmpty(beanFields)){
                     //遍历 bBean Field
                     for (Field beanField:beanFields){
-                        if(beanField.isAnnotationPresent(Inject.class)){
+                        if(beanField.isAnnotationPresent(Autowired.class)){
                             //再 Bean Map 中获取 Bean Field 对应的实例
                             Class<?> beanFieldClass = beanField.getType();
                             Object beanFieldInstance = beanMap.get(beanFieldClass);
