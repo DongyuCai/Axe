@@ -1,4 +1,4 @@
-package org.easyweb4j;
+package org.easyweb4j.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.easyweb4j.annotation.Autowired;
 import org.easyweb4j.annotation.Controller;
 import org.easyweb4j.annotation.FilterFuckOff;
-import org.easyweb4j.annotation.Autowired;
 import org.easyweb4j.annotation.Request;
 import org.easyweb4j.annotation.RequestParam;
 import org.easyweb4j.bean.Data;
@@ -18,7 +18,12 @@ import org.easyweb4j.bean.FileParam;
 import org.easyweb4j.bean.FormParam;
 import org.easyweb4j.bean.Param;
 import org.easyweb4j.bean.View;
+import org.easyweb4j.bean.just4test;
 import org.easyweb4j.constant.RequestMethod;
+import org.easyweb4j.dao.TestDao;
+import org.easyweb4j.exception.RestException;
+import org.easyweb4j.filter.TestFilter1;
+import org.easyweb4j.service.TestService;
 
 /**
  * Created by Administrator on 2016/4/8.
@@ -28,6 +33,14 @@ public class TestController {
 	
 	@Autowired
 	private TestService testService;
+	
+	@Autowired
+	private TestDao testDao;
+	
+	@Request(value="/all",method=RequestMethod.GET)
+	public Data getAll(){
+		return new Data(testService.getAll());
+	}
 
     @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
     public Data postPathParam(
@@ -79,8 +92,13 @@ public class TestController {
     
     //==================== postman success ================//
     @Request(value="/getOne/{id}",method=RequestMethod.GET)
-    public Data getOne(Param param){
-    	Data data = analysisParam(param);
+    public Data getOne(@RequestParam("id")Long id,Param param){
+//    	Data data = analysisParam(param);
+    	if(id == null){
+    		throw new RestException(RestException.SC_BAD_REQUEST, "id不正确");
+    	}
+    	just4test one = testService.get(id);
+    	Data data = new Data(one);
         return data;
     }
     

@@ -1,15 +1,19 @@
 package org.easyweb4j.helper;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.easyweb4j.annotation.Aspect;
-import org.easyweb4j.proxy.AspectProxy;
 import org.easyweb4j.proxy.Proxy;
 import org.easyweb4j.proxy.ProxyManger;
 import org.easyweb4j.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.annotation.Annotation;
-import java.util.*;
 
 /**
  * 方法拦截助手类
@@ -43,7 +47,7 @@ public final class AopHelper {
     private static Map<Class<?>,Set<Class<?>>> createProxyMap() throws Exception {
         Map<Class<?>,Set<Class<?>>> proxyMap = new HashMap<>();
         //找到切面抽象类的实现类，就是说，都是切面类
-        Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
+        Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(Proxy.class);
         for(Class<?> proxyClass : proxyClassSet){
             //继承了 AspectProxy 不算，还得是有指定了切面目标类
             if(proxyClass.isAnnotationPresent(Aspect.class)){

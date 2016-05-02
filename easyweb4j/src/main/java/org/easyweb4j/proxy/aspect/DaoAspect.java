@@ -28,9 +28,13 @@ public class DaoAspect implements Proxy{
 			String sql = sqlAnnotation.value();
 			
 			String sqlUpperCase = sql.toUpperCase();
-			if(sqlUpperCase.contains(" SELECT ")){
+			if(sqlUpperCase.startsWith("SELECT") || sqlUpperCase.contains(" SELECT ")){
 				result = DataBaseHelper.queryEntity(targetMethod.getReturnType(), sql, methodParams);
+			}else{
+				result = DataBaseHelper.executeUpdate(sql, methodParams);
 			}
+		}else{
+			result = proxyChain.doProxyChain();
 		}
 		return result;
 	}

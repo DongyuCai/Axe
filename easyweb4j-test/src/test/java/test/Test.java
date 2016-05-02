@@ -2,9 +2,13 @@ package test;
 
 import java.util.List;
 
-import org.easyweb4j.TestFilter1;
+import org.easyweb4j.HelperLoader;
 import org.easyweb4j.bean.FileParam;
+import org.easyweb4j.dao.TestDao;
 import org.easyweb4j.filter.Filter;
+import org.easyweb4j.filter.TestFilter1;
+import org.easyweb4j.helper.BeanHelper;
+import org.easyweb4j.service.TestService;
 import org.easyweb4j.util.ReflectionUtil;
 
 /**
@@ -13,9 +17,13 @@ import org.easyweb4j.util.ReflectionUtil;
 public class Test{
 
     public static void main(String[] args) {
+    	HelperLoader.init();
+    	TestDao testDao = BeanHelper.getBean(TestDao.class);
+    	System.out.println(testDao.getAll().getClass());
+    	
 //    	cls.isAssignableFrom(Filter.class) && !
-    	System.out.println(Filter.class.isAssignableFrom(TestFilter1.class));
-    	System.out.println(ReflectionUtil.compareType(TestFilter1.class, Filter.class));
+//    	System.out.println(Filter.class.isAssignableFrom(TestFilter1.class));
+//    	System.out.println(ReflectionUtil.compareType(TestFilter1.class, Filter.class));
     	
     	/*List<Test> list = new ArrayList<>();
     	list.add(new Test());

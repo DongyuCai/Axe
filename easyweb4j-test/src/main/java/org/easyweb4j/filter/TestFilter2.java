@@ -1,4 +1,4 @@
-package org.easyweb4j;
+package org.easyweb4j.filter;
 
 import java.util.regex.Pattern;
 
@@ -10,11 +10,11 @@ import org.easyweb4j.bean.Param;
 import org.easyweb4j.exception.RestException;
 import org.easyweb4j.filter.Filter;
 
-public class TestFilter1 implements Filter{
+public class TestFilter2 implements Filter{
 
 	@Override
 	public int setLevel() {
-		return 1;
+		return 2;
 	}
 
 	@Override

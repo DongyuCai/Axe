@@ -1,4 +1,4 @@
-package org.easyweb4j;
+package org.easyweb4j.bean;
 
 /**
  * Created by CaiDongYu on 2016/4/19.

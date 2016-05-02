@@ -1,4 +1,4 @@
-package org.easyweb4j;
+package org.easyweb4j.rest;
 
 import java.io.PrintWriter;
 

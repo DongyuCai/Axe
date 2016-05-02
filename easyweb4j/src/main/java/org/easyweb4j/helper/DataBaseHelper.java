@@ -126,7 +126,11 @@ public class DataBaseHelper {
         T entity;
         Connection conn = getConnection();
         try {
-            entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
+        	if(params == null || params.length > 0){
+        		entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
+        	}else{
+        		entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass));
+        	}
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
             throw new RuntimeException(e);
