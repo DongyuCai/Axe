@@ -34,6 +34,13 @@ public final class ConfigHelper {
     public static String getJdbcUsername() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_USERNAME);
     }
+    
+    /**
+     * 获取 JDBC 是否自动同步表结构
+     */
+    public static String getJdbcAutotable() {
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_AUTOTABLE);
+    }
 
     /**
      * 获取 JDBC 密码

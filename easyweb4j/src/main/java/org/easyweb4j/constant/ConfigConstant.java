@@ -11,7 +11,8 @@ public interface ConfigConstant {
     String JDBC_URL = "jdbc.url";
     String JDBC_USERNAME = "jdbc.username";
     String JDBC_PASSWORD = "jdbc.password";
-
+    String JDBC_AUTOTABLE = "jdbc.autotable";
+    
     String APP_BASE_PACKAGE = "app.base_package";
     String APP_JSP_PATH = "app.jsp_path";
     String APP_ASSET_PATH = "app.asset_path";

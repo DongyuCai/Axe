@@ -15,6 +15,8 @@ import java.io.OutputStream;
 public final class StreamUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamUtil.class);
 
+    private StreamUtil() {}
+    
     /**
      * 从输入流中获取字符串
      */

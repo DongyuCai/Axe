@@ -29,6 +29,8 @@ public final class ClassUtil {
         return Thread.currentThread().getContextClassLoader();
     }
 
+    private ClassUtil() {}
+    
     /**
      * 加载类
      */

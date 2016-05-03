@@ -15,6 +15,8 @@ public final class PropsUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropsUtil.class);
 
+    private PropsUtil() {}
+    
     /**
      * 加载属性文件
      */

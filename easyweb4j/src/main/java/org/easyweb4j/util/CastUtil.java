@@ -10,6 +10,8 @@ import org.easyweb4j.bean.FormParam;
  * Created by CaiDongYu on 2016/4/8.
  */
 public final class  CastUtil {
+	
+	private CastUtil() {}
 
 	public static Object smartCast(List<FormParam> formParamList,Class<?> type){
 		Object result = null;

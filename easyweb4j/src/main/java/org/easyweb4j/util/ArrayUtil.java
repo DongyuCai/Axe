@@ -7,6 +7,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * Created by CaiDongYu on 2016/4/11.
  */
 public final class ArrayUtil {
+	
+	private ArrayUtil() {}
 
     /**
      * 判断空

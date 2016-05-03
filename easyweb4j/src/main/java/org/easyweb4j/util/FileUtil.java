@@ -14,6 +14,8 @@ import java.io.File;
 public class FileUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 
+    private FileUtil() {}
+    
     /**
      * 获取真实文件名 (自动去掉文件路径)
      */

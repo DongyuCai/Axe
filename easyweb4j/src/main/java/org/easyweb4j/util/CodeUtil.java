@@ -13,6 +13,8 @@ import java.net.URLEncoder;
 public final class CodeUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeUtil.class);
 
+    private CodeUtil() {}
+    
     /**
      * 将 URL 编码
      */

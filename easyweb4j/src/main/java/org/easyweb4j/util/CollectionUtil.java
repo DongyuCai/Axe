@@ -11,6 +11,9 @@ import java.util.Map;
  * Created by CaiDongYu on 2016/4/9.
  */
 public final class CollectionUtil {
+	
+	private CollectionUtil() {}
+	
     /**
      * 判断 Collection 是否为空
      */

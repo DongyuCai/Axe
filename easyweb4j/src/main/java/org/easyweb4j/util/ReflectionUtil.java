@@ -2,10 +2,6 @@ package org.easyweb4j.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,25 +14,10 @@ import org.slf4j.LoggerFactory;
 public final class ReflectionUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
-
-    public static void main(String[] args) {
-    	try {
-			Method method = ReflectionUtil.class.getDeclaredMethod("getList");
-			getFanXing(method.getReturnType());
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-	}
     
-    public List<String> getList(){
-    	return null;
-    }
-    
-    public static void getFanXing(Class<?> cls){
-    }
-    
+    /**
+     * 比较两个类，是否是同一个类
+     */
     public static boolean compareType(Class<?> cls1,Class<?> cls2){
     	return cls1.getName().equals(cls2.getName());
     }

@@ -13,6 +13,8 @@ public final class JsonUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private JsonUtil() {}
+    
     /**
      * 将 POJO 转为 JSON
      */

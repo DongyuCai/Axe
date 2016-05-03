@@ -3,13 +3,11 @@ package test;
 import java.util.List;
 
 import org.easyweb4j.HelperLoader;
+import org.easyweb4j.bean.Account;
 import org.easyweb4j.bean.FileParam;
-import org.easyweb4j.dao.TestDao;
-import org.easyweb4j.filter.Filter;
-import org.easyweb4j.filter.TestFilter1;
+import org.easyweb4j.dao.AccountDao;
 import org.easyweb4j.helper.BeanHelper;
-import org.easyweb4j.service.TestService;
-import org.easyweb4j.util.ReflectionUtil;
+import org.easyweb4j.util.JsonUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -18,8 +16,13 @@ public class Test{
 
     public static void main(String[] args) {
     	HelperLoader.init();
-    	TestDao testDao = BeanHelper.getBean(TestDao.class);
-    	System.out.println(testDao.getAll().getClass());
+    	AccountDao testDao = BeanHelper.getBean(AccountDao.class);
+    	System.out.println(JsonUtil.toJson(testDao.getAll().get(0)));
+    	Account account = testDao.getLimit1();
+    	System.out.println(JsonUtil.toJson(account));
+//    	System.out.println(testDao.getCount().get("all"));
+//    	System.out.println(testDao.getMap());
+    	System.out.println(JsonUtil.toJson(testDao.getMap()));
     	
 //    	cls.isAssignableFrom(Filter.class) && !
 //    	System.out.println(Filter.class.isAssignableFrom(TestFilter1.class));

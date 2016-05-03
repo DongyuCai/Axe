@@ -13,5 +13,5 @@ public interface TestDao {
 	public just4test getOne(long id);
 
 	@Sql("select * from just4test")
-	public just4test[] getAll();
+	public List<just4test> getAll();
 }

@@ -1,19 +1,25 @@
 package org.easyweb4j.helper;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.MapListHandler;
-import org.easyweb4j.util.CollectionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.MapHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.easyweb4j.util.CollectionUtil;
+import org.easyweb4j.util.ReflectionUtil;
+import org.easyweb4j.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 数据库 助手类
@@ -51,6 +57,8 @@ public class DataBaseHelper {
             DATA_SOURCE.setUrl(URL);
             DATA_SOURCE.setUsername(USERNAME);
             DATA_SOURCE.setPassword(PASSWORD);
+            
+            //TODO:启动时同步表结构
         } catch (Exception e) {
             LOGGER.error("jdbc driver : " + DRIVER);
             LOGGER.error("jdbc url : " + URL);
@@ -99,11 +107,36 @@ public class DataBaseHelper {
     /**
      * 查询实体列表
      */
-    public static <T> List<T> queryEntityList(Class<T> entityClass, String sql, Object... params) {
+	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object... params) {
         List<T> entityList;
         Connection conn = getConnection();
         try {
-            entityList = QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
+        	//BeanListHandler 不支持Date，所以自己实现
+            //entityList = QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
+        	entityList = QUERY_RUNNER.query(conn, sql, new ResultSetHandler<List<T>>(){
+        		@Override
+        		public List<T> handle(ResultSet table) throws SQLException {
+        			Method[] methods = entityClass.getDeclaredMethods();
+					List<Method> setMethods = new ArrayList<>();
+					for(Method method:methods){
+						if(!method.getName().startsWith("set")) continue;
+						
+						setMethods.add(method);
+					}
+					List<T> list = new ArrayList<>();
+        			while(table.next()){
+						T obj = ReflectionUtil.newInstance(entityClass);
+						for(Method setMethod:setMethods){
+							String fieldName = setMethod.getName().substring(3);
+							String columnName = StringUtil.camelToUnderline(fieldName);
+							Object setMethodArg = table.getObject(columnName);
+							ReflectionUtil.invokeMethod(obj, setMethod, setMethodArg);
+						}
+						list.add(obj);
+					}
+					return list;
+        		}
+        	},params);
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
             throw new RuntimeException(e);
@@ -122,15 +155,36 @@ public class DataBaseHelper {
     /**
      * 查询单个实体
      */
-    public static <T> T queryEntity(Class<T> entityClass, String sql, Object... params) {
+    public static <T> T queryEntity(final Class<T> entityClass, String sql, Object... params) {
         T entity;
         Connection conn = getConnection();
         try {
-        	if(params == null || params.length > 0){
-        		entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
-        	}else{
-        		entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass));
-        	}
+        	//BeanHandler 不支持Date，所以自己实现
+        	//entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
+        	entity = QUERY_RUNNER.query(conn, sql, new ResultSetHandler<T>(){
+
+				@Override
+				public T handle(ResultSet table) throws SQLException {
+					if(table.next()){
+						Method[] methods = entityClass.getDeclaredMethods();
+						List<Method> setMethods = new ArrayList<>();
+						for(Method method:methods){
+							if(!method.getName().startsWith("set")) continue;
+							
+							setMethods.add(method);
+						}
+						T obj = ReflectionUtil.newInstance(entityClass);
+						for(Method setMethod:setMethods){
+							String fieldName = setMethod.getName().substring(3);
+							String columnName = StringUtil.camelToUnderline(fieldName);
+							Object setMethodArg = table.getObject(columnName);
+							ReflectionUtil.invokeMethod(obj, setMethod, setMethodArg);
+						}
+						return obj;
+					}
+					return null;
+				}
+        	}, params);
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
             throw new RuntimeException(e);
@@ -147,16 +201,15 @@ public class DataBaseHelper {
     }
 
     /**
-     * 执行查询
-     * TODO:不支持 in ? 操作（不支持 list）
+     * 执行List查询
      */
-    public static List<Map<String, Object>> executeQuery(String sql, Object... params) {
-        List<Map<String, Object>> result;
+    public static List<Map<String, Object>> queryList(String sql, Object... params) {
+        List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection();
         try {
             result = QUERY_RUNNER.query(conn, sql, new MapListHandler(), params);
         } catch (Exception e) {
-            LOGGER.error("execute query failure", e);
+            LOGGER.error("execute queryList failure", e);
             throw new RuntimeException(e);
         } finally {
             try {
@@ -169,6 +222,55 @@ public class DataBaseHelper {
         }
         return result;
     }
+    
+    /**
+     * 执行单条查询
+     */
+    public static Map<String, Object> queryMap(String sql, Object... params) {
+        Map<String, Object> result = new HashMap<>();
+        Connection conn = getConnection();
+        try {
+            result = QUERY_RUNNER.query(conn, sql, new MapHandler(), params);
+        } catch (Exception e) {
+            LOGGER.error("execute queryMap failure", e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
+    
+
+    /**
+     * 执行返回结果是基本类型的查询
+     */
+    public static <T> T queryPrimitive(String sql, Object... params) {
+    	T result = null;
+        Connection conn = getConnection();
+        try {
+            result = QUERY_RUNNER.query(conn, sql, new ScalarHandler<T>(), params);
+        } catch (Exception e) {
+            LOGGER.error("execute queryMap failure", e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
+    
+
 
     /**
      * 执行更新语句 （包括 update、insert、delete）
@@ -194,7 +296,7 @@ public class DataBaseHelper {
     }
 
     /**
-     * 细化上面的 executeUpdate 方法
+     * 插入实体
      */
     public static boolean insertEntity(Class<?> entityClass, Map<String, Object> fieldMap) {
         if (CollectionUtil.isEmpty(fieldMap)) {

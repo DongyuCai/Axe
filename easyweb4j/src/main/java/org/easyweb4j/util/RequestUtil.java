@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 public final class RequestUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtil.class);
 	
+	private RequestUtil() {}
+	
 	/**
 	 * 允许接受的字符串种类
 	 * 字母、数字、下划线、$
