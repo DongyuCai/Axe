@@ -165,7 +165,7 @@ public class DispatcherServlet extends HttpServlet{
     		do{
     			Parameter parameter = parameterAry[i];
     			Class<?> parameterType = parameterTypes[i];
-    			
+    			parameterType.gettype
     			//#是否@RequestParam标注的
     			if(parameter.isAnnotationPresent(RequestParam.class)){
     				String fieldName = parameter.getAnnotation(RequestParam.class).value();
