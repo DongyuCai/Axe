@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jw.annotation.Dao;
 import org.jw.annotation.RequestParam;
 import org.jw.bean.Data;
 import org.jw.bean.FileParam;
@@ -73,9 +74,11 @@ public class DispatcherServlet extends HttpServlet{
         //初始化框架相关 helper 类
         HelperLoader.init(servletContext);
         
-        LOGGER.debug("jw framework started success!");
-        LOGGER.debug("controllers\tx"+ClassHelper.getControllerClassSet().size());
-        LOGGER.debug("services\tx"+ClassHelper.getServiceClassSet().size());
+        LOGGER.error("Filter implements\tx"+ClassHelper.getFilterClassSet().size());
+        LOGGER.error("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
+        LOGGER.error("@Service :\tx"+ClassHelper.getServiceClassSet().size());
+        LOGGER.error("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
+        LOGGER.error("jw framework started success!");
     }
 
     @Override

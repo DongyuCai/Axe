@@ -6,7 +6,7 @@
 	
 	<servlet>
 		<servlet-name>dispatcherServlet</servlet-name>
-		<servlet-class>org.easyweb4j.DispatcherServlet</servlet-class>
+		<servlet-class>org.jw.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	

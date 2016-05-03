@@ -5,9 +5,7 @@ import java.util.List;
 import org.jw.HelperLoader;
 import org.jw.bean.FileParam;
 import org.jw.helper.BeanHelper;
-import org.jw.util.JsonUtil;
-import org.test_jw.bean.Account;
-import org.test_jw.dao.AccountDao;
+import org.test_jw.dao.TestDao;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -16,13 +14,15 @@ public class Test{
 
     public static void main(String[] args) {
     	HelperLoader.init();
-    	AccountDao testDao = BeanHelper.getBean(AccountDao.class);
-    	System.out.println(JsonUtil.toJson(testDao.getAll().get(0)));
-    	Account account = testDao.getLimit1();
-    	System.out.println(JsonUtil.toJson(account));
+    	TestDao testDao = BeanHelper.getBean(TestDao.class);
+    	System.out.println(testDao.getAll().size());
+//    	AccountDao testDao = BeanHelper.getBean(AccountDao.class);
+//    	System.out.println(JsonUtil.toJson(testDao.getAll().get(0)));
+//    	Account account = testDao.getLimit1();
+//    	System.out.println(JsonUtil.toJson(account));
 //    	System.out.println(testDao.getCount().get("all"));
 //    	System.out.println(testDao.getMap());
-    	System.out.println(JsonUtil.toJson(testDao.getMap()));
+//    	System.out.println(JsonUtil.toJson(testDao.getMap()));
     	
 //    	cls.isAssignableFrom(Filter.class) && !
 //    	System.out.println(Filter.class.isAssignableFrom(TestFilter1.class));

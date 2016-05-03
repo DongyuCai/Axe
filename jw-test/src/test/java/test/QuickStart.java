@@ -10,6 +10,7 @@ public class QuickStart {
 	
 	public static void main(String[] args) {
 		new QuickStart().startJetty();
+		
 	}
 	
 	
