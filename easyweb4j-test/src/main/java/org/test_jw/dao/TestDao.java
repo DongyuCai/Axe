@@ -1,10 +1,10 @@
-package org.jw.dao;
+package org.test_jw.dao;
 
 import java.util.List;
 
 import org.jw.annotation.Dao;
 import org.jw.annotation.Sql;
-import org.jw.bean.just4test;
+import org.test_jw.bean.just4test;
 
 @Dao
 public interface TestDao {

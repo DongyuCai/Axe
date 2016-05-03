@@ -1,4 +1,4 @@
-package org.jw.filter;
+package org.test_jw.filter;
 
 import java.util.regex.Pattern;
 
@@ -10,11 +10,11 @@ import org.jw.bean.Param;
 import org.jw.exception.RestException;
 import org.jw.filter.Filter;
 
-public class TestFilter1 implements Filter{
+public class TestFilter3 implements Filter{
 
 	@Override
 	public int setLevel() {
-		return 1;
+		return 3;
 	}
 
 	@Override

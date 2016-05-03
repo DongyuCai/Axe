@@ -73,7 +73,7 @@ public class DispatcherServlet extends HttpServlet{
         //初始化框架相关 helper 类
         HelperLoader.init(servletContext);
         
-        LOGGER.debug("easyweb4j started success!");
+        LOGGER.debug("jw framework started success!");
         LOGGER.debug("controllers\tx"+ClassHelper.getControllerClassSet().size());
         LOGGER.debug("services\tx"+ClassHelper.getServiceClassSet().size());
     }

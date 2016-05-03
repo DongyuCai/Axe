@@ -1,4 +1,4 @@
-package org.jw.rest;
+package org.test_jw.rest;
 
 import java.io.PrintWriter;
 

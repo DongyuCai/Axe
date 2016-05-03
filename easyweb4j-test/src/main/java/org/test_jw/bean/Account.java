@@ -1,4 +1,4 @@
-package org.jw.bean;
+package org.test_jw.bean;
 
 import java.util.Date;
 

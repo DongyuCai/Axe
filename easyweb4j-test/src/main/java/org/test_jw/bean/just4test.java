@@ -1,4 +1,4 @@
-package org.jw.bean;
+package org.test_jw.bean;
 
 /**
  * Created by CaiDongYu on 2016/4/19.

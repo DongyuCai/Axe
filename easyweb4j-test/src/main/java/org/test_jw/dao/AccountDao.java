@@ -1,4 +1,4 @@
-package org.jw.dao;
+package org.test_jw.dao;
 
 import java.util.Date;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.jw.annotation.Dao;
 import org.jw.annotation.Sql;
-import org.jw.bean.Account;
+import org.test_jw.bean.Account;
 
 @Dao
 public interface AccountDao {

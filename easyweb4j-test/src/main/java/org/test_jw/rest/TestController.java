@@ -1,4 +1,4 @@
-package org.jw.rest;
+package org.test_jw.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,12 +18,12 @@ import org.jw.bean.FileParam;
 import org.jw.bean.FormParam;
 import org.jw.bean.Param;
 import org.jw.bean.View;
-import org.jw.bean.just4test;
 import org.jw.constant.RequestMethod;
-import org.jw.dao.TestDao;
 import org.jw.exception.RestException;
-import org.jw.filter.TestFilter1;
-import org.jw.service.TestService;
+import org.test_jw.bean.just4test;
+import org.test_jw.dao.TestDao;
+import org.test_jw.filter.TestFilter1;
+import org.test_jw.service.TestService;
 
 /**
  * Created by Administrator on 2016/4/8.
