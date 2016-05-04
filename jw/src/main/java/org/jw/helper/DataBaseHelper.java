@@ -74,7 +74,7 @@ public class DataBaseHelper {
             LOGGER.error("load jdbc driver failure", e);
         }
         
-        //#TODO:初始化Dao
+        //#加载所有@Table指定的Entity类
         Set<Class<?>> entityClassSet = ClassHelper.getClassSetByAnnotation(Table.class);
         for(Class<?> entityClass:entityClassSet){
         	String entityClassSimpleName = entityClass.getSimpleName();
