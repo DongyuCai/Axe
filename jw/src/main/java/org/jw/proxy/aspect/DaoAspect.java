@@ -38,7 +38,6 @@ public class DaoAspect implements Proxy{
 			
 			String sqlUpperCase = sql.toUpperCase();
 			if(sqlUpperCase.startsWith("SELECT") || sqlUpperCase.contains(" SELECT ")){
-				
 				Type returnType = targetMethod.getGenericReturnType();
 				if(returnType instanceof ParameterizedType){
 					Type[] actualTypes = ((ParameterizedType) returnType).getActualTypeArguments();
@@ -61,12 +60,18 @@ public class DaoAspect implements Proxy{
 							}else if(ReflectionUtil.compareType(Map.class, (Class<?>)listParamType)){
 								//List<Map>
 								result = DataBaseHelper.queryList(sql, methodParams);
-							}else if(ReflectionUtil.compareType(String.class, (Class<?>)listParamType)){
+							}else if(ReflectionUtil.compareType(String.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Date.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Byte.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Boolean.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Short.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Character.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Integer.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Long.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Float.class, (Class<?>)listParamType) || 
+									ReflectionUtil.compareType(Double.class, (Class<?>)listParamType)){
 								//List<String>
-								result = getStringOrDateList(sql, methodParams);
-							}else if(ReflectionUtil.compareType(Date.class, (Class<?>)listParamType)){
-								//List<Date>
-								result = getStringOrDateList(sql, methodParams);
+								result = getBasetypeOrDateList(sql, methodParams);
 							}else{
 								//Entity
 								result = DataBaseHelper.queryEntityList((Class<?>)listParamType, sql, methodParams);
@@ -86,12 +91,18 @@ public class DaoAspect implements Proxy{
 					}else if(ReflectionUtil.compareType(Object.class, (Class<?>)returnType)){
 						//Object
 						result = DataBaseHelper.queryMap(sql, methodParams);
-					}else if(ReflectionUtil.compareType(String.class, (Class<?>)returnType)){
+					}else if(ReflectionUtil.compareType(String.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Date.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Byte.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Boolean.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Short.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Character.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Integer.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Long.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Float.class, (Class<?>)returnType) || 
+							ReflectionUtil.compareType(Double.class, (Class<?>)returnType)){
 						//String
-						result = getStringOrDate(sql, methodParams);
-					}else if(ReflectionUtil.compareType(Date.class, (Class<?>)returnType)){
-						//Date
-						result = getStringOrDate(sql, methodParams);
+						result = getBasetypeOrDate(sql, methodParams);
 					}else if(((Class<?>)returnType).isPrimitive()){
 						//基本类型
 						result = DataBaseHelper.queryPrimitive(sql, methodParams);
@@ -109,14 +120,14 @@ public class DaoAspect implements Proxy{
 		return result;
 	}
 	
-	private Object getStringOrDate(String sql,Object[] methodParams){
+	private Object getBasetypeOrDate(String sql,Object[] methodParams){
 		//Date
 		Map<String,Object> resultMap = DataBaseHelper.queryMap(sql, methodParams);
 		Set<String> keySet = resultMap.keySet();
 		return keySet.size() == 1 ? resultMap.get(keySet.iterator().next()) : null;
 	}
 	
-	private Object getStringOrDateList(String sql,Object[] methodParams){
+	private Object getBasetypeOrDateList(String sql,Object[] methodParams){
 		List<Map<String,Object>> resultList = DataBaseHelper.queryList(sql, methodParams);
 		if(resultList.size() > 0){
 			List<Object> list = new ArrayList<Object>();

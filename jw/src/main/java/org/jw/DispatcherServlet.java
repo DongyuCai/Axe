@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jw.annotation.Dao;
 import org.jw.annotation.RequestParam;
 import org.jw.bean.Data;
-import org.jw.bean.FileParam;
-import org.jw.bean.FormParam;
 import org.jw.bean.Handler;
 import org.jw.bean.Param;
 import org.jw.bean.View;
@@ -33,8 +33,6 @@ import org.jw.helper.ClassHelper;
 import org.jw.helper.ConfigHelper;
 import org.jw.helper.ControllerHelper;
 import org.jw.helper.FormRequestHelper;
-import org.jw.util.CastUtil;
-import org.jw.util.CollectionUtil;
 import org.jw.util.JsonUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.RequestUtil;
@@ -165,65 +163,52 @@ public class DispatcherServlet extends HttpServlet{
     		do{
     			Parameter parameter = parameterAry[i];
     			Class<?> parameterType = parameterTypes[i];
-    			parameterType.gettype
-    			//#是否@RequestParam标注的
+    			Type parameterizedType = parameter.getParameterizedType();
+    			
+    			//## 是否@RequestParam标注的
     			if(parameter.isAnnotationPresent(RequestParam.class)){
     				String fieldName = parameter.getAnnotation(RequestParam.class).value();
-    				if(parameterType.isArray() 
-    						&& 
-    						ReflectionUtil.compareType(parameterType.getComponentType(), FileParam.class)
-    						){
-    					//如果是 FileParam[]这样的
-    					Map<String,List<FileParam>> fileMap = param.getFileMap();
-    					if(fileMap.containsKey(fieldName)){
-    						List<FileParam> fileParamList = fileMap.get(fieldName);
-    						if(CollectionUtil.isNotEmpty(fileParamList)){
-    							FileParam[] fileParamAry= null;
-    							fileParamAry = new FileParam[0];
-    							fileParamAry = fileParamList.toArray(fileParamAry);
-    							parameterValue = fileParamAry;
-    						}
-    					}
-    				}else if(ReflectionUtil.compareType(parameterType,FileParam.class)){
-    					//单文件
-    					Map<String,List<FileParam>> fileMap = param.getFileMap();
-    					if(fileMap.containsKey(fieldName)){
-    						List<FileParam> fileParamList = fileMap.get(fieldName);
-    						if(CollectionUtil.isNotEmpty(fileParamList)){
-    							parameterValue = fileParamList.get(fileParamList.size()-1);
-    						}
-    					}
-    				}else{
-    					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
-    					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
-    					Map<String,List<FormParam>> fieldMap = param.getFieldMap();
-    					Map<String,List<FileParam>> fileMap = param.getFileMap();
-    					if(fieldMap.containsKey(fieldName)){
-    						List<FormParam> formParamList = fieldMap.get(fieldName);
-    						parameterValue = CastUtil.smartCast(formParamList, parameterType);
-    					}else if(fileMap.containsKey(fieldName)){
-    						parameterValue = fileMap.get(fieldName);
-    					}
+					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
+					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
+					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType,parameterizedType);
+    				break;
+    			}else{
+    				//## 不含注解的
+    				//* 如果是HttpServletRequest
+    				if(ReflectionUtil.compareType(HttpServletRequest.class, parameterType)){
+    					parameterValue = request;
+    					break;
     				}
-    				break;
-    			}
-    			//#不含注解的
-    			//如果是HttpServletRequest
-    			if(ReflectionUtil.compareType(HttpServletRequest.class, parameterType)){
-    				parameterValue = request;
-    				break;
-    			}
-    			if(ReflectionUtil.compareType(HttpServletResponse.class, parameterType)){
-    				parameterValue = response;
-    				break;
-    			}
-    			//如果是Param
-    			if(ReflectionUtil.compareType(Param.class,parameterType)){
-    				parameterValue = param;
-    				break;
+    				if(ReflectionUtil.compareType(HttpServletResponse.class, parameterType)){
+    					parameterValue = response;
+    					break;
+    				}
+    				//* 如果是Param
+    				if(ReflectionUtil.compareType(Param.class,parameterType)){
+    					parameterValue = param;
+    					break;
+    				}
+    				//* 如果是Map<String,Object> 
+    				if(ReflectionUtil.compareType(Map.class, parameterType)){
+    					if(parameterizedType instanceof ParameterizedType){
+    						Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
+    						if(actualTypes.length > 1){
+    							Type mapKeyType = actualTypes[0];
+    							Type mapValueType = actualTypes[1];
+    							if(ReflectionUtil.compareType(String.class, (Class<?>)mapKeyType) && 
+    									ReflectionUtil.compareType(Object.class, (Class<?>)mapValueType)){
+    								//Map<String,Object> 只能接受到 payload就是body里的json对象
+    								parameterValue = param.getBodyMap();
+    							}
+    						}
+    					}else{
+							//Map
+							parameterValue = param.getBodyMap();
+						}
+    				}
     			}
     			
-    			//#其他杂七杂八类型，只能给null，框架不管
+    			//## 其他杂七杂八类型，只能给null，框架不管
     		}while(false);
     		parameterValueList.add(parameterValue);
     	}

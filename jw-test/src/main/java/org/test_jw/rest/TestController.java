@@ -45,18 +45,37 @@ public class TestController {
     @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
     public Data postPathParam(
     		@RequestParam("money")Integer money,//如果money是整数，这里就有值，如果是别的，甚至是字符串，就会是null
-    		@RequestParam("file")FileParam file,//单个文件，如果上传的是多文件，只会拿到最后一个
-    		@RequestParam("file")List<FileParam> filesList,
-    		@RequestParam("file")FileParam[] filesAry,
-    		Param param,
+    		
+    		@RequestParam("file")FileParam file1,//单个文件，如果上传的是多文件，只会拿到最后一个
+    		@RequestParam("file")Object file2,
+    		@RequestParam("file")List<FileParam> filesList1,
+    		@RequestParam("file")List<?> filesList2,
+    		@RequestParam("file")List filesList3,
+    		@RequestParam("file")FileParam[] filesAry1,
+    		@RequestParam("file")Object[] filesAry2,
+    		
     		@RequestParam("ids")Integer ids,//如果传递的参数是多个，只会拿到最后一个
-    		@RequestParam("ids")List<String> idsList,
-    		@RequestParam("ids")String[] idsAry,//如果传递的参数是多个，会用","拼接
-    		@RequestParam("ids")Integer[] ids2Ary,
-    		@RequestParam("ids")Double[] ids3Ary,
-    		@RequestParam("name")String name,
+    		@RequestParam("ids")List<String> idsList1,
+    		@RequestParam("ids")List<?> idsList2,
+    		@RequestParam("ids")List<Integer> idsList3,
+    		@RequestParam("ids")List idsList4,
+    		@RequestParam("ids")String[] idsAry1,//如果传递的参数是多个，会用","拼接
+    		@RequestParam("ids")Integer[] idsAry2,
+    		@RequestParam("ids")Double[] idsAry3,
+    		@RequestParam("ids")Object[] idsAry4,
+    		
+    		@RequestParam("name")String name1,
+    		@RequestParam("name")Object name2,
+    		@RequestParam("name")List<String> nameList1,
+    		@RequestParam("name")List<?> nameList2,
+    		@RequestParam("name")List nameList3,
+    		@RequestParam("name")String[] nameAry1,
+    		@RequestParam("name")Object[] nameAry2,
+    		
     		HttpServletRequest request,
     		HttpServletResponse response,
+    		Param param,
+    		Map<String,Object> body,
     		String otherParam){//这里总是null，如果有人这么写，那只能在别的地方手工调用这个方法时候传值了，框架不会映射的。
     	System.out.println("postPathParam");
 //    	Data data = analysisParam(param);

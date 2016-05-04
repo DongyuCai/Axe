@@ -22,8 +22,18 @@ public interface AccountDao {
 	
 	@Sql("select * from iot_user_account limit 1")
 	public Map<String,Object> getMap();
+
+	@Sql("select * from iot_user_account limit 1")
+	public Map getMap2();
 	
 
 	@Sql("select regeist_date from iot_user_account where id=?")
-	public Date getString(long id);
+	public List<Date> getDate(long id);
+	
+
+	@Sql("select mobile_validate from iot_user_account")
+	public List<Integer> getIntegerList();
+
+	@Sql("select id from iot_user_account")
+	public List<Long> getLongList();
 }

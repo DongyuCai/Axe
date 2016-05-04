@@ -14,14 +14,14 @@ import org.jw.util.CollectionUtil;
 public class Param {
     private List<FormParam> formParamList;
     private List<FileParam> fileParamList;
-    private List<BodyParam> bodyParamList;
+    private Map<String,Object> bodyParamMap;
 //    private Map<String,Object> paramMap;
 
 
-    public Param(List<FormParam> formParamList, List<FileParam> fileParamList, List<BodyParam> bodyParamList) {
+    public Param(List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
         this.formParamList = formParamList;
         this.fileParamList = fileParamList;
-        this.bodyParamList = bodyParamList;
+        this.bodyParamMap = bodyParamMap;
     }
 
     /**
@@ -59,25 +59,13 @@ public class Param {
         return fileMap;
     }
 
-    public Map<String,List<BodyParam>> getBodyMap(){
-        Map<String,List<BodyParam>> bodyMap = new HashMap<>();
-        if(CollectionUtil.isNotEmpty(bodyParamList)){
-            for(BodyParam bodyParam:bodyParamList){
-                String fieldName = bodyParam.getFieldName();
-                List<BodyParam> fileParamList = bodyMap.get(fieldName);
-                if(fileParamList == null){
-                    fileParamList = new ArrayList<>();
-                    bodyMap.put(fieldName,fileParamList);
-                }
-                fileParamList.add(bodyParam);
-            }
-        }
-        return bodyMap;
+    public Map<String,Object> getBodyMap(){
+        return bodyParamMap;
     }
 
     public boolean isEmpty(){
         return CollectionUtil.isEmpty(formParamList) && 
         		CollectionUtil.isEmpty(fileParamList) && 
-        		CollectionUtil.isEmpty(bodyParamList);
+        		CollectionUtil.isEmpty(bodyParamMap);
     }
 }

@@ -51,9 +51,11 @@ public final class ControllerHelper {
                             }
                             
                             //检查actionMethod是否合规
-                            if(!RequestUtil.checkActionMethod(method)){
-                            	throw new RuntimeException("action method 不允许使用 primitive 类型参数: "+method);
-                            }
+                            try {
+                            	RequestUtil.checkActionMethod(method);
+							} catch (Exception e) {
+								throw new RuntimeException("invalid Controler method : "+e.getMessage());
+							}
                             
                             //格式化
                             mappingPath = RequestUtil.formatUrl(mappingPath);
@@ -141,7 +143,7 @@ public final class ControllerHelper {
     			node.put(nodeName, handler);
     		}else{
     			Handler handler = (Handler)node.get(nodeName);
-    			throw new RuntimeException("find two same action: "+actionMethod+" === "+handler.getActionMethod());
+    			throw new RuntimeException("find two same action: "+actionMethod.toGenericString()+" === "+handler.getActionMethod().toGenericString());
     		}
     	}
     }

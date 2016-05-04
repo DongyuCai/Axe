@@ -3,10 +3,10 @@ package org.jw.helper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jw.bean.BodyParam;
 import org.jw.bean.FormParam;
 import org.jw.bean.Param;
 import org.jw.util.RequestUtil;
@@ -18,9 +18,8 @@ import org.jw.util.RequestUtil;
 public class AjaxRequestHelper {
     public static Param createParam(HttpServletRequest request,String requestPath,String mappingPath)throws IOException{
         List<FormParam> formParamList = new ArrayList<>();
-        List<BodyParam> bodyParamList = new ArrayList<>();
         formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));
-        bodyParamList.addAll(RequestUtil.parsePayload(request));
-        return new Param(formParamList,null,bodyParamList);
+        Map<String,Object> bodyParamMap = RequestUtil.parsePayload(request);
+        return new Param(formParamList,null,bodyParamMap);
     }
 }
