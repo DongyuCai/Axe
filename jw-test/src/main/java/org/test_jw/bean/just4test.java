@@ -1,8 +1,11 @@
 package org.test_jw.bean;
 
+import org.jw.annotation.Table;
+
 /**
  * Created by CaiDongYu on 2016/4/19.
  */
+@Table("just4test")
 public class just4test {
     private long id;
     private String name;

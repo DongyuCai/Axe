@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.jw.annotation.Table;
 import org.jw.util.CollectionUtil;
+import org.jw.util.JsonUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.StringUtil;
 import org.slf4j.Logger;
@@ -431,5 +433,35 @@ public class DataBaseHelper {
                 closeConnection();
             }
         }
+    }
+    
+    /**
+     * 解析sql中的类信息
+     */
+    public static String convertSql(String sql){
+    	LOGGER.debug("sql : "+sql);
+    	//Sql中的特殊字符
+    	String sqlClean = sql.replaceAll("[,><=!\\+\\-\\*/\\(\\)]", " ");
+    	
+    	String[] sqlWords = sqlClean.split(" ");
+    	LOGGER.debug("sqlWords : "+Arrays.toString(sqlWords));
+    	
+    	Map<String,Class<?>> sqlEntityClassMap = new HashMap<>();
+    	for(String word:sqlWords){
+    		if(ENTITY_CLASS_MAP.containsKey(word)){
+    			sqlEntityClassMap.put(word, ENTITY_CLASS_MAP.get(word));
+    		}
+    	}
+    	LOGGER.debug("sqlEntityClassMap : "+JsonUtil.toJson(sqlEntityClassMap));
+    	for(Map.Entry<String, Class<?>> sqlEntityClassEntry:sqlEntityClassMap.entrySet()){
+    		String entityClassSimpleName = sqlEntityClassEntry.getKey();
+    		Class<?> entityClass = sqlEntityClassEntry.getValue();
+    		Table tableAnnotation = entityClass.getAnnotation(Table.class);
+    		sql = sql.replaceAll(entityClassSimpleName,tableAnnotation.value());
+    		
+    	}
+    	
+    	
+    	return null;
     }
 }

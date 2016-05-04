@@ -2,10 +2,8 @@ package test;
 
 import java.util.List;
 
-import org.jw.HelperLoader;
 import org.jw.bean.FileParam;
-import org.jw.helper.BeanHelper;
-import org.test_jw.dao.AccountDao;
+import org.jw.helper.DataBaseHelper;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -13,7 +11,9 @@ import org.test_jw.dao.AccountDao;
 public class Test{
 
     public static void main(String[] args) {
-    	System.out.println(Test.class.getSimpleName());
+    	DataBaseHelper.convertSql("select * from just4test where id=1");
+    	
+//    	System.out.println(Test.class.getSimpleName());
     	
     	
 //    	HelperLoader.init();
