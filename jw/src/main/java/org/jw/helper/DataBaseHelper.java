@@ -42,12 +42,12 @@ public class DataBaseHelper {
 
     static {
 
-        //初始化jdbc配置
+        //#初始化jdbc配置
         DRIVER = ConfigHelper.getJdbcDriver();
         URL = ConfigHelper.getJdbcUrl();
         USERNAME = ConfigHelper.getJdbcUsername();
         PASSWORD = ConfigHelper.getJdbcPassword();
-        //数据库连接池
+        //#数据库连接池
         CONNECTION_HOLDER = new ThreadLocal<>();
         QUERY_RUNNER = new QueryRunner();
         DATA_SOURCE = new BasicDataSource();
@@ -58,7 +58,7 @@ public class DataBaseHelper {
             DATA_SOURCE.setUsername(USERNAME);
             DATA_SOURCE.setPassword(PASSWORD);
             
-            //TODO:启动时同步表结构
+            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
         } catch (Exception e) {
             LOGGER.error("jdbc driver : " + DRIVER);
             LOGGER.error("jdbc url : " + URL);
@@ -66,7 +66,10 @@ public class DataBaseHelper {
             LOGGER.error("jdbc password : " + PASSWORD);
             LOGGER.error("load jdbc driver failure", e);
         }
-
+        
+        //#初始化Dao
+        
+        
     }
 
     /**
