@@ -13,16 +13,19 @@ import org.test_jw.dao.AccountDao;
 public class Test{
 
     public static void main(String[] args) {
-    	HelperLoader.init();
+    	System.out.println(Test.class.getSimpleName());
+    	
+    	
+//    	HelperLoader.init();
 //    	TestDao testDao = BeanHelper.getBean(TestDao.class);
 //    	System.out.println(testDao.getAll().size());
-    	AccountDao testDao = BeanHelper.getBean(AccountDao.class);
+//    	AccountDao testDao = BeanHelper.getBean(AccountDao.class);
 //    	System.out.println(JsonUtil.toJson(testDao.getAll().get(0)));
 //    	Account account = testDao.getLimit1();
 //    	System.out.println(JsonUtil.toJson(account));
-    	System.out.println(testDao.getCount().get("all"));
-    	System.out.println(testDao.getIntegerList());
-    	System.out.println(testDao.getLongList());
+//    	System.out.println(testDao.getCount().get("all"));
+//    	System.out.println(testDao.getIntegerList());
+//    	System.out.println(testDao.getLongList());
 //    	System.out.println(JsonUtil.toJson(testDao.getMap()));
     	
 //    	cls.isAssignableFrom(Filter.class) && !

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
@@ -15,6 +16,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.jw.annotation.Table;
 import org.jw.util.CollectionUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.StringUtil;
@@ -28,7 +30,9 @@ import org.slf4j.LoggerFactory;
 public class DataBaseHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
-
+    
+    
+    //#数据库
     private static final String DRIVER;
     private static final String URL;
     private static final String USERNAME;
@@ -40,14 +44,17 @@ public class DataBaseHelper {
 
     private static final BasicDataSource DATA_SOURCE;
 
+    
+    //#@Table 实体
+    private static final Map<String,Class<?>> ENTITY_CLASS_MAP = new HashMap<>();
     static {
 
-        //初始化jdbc配置
+        //#初始化jdbc配置
         DRIVER = ConfigHelper.getJdbcDriver();
         URL = ConfigHelper.getJdbcUrl();
         USERNAME = ConfigHelper.getJdbcUsername();
         PASSWORD = ConfigHelper.getJdbcPassword();
-        //数据库连接池
+        //#数据库连接池
         CONNECTION_HOLDER = new ThreadLocal<>();
         QUERY_RUNNER = new QueryRunner();
         DATA_SOURCE = new BasicDataSource();
@@ -58,7 +65,7 @@ public class DataBaseHelper {
             DATA_SOURCE.setUsername(USERNAME);
             DATA_SOURCE.setPassword(PASSWORD);
             
-            //TODO:启动时同步表结构
+            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
         } catch (Exception e) {
             LOGGER.error("jdbc driver : " + DRIVER);
             LOGGER.error("jdbc url : " + URL);
@@ -66,9 +73,22 @@ public class DataBaseHelper {
             LOGGER.error("jdbc password : " + PASSWORD);
             LOGGER.error("load jdbc driver failure", e);
         }
-
+        
+        //#TODO:初始化Dao
+        Set<Class<?>> entityClassSet = ClassHelper.getClassSetByAnnotation(Table.class);
+        for(Class<?> entityClass:entityClassSet){
+        	String entityClassSimpleName = entityClass.getSimpleName();
+        	if(ENTITY_CLASS_MAP.containsKey(entityClassSimpleName)){
+        		throw new RuntimeException("find the same entity class: "+entityClass.getName()+" == "+ENTITY_CLASS_MAP.get(entityClassSimpleName).getName());
+        	}
+        	ENTITY_CLASS_MAP.put(entityClassSimpleName, entityClass);
+        }
     }
 
+    public static Map<String, Class<?>> getEntityClassMap() {
+		return ENTITY_CLASS_MAP;
+	}
+    
     /**
      * 获取数据库并链接
      */

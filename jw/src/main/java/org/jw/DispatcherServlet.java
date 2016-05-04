@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jw.annotation.Dao;
 import org.jw.annotation.RequestParam;
 import org.jw.bean.Data;
 import org.jw.bean.Handler;
@@ -29,7 +28,6 @@ import org.jw.exception.RestException;
 import org.jw.filter.Filter;
 import org.jw.helper.AjaxRequestHelper;
 import org.jw.helper.BeanHelper;
-import org.jw.helper.ClassHelper;
 import org.jw.helper.ConfigHelper;
 import org.jw.helper.ControllerHelper;
 import org.jw.helper.FormRequestHelper;
@@ -71,12 +69,6 @@ public class DispatcherServlet extends HttpServlet{
 
         //初始化框架相关 helper 类
         HelperLoader.init(servletContext);
-        
-        LOGGER.error("Filter implements\tx"+ClassHelper.getFilterClassSet().size());
-        LOGGER.error("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
-        LOGGER.error("@Service :\tx"+ClassHelper.getServiceClassSet().size());
-        LOGGER.error("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
-        LOGGER.error("jw framework started success!");
     }
 
     @Override

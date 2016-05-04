@@ -143,7 +143,7 @@ public final class ControllerHelper {
     			node.put(nodeName, handler);
     		}else{
     			Handler handler = (Handler)node.get(nodeName);
-    			throw new RuntimeException("find two same action: "+actionMethod.toGenericString()+" === "+handler.getActionMethod().toGenericString());
+    			throw new RuntimeException("find the same action: "+actionMethod.toGenericString()+" === "+handler.getActionMethod().toGenericString());
     		}
     	}
     }

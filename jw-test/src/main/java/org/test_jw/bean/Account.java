@@ -2,6 +2,9 @@ package org.test_jw.bean;
 
 import java.util.Date;
 
+import org.jw.annotation.Table;
+
+@Table("iot_user_account")
 public class Account{
 	private long id;
 	
