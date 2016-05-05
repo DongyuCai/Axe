@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.jw.annotation.Controller;
 import org.jw.annotation.Service;
 import org.jw.constant.ConfigConstant;
-import org.jw.filter.Filter;
+import org.jw.interface_.Filter;
 import org.jw.util.ClassUtil;
 import org.jw.util.ReflectionUtil;
 
@@ -66,13 +66,6 @@ public final class ClassHelper {
         return classSet;
     }
     
-    public static Set<Class<?>> getFilterClassSet(){
-    	Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> 
-    		{if(Filter.class.isAssignableFrom(cls) && !ReflectionUtil.compareType(cls, Filter.class)) return true;return false;}
-    			).collect(Collectors.toSet());
-        return classSet;
-    }
-
     /**
      * 获取所有的 Bean，包括Controller和Service
      * TODO:待优化，不用重复获取

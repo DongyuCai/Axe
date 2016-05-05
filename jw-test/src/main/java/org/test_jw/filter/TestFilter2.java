@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.jw.bean.Handler;
 import org.jw.bean.Param;
 import org.jw.exception.RestException;
-import org.jw.filter.Filter;
+import org.jw.interface_.Filter;
 
 public class TestFilter2 implements Filter{
 

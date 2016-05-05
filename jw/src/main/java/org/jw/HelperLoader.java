@@ -39,7 +39,7 @@ public final class HelperLoader {
         }
         
         //装载的类日志分析
-        LOGGER.error("Filter implements\tx"+ClassHelper.getFilterClassSet().size());
+        LOGGER.error("Filter implements\tx"+FilterHelper.getSortedFilterList().size());
         LOGGER.error("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
         LOGGER.error("@Service :\tx"+ClassHelper.getServiceClassSet().size());
         LOGGER.error("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());

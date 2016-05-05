@@ -1,4 +1,4 @@
-package org.jw.filter;
+package org.jw.interface_;
 
 import java.util.regex.Pattern;
 
@@ -10,6 +10,12 @@ import org.jw.bean.Param;
 import org.jw.exception.RestException;
 
 
+/**
+ * 过滤器 接口
+ * 提供Controller之前的请求过滤操作
+ * 也可以结合  @FilterFuckOff 注解使用来屏蔽过滤器
+ * Created by CaiDongYu on 2016/4/9.
+ */
 public interface Filter {
 	/**
 	 * 层级 执行顺序从小到大

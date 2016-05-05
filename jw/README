@@ -10,14 +10,17 @@
 * actionMethod 方法参数的随意化，支持HttpRequest、HttpResponse、Param 注入。
 * 过滤器 ，实现Filter，支持filter链（有序），支持在Controller上或Controller方法上@FilterFuckOff排除Filter
 * dao层（miniDao4Mysql），底层是apache DbUtils，Bean映射框架自己实现（因为DbUtils不支持Date类型）
+* dao层  支持表名用类名表示，表字段用类字段表示，类似HQL
+* dao通过继承 Repository接口拥有saveEntity、insertEntity、updateEntity、getEntity、deleteEntity直接面向对象的方法。
 
 ##待加入特性列表
 * 权限验证
 * 文件下载
 * TODO列表
 * 多数据源
-* dao层@Sql支持hql语法，优先按照@Table指定的类来解析HQL中的表名和字段名，如果找不到，则不做变换，直接执行sql。
 * dao层支持配置连接池
+
+##正在进行
 
 ##约定（这个要看玩游戏，熟悉了按键操作，才能玩的起来，好的约定，是为了更加的方便）：
 * Request.value 也就是url 只支持字母加数字，理论上也够用了，因此，url的 pathParam 变量名只支持 字母数字，这点框架启动会检测。
@@ -33,3 +36,6 @@
 * Controller中的action方法参数，除了基本类型的包装类，List中的泛型，数组类型，都不可以用自定义Bean，这部分框架尚未打算实现！为了约束，所以禁止使用自定义Bean类型，就是Pojo类型，这点框架启动会检测！
 * Dao层不支持框架启动自动建表，考虑到支持多数据源，如果自动建表，Bean就没法复用来支持多数据源，根据dao来获取多数据源目录也变得非常复杂难搞，使用起来也会痛苦要死。
 虽然不支持自动建表，框架也拱了小工具来手动运行建表，可以指定数据库地址。
+* Dao 继承并使用 Repository接口时，注意接口内有戏方法是要求Entity类必须有@Id标注的字段的
+* Dao 的自动解析机制，要求Entity类中的字段，必须有对应的set、get方法，方法名的后半部分采用驼峰标记，必须严格规范书写，否则解析器不会认作表字段处理
+另外Entity如果有父类，不可以在子类中set、get父类的字段，解析器只会认识当前类中的字段与set、get方法，不会跨父子类匹配，这点需要注意，虽然少见。

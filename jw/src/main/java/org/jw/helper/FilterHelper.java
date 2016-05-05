@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.jw.filter.Filter;
+import org.jw.interface_.Filter;
 import org.jw.util.ReflectionUtil;
 
 /**
@@ -16,7 +16,7 @@ import org.jw.util.ReflectionUtil;
 public class FilterHelper {
 	private static final List<Filter> FILTER_LIST = new ArrayList<>();//保证顺序
     static {
-        Set<Class<?>> filterClassSet = ClassHelper.getFilterClassSet();
+        Set<Class<?>> filterClassSet = ClassHelper.getClassSetBySuper(Filter.class);
         for(Class<?> filterClass:filterClassSet){
             Object obj = ReflectionUtil.newInstance(filterClass);
             FILTER_LIST.add((Filter)obj);

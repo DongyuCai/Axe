@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.jw.filter.Filter;
+import org.jw.interface_.Filter;
 
 /**
  * 排除过滤器、拦截器注解

@@ -12,7 +12,7 @@ import org.jw.annotation.Controller;
 import org.jw.annotation.FilterFuckOff;
 import org.jw.annotation.Request;
 import org.jw.bean.Handler;
-import org.jw.filter.Filter;
+import org.jw.interface_.Filter;
 import org.jw.util.ArrayUtil;
 import org.jw.util.CollectionUtil;
 import org.jw.util.ReflectionUtil;

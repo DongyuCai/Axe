@@ -3,7 +3,7 @@ package org.jw.bean;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.jw.filter.Filter;
+import org.jw.interface_.Filter;
 
 /**
  * 封装 Action 信息

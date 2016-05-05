@@ -1,17 +1,64 @@
 package test;
 
+import java.util.Date;
 import java.util.List;
 
+import org.jw.HelperLoader;
 import org.jw.bean.FileParam;
-import org.jw.helper.DataBaseHelper;
+import org.jw.helper.BeanHelper;
+import org.jw.util.JsonUtil;
+import org.test_jw.bean.Export;
+import org.test_jw.dao.TestDao;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
  */
 public class Test{
+	
 
     public static void main(String[] args) {
-    	DataBaseHelper.convertSql("select * from just4test where id=1");
+
+    	HelperLoader.init();
+    	
+    	TestDao testDao = BeanHelper.getBean(TestDao.class);
+    	Export export = new Export();
+    	export.setId(68l);
+    	int rows = 0;
+    	export = testDao.getEntity(export);
+    	System.out.println("getEntity:"+JsonUtil.toJson(export));
+    	
+    	export.setCreateTime(new Date());
+    	
+    	rows = testDao.saveEntity(export);
+    	System.out.println("saveEntity:"+rows);
+    	
+    	export.setName("新框架测试");
+    	rows = testDao.updateEntity(export);
+    	System.out.println("updateEntity:"+rows);
+    	
+    	export = testDao.getEntity(export);
+    	System.out.println("getEntity:"+JsonUtil.toJson(export));
+
+    	rows = testDao.deleteEntity(export);
+    	System.out.println("deleteEntity:"+rows);
+    	
+    	rows = testDao.updateEntity(export);
+    	System.out.println("updateEntity:"+rows);
+    	
+    	rows = testDao.insertEntity(export);
+    	System.out.println("updateEntity:"+rows);
+    	
+    	
+//    	String str = "a";
+//    	System.out.println(str.substring(1));
+//    	String sql = "select t1.* from Account t1,GroupUser t2 where t2.id in(select id from Account) and t1.id = t2.user_id";
+//    	String sql = "insert into Account(LoginName)values('abc')";
+//    	sql = DataBaseHelper.convertSql(sql);
+//    	List<Map<String,Object>> result  = DataBaseHelper.queryList(sql);
+//    	List<Account> accountList  = DataBaseHelper.queryEntityList(Account.class,sql);
+//    	System.out.println(sql);
+//    	System.out.println(result);
+//    	System.out.println(accountList.size());
     	
 //    	System.out.println(Test.class.getSimpleName());
     	

@@ -2,7 +2,15 @@ package org.jw.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.jw.bean.EntityFieldMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +23,106 @@ public final class ReflectionUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
     
+    
+    public static List<EntityFieldMethod> getGetMethodList(Class<?> cls){
+    	return getGetMethodList(cls, null);
+    }
+    /**
+     * 自子类向父类，寻找所有字段以及对应的Get方法
+     * 子类中与父类同名的字段，取子类，舍父类
+     */
+    public static List<EntityFieldMethod> getGetMethodList(Class<?> cls, Set<String> withoutFieldNameSet){
+    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<>():withoutFieldNameSet;
+    	Field[] fields = cls.getDeclaredFields();
+    	Map<String,Field> fieldMap = new HashMap<>();
+    	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
+    	for(Field field:fields){
+    		fieldMap.put(field.getName(), field);
+    	}
+    	Method[] methodAry =  cls.getDeclaredMethods();
+    	List<EntityFieldMethod> getMethodList = new ArrayList<>();
+    	//#获取Entity类的get方法
+    	for(Method method:methodAry){
+    		//#get开头
+    		if(!method.getName().startsWith("get")) continue;
+    		String fieldName = method.getName().substring(3);
+    		String fieldName1 = fieldName.substring(0,1);
+    		String fieldName2 = fieldName.substring(1);
+    		//#get之后的字符串，必须和class类成员变量对应，第一个字符小写大写对应
+    		fieldName = fieldName1.toLowerCase()+fieldName2;
+    		Field field = fieldMap.get(fieldName);
+    		if(field == null) continue;
+    		//#无参
+    		if(method.getParameterCount() > 0) continue;
+    		//#排除的字段
+    		if(withoutFieldNameSet.contains(fieldName)) continue;
+    		
+    		getMethodList.add(new EntityFieldMethod(field, method));
+    		withoutFieldNameSet.add(fieldName);
+    	}
+    	
+    	Class<?> superClass = cls.getSuperclass();
+    	if(superClass != null && !superClass.equals(Object.class)){
+    		//#迭代父类
+    		getMethodList.addAll(getGetMethodList(superClass,withoutFieldNameSet));
+    	}
+    	
+    	return getMethodList;
+    }
+
+    public static List<EntityFieldMethod> getSetMethodList(Class<?> cls){
+    	return getSetMethodList(cls, null);
+    }
+
+    /**
+     * 自子类向父类，寻找所有字段以及对应的Set方法
+     * 子类中与父类同名的字段，取子类，舍父类
+     */
+    public static List<EntityFieldMethod> getSetMethodList(Class<?> cls, Set<String> withoutFieldNameSet){
+    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<>():withoutFieldNameSet;
+    	Field[] fields = cls.getDeclaredFields();
+    	Map<String,Field> fieldMap = new HashMap<>();
+    	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
+    	for(Field field:fields){
+    		fieldMap.put(field.getName(), field);
+    	}
+    	Method[] methodAry = cls.getDeclaredMethods();
+		List<EntityFieldMethod> etityFieldMethodList = new ArrayList<>();
+		for(Method method:methodAry){
+			//#set开头
+			if(!method.getName().startsWith("set")) continue;
+    		String fieldName = method.getName().substring(3);
+    		String fieldName1 = fieldName.substring(0,1);
+    		String fieldName2 = fieldName.substring(1);
+    		//#set之后的字符串，必须和class类成员变量对应，第一个字符小写大写对应
+    		fieldName = fieldName1.toLowerCase()+fieldName2;
+    		Field field = fieldMap.get(fieldName);
+    		if(field == null) continue;
+			//#带1个参数，类型与Field一至
+    		Parameter[] parameterAry = method.getParameters();
+    		if(parameterAry == null || parameterAry.length != 1) continue;
+    		if(!compareType(parameterAry[0].getType(), field.getType())) continue;
+    		//#排除的字段
+    		if(withoutFieldNameSet.contains(fieldName)) continue;
+    		
+    		etityFieldMethodList.add(new EntityFieldMethod(field, method));
+    		withoutFieldNameSet.add(fieldName);
+		}
+
+    	Class<?> superClass = cls.getSuperclass();
+    	if(superClass != null && !superClass.equals(Object.class)){
+    		//#迭代父类
+    		etityFieldMethodList.addAll(getSetMethodList(superClass,withoutFieldNameSet));
+    	}
+		
+		return etityFieldMethodList;
+    }
+    
     /**
      * 比较两个类，是否是同一个类
      */
     public static boolean compareType(Class<?> cls1,Class<?> cls2){
-    	return cls1.getName().equals(cls2.getName());
+    	return cls1 == null?false:cls1.equals(cls2);
     }
     
     /**

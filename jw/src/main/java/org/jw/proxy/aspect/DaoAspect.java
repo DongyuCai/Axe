@@ -1,6 +1,7 @@
 package org.jw.proxy.aspect;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -14,6 +15,7 @@ import org.jw.annotation.Aspect;
 import org.jw.annotation.Dao;
 import org.jw.annotation.Sql;
 import org.jw.helper.DataBaseHelper;
+import org.jw.interface_.Repository;
 import org.jw.proxy.Proxy;
 import org.jw.proxy.ProxyChain;
 import org.jw.util.ReflectionUtil;
@@ -32,9 +34,14 @@ public class DaoAspect implements Proxy{
 		Object result = null;
 		Method targetMethod = proxyChain.getTargetMethod();
 		Object[] methodParams = proxyChain.getMethodParams();
+		Class<?> daoClass = proxyChain.getTargetClass();
+		
 		if(targetMethod.isAnnotationPresent(Sql.class)){
 			Sql sqlAnnotation = targetMethod.getAnnotation(Sql.class);
 			String sql = sqlAnnotation.value();
+			
+			//#解析Sql中的类名字段名
+			sql = DataBaseHelper.convertSql(sql);
 			
 			String sqlUpperCase = sql.toUpperCase();
 			if(sqlUpperCase.startsWith("SELECT") || sqlUpperCase.contains(" SELECT ")){
@@ -113,6 +120,44 @@ public class DaoAspect implements Proxy{
 				}
 			}else{
 				result = DataBaseHelper.executeUpdate(sql, methodParams);
+			}
+		}else if(Repository.class.isAssignableFrom(daoClass) && !ReflectionUtil.compareType(Repository.class,daoClass)){
+			String methodName = targetMethod.getName();
+			Parameter[] paramAry = targetMethod.getParameters();
+			//# Repository.insertEntity(Object entity);
+			if("insertEntity".equals(methodName)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+					Object entity = methodParams[0];
+					result = DataBaseHelper.insertEntity(entity);
+				}
+			}
+			//# Repository.deleteEntity(Object entity);
+			if("deleteEntity".equals(methodName)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+					Object entity = methodParams[0];
+					result = DataBaseHelper.deleteEntity(entity);
+				}
+			}
+			//# Repository.updateEntity(Object entity);
+			if("updateEntity".equals(methodName)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+					Object entity = methodParams[0];
+					result = DataBaseHelper.updateEntity(entity);
+				}
+			}
+			//# Repository.getEntity(Object entity);
+			if("getEntity".equals(methodName)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+					Object entity = methodParams[0];
+					result = DataBaseHelper.getEntity(entity);
+				}
+			}
+			//# Repository.saveEntity(Object entity);
+			if("saveEntity".equals(methodName)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+					Object entity = methodParams[0];
+					result = DataBaseHelper.insertOnDuplicateKeyEntity(entity);
+				}
 			}
 		}else{
 			result = proxyChain.doProxyChain();
