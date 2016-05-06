@@ -37,8 +37,14 @@
     * 这样是可以的：{"key":"value"} 或者 {"key":[{"subkey":"subvalue"}]} 等json格式
 	* 这样不可以：[{"key":"value"}] 
 * 下面的请求作为例子
-	* 这样是可以的(查询参数可以是中文，随意)：```javascript http://localhost:8080/getOne/zhangjiagang/123_zhangsan/detail?p1=123&p2=张家港 ```
-	* 这样是不可以的(404，路径请不要含有非字母、数字、下划线、$以外的字符)：```javascript http://localhost:8080/getOne/张家港/123_zhangsan/detail?p1=123&p2=张家港 ```
+	* 这样是可以的(查询参数可以是中文，随意)：
+	```
+	http://localhost:8080/getOne/zhangjiagang/123_zhangsan/detail?p1=123&p2=张家港
+	```
+	* 这样是不可以的(404，路径请不要含有非字母、数字、下划线、$以外的字符)：
+	``` 
+	http://localhost:8080/getOne/张家港/123_zhangsan/detail?p1=123&p2=张家港 
+	```
 第二种匹配是什么鬼!这是系统实际运行时决定的，这点框架启动时无法检测，只能不匹配路径返回404。
 * Controller中的action处理方法，也就是加了@Request注解的方法，携带的参数，如果请求中能够取到，就自动赋值，如果请求中没有，默认为null。有些框架是会强制参数个数的，此框架不做参数个数强制。
 因为默认是赋值null，所以参数不可以是基本类型的小写形式(语法糖)，因为这样是不能赋值null的，这点框架启动会检测。
