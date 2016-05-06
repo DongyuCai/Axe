@@ -1,4 +1,6 @@
 版本 0.1
+----------
+
 ##支持特性（基本可以不用看，都是常用的东西）：
 * IOC（[@Controller]()、[@Service]()、[@Autowired]()，使用[BeanHelper]()获取BeanMap）
 * AOP/Proxy（[@Aspect]()注解切面类，实现[Proxy]()或者继承[AspectProxy]()加强切点）
@@ -12,6 +14,7 @@
 * dao层（miniDao4Mysql），底层是apache DbUtils，Bean映射框架自己实现（因为DbUtils不支持Date类型）
 * dao层  支持表名用类名表示，表字段用类字段表示，类似HQL
 * dao通过继承 [Repository]()接口可直接获得saveEntity、insertEntity、updateEntity、getEntity、deleteEntity直接面向对象的方法。
+----------
 
 ##待加入特性列表：
 * 权限验证
@@ -19,8 +22,10 @@
 * TODO列表
 * 多数据源
 * dao层支持配置连接池
+----------
 
 ##正在进行：
+----------
 
 ##约定（这个要看，约定，是为了更方便）：
 * Request.value 也就是url 只支持字母加数字，理论上也够用了，因此，url的 pathParam 变量名只支持 字母数字，这点框架启动会检测。
