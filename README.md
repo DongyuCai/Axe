@@ -2,6 +2,7 @@
 ----------
 
 ##支持特性（基本可以不用看，都是常用的东西）：
+----------
 * IOC（[@Controller]()、[@Service]()、[@Autowired]()，使用[BeanHelper]()获取BeanMap）
 * AOP/Proxy（[@Aspect]()注解切面类，实现[Proxy]()或者继承[AspectProxy]()加强切点）
 * restful风格的Http请求支持，内建了POST、DELETE、PUT、GET类型，可以查看[RequestMethod]()枚举
@@ -14,23 +15,24 @@
 * dao层（miniDao4Mysql），底层是apache DbUtils，Bean映射框架自己实现（因为DbUtils不支持Date类型）
 * dao层  支持表名用类名表示，表字段用类字段表示，类似HQL
 * dao通过继承 [Repository]()接口可直接获得saveEntity、insertEntity、updateEntity、getEntity、deleteEntity直接面向对象的方法。
-----------
+
 
 ##待加入特性列表：
+----------
 * 权限验证
 * 文件下载
 * TODO列表
 * 多数据源
 * dao层支持配置连接池
-----------
 
 ##正在进行：
 ----------
 
 ##约定（这个要看，约定，是为了更方便）：
+----------
 * Request.value 也就是url 只支持字母加数字，理论上也够用了，因此，url的 pathParam 变量名只支持 字母数字，这点框架启动会检测。
 * post请求的payload 只支持json格式，不能是数组，key必须用英文双引号包围，value 必须区分数字字符串，如果是字符串纯字母，必须双引号包围。总之按规范来。
-	* 这样是可以的：{"key":"value"} 或者 {"key":[{"subkey":"subvalue"}]} 等json格式
+    * 这样是可以的：{"key":"value"} 或者 {"key":[{"subkey":"subvalue"}]} 等json格式
 	* 这样不可以：[{"key":"value"}] 
 * 下面的请求作为例子
 	* 这样是可以的(查询参数可以是中文，随意)：```javascript http://localhost:8080/getOne/zhangjiagang/123_zhangsan/detail?p1=123&p2=张家港 ```
