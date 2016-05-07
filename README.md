@@ -17,6 +17,7 @@
 * dao通过继承 [Repository]()接口可直接获得saveEntity、insertEntity、updateEntity、getEntity、deleteEntity直接面向对象的方法。
 * dao内sql语句变量占位符，支持?，也支持?带数字，但是，不可以在一个语句内，同时出现两种模式
 * dao的sql支持in，但是有要求，变量必须是List才好使，不可以是Array，还有，in后面要主动加(...)，另外提一点，有的框架in操作不支持List的size为0，此框架也不支持
+
 ----------
 
 ##待加入特性列表：
