@@ -8,8 +8,10 @@ import org.jw.annotation.Table;
 
 /**
  * @Table 数据库 entity 助手类
+ * 解析表名，字段名
  * 剥离自DataBaseHelper
  * Created by CaiDongYu on 2016/5/6.
+ * TODO:Entity 表名约束、字段名约束
  */
 public final class TableHelper {
     
