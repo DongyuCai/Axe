@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +80,7 @@ public class DispatcherServlet extends HttpServlet{
             if(requestPath != null && requestPath.equals("/favicon.ico")){
                 return;
             }
-
+            
             //获取 Action 处理器
             Handler handler = ControllerHelper.getHandler(requestMethod,requestPath);
             if(handler != null){
@@ -115,6 +114,9 @@ public class DispatcherServlet extends HttpServlet{
                 		handleViewResult((View)result,request,response);
                 	} else if (result instanceof Data){
                 		handleDataResult((Data)result,response);
+                	} else {
+                		Data data = new Data(result);
+                		handleDataResult(data,response);
                 	}
                 }
             }else{
@@ -131,6 +133,8 @@ public class DispatcherServlet extends HttpServlet{
     
     public void writeBackToClient(int status,String msg,HttpServletResponse response){
     	try {
+    		response.setCharacterEncoding("utf-8");
+    		response.setContentType("application/json");
     		response.setStatus(status);
         	PrintWriter writer = response.getWriter();
         	writer.write(msg);
@@ -182,7 +186,8 @@ public class DispatcherServlet extends HttpServlet{
     				}
     				//* 如果是Map<String,Object> 
     				if(ReflectionUtil.compareType(Map.class, parameterType)){
-    					if(parameterizedType instanceof ParameterizedType){
+						parameterValue = param.getBodyMap();
+    					/*if(parameterizedType instanceof ParameterizedType){
     						Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
     						if(actualTypes.length > 1){
     							Type mapKeyType = actualTypes[0];
@@ -196,7 +201,7 @@ public class DispatcherServlet extends HttpServlet{
     					}else{
 							//Map
 							parameterValue = param.getBodyMap();
-						}
+						}*/
     				}
     			}
     			

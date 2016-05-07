@@ -16,7 +16,7 @@ public class Handler {
 	 */
 	private String requestMethod;
 	/**
-	 * Action rest 串
+	 * 完整的 Action rest 串
 	 */
 	private String mappingPath;
 	

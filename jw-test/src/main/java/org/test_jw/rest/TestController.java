@@ -75,7 +75,7 @@ public class TestController {
     		HttpServletRequest request,
     		HttpServletResponse response,
     		Param param,
-    		Map<String,Object> body,
+    		Map<String,String> body,
     		String otherParam){//这里总是null，如果有人这么写，那只能在别的地方手工调用这个方法时候传值了，框架不会映射的。
     	System.out.println("postPathParam");
 //    	Data data = analysisParam(param);

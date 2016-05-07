@@ -19,6 +19,10 @@ public class RestException extends RuntimeException implements HttpServletRespon
 	private int status;
 	private String message;
 	
+	public RestException(String message) {
+		this.status = SC_INTERNAL_SERVER_ERROR;
+		this.message = message;
+	}
 	
 	public RestException(int status, String message) {
 		this.status = status;

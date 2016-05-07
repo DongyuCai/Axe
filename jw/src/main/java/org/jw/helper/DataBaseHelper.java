@@ -6,14 +6,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
@@ -21,11 +16,8 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
-import org.jw.annotation.Id;
-import org.jw.annotation.Table;
 import org.jw.bean.EntityFieldMethod;
-import org.jw.util.CollectionUtil;
-import org.jw.util.JsonUtil;
+import org.jw.bean.SqlPackage;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.StringUtil;
 import org.slf4j.Logger;
@@ -52,9 +44,6 @@ public class DataBaseHelper {
 
     private static final BasicDataSource DATA_SOURCE;
 
-    
-    //#@Table 实体
-    private static final Map<String,Class<?>> ENTITY_CLASS_MAP = new HashMap<>();
     static {
 
         //#初始化jdbc配置
@@ -82,23 +71,8 @@ public class DataBaseHelper {
             LOGGER.error("load jdbc driver failure", e);
         }
         
-        //#加载所有@Table指定的Entity类
-        Set<Class<?>> entityClassSet = ClassHelper.getClassSetByAnnotation(Table.class);
-        for(Class<?> entityClass:entityClassSet){
-        	String entityClassSimpleName = entityClass.getSimpleName();
-        	if(ENTITY_CLASS_MAP.containsKey(entityClassSimpleName)){
-        		throw new RuntimeException("find the same entity class: "+entityClass.getName()+" == "+ENTITY_CLASS_MAP.get(entityClassSimpleName).getName());
-        	}
-        	ENTITY_CLASS_MAP.put(entityClassSimpleName, entityClass);
-        }
     }
 
-    /**
-     * 返回所有@Table标注的Entity类
-     */
-    public static Map<String, Class<?>> getEntityClassMap() {
-		return ENTITY_CLASS_MAP;
-	}
     
     /**
      * 获取数据库并链接
@@ -148,7 +122,8 @@ public class DataBaseHelper {
         try {
         	//BeanListHandler 不支持Date，所以自己实现
             //entityList = QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
-        	entityList = QUERY_RUNNER.query(conn, sql, new ResultSetHandler<List<T>>(){
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	entityList = QUERY_RUNNER.query(conn, sp.getSql(), new ResultSetHandler<List<T>>(){
         		@Override
         		public List<T> handle(ResultSet table) throws SQLException {
         			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
@@ -167,7 +142,7 @@ public class DataBaseHelper {
 					}
 					return list;
         		}
-        	},params);
+        	},sp.getParams());
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
             throw new RuntimeException(e);
@@ -193,7 +168,8 @@ public class DataBaseHelper {
         try {
         	//BeanHandler 不支持Date，所以自己实现
         	//entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
-        	entity = QUERY_RUNNER.query(conn, sql, new ResultSetHandler<T>(){
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	entity = QUERY_RUNNER.query(conn, sp.getSql(), new ResultSetHandler<T>(){
 
 				@Override
 				public T handle(ResultSet table) throws SQLException {
@@ -212,7 +188,7 @@ public class DataBaseHelper {
 					}
 					return null;
 				}
-        	}, params);
+        	}, sp.getParams());
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
             throw new RuntimeException(e);
@@ -236,7 +212,8 @@ public class DataBaseHelper {
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection();
         try {
-            result = QUERY_RUNNER.query(conn, sql, new MapListHandler(), params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+            result = QUERY_RUNNER.query(conn, sp.getSql(), new MapListHandler(), sp.getParams());
         } catch (Exception e) {
             LOGGER.error("execute queryList failure", e);
             throw new RuntimeException(e);
@@ -260,7 +237,8 @@ public class DataBaseHelper {
         Map<String, Object> result = new HashMap<>();
         Connection conn = getConnection();
         try {
-            result = QUERY_RUNNER.query(conn, sql, new MapHandler(), params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+            result = QUERY_RUNNER.query(conn, sp.getSql(), new MapHandler(), sp.getParams());
         } catch (Exception e) {
             LOGGER.error("execute queryMap failure", e);
             throw new RuntimeException(e);
@@ -285,7 +263,8 @@ public class DataBaseHelper {
     	T result = null;
         Connection conn = getConnection();
         try {
-            result = QUERY_RUNNER.query(conn, sql, new ScalarHandler<T>(), params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+            result = QUERY_RUNNER.query(conn, sp.getSql(), new ScalarHandler<T>(), sp.getParams());
         } catch (Exception e) {
             LOGGER.error("execute queryMap failure", e);
             throw new RuntimeException(e);
@@ -311,7 +290,8 @@ public class DataBaseHelper {
         int rows = 0;
         Connection conn = getConnection();
         try {
-            rows = QUERY_RUNNER.update(conn, sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+            rows = QUERY_RUNNER.update(conn, sp.getSql(), sp.getParams());
         } catch (SQLException e) {
             LOGGER.error("execute update failure", e);
             throw new RuntimeException(e);
@@ -331,118 +311,24 @@ public class DataBaseHelper {
      * 插入实体
      */
     public static int insertEntity(Object entity) {
-        String sql = "INSERT INTO " + getTableName(entity.getClass());
-        List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-        StringBuilder columns = new StringBuilder("(");
-        StringBuilder values = new StringBuilder("(");
-        Object[] params = new Object[entityFieldMethodList.size()];
-        for (int i=0;i<entityFieldMethodList.size();i++) {
-        	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-        	Field field = entityFieldMethod.getField();
-        	Method method = entityFieldMethod.getMethod();
-        	String column = StringUtil.camelToUnderline(field.getName());
-            columns.append(column).append(", ");
-            values.append("?, ");
-            params[i] = ReflectionUtil.invokeMethod(entity, method);
-        }
-        columns.replace(columns.lastIndexOf(", "), columns.length(), ")");
-        values.replace(values.lastIndexOf(", "), values.length(), ")");
-        sql += columns + " VALUES " + values;
-
-        return executeUpdate(sql, params);
+    	SqlPackage sp = SqlHelper.getInsertSqlPackage(entity);
+        return executeUpdate(sp.getSql(), sp.getParams());
     }
 
     /**
      * 更新实体
      */
     public static int updateEntity(Object entity) {
-        String sql = "UPDATE " + getTableName(entity.getClass()) + " SET ";
-        List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-        //#会做修改的字段
-        StringBuilder columns = new StringBuilder();
-        //#修改的条件
-        StringBuilder where = new StringBuilder(" WHERE 1=1 ");
-        //#占位符的值
-        Object[] params = new Object[entityFieldMethodList.size()];
-        boolean hashIdField = false;
-        for (int i=0;i<entityFieldMethodList.size();i++) {
-        	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-        	Field field = entityFieldMethod.getField();
-        	Method method = entityFieldMethod.getMethod();
-        	String column = StringUtil.camelToUnderline(field.getName());
-        	if(!field.isAnnotationPresent(Id.class)){
-        		//#没有@Id注解的字段作为修改内容
-        		columns.append(column).append("=?, ");
-        	}else{
-        		//#有@Id的字段作为主键，用来当修改条件
-        		where.append(" and "+column+"=?");
-        		hashIdField = true;
-        	}
-        	params[i] = ReflectionUtil.invokeMethod(entity, method);
-        }
-        columns.replace(columns.lastIndexOf(", "), columns.length(), " ");
-        sql = sql+columns.toString()+where.toString();
-
-        if(!hashIdField){
-        	//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
-        	throw new RuntimeException("update entity failure!cannot find any field with @Id in "+entity.getClass());
-        }
-        
-        return executeUpdate(sql, params);
+        SqlPackage sp = SqlHelper.getUpdateSqlPackage(entity);
+        return executeUpdate(sp.getSql(), sp.getParams());
     }
     
     /**
      * 更新实体
      */
     public static int insertOnDuplicateKeyEntity(Object entity) {
-        String sql = "INSERT INTO " + getTableName(entity.getClass());
-        List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-        //#字段
-        StringBuilder columnsInsert = new StringBuilder("(");
-        StringBuilder valuesInsert = new StringBuilder(" VALUES (");
-        StringBuilder columnsUpdate = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
-        //#占位符的值
-        List<Object> params = new ArrayList<>();
-        boolean hashIdField = false;
-        for (int i=0;i<entityFieldMethodList.size();i++) {
-        	//# insert
-        	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-        	Field field = entityFieldMethod.getField();
-        	Method method = entityFieldMethod.getMethod();
-        	String column = StringUtil.camelToUnderline(field.getName());
-        	
-        	columnsInsert.append(column).append(", ");
-        	valuesInsert.append("?, ");
-        	params.add(ReflectionUtil.invokeMethod(entity, method));
-        }
-        columnsInsert.replace(columnsInsert.lastIndexOf(", "), columnsInsert.length(), ")");
-        valuesInsert.replace(valuesInsert.lastIndexOf(", "), valuesInsert.length(), ")");
-        for (int i=0;i<entityFieldMethodList.size();i++) {
-        	//# update
-        	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-        	Field field = entityFieldMethod.getField();
-        	Method method = entityFieldMethod.getMethod();
-        	String column = StringUtil.camelToUnderline(field.getName());
-        	
-        	//# update
-        	if(!field.isAnnotationPresent(Id.class)){
-        		//#没有@Id注解的字段作为修改内容
-        		columnsUpdate.append(column).append("=?, ");
-        		params.add(ReflectionUtil.invokeMethod(entity, method));
-        	}else{
-        		hashIdField = true;
-        	}
-        }
-        columnsUpdate.replace(columnsUpdate.lastIndexOf(", "), columnsUpdate.length(), " ");
-
-        sql = sql+columnsInsert.toString()+valuesInsert.toString()+columnsUpdate.toString();
-        
-        if(!hashIdField){
-        	//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
-        	throw new RuntimeException("update entity failure!cannot find any field with @Id in "+entity.getClass());
-        }
-        
-        return executeUpdate(sql, params.toArray());
+        SqlPackage sp = SqlHelper.getInsertOnDuplicateKeyUpdateSqlPackage(entity);
+        return executeUpdate(sp.getSql(), sp.getParams());
     }
 
 
@@ -450,79 +336,16 @@ public class DataBaseHelper {
      * 删除实体
      */
     public static int deleteEntity(Object entity) {
-        String sql = "DELETE FROM " + getTableName(entity.getClass());
-        List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-        //#修改的条件
-        StringBuilder where = new StringBuilder(" WHERE 1=1 ");
-        //#占位符的值
-        //#先过滤出带有@Id的EntityFieldMethod
-        List<EntityFieldMethod> idFieldList = entityFieldMethodList.stream().filter(
-        		entityFieldMethod->entityFieldMethod.getField().isAnnotationPresent(Id.class)
-        		).collect(Collectors.toList());
-        Object[] params = new Object[idFieldList.size()];
-        for (int i=0;i<idFieldList.size();i++) {
-        	EntityFieldMethod entityFieldMethod = idFieldList.get(i);
-        	Field field = entityFieldMethod.getField();
-        	Method method = entityFieldMethod.getMethod();
-        	String column = StringUtil.camelToUnderline(field.getName());
-        	//#有@Id的字段作为主键，用来当修改条件
-    		where.append(" and "+column+"=?");
-    		params[i] = ReflectionUtil.invokeMethod(entity, method);
-        }
-        sql = sql+where.toString();
-        
-        if(CollectionUtil.isEmpty(idFieldList)){
-        	//注意，deleteEntity，如果Entity中没有标注@Id的字段，是不能删除的，否则会where 1=1 全表删除！
-        	throw new RuntimeException("delete entity failure!cannot find any field with @Id in "+entity.getClass());
-        }
-        
-        return executeUpdate(sql, params);
+        SqlPackage sp = SqlHelper.getDeleteSqlPackage(entity);
+        return executeUpdate(sp.getSql(), sp.getParams());
     }
     
     @SuppressWarnings("unchecked")
 	public static <T> T getEntity(Object entity){
-        String sql = "SELECT * FROM " + getTableName(entity.getClass());
-        List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-        //#修改的条件
-        StringBuilder where = new StringBuilder(" WHERE 1=1 ");
-        //#占位符的值
-        //#先过滤出带有@Id的EntityFieldMethod
-        List<EntityFieldMethod> idFieldList = entityFieldMethodList.stream().filter(
-        		entityFieldMethod->entityFieldMethod.getField().isAnnotationPresent(Id.class)
-        		).collect(Collectors.toList());
-        Object[] params = new Object[idFieldList.size()];
-        for (int i=0;i<idFieldList.size();i++) {
-        	EntityFieldMethod entityFieldMethod = idFieldList.get(i);
-        	Field field = entityFieldMethod.getField();
-        	Method method = entityFieldMethod.getMethod();
-        	String column = StringUtil.camelToUnderline(field.getName());
-        	//#有@Id的字段作为主键，用来当修改条件
-    		where.append(" and "+column+"=?");
-    		params[i] = ReflectionUtil.invokeMethod(entity, method);
-        }
-        sql = sql+where.toString();
-        
-        if(CollectionUtil.isEmpty(idFieldList)){
-        	//注意，deleteEntity，如果Entity中没有标注@Id的字段，是不能删除的，否则会where 1=1 全表删除！
-        	throw new RuntimeException("delete entity failure!cannot find any field with @Id in "+entity.getClass());
-        }
-    	return (T)queryEntity(entity.getClass(), sql, params);
+        SqlPackage sp = SqlHelper.getSelectSqlPackage(entity);
+    	return (T)queryEntity(entity.getClass(), sp.getSql(), sp.getParams());
     }
     
-    
-    /**
-     * 根据Entity获取表名
-     * 如果有@Table注解，就取注解值
-     * 如果没有，就取类名做表名
-     */
-    private static String getTableName(Class<?> entityClass) {
-    	String tableName = entityClass.getSimpleName();
-    	if(entityClass.isAnnotationPresent(Table.class)){
-    		tableName = entityClass.getAnnotation(Table.class).value();
-    	}
-        return tableName;
-    }
-
     /**
      * 开启事务
      */
@@ -584,101 +407,6 @@ public class DataBaseHelper {
                 }
             }
         }
-    }
-    
-    /**
-     * 解析sql中的类信息
-     */
-    public static String convertSql(String sql){
-    	LOGGER.debug("sql : "+sql);
-    	//#根据sql匹配出Entity类
-    	Map<String,Class<?>> sqlEntityClassMap = matcherEntityClassMap(sql);
-    	LOGGER.debug("sqlEntityClassMap : "+JsonUtil.toJson(sqlEntityClassMap));
-    	//#解析表名
-    	sql = convertTableName(sql,sqlEntityClassMap);
-    	//#解析字段
-    	sql = convertColumnName(sql, sqlEntityClassMap);
-    	return sql;
-    }
-    
-    private static Map<String,Class<?>> matcherEntityClassMap(String sql){
-    	String sqlClean = sql.replaceAll("[,><=!\\+\\-\\*/\\(\\)]", " ");
-    	String[] sqlWords = sqlClean.split(" ");
-    	LOGGER.debug("sqlWords : "+Arrays.toString(sqlWords));
-    	
-    	Map<String,Class<?>> sqlEntityClassMap = new HashMap<>();
-    	for(String word:sqlWords){ 
-    		if(ENTITY_CLASS_MAP.containsKey(word) && !sqlEntityClassMap.containsKey(word)){
-    			sqlEntityClassMap.put(word, ENTITY_CLASS_MAP.get(word));
-    		}
-    	}
-    	return sqlEntityClassMap;
-    }
-    
-    
-    private static String convertTableName(String sql, Map<String,Class<?>> sqlEntityClassMap){
-    	//#表名可能被这些东西包围，空格本身就用来分割，所以不算在内
-    	for(Map.Entry<String, Class<?>> sqlEntityClassEntry:sqlEntityClassMap.entrySet()){
-    		String entityClassSimpleName = sqlEntityClassEntry.getKey();
-    		Class<?> entityClass = sqlEntityClassEntry.getValue();
-    		Table tableAnnotation = entityClass.getAnnotation(Table.class);
-    		//#替换表名
-    		//这里的表达式就需要空格了
-    		String tableNameReg = "([,><=!\\+\\-\\*/\\(\\) ])"+entityClassSimpleName+"([,><=!\\+\\-\\*/\\(\\) ])";
-    		Pattern p = Pattern.compile(tableNameReg);
-    		Matcher m = p.matcher(sql);
-    		while(m.find()){//这就可以找到表名，包括表名前后的字符，后面替换的时候，就能很方便替换了
-    			String tablePre = m.group(1);
-    			String tableAfter = m.group(2);
-    			if("+-*()".contains(tablePre)){
-    				tablePre = "\\"+tablePre;
-    			}
-    			if("+-*()".contains(tableAfter)){
-    				tableAfter = "\\"+tableAfter;
-    			}
-    			tableNameReg = tablePre+entityClassSimpleName+tableAfter;
-    			String tableNameAround = tablePre+tableAnnotation.value()+tableAfter;
-    			sql = sql.replaceAll(tableNameReg, tableNameAround);
-    		}
-    	}
-    	
-		return sql;
-    }
-    
-    private static String convertColumnName(String sql, Map<String,Class<?>> sqlEntityClassMap){
-
-    	for(Map.Entry<String, Class<?>> sqlEntityClassEntry:sqlEntityClassMap.entrySet()){
-    		Class<?> entityClass = sqlEntityClassEntry.getValue();
-    		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
-        	//#根据get方法来解析字段名
-        	for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
-    			String field = entityFieldMethod.getField().getName();
-    			String column = StringUtil.camelToUnderline(field);
-    			//前后表达式不同
-    			//前面有! 
-    			//前面有(
-    			//前面有.
-    			//后面有)
-    			String columnNameReg = "([,><=\\+\\-\\*/\\(\\. ])"+field+"([,><=!\\+\\-\\*/\\) ])";
-        		Pattern p = Pattern.compile(columnNameReg);
-        		Matcher m = p.matcher(sql);
-        		while(m.find()){//这就可以找到表名，包括表名前后的字符，后面替换的时候，就能很方便替换了
-        			String columnPre = m.group(1);
-        			String columnAfter = m.group(2);
-        			if("+-*(.".contains(columnPre)){
-        				columnPre = "\\"+columnPre;
-        			}
-        			if("+-*)".contains(columnAfter)){
-        				columnAfter = "\\"+columnAfter;
-        			}
-        			columnNameReg = columnPre+field+columnAfter;
-        			String columnNameAround = columnPre+column+columnAfter;
-        			sql = sql.replaceAll(columnNameReg, columnNameAround);
-        		}
-        	}
-    	}
-    	
-    	return sql;
     }
     
 }

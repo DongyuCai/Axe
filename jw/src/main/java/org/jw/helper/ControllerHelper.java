@@ -3,6 +3,7 @@ package org.jw.helper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,10 +26,17 @@ import org.jw.util.RequestUtil;
  */
 public final class ControllerHelper {
 
+	/**
+	 * Action List
+	 * 因为框架不会用到这个变量，记录这份原始数据列表，是为了以便开发者使用
+	 * 所以用LinkedList 为了合理利用点内存嘛
+	 */
+	private static final List<Handler> ACTION_LIST = new LinkedList<Handler>();
     /**
      * 存放映射关系 Action Map
+     * Action Map是Action List整理之后的树关系
      */
-    public static final Map<String, Object> ACTION_MAP = new HashMap<>();
+	private static final Map<String, Object> ACTION_MAP = new HashMap<>();
 
     static {
         //获取所有的 Controller 类
@@ -140,7 +148,10 @@ public final class ControllerHelper {
     				filterList.add(filter);
     			}
     			Handler handler = new Handler(requestMethod,mappingPath,controllerClass, actionMethod,filterList);
+    			//构建树
     			node.put(nodeName, handler);
+    			//存根到ACTIN_LIST
+    			ACTION_LIST.add(handler);
     		}else{
     			Handler handler = (Handler)node.get(nodeName);
     			throw new RuntimeException("find the same action: "+actionMethod.toGenericString()+" === "+handler.getActionMethod().toGenericString());
@@ -227,4 +238,12 @@ public final class ControllerHelper {
     	
     	return findNode?nodeName:null;
     }
+    
+    public static Map<String, Object> getActionMap() {
+		return ACTION_MAP;
+	}
+    
+    public static List<Handler> getActionList() {
+		return ACTION_LIST;
+	}
 }

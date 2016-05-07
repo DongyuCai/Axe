@@ -1,12 +1,20 @@
 package org.jw;
 
+import javax.servlet.ServletContext;
+
 import org.jw.annotation.Dao;
-import org.jw.helper.*;
+import org.jw.helper.AopHelper;
+import org.jw.helper.BeanHelper;
+import org.jw.helper.ClassHelper;
+import org.jw.helper.ControllerHelper;
+import org.jw.helper.DataBaseHelper;
+import org.jw.helper.FilterHelper;
+import org.jw.helper.FormRequestHelper;
+import org.jw.helper.IocHelper;
+import org.jw.helper.TableHelper;
 import org.jw.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContext;
 
 /**
  * 加载并初始化 Helper 类
@@ -25,9 +33,10 @@ public final class HelperLoader {
                 BeanHelper.class,//实例化CLASS_SET里的类，放到BEAN_MAP里
                 FilterHelper.class,//实例化所有Filter，并按层级排好序
                 AopHelper.class,//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
-                IocHelper.class,
-                ControllerHelper.class,
-                DataBaseHelper.class
+                IocHelper.class,//组装所有@Autowired
+                ControllerHelper.class,//加载ACTION_MAP
+                TableHelper.class,//加载所有的@Table
+                DataBaseHelper.class//初始化数据库配置
         };
         for (Class<?> cls:classList){
             ClassUtil.loadClass(cls.getName(),true);
@@ -39,11 +48,12 @@ public final class HelperLoader {
         }
         
         //装载的类日志分析
-        LOGGER.error("Filter implements\tx"+FilterHelper.getSortedFilterList().size());
-        LOGGER.error("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
-        LOGGER.error("@Service :\tx"+ClassHelper.getServiceClassSet().size());
-        LOGGER.error("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
-        LOGGER.error("@Table :\tx"+DataBaseHelper.getEntityClassMap().size());
-        LOGGER.error("jw framework started success!");
+        LOGGER.debug("Filter implements\tx"+FilterHelper.getSortedFilterList().size());
+        LOGGER.debug("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
+        LOGGER.debug("@Service :\tx"+ClassHelper.getServiceClassSet().size());
+        LOGGER.debug("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
+        LOGGER.debug("@Table :\tx"+TableHelper.getEntityClassMap().size());
+        LOGGER.debug("ACTION_LIST :\tx"+ControllerHelper.getActionList().size());
+        LOGGER.debug("jw framework started success!");
     }
 }

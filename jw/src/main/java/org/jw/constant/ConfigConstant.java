@@ -5,7 +5,7 @@ package org.jw.constant;
  * Created by CaiDongYu on 2016/4/8.
  */
 public interface ConfigConstant {
-    String CONFIG_FILE = "smart.properties";
+    String CONFIG_FILE = "application.properties";
 
     String JDBC_DRIVER = "jdbc.driver";
     String JDBC_URL = "jdbc.url";
