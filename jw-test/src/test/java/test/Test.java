@@ -1,8 +1,12 @@
 package test;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.List;
 
 import org.jw.bean.FileParam;
+import org.jw.util.StringUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -11,7 +15,23 @@ public class Test{
 	
 
     public static void main(String[] args) {
-
+    	try {
+			BufferedReader br = new BufferedReader(new FileReader("data.txt"));
+			String line = br.readLine();
+			while(!StringUtil.isEmpty(line)){
+				String[] wordAry = line.split("	");
+				for(String word:wordAry){
+					word = word.trim();
+					if(StringUtil.isEmpty(word)) continue;
+					System.out.print(word+",");
+				}
+				line = br.readLine();
+			}
+			br.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     	
     	
 //    	String str = "a";

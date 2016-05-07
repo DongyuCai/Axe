@@ -214,6 +214,51 @@ public class SqlHelper {
 	
 	
 	/**
+	 * 检测sql是否可做hql转换
+	 * 目前只做类到表的表名、字段是否会影响sql语句中的mysql关键字。
+	 * 比如表名叫cOunt，这就会影响，因为经过驼峰转换下划线后会替换成c_ount，
+	 * 会导致后续的hql解析时，如果sql中正好有count关键字，也会被替换掉，
+	 * 因为在sql中cOunt不区分大小写情况下，是可以执行的，这就破坏了sql。
+	 * 如果检测通过，会额外返回检测时已经匹配好的get方法和字段的map
+	 */
+	private static Map<String,Class<?>> checkHqlConvertIfOk(String sql){
+		//匹配出Entity-Class
+    	Map<String,Class<?>> sqlEntityClassMap = matcherEntityClassMap(sql);
+		do{
+			if(CollectionUtil.isEmpty(sqlEntityClassMap)) break;
+			
+			for(Map.Entry<String, Class<?>> entity:sqlEntityClassMap.entrySet()){
+				String entityClassName = entity.getKey();
+				//#检测表名是否影响
+				//* 如果MYSQL_KEYWORDS中包含此表名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
+				if(TableHelper.checkIsMysqlKeyword(entityClassName)){
+					String afterTryCast2TableName = StringUtil.camelToUnderline(entityClassName);
+					if(!entityClassName.equalsIgnoreCase(afterTryCast2TableName))
+						throw new RuntimeException("invalid class name["+entityClassName+"] for sql#["+sql+"], because mysql keyword will be affected!");
+				}
+				
+				
+				Class<?> entityClass = entity.getValue();
+				//#检测表字锻是否影响
+	    		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
+	    		if(CollectionUtil.isNotEmpty(entityFieldMethodList)){
+	    			for(EntityFieldMethod efm:entityFieldMethodList){
+	    				String fieldName = efm.getField().getName();
+	    				//* 如果MYSQL_KEYWORDS中包含此字段名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
+	    				if(TableHelper.checkIsMysqlKeyword(fieldName)){
+	    					String afterTryCast2ColumnName = StringUtil.camelToUnderline(fieldName);
+	    					if(!fieldName.equalsIgnoreCase(afterTryCast2ColumnName))
+	    						throw new RuntimeException("invalid field name#["+fieldName+"] in class#["+entityClassName+"] for sql#["+sql+"], because mysql keyword will be affected!");
+	    				}
+	    			}
+	    		}
+			}
+		}while(false);
+		return sqlEntityClassMap;
+	}
+	
+	
+	/**
      * 解析sql中的类信息
      */
     public static String convertHql2Sql(String sql){
@@ -221,12 +266,14 @@ public class SqlHelper {
     	sql = sql+" ";
     	LOGGER.debug("sql : "+sql);
     	//#根据sql匹配出Entity类
-    	Map<String,Class<?>> sqlEntityClassMap = matcherEntityClassMap(sql);
+    	Map<String,Class<?>> sqlEntityClassMap =  checkHqlConvertIfOk(sql);
     	LOGGER.debug("sqlEntityClassMap : "+JsonUtil.toJson(sqlEntityClassMap));
-    	//#解析表名
-    	sql = convertTableName(sql,sqlEntityClassMap);
-    	//#解析字段
-    	sql = convertColumnName(sql, sqlEntityClassMap);
+		if(!CollectionUtil.isEmpty(sqlEntityClassMap)){
+			//#解析表名
+			sql = convertTableName(sql,sqlEntityClassMap);
+			//#解析字段
+			sql = convertColumnName(sql, sqlEntityClassMap);
+		}
     	return sql;
     }
     
