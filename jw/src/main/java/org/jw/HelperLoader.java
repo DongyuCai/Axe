@@ -48,7 +48,8 @@ public final class HelperLoader {
         }
         
         //装载的类日志分析
-        LOGGER.debug("Filter implements\tx"+FilterHelper.getSortedFilterList().size());
+        //TODO:详细日志
+        LOGGER.debug("Filter implements :\tx"+FilterHelper.getSortedFilterList().size());
         LOGGER.debug("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
         LOGGER.debug("@Service :\tx"+ClassHelper.getServiceClassSet().size());
         LOGGER.debug("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());

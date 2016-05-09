@@ -112,11 +112,19 @@ public final class ControllerHelper {
     		if(!node.containsKey(nodeName)){
     			List<Filter> filterList = new ArrayList<>();
     			for(Filter filter:FilterHelper.getSortedFilterList()){
-    				//首先判断是否匹配mappingPath
-    				Matcher mappingPathMatcher = filter.setMappingPathPattern().matcher(mappingPath);
+    				//#首先判断是否匹配mappingPath
+    				if(filter.setMapping() == null){
+    					throw new RuntimeException("invalid filter["+filter.getClass()+"] setMapping is null");
+    				}
+    				Matcher mappingPathMatcher = filter.setMapping().matcher(mappingPath);
     				if(!mappingPathMatcher.find()) continue;
+    				//还要判断是否在刨除的规则里，此规则可以为null，直接跳过
+    				if(filter.setNotMapping() != null){
+    					Matcher notMappingPathMatcher = filter.setNotMapping().matcher(mappingPath);
+    					if(notMappingPathMatcher.find()) continue;
+    				}
     				
-    				//其次，说明匹配上了，判断controller是否排除了这个Filter
+    				//#其次，说明匹配上了，判断controller是否排除了这个Filter
     				if(controllerClass.isAnnotationPresent(FilterFuckOff.class)){
     					FilterFuckOff filterFuckOff = controllerClass.getAnnotation(FilterFuckOff.class);
     					if(filterFuckOff.value().length == 0) continue;

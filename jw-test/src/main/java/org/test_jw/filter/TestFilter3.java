@@ -18,8 +18,13 @@ public class TestFilter3 implements Filter{
 	}
 
 	@Override
-	public Pattern setMappingPathPattern() {
+	public Pattern setMapping() {
 		return Pattern.compile("^.*$");
+	}
+	
+	@Override
+	public Pattern setNotMapping() {
+		return null;
 	}
 
 	@Override
