@@ -267,7 +267,7 @@ public class DataBaseHelper {
         	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
             result = QUERY_RUNNER.query(conn, sp.getSql(), new ScalarHandler<T>(), sp.getParams());
         } catch (Exception e) {
-            LOGGER.error("execute queryMap failure", e);
+            LOGGER.error("execute queryPrimitive failure", e);
             throw new RuntimeException(e);
         } finally {
             try {
@@ -285,28 +285,18 @@ public class DataBaseHelper {
     /**
      * 执行返回结果是基本类型的查询
      */
-    public static int countQuery(String sql, Object[] params, Class<?>[] paramTypes) {
-		LOGGER.debug(sql);
-    	int result = 0;
-        Connection conn = getConnection();
+    public static long countQuery(String sql, Object[] params, Class<?>[] paramTypes) {
+    	long result = 0;
         try {
         	//包装count(1)语句
-        	sql = "select count(1) from("+sql+")";
+        	sql = "select count(1) from("+sql+") as table_"+System.currentTimeMillis();
         	
         	//免转换，因为queryPrimitive会做
 //        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-            result = queryPrimitive(sql, params, paramTypes);
+            result = queryPrimitive(sql, params, null);
         } catch (Exception e) {
-            LOGGER.error("execute queryMap failure", e);
+            LOGGER.error("execute countQuery failure", e);
             throw new RuntimeException(e);
-        } finally {
-            try {
-                if(conn.getAutoCommit()){
-                    closeConnection();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
         }
         return result;
     }

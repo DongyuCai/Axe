@@ -1,12 +1,8 @@
 package test;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.List;
 
 import org.jw.bean.FileParam;
-import org.jw.util.StringUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.

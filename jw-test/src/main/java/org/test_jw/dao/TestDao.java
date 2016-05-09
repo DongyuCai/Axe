@@ -19,6 +19,9 @@ public interface TestDao extends BaseRepository{
 	@Sql("select * from just4test")
 	public List<just4test> getAll();
 	
+	@Sql("select * from just4test where name like '%test%'")
+	public Page<just4test> page();
+	
 	@Sql("select * from Export")
 	public List<Export> getAllExport();
 	

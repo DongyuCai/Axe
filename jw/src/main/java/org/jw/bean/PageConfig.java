@@ -10,22 +10,22 @@ public class PageConfig {
 	/**
 	 * 当前页码
 	 */
-	private int pageNum;
+	private long pageNum;
 	/**
 	 * 每页大小
 	 */
-	private int pageSize;
+	private long pageSize;
 	/**
 	 * mysql limit 起始行
 	 */
-	private int limitParam1;
+	private long limitParam1;
 	/**
 	 * mysql limit 查询条数
 	 */
-	private int limitParam2;
+	private long limitParam2;
 
 	
-	public PageConfig(int pageNum, int pageSize) {
+	public PageConfig(long pageNum, long pageSize) {
 		this.pageNum = pageNum;
 		this.pageSize = pageSize;
 		init();
@@ -38,19 +38,19 @@ public class PageConfig {
 		this.limitParam2 = this.pageSize;
 	}
 
-	public int getPageNum() {
+	public long getPageNum() {
 		return pageNum;
 	}
 
-	public int getPageSize() {
+	public long getPageSize() {
 		return pageSize;
 	}
 
-	public int getLimitParam1() {
+	public long getLimitParam1() {
 		return limitParam1;
 	}
 
-	public int getLimitParam2() {
+	public long getLimitParam2() {
 		return limitParam2;
 	}
 }

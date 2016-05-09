@@ -20,14 +20,14 @@ public class Page<T> {
 	/**
 	 * 全部页加起来的总条数
 	 */
-	private int count;
+	private long count;
 	
 	/**
 	 * 页数
 	 */
-	private int pages;
+	private long pages;
 
-	public Page(List<T> records, PageConfig pageConfig, int count, int pages) {
+	public Page(List<T> records, PageConfig pageConfig, long count, long pages) {
 		this.records = records;
 		this.pageConfig = pageConfig;
 		this.count = count;
@@ -42,11 +42,11 @@ public class Page<T> {
 		return pageConfig;
 	}
 
-	public int getCount() {
+	public long getCount() {
 		return count;
 	}
 
-	public int getPages() {
+	public long getPages() {
 		return pages;
 	}
 	

@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.jw.HelperLoader;
 import org.jw.bean.Page;
-import org.jw.bean.PageConfig;
 import org.jw.helper.BeanHelper;
 import org.jw.util.JsonUtil;
 import org.jw.util.StringUtil;
 import org.test_jw.bean.Export;
+import org.test_jw.bean.just4test;
 import org.test_jw.dao.TestDao;
 
 public class DaoTest {
@@ -19,18 +19,25 @@ public class DaoTest {
 	public static void main(String[] args) {
 //		testDaoEntity();
 		testDaoPaging();
+//		HelperLoader.init();
+//		just4test just4test = new just4test();
+//		just4test.setName("aaa");
+//		TestDao testDao = BeanHelper.getBean(TestDao.class);
+//		testDao.insertEntity(just4test);
+		
 	}
 	
 	public static void testDaoPaging(){
 		HelperLoader.init();
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
-		List<Export> all = testDao.getAllExport();
-		Page<Export> pageList = testDao.pagingExport("%SqlHelper%",new PageConfig(1, 2));
-		for(Export e:all){
+		List<just4test> all = testDao.getAll();
+		Page<just4test> pageList = testDao.page();
+		for(just4test e:all){
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();
-		for(Export e:pageList.getRecords()){
+		System.out.println(pageList.getCount()+"\t"+pageList.getPages());
+		for(just4test e:pageList.getRecords()){
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();

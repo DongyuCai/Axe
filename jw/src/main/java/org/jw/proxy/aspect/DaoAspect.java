@@ -207,9 +207,9 @@ public class DaoAspect implements Proxy{
 	 */
 	private <T> Page<T> pageResult(String sql, Object[] params, Class<?>[] paramTypes, List<T> records){
 		PageConfig pageConfig= SqlHelper.getPageConfigFromParams(params, paramTypes);
-		int count = DataBaseHelper.countQuery(sql, params, paramTypes);
+		long count = DataBaseHelper.countQuery(sql, params, paramTypes);
 		pageConfig = pageConfig == null?new PageConfig(1,count):pageConfig;
-		int pages = count/pageConfig.getPageSize();
+		long pages = count/pageConfig.getPageSize();
 		if(pages*pageConfig.getPageSize() < count)
 			pages++;
 		
