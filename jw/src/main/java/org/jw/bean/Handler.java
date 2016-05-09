@@ -3,6 +3,7 @@ package org.jw.bean;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.jw.annotation.Request;
 import org.jw.interface_.Filter;
 
 /**
@@ -19,7 +20,14 @@ public class Handler {
 	 * 完整的 Action rest 串
 	 */
 	private String mappingPath;
-	
+	/**
+	 * Mime-Type 类型
+	 */
+	private String contentType;
+	/**
+	 * characterEncoding 编码类型
+	 */
+	private String characterEncoding;
     /**
      * Controller 类
      */
@@ -35,15 +43,26 @@ public class Handler {
      */
     private List<Filter> filterList;
 
-    public Handler(String requestMethod, String mappingPath,Class<?> controllerClass, Method actionMethod, List<Filter> filterList){
-    	this.requestMethod = requestMethod;
-    	this.mappingPath = mappingPath;
-        this.controllerClass = controllerClass;
-        this.actionMethod = actionMethod;
-        this.filterList = filterList;
-    }
+    public Handler(String requestMethod, String mappingPath, 
+			Class<?> controllerClass, Method actionMethod, List<Filter> filterList) {
+		this.requestMethod = requestMethod;
+		this.mappingPath = mappingPath;
+		this.controllerClass = controllerClass;
+		this.actionMethod = actionMethod;
+		this.filterList = filterList;
+		
+		init();
+	}
+    
+    private void init() {
+    	if(this.actionMethod.isAnnotationPresent(Request.class)){
+    		Request request = this.actionMethod.getAnnotation(Request.class);
+    		this.contentType = request.contentType();
+    		this.characterEncoding = request.characterEncoding();
+    	}
+	}
 
-    public Class<?> getControllerClass() {
+	public Class<?> getControllerClass() {
         return controllerClass;
     }
 
@@ -61,5 +80,13 @@ public class Handler {
     
     public List<Filter> getFilterList() {
 		return filterList;
+	}
+    
+    public String getContentType() {
+		return contentType;
+	}
+    
+    public String getCharacterEncoding() {
+		return characterEncoding;
 	}
 }

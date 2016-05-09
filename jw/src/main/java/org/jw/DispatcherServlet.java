@@ -113,10 +113,10 @@ public class DispatcherServlet extends HttpServlet{
                 	if(result instanceof View){
                 		handleViewResult((View)result,request,response);
                 	} else if (result instanceof Data){
-                		handleDataResult((Data)result,response);
+                		handleDataResult((Data)result,response,handler);
                 	} else {
                 		Data data = new Data(result);
-                		handleDataResult(data,response);
+                		handleDataResult(data,response,handler);
                 	}
                 }
             }else{
@@ -231,17 +231,19 @@ public class DispatcherServlet extends HttpServlet{
         }
     }
 
-    private void handleDataResult(Data data,HttpServletResponse response) throws IOException{
+    private void handleDataResult(Data data,HttpServletResponse response,Handler handler) throws IOException{
+    	response.setContentType(handler.getContentType());
+    	response.setCharacterEncoding(handler.getCharacterEncoding());
         //返回JSON数据
         Object model = data.getModel();
         if(model != null){
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            PrintWriter writer = response.getWriter();
             String json = JsonUtil.toJson(model);
-            writer.write(json);
-            writer.flush();
-            writer.close();
+            if(json != null){
+            	PrintWriter writer = response.getWriter();
+            	writer.write(json);
+            	writer.flush();
+            	writer.close();
+            }
         }
     }
 }

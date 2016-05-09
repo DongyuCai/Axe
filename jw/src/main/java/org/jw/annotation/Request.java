@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.jw.constant.RequestMethod;
+
 /**
  * 控制器方法注解
  * Created by CaiDongYu on 2016/4/8.
@@ -21,5 +23,15 @@ public @interface Request {
     /**
      * 请求类型
      */
-    org.jw.constant.RequestMethod method();
+    RequestMethod method();
+    
+    /**
+     * 返回结果类型
+     */
+    String contentType() default "application/json";
+    
+    /**
+     * 编码类型
+     */
+    String characterEncoding() default "UTF-8";
 }
