@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jw.annotation.Dao;
 import org.jw.annotation.Sql;
+import org.jw.bean.Page;
 import org.jw.bean.PageConfig;
 import org.jw.interface_.BaseRepository;
 import org.test_jw.bean.Export;
@@ -22,5 +23,5 @@ public interface TestDao extends BaseRepository{
 	public List<Export> getAllExport();
 	
 	@Sql("select * from Export where name like ?1")
-	public List<Export> pagingExport(String name,PageConfig pageConfig);
+	public Page<Export> pagingExport(String name,PageConfig pageConfig);
 }

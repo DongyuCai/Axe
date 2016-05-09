@@ -91,7 +91,10 @@ public class DaoAspect implements Proxy{
 							}
 						}
 						
-						sdfa
+						if(Page.class.isAssignableFrom(rawType)){
+							//如果是分页，包装返回结果
+							result = pageResult(sql, methodParams, parameterTypes, (List<?>)result);
+						}
 					}else if(ReflectionUtil.compareType(Map.class, rawType)){
 						//Map无所谓里面的泛型
 						result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
@@ -102,7 +105,11 @@ public class DaoAspect implements Proxy{
 						//Page、List
 						result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 						
-						sdfa
+
+						if(Page.class.isAssignableFrom(rawType)){
+							//如果是分页，包装返回结果
+							result = pageResult(sql, methodParams, parameterTypes, (List<?>)result);
+						}
 					}else if(ReflectionUtil.compareType(Map.class, rawType)){
 						//Map
 						result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
@@ -202,8 +209,10 @@ public class DaoAspect implements Proxy{
 		PageConfig pageConfig= SqlHelper.getPageConfigFromParams(params, paramTypes);
 		int count = DataBaseHelper.countQuery(sql, params, paramTypes);
 		pageConfig = pageConfig == null?new PageConfig(1,count):pageConfig;
+		int pages = count/pageConfig.getPageSize();
+		if(pages*pageConfig.getPageSize() < count)
+			pages++;
 		
-		
-		return new Page<>(records, pageConfig, count, pages)
+		return new Page<>(records, pageConfig, count, pages);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.jw.HelperLoader;
+import org.jw.bean.Page;
 import org.jw.bean.PageConfig;
 import org.jw.helper.BeanHelper;
 import org.jw.util.JsonUtil;
@@ -24,12 +25,12 @@ public class DaoTest {
 		HelperLoader.init();
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
 		List<Export> all = testDao.getAllExport();
-		List<Export> pageList = testDao.pagingExport("%SqlHelper%",new PageConfig(1, 2));
+		Page<Export> pageList = testDao.pagingExport("%SqlHelper%",new PageConfig(1, 2));
 		for(Export e:all){
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();
-		for(Export e:pageList){
+		for(Export e:pageList.getRecords()){
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();
