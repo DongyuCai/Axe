@@ -116,14 +116,14 @@ public class DataBaseHelper {
     /**
      * 查询实体列表
      */
-	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object... params) {
+	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
         List<T> entityList;
         Connection conn = getConnection();
         try {
         	//BeanListHandler 不支持Date，所以自己实现
             //entityList = QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
         	entityList = QUERY_RUNNER.query(conn, sp.getSql(), new ResultSetHandler<List<T>>(){
         		@Override
         		public List<T> handle(ResultSet table) throws SQLException {
@@ -162,14 +162,14 @@ public class DataBaseHelper {
     /**
      * 查询单个实体
      */
-    public static <T> T queryEntity(final Class<T> entityClass, String sql, Object... params) {
+    public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
         T entity;
         Connection conn = getConnection();
         try {
         	//BeanHandler 不支持Date，所以自己实现
         	//entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
         	entity = QUERY_RUNNER.query(conn, sp.getSql(), new ResultSetHandler<T>(){
 
 				@Override
@@ -208,12 +208,12 @@ public class DataBaseHelper {
     /**
      * 执行List查询
      */
-    public static List<Map<String, Object>> queryList(String sql, Object... params) {
+    public static List<Map<String, Object>> queryList(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
             result = QUERY_RUNNER.query(conn, sp.getSql(), new MapListHandler(), sp.getParams());
         } catch (Exception e) {
             LOGGER.error("execute queryList failure", e);
@@ -233,12 +233,12 @@ public class DataBaseHelper {
     /**
      * 执行单条查询
      */
-    public static Map<String, Object> queryMap(String sql, Object... params) {
+    public static Map<String, Object> queryMap(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
         Map<String, Object> result = new HashMap<>();
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
             result = QUERY_RUNNER.query(conn, sp.getSql(), new MapHandler(), sp.getParams());
         } catch (Exception e) {
             LOGGER.error("execute queryMap failure", e);
@@ -259,13 +259,43 @@ public class DataBaseHelper {
     /**
      * 执行返回结果是基本类型的查询
      */
-    public static <T> T queryPrimitive(String sql, Object... params) {
+    public static <T> T queryPrimitive(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
     	T result = null;
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
             result = QUERY_RUNNER.query(conn, sp.getSql(), new ScalarHandler<T>(), sp.getParams());
+        } catch (Exception e) {
+            LOGGER.error("execute queryMap failure", e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
+    
+
+    /**
+     * 执行返回结果是基本类型的查询
+     */
+    public static int countQuery(String sql, Object[] params, Class<?>[] paramTypes) {
+		LOGGER.debug(sql);
+    	int result = 0;
+        Connection conn = getConnection();
+        try {
+        	//包装count(1)语句
+        	sql = "select count(1) from("+sql+")";
+        	
+        	//免转换，因为queryPrimitive会做
+//        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
+            result = queryPrimitive(sql, params, paramTypes);
         } catch (Exception e) {
             LOGGER.error("execute queryMap failure", e);
             throw new RuntimeException(e);
@@ -286,12 +316,12 @@ public class DataBaseHelper {
     /**
      * 执行更新语句 （包括 update、insert、delete）
      */
-    public static int executeUpdate(String sql, Object... params) {
+    public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
         int rows = 0;
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params);
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
             rows = QUERY_RUNNER.update(conn, sp.getSql(), sp.getParams());
         } catch (SQLException e) {
             LOGGER.error("execute update failure", e);
@@ -312,24 +342,31 @@ public class DataBaseHelper {
      * 插入实体
      */
     public static int insertEntity(Object entity) {
+    	if(entity == null)
+    		throw new RuntimeException("insertEntity failure, insertEntity param is null!");
+    	
     	SqlPackage sp = SqlHelper.getInsertSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams());
+        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
     }
 
     /**
      * 更新实体
      */
     public static int updateEntity(Object entity) {
+    	if(entity == null)
+    		throw new RuntimeException("updateEntity failure, updateEntity param is null!");
         SqlPackage sp = SqlHelper.getUpdateSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams());
+        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
     }
     
     /**
      * 更新实体
      */
     public static int insertOnDuplicateKeyEntity(Object entity) {
+    	if(entity == null)
+    		throw new RuntimeException("insertOnDuplicateKeyEntity failure, insertOnDuplicateKeyEntity param is null!");
         SqlPackage sp = SqlHelper.getInsertOnDuplicateKeyUpdateSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams());
+        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
     }
 
 
@@ -337,16 +374,21 @@ public class DataBaseHelper {
      * 删除实体
      */
     public static int deleteEntity(Object entity) {
+    	if(entity == null)
+    		throw new RuntimeException("deleteEntity failure, deleteEntity param is null!");
         SqlPackage sp = SqlHelper.getDeleteSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams());
+        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
     }
     
     @SuppressWarnings("unchecked")
-	public static <T> T getEntity(Object entity){
-        SqlPackage sp = SqlHelper.getSelectSqlPackage(entity);
-    	return (T)queryEntity(entity.getClass(), sp.getSql(), sp.getParams());
+	public static <T> T getEntity(T entity){
+    	if(entity == null)
+    		throw new RuntimeException("getEntity failure, getEntity param is null!");
+        SqlPackage sp = SqlHelper.getSelectByIdSqlPackage(entity);
+        entity = (T)queryEntity(entity.getClass(), sp.getSql(), sp.getParams(), sp.getParamTypes());
+    	return (T)entity;
     }
-    
+
     /**
      * 开启事务
      */

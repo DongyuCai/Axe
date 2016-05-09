@@ -15,24 +15,6 @@ public class Test{
 	
 
     public static void main(String[] args) {
-    	try {
-			BufferedReader br = new BufferedReader(new FileReader("data.txt"));
-			String line = br.readLine();
-			while(!StringUtil.isEmpty(line)){
-				String[] wordAry = line.split("	");
-				for(String word:wordAry){
-					word = word.trim();
-					if(StringUtil.isEmpty(word)) continue;
-					System.out.print(word+",");
-				}
-				line = br.readLine();
-			}
-			br.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    	
     	
 //    	String str = "a";
 //    	System.out.println(str.substring(1));

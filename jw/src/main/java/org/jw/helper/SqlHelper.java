@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.jw.annotation.Id;
 import org.jw.annotation.Table;
 import org.jw.bean.EntityFieldMethod;
+import org.jw.bean.PageConfig;
 import org.jw.bean.SqlPackage;
 import org.jw.util.CastUtil;
 import org.jw.util.CollectionUtil;
@@ -64,7 +65,7 @@ public class SqlHelper {
         columns.replace(columns.lastIndexOf(", "), columns.length(), ")");
         values.replace(values.lastIndexOf(", "), values.length(), ")");
         sql += columns + " VALUES " + values;
-        return new SqlPackage(sql, params);
+        return new SqlPackage(sql, params, null);
 	}
 	
 	public static SqlPackage getUpdateSqlPackage(Object entity){
@@ -99,7 +100,7 @@ public class SqlHelper {
         	//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
         	throw new RuntimeException("update entity failure!cannot find any field with @Id in "+entity.getClass());
         }
-        return new SqlPackage(sql, params);
+        return new SqlPackage(sql, params, null);
 	}
 	
 	
@@ -150,7 +151,7 @@ public class SqlHelper {
         	//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
         	throw new RuntimeException("update entity failure!cannot find any field with @Id in "+entity.getClass());
         }
-        return new SqlPackage(sql, params.toArray());
+        return new SqlPackage(sql, params.toArray(), null);
 	}
 	
 	public static SqlPackage getDeleteSqlPackage(Object entity){
@@ -179,10 +180,10 @@ public class SqlHelper {
         	//注意，deleteEntity，如果Entity中没有标注@Id的字段，是不能删除的，否则会where 1=1 全表删除！
         	throw new RuntimeException("delete entity failure!cannot find any field with @Id in "+entity.getClass());
         }
-        return new SqlPackage(sql, params);
+        return new SqlPackage(sql, params, null);
 	}
 	
-	public static SqlPackage getSelectSqlPackage(Object entity){
+	public static SqlPackage getSelectByIdSqlPackage(Object entity){
 		String sql = "SELECT * FROM " + TableHelper.getTableName(entity.getClass());
         List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
         //#修改的条件
@@ -192,6 +193,13 @@ public class SqlHelper {
         List<EntityFieldMethod> idFieldList = entityFieldMethodList.stream().filter(
         		entityFieldMethod->entityFieldMethod.getField().isAnnotationPresent(Id.class)
         		).collect(Collectors.toList());
+
+        //注意，如果Entity中没有标注@Id的字段，就不能匹配了
+        if(CollectionUtil.isEmpty(idFieldList)){
+        	throw new RuntimeException("select entity failure!cannot find any field with @Id in "+entity.getClass());
+        }
+        
+
         Object[] params = new Object[idFieldList.size()];
         for (int i=0;i<idFieldList.size();i++) {
         	EntityFieldMethod entityFieldMethod = idFieldList.get(i);
@@ -204,12 +212,7 @@ public class SqlHelper {
         }
         sql = sql+where.toString();
         
-        if(CollectionUtil.isEmpty(idFieldList)){
-        	//注意，deleteEntity，如果Entity中没有标注@Id的字段，是不能删除的，否则会where 1=1 全表删除！
-        	throw new RuntimeException("select entity failure!cannot find any field with @Id in "+entity.getClass());
-        }
-        
-        return new SqlPackage(sql, params);
+        return new SqlPackage(sql, params, null);
 	}
 	
 	
@@ -345,15 +348,14 @@ public class SqlHelper {
     }
     
     /**
-     * 转换占位符 ?1
+     * 分析占位符的模式
+     * 1.纯prepareStatement的顺序占位符，?后面不带数字
+     * 2.可以?后面带数字的制定参数位置的占位符
      */
-    public static SqlPackage convertGetFlag(String sql,Object[] params){
-    	//#检测占位符是否都符合格式
-    	//?后面跟1~9,如果两位数或者更多位,则十位开始可以0~9
-    	//但是只用检测个位就好
-    	int getFlagIndex = sql.indexOf("?");
+    private static boolean[] analysisGetFlagMode(String sql){
     	boolean getFlagComm = false;//普通模式 就是?不带数字
     	boolean getFlagSpec = false;//?带数字模式
+    	int getFlagIndex = sql.indexOf("?");
     	while(getFlagIndex >= 0 && getFlagIndex<sql.length()-1){
     		char c = sql.charAt(getFlagIndex+1);
     		if(c < '1' || c > '9'){
@@ -366,15 +368,31 @@ public class SqlHelper {
     	if(sql.trim().endsWith("?"))
     		getFlagComm = true;
     	
-    	//不可以两种模式都并存，只能选一种，要么?都带数字，要么?都不带数字
-    	if(getFlagComm && getFlagSpec)
-			throw new RuntimeException("invalid sql statement with ?+number and only ?: ");
+    	return new boolean[]{getFlagComm,getFlagSpec};
+    }
+    
+    /**
+     * 转换占位符 ?1
+     * 转换pageConfig占位符
+     */
+    public static SqlPackage convertGetFlag(String sql,Object[] params, Class<?>[] paramTypes) {
+    	//#转换pageConfig
+    	SqlPackage sqlPackage = convertPagConfig(sql, params, paramTypes);
+    	sql = sqlPackage.getSql();
+    	params = sqlPackage.getParams();
+    	paramTypes = sqlPackage.getParamTypes();
+    	boolean[] getFlagModeAry = sqlPackage.getGetFlagModeAry();
     	
     	//#开始排布
     	//* 根据sql中?1这样的取值占位符，
+    	boolean getFlagComm = getFlagModeAry[0];//普通模式 就是?不带数字
+    	boolean getFlagSpec = getFlagModeAry[1];//?带数字模式
+    	//不可以两种模式都并存，只能选一种，要么?都带数字，要么?都不带数字
+    	if(getFlagComm && getFlagSpec)
+			throw new RuntimeException("invalid sql statement with ?+number and only ?: "+sql);
     	List<Object> paramList = new ArrayList<>();
     	if(getFlagComm){
-    		getFlagIndex = sql.indexOf("?");
+    		int getFlagIndex = sql.indexOf("?");
     		int paramIndex = 0;
     		while(getFlagIndex >= 0 && getFlagIndex<sql.length()){
         		Object param = params[paramIndex++];
@@ -447,8 +465,74 @@ public class SqlHelper {
         		sql = sql.replace("?"+getFlagNumber, getFlagReplaceBuffer.toString());
         	}
     	}
+    	return new SqlPackage(sql, paramList.toArray(), paramTypes);
+    }
+    
+    /**
+     * 转换 分页查询条件
+     * 转换有条件，如果params里包含约定位置的pageConfig，就转换，如果没有，就不作处理
+     * 但是，如果有pageConfig但是书写方式不符合约定，会报异常
+     */
+    public static SqlPackage convertPagConfig(String sql,Object[] params,Class<?>[] paramTypes){
+    	//#检测占位符是否都符合格式
+    	//?后面跟1~9,如果两位数或者更多位,则十位开始可以0~9
+    	//但是只用检测个位就好
+    	boolean[] getFlagModeAry = analysisGetFlagMode(sql);
+    	boolean getFlagComm = getFlagModeAry[0];//普通模式 就是?不带数字
+    	boolean getFlagSpec = getFlagModeAry[1];//?带数字模式
     	
+    	//不可以两种模式都并存，只能选一种，要么?都带数字，要么?都不带数字
+    	if(getFlagComm && getFlagSpec)
+			throw new RuntimeException("invalid sql statement with ?+number and only ?: "+sql);
     	
-    	return new SqlPackage(sql, paramList.toArray());
+    	//#params检测是否包含pageConfig，包含的位置
+    	do{
+    		PageConfig pageConfig = getPageConfigFromParams(params, paramTypes);
+    		if(pageConfig == null) break;
+    		
+        	if(!getFlagComm && !getFlagSpec){
+        		//默认这里采用getFlagComm模式，减少一点后续sql转换
+        		getFlagComm = true;
+        	}
+        	//替换sql
+    		if(sql.toUpperCase().contains(" LIMIT ")){
+    			if(getFlagComm){//?
+    				sql = "select * from("+sql+") limit ?,?";
+    			} else if(getFlagSpec){//?1
+    				sql = "select * from("+sql+") limit ?"+(paramTypes.length)+",?"+(paramTypes.length+1);
+    			}
+    		}else{
+    			if(getFlagComm){//?
+    				sql = sql+" limit ?,?";
+    			} else if(getFlagSpec){//?1
+    				sql = sql+" limit ?"+(paramTypes.length)+",?"+(paramTypes.length+1);
+    			}
+    		}
+    		//替换params
+    		Object[] newParams = new Object[params.length+1];
+    		for(int i=0;i<newParams.length-2;i++){
+    			newParams[i] = params[i];
+    		}
+    		newParams[newParams.length-2] = pageConfig.getLimitParam1();
+    		newParams[newParams.length-1] = pageConfig.getLimitParam2();
+    		params = newParams;
+    	}while(false);
+    	return new SqlPackage(sql, params, paramTypes,new boolean[]{getFlagComm,getFlagSpec});
+    }
+    
+    
+    public static PageConfig getPageConfigFromParams(Object[] params,Class<?>[] paramTypes){
+    	PageConfig pageConfig = null;
+    	do{
+    		if(paramTypes == null || paramTypes.length <= 0) break;
+    		Class<?> lastParamType = paramTypes[paramTypes.length-1];
+    		
+    		if(!PageConfig.class.isAssignableFrom(lastParamType)) break;
+    		//#认为有分页要求
+    		pageConfig  = (PageConfig)params[params.length-1];
+    		if(pageConfig == null)
+    			throw new RuntimeException("invalid sql param value of type PageConfig is null");
+    	}while(false);
+    	return pageConfig;
     }
 }

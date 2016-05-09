@@ -7,10 +7,8 @@ package org.jw.interface_;
  * Dao可以不继承 这个接口，只需要有@Dao注解，DaoAspect也会加载
  * 继承此接口可以让Dao拥有一些基本的面向对象的Entity操作
  * Created by CaiDongYu on 2016/5/5.
- * TODO:增加 countAll、getAll、page 方法
- * 
  */
-public interface Repository {
+public interface BaseRepository {
 	public int insertEntity(Object entity);
 
 	/**
@@ -26,7 +24,13 @@ public interface Repository {
 	/**
 	 * 需要entity类有@Id字段
 	 */
-	public <T> T getEntity(Object entity);
+	public <T> T getEntity(T entity);
 	
+	/**
+	 * 保存entity
+	 * 这是个 INSERT ... ON DUPLICATE KEY UPDATE 操作
+	 * 如果entity有主键，并且主键已存在，执行update
+	 */
 	public int saveEntity(Object entity);
+	
 }
