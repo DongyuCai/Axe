@@ -116,11 +116,11 @@ public final class ControllerHelper {
     				if(filter.setMapping() == null){
     					throw new RuntimeException("invalid filter["+filter.getClass()+"] setMapping is null");
     				}
-    				Matcher mappingPathMatcher = filter.setMapping().matcher(mappingPath);
+    				Matcher mappingPathMatcher = filter.setMapping().matcher(requestMethod+":"+mappingPath);
     				if(!mappingPathMatcher.find()) continue;
     				//还要判断是否在刨除的规则里，此规则可以为null，直接跳过
     				if(filter.setNotMapping() != null){
-    					Matcher notMappingPathMatcher = filter.setNotMapping().matcher(mappingPath);
+    					Matcher notMappingPathMatcher = filter.setNotMapping().matcher(requestMethod+":"+mappingPath);
     					if(notMappingPathMatcher.find()) continue;
     				}
     				

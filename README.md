@@ -28,6 +28,7 @@
 * TODO列表
 * 多数据源
 * dao层支持配置连接池
+* dao层支持数据库主从分离
 * 分布式服务管理支持
 
 ----------
@@ -44,6 +45,7 @@
 * post请求的payload 只支持json格式，不能是数组，key必须用英文双引号包围，value 必须区分数字字符串，如果是字符串纯字母，必须双引号包围。总之按规范来。
     * 这样是可以的：{"key":"value"} 或者 {"key":[{"subkey":"subvalue"}]} 等json格式
 	* 这样不可以：[{"key":"value"}] 
+	* 对JSON格式相关疑问可以参考[JSON 入门指南](http://www.ibm.com/developerworks/cn/web/wa-lo-json/)
 * 下面的请求作为例子
 	* 这样是可以的(查询参数可以是中文，随意)：
 	```

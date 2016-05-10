@@ -34,4 +34,7 @@ public class TestFilter2 implements Filter{
 		return true;
 	}
 
+	@Override
+	public void init() {}
+
 }

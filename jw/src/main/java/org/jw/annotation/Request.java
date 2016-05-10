@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.jw.constant.CharacterEncoding;
+import org.jw.constant.ContentType;
 import org.jw.constant.RequestMethod;
 
 /**
@@ -26,12 +28,12 @@ public @interface Request {
     RequestMethod method();
     
     /**
-     * 返回结果类型
+     * 返回结果  MIME 类型
      */
-    String contentType() default "application/json";
+    String contentType() default ContentType.APPLICATION_JSON;
     
     /**
      * 编码类型
      */
-    String characterEncoding() default "UTF-8";
+    String characterEncoding() default CharacterEncoding.UTF_8;
 }

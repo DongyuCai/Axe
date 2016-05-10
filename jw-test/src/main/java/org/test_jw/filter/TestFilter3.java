@@ -34,4 +34,10 @@ public class TestFilter3 implements Filter{
 		return true;
 	}
 
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -18,6 +18,11 @@ import org.jw.exception.RestException;
  */
 public interface Filter {
 	/**
+	 * 初始化
+	 */
+	public void init();
+	
+	/**
 	 * 层级 执行顺序从小到大
 	 */
 	public int setLevel();

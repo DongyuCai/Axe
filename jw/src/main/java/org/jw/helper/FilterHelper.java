@@ -18,8 +18,9 @@ public class FilterHelper {
     static {
         Set<Class<?>> filterClassSet = ClassHelper.getClassSetBySuper(Filter.class);
         for(Class<?> filterClass:filterClassSet){
-            Object obj = ReflectionUtil.newInstance(filterClass);
-            FILTER_LIST.add((Filter)obj);
+        	Filter filter = ReflectionUtil.newInstance(filterClass);
+        	filter.init();//初始化Filter
+            FILTER_LIST.add(filter);
         }
         FILTER_LIST.sort((f1,f2)->{if(((Filter)f1).setLevel() > ((Filter)f2).setLevel()) return 1;return -1;});
     }
