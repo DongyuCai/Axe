@@ -1,6 +1,7 @@
 package org.jw.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jw.bean.persistence.EntityFieldMethod;
+import org.jw.exception.RestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,11 +175,28 @@ public final class ReflectionUtil {
         Object result;
         method.setAccessible(true);
         try {
-            result = method.invoke(obj,args);
-        } catch (Exception e) {
-            LOGGER.error("invoke method failure",e);
-            throw new RuntimeException(e);
-        }
+			result = method.invoke(obj,args);
+		} catch (IllegalAccessException e) {
+			LOGGER.error("invoke method failure",e);
+			throw new RuntimeException(e);
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("invoke method failure",e);
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			LOGGER.error("invoke method failure",e);
+			Throwable cause = e.getCause();
+			if(cause != null){
+				if(cause instanceof RestException){
+					throw (RestException)e.getCause();
+				}else{
+					throw new RuntimeException(cause);
+				}
+			}else{
+				throw new RuntimeException(e);
+				
+			}
+		}
         return result;
     }
 
