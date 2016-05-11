@@ -138,7 +138,7 @@ public class DispatcherServlet extends HttpServlet{
     		response.setContentType("application/json");
     		response.setStatus(status);
         	PrintWriter writer = response.getWriter();
-        	writer.write(msg);
+        	writer.write("{\"message\":\"<span name='RestException'>" + msg + "</span>\",\"code\":\"SERVER_ERROR\"}");
         	writer.flush();
         	writer.close();
 		} catch (Exception e) {

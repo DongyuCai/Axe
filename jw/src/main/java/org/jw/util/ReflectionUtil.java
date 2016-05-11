@@ -174,11 +174,28 @@ public final class ReflectionUtil {
         Object result;
         method.setAccessible(true);
         try {
-            result = method.invoke(obj,args);
-        } catch (Exception e) {
-            LOGGER.error("invoke method failure",e);
-            throw new RuntimeException(e);
-        }
+			result = method.invoke(obj,args);
+		} catch (IllegalAccessException e) {
+			LOGGER.error("invoke method failure",e);
+			throw new RuntimeException(e);
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("invoke method failure",e);
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			LOGGER.error("invoke method failure",e);
+			Throwable cause = e.getCause();
+			if(cause != null){
+				if(cause instanceof RestException){
+					throw (RestException)e.getCause();
+				}else{
+					throw new RuntimeException(cause);
+				}
+			}else{
+				throw new RuntimeException(e);
+				
+			}
+		}
         return result;
     }
 
