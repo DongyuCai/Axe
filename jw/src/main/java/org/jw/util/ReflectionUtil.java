@@ -2,7 +2,6 @@ package org.jw.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +31,7 @@ public final class ReflectionUtil {
     }
     		
     public static List<Field> getDeclaredFieldsAll(Class<?> cls, Set<String> withoutFieldNameSet){
-    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<>():withoutFieldNameSet;
+    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<String>():withoutFieldNameSet;
     	Field[] fields = cls.getDeclaredFields();
     	List<Field> fieldList = new ArrayList<>();
     	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
@@ -59,7 +58,7 @@ public final class ReflectionUtil {
      * 子类中与父类同名的字段，取子类，舍父类
      */
     public static List<EntityFieldMethod> getGetMethodList(Class<?> cls, Set<String> withoutFieldNameSet){
-    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<>():withoutFieldNameSet;
+    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<String>():withoutFieldNameSet;
     	Field[] fields = cls.getDeclaredFields();
     	Map<String,Field> fieldMap = new HashMap<>();
     	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
@@ -80,7 +79,7 @@ public final class ReflectionUtil {
     		Field field = fieldMap.get(fieldName);
     		if(field == null) continue;
     		//#无参
-    		if(method.getParameterCount() > 0) continue;
+    		if(method.getParameterTypes().length > 0) continue;
     		//#排除的字段
     		if(withoutFieldNameSet.contains(fieldName)) continue;
     		
@@ -106,7 +105,7 @@ public final class ReflectionUtil {
      * 子类中与父类同名的字段，取子类，舍父类
      */
     public static List<EntityFieldMethod> getSetMethodList(Class<?> cls, Set<String> withoutFieldNameSet){
-    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<>():withoutFieldNameSet;
+    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<String>():withoutFieldNameSet;
     	Field[] fields = cls.getDeclaredFields();
     	Map<String,Field> fieldMap = new HashMap<>();
     	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
@@ -126,9 +125,9 @@ public final class ReflectionUtil {
     		Field field = fieldMap.get(fieldName);
     		if(field == null) continue;
 			//#带1个参数，类型与Field一至
-    		Parameter[] parameterAry = method.getParameters();
+    		Class<?>[] parameterAry = method.getParameterTypes();
     		if(parameterAry == null || parameterAry.length != 1) continue;
-    		if(!compareType(parameterAry[0].getType(), field.getType())) continue;
+    		if(!compareType(parameterAry[0], field.getType())) continue;
     		//#排除的字段
     		if(withoutFieldNameSet.contains(fieldName)) continue;
     		

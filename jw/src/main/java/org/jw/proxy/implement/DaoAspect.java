@@ -1,7 +1,6 @@
 package org.jw.proxy.implement;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -141,34 +140,34 @@ public class DaoAspect implements Proxy{
 			}
 		}else if(BaseRepository.class.isAssignableFrom(daoClass) && !ReflectionUtil.compareType(BaseRepository.class,daoClass)){
 			String methodName = targetMethod.getName();
-			Parameter[] paramAry = targetMethod.getParameters();
+			Class<?>[] paramAry = targetMethod.getParameterTypes();
 			if("insertEntity".equals(methodName)){
 				//# Repository.insertEntity(Object entity);
-				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
 					result = DataBaseHelper.insertEntity(entity);
 				}
 			}else if("deleteEntity".equals(methodName)){
 				//# Repository.deleteEntity(Object entity);
-				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
 					result = DataBaseHelper.deleteEntity(entity);
 				}
 			}else if("updateEntity".equals(methodName)){
 				//# Repository.updateEntity(Object entity);
-				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
 					result = DataBaseHelper.updateEntity(entity);
 				}
 			}else if("getEntity".equals(methodName)){
 				//# Repository.getEntity(T entity);
-				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
 					result = DataBaseHelper.getEntity(entity);
 				}
 			}else if("saveEntity".equals(methodName)){
 				//# Repository.saveEntity(Object entity);
-				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0].getType(),Object.class)){
+				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
 					result = DataBaseHelper.insertOnDuplicateKeyEntity(entity);
 				}

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.jw.annotation.persistence.Id;
 import org.jw.annotation.persistence.Table;
@@ -161,9 +160,13 @@ public class SqlHelper {
         StringBuilder where = new StringBuilder(" WHERE 1=1 ");
         //#占位符的值
         //#先过滤出带有@Id的EntityFieldMethod
-        List<EntityFieldMethod> idFieldList = entityFieldMethodList.stream().filter(
-        		entityFieldMethod->entityFieldMethod.getField().isAnnotationPresent(Id.class)
-        		).collect(Collectors.toList());
+        List<EntityFieldMethod> idFieldList = new ArrayList<>();
+        for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
+        	if(entityFieldMethod.getField().isAnnotationPresent(Id.class)){
+        		idFieldList.add(entityFieldMethod);
+        	}
+        }
+        
         Object[] params = new Object[idFieldList.size()];
         for (int i=0;i<idFieldList.size();i++) {
         	EntityFieldMethod entityFieldMethod = idFieldList.get(i);
@@ -190,10 +193,12 @@ public class SqlHelper {
         StringBuilder where = new StringBuilder(" WHERE 1=1 ");
         //#占位符的值
         //#先过滤出带有@Id的EntityFieldMethod
-        List<EntityFieldMethod> idFieldList = entityFieldMethodList.stream().filter(
-        		entityFieldMethod->entityFieldMethod.getField().isAnnotationPresent(Id.class)
-        		).collect(Collectors.toList());
-
+        List<EntityFieldMethod> idFieldList = new ArrayList<>();
+        for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
+        	if(entityFieldMethod.getField().isAnnotationPresent(Id.class)){
+        		idFieldList.add(entityFieldMethod);
+        	}
+        }
         //注意，如果Entity中没有标注@Id的字段，就不能匹配了
         if(CollectionUtil.isEmpty(idFieldList)){
         	throw new RuntimeException("select entity failure!cannot find any field with @Id in "+entity.getClass());

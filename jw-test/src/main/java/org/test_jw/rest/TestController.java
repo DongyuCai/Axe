@@ -84,7 +84,7 @@ public class TestController {
     
 
     @Request(value="/post100/4{id}_{name}",method=RequestMethod.POST)
-    public Data postPathParam2(Param param){
+    public Data postPathParam2(@RequestParam("id")String id,Param param){
     	System.out.println("postPathParam2");
     	Data data = analysisParam(param);
         return data;

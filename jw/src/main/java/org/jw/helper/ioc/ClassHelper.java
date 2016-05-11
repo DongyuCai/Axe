@@ -3,7 +3,6 @@ package org.jw.helper.ioc;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jw.annotation.ioc.Component;
 import org.jw.annotation.ioc.Controller;
@@ -48,7 +47,12 @@ public final class ClassHelper {
     }
 
     public static Set<Class<?>> getComponentClassSet(){
-    	Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> cls.isAnnotationPresent(Component.class)).collect(Collectors.toSet());
+    	Set<Class<?>> classSet = new HashSet<>();
+    	for(Class<?> cls:CLASS_SET){
+    		if(cls.isAnnotationPresent(Component.class)){
+    			classSet.add(cls);
+    		}
+    	}
         return classSet;
     }
 
@@ -57,7 +61,12 @@ public final class ClassHelper {
      * TODO:待优化，不用重复获取
      */
     public static Set<Class<?>> getServiceClassSet(){
-        Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> cls.isAnnotationPresent(Service.class)).collect(Collectors.toSet());
+    	Set<Class<?>> classSet = new HashSet<>();
+    	for(Class<?> cls:CLASS_SET){
+    		if(cls.isAnnotationPresent(Service.class)){
+    			classSet.add(cls);
+    		}
+    	}
         return classSet;
     }
 
@@ -66,7 +75,12 @@ public final class ClassHelper {
      * TODO:待优化，不用重复获取
      */
     public static Set<Class<?>> getControllerClassSet(){
-        Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> cls.isAnnotationPresent(Controller.class)).collect(Collectors.toSet());
+    	Set<Class<?>> classSet = new HashSet<>();
+    	for(Class<?> cls:CLASS_SET){
+    		if(cls.isAnnotationPresent(Controller.class)){
+    			classSet.add(cls);
+    		}
+    	}
         return classSet;
     }
     
@@ -86,7 +100,12 @@ public final class ClassHelper {
      * 获取某父类（或接口）的所有子类（或实现类）
      */
     public static Set<Class<?>> getClassSetBySuper(Class<?> superClass){
-        Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> superClass.isAssignableFrom(cls) && !superClass.equals(cls)).collect(Collectors.toSet());
+    	Set<Class<?>> classSet = new HashSet<>();
+    	for(Class<?> cls:CLASS_SET){
+    		if(superClass.isAssignableFrom(cls) && !superClass.equals(cls)){
+    			classSet.add(cls);
+    		}
+    	}
         return classSet;
     }
 
@@ -94,7 +113,12 @@ public final class ClassHelper {
      * 获取带有某注解的所有类
      */
     public static Set<Class<?>> getClassSetByAnnotation(Class<? extends Annotation> annotationClass){
-        Set<Class<?>> classSet = CLASS_SET.stream().filter(cls -> cls.isAnnotationPresent(annotationClass)).collect(Collectors.toSet());
+    	Set<Class<?>> classSet = new HashSet<>();
+    	for(Class<?> cls:CLASS_SET){
+    		if(cls.isAnnotationPresent(annotationClass)){
+    			classSet.add(cls);
+    		}
+    	}
         return classSet;
     }
 }

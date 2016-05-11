@@ -1,8 +1,8 @@
 package org.jw.util;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -212,36 +212,50 @@ public final class RequestUtil {
 	 * 基本类型指： int、short、long、double、float、boolean、char等
 	 */
 	public static void checkActionMethod(Method actionMethod)throws Exception{
-    	Parameter[] parameterAry = actionMethod.getParameters();
-    	parameterAry = parameterAry == null?new Parameter[0]:parameterAry;
-    	for(Parameter parameter:parameterAry){
-    		Class<?> parameterType = parameter.getType();
-    		Type parameterizedType = parameter.getParameterizedType();
+    	Type[] parameterTypeAry = actionMethod.getGenericParameterTypes();
+    	Annotation[][] parameterAnnotations = actionMethod.getParameterAnnotations();
+    	
+    	parameterTypeAry = parameterTypeAry == null?new Type[0]:parameterTypeAry;
+    	for(int i=0;i<parameterTypeAry.length;i++){
+    		Type parameterType = parameterTypeAry[i];
+    		Annotation[] parameterAnnotationAry = parameterAnnotations[i];
+    		
     		//所有的方法参数，都不准是语法糖小写，如int，为了默认值null
-			if(parameterType.isPrimitive()){
-				throw new Exception(actionMethod.toGenericString()+"#"+parameter+"# is a primitive");
+			if(parameterType instanceof Class && ((Class<?>)parameterType).isPrimitive()){
+				throw new Exception(actionMethod.toGenericString()+"#"+parameterType+"# is a primitive");
 			}
 			//如果标注了@RequestParam，需要检测是否是自定义Bean类型
-			if(parameter.isAnnotationPresent(RequestParam.class)){
-				if(parameterizedType instanceof ParameterizedType){
-					Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
+			boolean isRequestParam = false;
+			for(Annotation anno:parameterAnnotationAry){
+				if(anno instanceof RequestParam){
+					isRequestParam = true;
+					break;
+				}
+			}
+			
+			if(isRequestParam){
+				if(parameterType instanceof ParameterizedType){
+					Type[] actualTypes = ((ParameterizedType) parameterType).getActualTypeArguments();
 					for(Type actualType : actualTypes){
 						if(!checkActionMethodParamType(actualType)){
-							throw new Exception(actionMethod.toGenericString()+"#"+parameter+"# is a customer pojo type");
+							throw new Exception(actionMethod.toGenericString()+"#"+parameterType+"# is a customer pojo type");
 						}
 						//额外判断，不许是List
 						if(actualType instanceof Class && ReflectionUtil.compareType(List.class, (Class<?>)actualType)){
-							throw new Exception(actionMethod.toGenericString()+"#"+parameter+"# is List<List> type");
+							throw new Exception(actionMethod.toGenericString()+"#"+parameterType+"# is List<List> type");
 						}
 					}
-				}else if(parameterType.isArray()){
-					Class<?> componentType = parameterType.getComponentType();
-					if(!checkActionMethodParamType(componentType)){
-						throw new Exception(actionMethod.toGenericString()+"#"+parameter+"# is a customer pojo type");
-					}
-				}else if(parameterizedType instanceof Class){
-					if(!checkActionMethodParamType(parameterizedType)){
-						throw new Exception(actionMethod.toGenericString()+"#"+parameter+"# is a customer pojo type");
+				}else if(parameterType instanceof Class){
+					Class<?> parameterClassType  = (Class<?>)parameterType;
+					if(parameterClassType.isArray()){
+						Class<?> componentType = parameterClassType.getComponentType();
+						if(!checkActionMethodParamType(componentType)){
+							throw new Exception(actionMethod.toGenericString()+"#"+parameterClassType+"# is a customer pojo type");
+						}
+					}else{
+						if(!checkActionMethodParamType(parameterClassType)){
+							throw new Exception(actionMethod.toGenericString()+"#"+parameterClassType+"# is a customer pojo type");
+						}
 					}
 				}
 			}
@@ -288,13 +302,13 @@ public final class RequestUtil {
 		return true;
 	}
 	
-    public static Object getRequestParam(Param param,String fieldName,Class<?> parameterType, Type parameterizedType){
+    public static Object getRequestParam(Param param,String fieldName,Type parameterType){
 		Object parameterValue = null;
 		try {
-			if(parameterizedType instanceof ParameterizedType){
+			if(parameterType instanceof ParameterizedType){
 				//* 泛型，只支持List这样，但是不支持元素还是泛型了，比如List<Map<String,Object>这样就不支持
-				Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
-				if(ReflectionUtil.compareType(List.class, (Class<?>)((ParameterizedType) parameterizedType).getRawType())){
+				Type[] actualTypes = ((ParameterizedType) parameterType).getActualTypeArguments();
+				if(ReflectionUtil.compareType(List.class, (Class<?>)((ParameterizedType) parameterType).getRawType())){
 					if(actualTypes.length > 0){
 						Type listParamType = actualTypes[0];
 						if(listParamType instanceof WildcardType){
@@ -380,165 +394,169 @@ public final class RequestUtil {
 						}
 					}
 				}
-			} else if(parameterType.isArray()){
-				List<FormParam> formParamList = param.getFieldMap().get(fieldName);
-				if(ReflectionUtil.compareType( parameterType.getComponentType(), Object.class)){
-					//Object
-					List<?> paramList = RequestUtil.getParamList(fieldName, param);
-					parameterValue = CollectionUtil.isNotEmpty(paramList)?paramList.toArray():null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), String.class)){
-					//String[]
-					List<String> paramList = RequestUtil.getFormParamList(fieldName, param.getFieldMap());
-					if(CollectionUtil.isNotEmpty(paramList)){
-						String[] paramAry = new String[paramList.size()];
-						parameterValue = paramList.toArray(paramAry);
-					}
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), FileParam.class)){
-					//FileParam[]
-					List<FileParam> paramList = RequestUtil.getFileParamList(fieldName, param.getFileMap());
-					if(CollectionUtil.isNotEmpty(paramList)){
-						FileParam[] paramAry = new FileParam[paramList.size()];
-						parameterValue = paramList.toArray(paramAry);
-					}
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Byte.class)){
-					//Byte[]
-					Byte[] list = new Byte[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Byte value =  CastUtil.castByte(formParamList.get(i).getFieldValue(),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Boolean.class)){
-					//Boolean[]
-					Boolean[] list = new Boolean[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Boolean value =  CastUtil.castBoolean(formParamList.get(i),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Short.class)){
-					//Short[]
-					Short[] list = new Short[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Short value =  CastUtil.castShort(formParamList.get(i).getFieldValue(),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Character.class)){
-					//Character[]
-					Character[] list = new Character[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Character value =  CastUtil.castCharacter(formParamList.get(i).getFieldValue());
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Integer.class)){
-					//Integer[]
-					Integer[] list = new Integer[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Integer value =  CastUtil.castInteger(formParamList.get(i).getFieldValue(),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Long.class)){
-					//Long[]
-					Long[] list = new Long[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Long value =  CastUtil.castLong(formParamList.get(i).getFieldValue(),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Float.class)){
-					//Float[]
-					Float[] list = new Float[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Float value =  CastUtil.castFloat(formParamList.get(i).getFieldValue(),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}else if(ReflectionUtil.compareType(parameterType.getComponentType(), Double.class)){
-					//Double[]
-					Double[] list = new Double[formParamList.size()];
-					for(int i=0;i<formParamList.size();i++){
-						Double value =  CastUtil.castDouble(formParamList.get(i).getFieldValue(),null);
-						list[i] = value;
-					}
-					parameterValue = list.length>0?list:null;
-				}
-			}else{
-				List<FormParam> formParamList = param.getFieldMap().get(fieldName);
-				if(ReflectionUtil.compareType(List.class, parameterType)){
-					//List
-					parameterValue = RequestUtil.getParamList(fieldName, param);
-				}else if(ReflectionUtil.compareType(Object.class, parameterType)){
-					//Object
-					parameterValue = RequestUtil.getParamList(fieldName, param);
-				}else if(ReflectionUtil.compareType(String.class, parameterType)){
-					//String
-					Map<String,List<FormParam>> fieldMap = param.getFieldMap();
-					if(fieldMap.containsKey(fieldName)){
-						StringBuffer buffer = new StringBuffer("");
-						for(int j=0;j<formParamList.size();j++){
-							String value =  CastUtil.castString(formParamList.get(j).getFieldValue(), null);
-							if(value != null){
-								buffer.append(value).append(",");
-							}
+			} else if(parameterType instanceof Class){
+				Class<?> parameterClass = (Class<?>)parameterType;
+				if(parameterClass.isArray()){
+					List<FormParam> formParamList = param.getFieldMap().get(fieldName);
+					if(ReflectionUtil.compareType( parameterClass.getComponentType(), Object.class)){
+						//Object
+						List<?> paramList = RequestUtil.getParamList(fieldName, param);
+						parameterValue = CollectionUtil.isNotEmpty(paramList)?paramList.toArray():null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), String.class)){
+						//String[]
+						List<String> paramList = RequestUtil.getFormParamList(fieldName, param.getFieldMap());
+						if(CollectionUtil.isNotEmpty(paramList)){
+							String[] paramAry = new String[paramList.size()];
+							parameterValue = paramList.toArray(paramAry);
 						}
-						parameterValue = buffer.length()>0?buffer.substring(0, buffer.length()-1):null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), FileParam.class)){
+						//FileParam[]
+						List<FileParam> paramList = RequestUtil.getFileParamList(fieldName, param.getFileMap());
+						if(CollectionUtil.isNotEmpty(paramList)){
+							FileParam[] paramAry = new FileParam[paramList.size()];
+							parameterValue = paramList.toArray(paramAry);
+						}
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Byte.class)){
+						//Byte[]
+						Byte[] list = new Byte[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Byte value =  CastUtil.castByte(formParamList.get(i).getFieldValue(),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Boolean.class)){
+						//Boolean[]
+						Boolean[] list = new Boolean[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Boolean value =  CastUtil.castBoolean(formParamList.get(i),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Short.class)){
+						//Short[]
+						Short[] list = new Short[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Short value =  CastUtil.castShort(formParamList.get(i).getFieldValue(),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Character.class)){
+						//Character[]
+						Character[] list = new Character[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Character value =  CastUtil.castCharacter(formParamList.get(i).getFieldValue());
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Integer.class)){
+						//Integer[]
+						Integer[] list = new Integer[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Integer value =  CastUtil.castInteger(formParamList.get(i).getFieldValue(),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Long.class)){
+						//Long[]
+						Long[] list = new Long[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Long value =  CastUtil.castLong(formParamList.get(i).getFieldValue(),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Float.class)){
+						//Float[]
+						Float[] list = new Float[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Float value =  CastUtil.castFloat(formParamList.get(i).getFieldValue(),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
+					}else if(ReflectionUtil.compareType(parameterClass.getComponentType(), Double.class)){
+						//Double[]
+						Double[] list = new Double[formParamList.size()];
+						for(int i=0;i<formParamList.size();i++){
+							Double value =  CastUtil.castDouble(formParamList.get(i).getFieldValue(),null);
+							list[i] = value;
+						}
+						parameterValue = list.length>0?list:null;
 					}
-				}else if(ReflectionUtil.compareType(parameterType, FileParam.class)){
-					//FileParam[]
-					List<FileParam> paramList = RequestUtil.getFileParamList(fieldName, param.getFileMap());
-					parameterValue = CollectionUtil.isNotEmpty(paramList)?paramList.get(paramList.size()-1):null;
-				}else if(ReflectionUtil.compareType(parameterType, Byte.class)){
-					//Byte
-					for(int i=0;i<formParamList.size();i++){
-						Byte value =  CastUtil.castByte(formParamList.get(i).getFieldValue(),null);
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Boolean.class)){
-					//Boolean
-					for(int i=0;i<formParamList.size();i++){
-						Boolean value =  CastUtil.castBoolean(formParamList.get(i),null);
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Short.class)){
-					//Short
-					for(int i=0;i<formParamList.size();i++){
-						Short value =  CastUtil.castShort(formParamList.get(i).getFieldValue(),null);
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Character.class)){
-					//Character
-					for(int i=0;i<formParamList.size();i++){
-						Character value =  CastUtil.castCharacter(formParamList.get(i).getFieldValue());
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Integer.class)){
-					//Integer
-					for(int i=0;i<formParamList.size();i++){
-						Integer value =  CastUtil.castInteger(formParamList.get(i).getFieldValue(),null);
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Long.class)){
-					//Long
-					for(int i=0;i<formParamList.size();i++){
-						Long value =  CastUtil.castLong(formParamList.get(i).getFieldValue(),null);
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Float.class)){
-					//Float
-					for(int i=0;i<formParamList.size();i++){
-						Float value =  CastUtil.castFloat(formParamList.get(i).getFieldValue(),null);
-						parameterValue = value;
-					}
-				}else if(ReflectionUtil.compareType(parameterType, Double.class)){
-					//Double
-					for(int i=0;i<formParamList.size();i++){
-						Double value =  CastUtil.castDouble(formParamList.get(i).getFieldValue(),null);
-						parameterValue = value;
+				}else{
+					List<FormParam> formParamList = param.getFieldMap().get(fieldName);
+					if(ReflectionUtil.compareType(List.class, parameterClass)){
+						//List
+						parameterValue = RequestUtil.getParamList(fieldName, param);
+					}else if(ReflectionUtil.compareType(Object.class, parameterClass)){
+						//Object
+						parameterValue = RequestUtil.getParamList(fieldName, param);
+					}else if(ReflectionUtil.compareType(String.class, parameterClass)){
+						//String
+						Map<String,List<FormParam>> fieldMap = param.getFieldMap();
+						if(fieldMap.containsKey(fieldName)){
+							StringBuffer buffer = new StringBuffer("");
+							for(int j=0;j<formParamList.size();j++){
+								String value =  CastUtil.castString(formParamList.get(j).getFieldValue(), null);
+								if(value != null){
+									buffer.append(value).append(",");
+								}
+							}
+							parameterValue = buffer.length()>0?buffer.substring(0, buffer.length()-1):null;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, FileParam.class)){
+						//FileParam[]
+						List<FileParam> paramList = RequestUtil.getFileParamList(fieldName, param.getFileMap());
+						parameterValue = CollectionUtil.isNotEmpty(paramList)?paramList.get(paramList.size()-1):null;
+					}else if(ReflectionUtil.compareType(parameterClass, Byte.class)){
+						//Byte
+						for(int i=0;i<formParamList.size();i++){
+							Byte value =  CastUtil.castByte(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Boolean.class)){
+						//Boolean
+						for(int i=0;i<formParamList.size();i++){
+							Boolean value =  CastUtil.castBoolean(formParamList.get(i),null);
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Short.class)){
+						//Short
+						for(int i=0;i<formParamList.size();i++){
+							Short value =  CastUtil.castShort(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Character.class)){
+						//Character
+						for(int i=0;i<formParamList.size();i++){
+							Character value =  CastUtil.castCharacter(formParamList.get(i).getFieldValue());
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Integer.class)){
+						//Integer
+						for(int i=0;i<formParamList.size();i++){
+							Integer value =  CastUtil.castInteger(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Long.class)){
+						//Long
+						for(int i=0;i<formParamList.size();i++){
+							Long value =  CastUtil.castLong(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Float.class)){
+						//Float
+						for(int i=0;i<formParamList.size();i++){
+							Float value =  CastUtil.castFloat(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
+					}else if(ReflectionUtil.compareType(parameterClass, Double.class)){
+						//Double
+						for(int i=0;i<formParamList.size();i++){
+							Double value =  CastUtil.castDouble(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
 					}
 				}
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

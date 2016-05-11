@@ -1,13 +1,12 @@
 package test;
 
-import java.util.ArrayList;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.jw.bean.mvc.FileParam;
-import org.jw.bean.persistence.Page;
-import org.jw.bean.persistence.PageConfig;
-import org.jw.util.JsonUtil;
-import org.test_jw.bean.Account;
+import org.jw.bean.mvc.Param;
+import org.test_jw.rest.TestController;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -16,7 +15,18 @@ public class Test{
 	
 
     public static void main(String[] args) {
-    	List<Account> list = new ArrayList<Account>();
+    	
+    	try {
+			Method method = TestController.class.getDeclaredMethod("postPathParam2",new Class<?>[]{String.class,Param.class});
+			Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+			
+			System.out.println(parameterAnnotations);
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+    	
+    	/*List<Account> list = new ArrayList<Account>();
     	Account a1 = new Account();
     	a1.setLoginName("login-1");
     	list.add(a1);
@@ -25,7 +35,7 @@ public class Test{
     	list.add(a2);
     	
     	Page<Account> page = new Page<>(list, new PageConfig(1, 2), 12, 7);
-    	System.out.println(JsonUtil.toJson(page));
+    	System.out.println(JsonUtil.toJson(page));*/
     	
 //    	System.out.println(str.substring(1));
 //    	String sql = "select t1.* from Account t1,GroupUser t2 where t2.id in(select id from Account) and t1.id = t2.user_id";

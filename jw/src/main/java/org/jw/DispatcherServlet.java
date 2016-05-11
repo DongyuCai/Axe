@@ -2,8 +2,9 @@ package org.jw;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,46 +150,59 @@ public class DispatcherServlet extends HttpServlet{
 
     private Object invokeActionMethod(Object controllerBean,Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
     	Object result;
-    	Parameter[] parameterAry = actionMethod.getParameters();
-    	parameterAry = parameterAry == null?new Parameter[0]:parameterAry;
-    	Class<?>[] parameterTypes = actionMethod.getParameterTypes();
+    	Type[] parameterTypes = actionMethod.getGenericParameterTypes();
+    	Annotation[][] parameterAnnotations = actionMethod.getParameterAnnotations();
     	parameterTypes = parameterTypes == null?new Class<?>[0]:parameterTypes;
     	//按顺序来，塞值
     	List<Object> parameterValueList = new ArrayList<>();
-    	for(int i=0;i<parameterAry.length && parameterAry.length == parameterTypes.length;i++){
+    	for(int i=0;i<parameterTypes.length;i++){
     		Object parameterValue = null;
     		do{
-    			Parameter parameter = parameterAry[i];
-    			Class<?> parameterType = parameterTypes[i];
-    			Type parameterizedType = parameter.getParameterizedType();
+    			Type parameterType = parameterTypes[i];
+    			Annotation[] parameterAnnotationAry = parameterAnnotations[i];
+    			
+    			RequestParam requestParam = null;
+    			for(Annotation anno:parameterAnnotationAry){
+    				if(anno instanceof RequestParam){
+    					requestParam = (RequestParam)anno;
+    					break;
+    				}
+    			}
     			
     			//## 是否@RequestParam标注的
-    			if(parameter.isAnnotationPresent(RequestParam.class)){
-    				String fieldName = parameter.getAnnotation(RequestParam.class).value();
+    			if(requestParam != null){
+    				String fieldName = requestParam.value();
 					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
 					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
-					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType,parameterizedType);
+					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType);
     				break;
     			}else{
-    				//## 不含注解的
-    				//* 如果是HttpServletRequest
-    				if(ReflectionUtil.compareType(HttpServletRequest.class, parameterType)){
-    					parameterValue = request;
-    					break;
+    				Class<?> parameterClass = null; 
+    				if(parameterType instanceof Class){
+    					parameterClass = (Class<?>)parameterType;
+    				}else if(parameterType instanceof ParameterizedType){
+    					parameterClass = (Class<?>)((ParameterizedType) parameterType).getRawType();
     				}
-    				if(ReflectionUtil.compareType(HttpServletResponse.class, parameterType)){
-    					parameterValue = response;
-    					break;
-    				}
-    				//* 如果是Param
-    				if(ReflectionUtil.compareType(Param.class,parameterType)){
-    					parameterValue = param;
-    					break;
-    				}
-    				//* 如果是Map<String,Object> 
-    				if(ReflectionUtil.compareType(Map.class, parameterType)){
-						parameterValue = param.getBodyMap();
-    					/*if(parameterizedType instanceof ParameterizedType){
+    				if(parameterClass != null){
+    					//## 不含注解的
+    					//* 如果是HttpServletRequest
+    					if(ReflectionUtil.compareType(HttpServletRequest.class, parameterClass)){
+    						parameterValue = request;
+    						break;
+    					}
+    					if(ReflectionUtil.compareType(HttpServletResponse.class, parameterClass)){
+    						parameterValue = response;
+    						break;
+    					}
+    					//* 如果是Param
+    					if(ReflectionUtil.compareType(Param.class,parameterClass)){
+    						parameterValue = param;
+    						break;
+    					}
+    					//* 如果是Map<String,Object> 
+    					if(ReflectionUtil.compareType(Map.class, parameterClass)){
+    						parameterValue = param.getBodyMap();
+    						/*if(parameterizedType instanceof ParameterizedType){
     						Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
     						if(actualTypes.length > 1){
     							Type mapKeyType = actualTypes[0];
@@ -203,6 +217,7 @@ public class DispatcherServlet extends HttpServlet{
 							//Map
 							parameterValue = param.getBodyMap();
 						}*/
+    					}
     				}
     			}
     			
