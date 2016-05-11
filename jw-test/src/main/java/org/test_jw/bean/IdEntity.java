@@ -5,7 +5,7 @@
  *******************************************************************************/
 package org.test_jw.bean;
 
-import org.jw.annotation.Id;
+import org.jw.annotation.persistence.Id;
 
 /**
  * 统一定义id的entity基类.

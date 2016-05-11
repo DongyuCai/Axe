@@ -4,9 +4,9 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.jw.annotation.Controller;
-import org.jw.annotation.FilterFuckOff;
-import org.jw.annotation.Request;
+import org.jw.annotation.ioc.Controller;
+import org.jw.annotation.mvc.FilterFuckOff;
+import org.jw.annotation.mvc.Request;
 import org.jw.constant.RequestMethod;
 
 @FilterFuckOff

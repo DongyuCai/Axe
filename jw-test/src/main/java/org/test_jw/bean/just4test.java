@@ -1,6 +1,6 @@
 package org.test_jw.bean;
 
-import org.jw.annotation.Table;
+import org.jw.annotation.persistence.Table;
 
 /**
  * Created by CaiDongYu on 2016/4/19.

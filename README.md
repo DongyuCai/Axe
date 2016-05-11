@@ -37,6 +37,10 @@
 1.完善Filter
 2.CreateTableUtil
 3.框架管理界面
+4.增加@RequestParam的default值
+5.修改url path中非变量的部分，不支持"-"符号
+6.增加Component注解
+7.修改bug，@Autowired成员变量不支持继承
 
 ----------
 

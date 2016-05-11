@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jw.bean.EntityFieldMethod;
+import org.jw.bean.persistence.EntityFieldMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +23,33 @@ public final class ReflectionUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
     
+    /**
+     * 获取Class中的成员变量，如果有父类，一并获取
+     * 重写的变量只取子类的
+     */
+    public static List<Field> getDeclaredFieldsAll(Class<?> cls){
+    	return getDeclaredFieldsAll(cls,null);
+    }
+    		
+    public static List<Field> getDeclaredFieldsAll(Class<?> cls, Set<String> withoutFieldNameSet){
+    	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<>():withoutFieldNameSet;
+    	Field[] fields = cls.getDeclaredFields();
+    	List<Field> fieldList = new ArrayList<>();
+    	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
+    	for(Field field:fields){
+    		if(withoutFieldNameSet.contains(field.getName())) continue;
+    		
+    		fieldList.add(field);
+    		withoutFieldNameSet.add(field.getName());
+    	}
+    	Class<?> superClass = cls.getSuperclass();
+    	if(superClass != null && !superClass.equals(Object.class)){
+    		//#迭代父类
+    		fieldList.addAll(getDeclaredFieldsAll(superClass,withoutFieldNameSet));
+    	}
+    	
+    	return fieldList;
+    }
     
     public static List<EntityFieldMethod> getGetMethodList(Class<?> cls){
     	return getGetMethodList(cls, null);

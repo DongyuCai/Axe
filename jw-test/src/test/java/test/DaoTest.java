@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.jw.HelperLoader;
-import org.jw.bean.Page;
-import org.jw.helper.BeanHelper;
+import org.jw.bean.persistence.Page;
+import org.jw.helper.ioc.BeanHelper;
 import org.jw.util.JsonUtil;
 import org.jw.util.StringUtil;
 import org.test_jw.bean.Export;

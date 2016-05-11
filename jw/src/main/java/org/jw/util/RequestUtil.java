@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jw.annotation.RequestParam;
-import org.jw.bean.FileParam;
-import org.jw.bean.FormParam;
-import org.jw.bean.Param;
+import org.jw.annotation.mvc.RequestParam;
+import org.jw.bean.mvc.FileParam;
+import org.jw.bean.mvc.FormParam;
+import org.jw.bean.mvc.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +34,7 @@ public final class RequestUtil {
 	/**
 	 * 允许接受的字符串种类
 	 * 字母、数字、下划线、$
+	 * TODO: 多了个 \\- 暂时不知道有什么副作用
 	 */
 	private static final String REG_WORD = "A-Za-z0-9_\\$";
 	
@@ -45,7 +46,7 @@ public final class RequestUtil {
 	 */
 	public static boolean checkMappingPath(String path){
 		do{
-			Pattern reg = Pattern.compile("^["+REG_WORD+"\\{\\}/]*$");
+			Pattern reg = Pattern.compile("^["+REG_WORD+"\\{\\}/\\-]*$");
 			Matcher matcher = reg.matcher(path);
 			if(!matcher.find()) return false;
 			

@@ -1,7 +1,7 @@
 package org.test_jw.service;
 
-import org.jw.annotation.Autowired;
-import org.jw.annotation.Service;
+import org.jw.annotation.ioc.Autowired;
+import org.jw.annotation.ioc.Service;
 import org.test_jw.bean.just4test;
 import org.test_jw.dao.TestDao;
 

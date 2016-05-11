@@ -3,9 +3,9 @@ package test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jw.bean.FileParam;
-import org.jw.bean.Page;
-import org.jw.bean.PageConfig;
+import org.jw.bean.mvc.FileParam;
+import org.jw.bean.persistence.Page;
+import org.jw.bean.persistence.PageConfig;
 import org.jw.util.JsonUtil;
 import org.test_jw.bean.Account;
 

@@ -5,10 +5,10 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jw.bean.Handler;
-import org.jw.bean.Param;
+import org.jw.bean.mvc.Handler;
+import org.jw.bean.mvc.Param;
 import org.jw.exception.RestException;
-import org.jw.interface_.Filter;
+import org.jw.interface_.mvc.Filter;
 
 public class TestFilter1 implements Filter{
 

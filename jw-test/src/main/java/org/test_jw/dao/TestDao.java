@@ -2,11 +2,11 @@ package org.test_jw.dao;
 
 import java.util.List;
 
-import org.jw.annotation.Dao;
-import org.jw.annotation.Sql;
-import org.jw.bean.Page;
-import org.jw.bean.PageConfig;
-import org.jw.interface_.BaseRepository;
+import org.jw.annotation.persistence.Dao;
+import org.jw.annotation.persistence.Sql;
+import org.jw.bean.persistence.Page;
+import org.jw.bean.persistence.PageConfig;
+import org.jw.interface_.persistence.BaseRepository;
 import org.test_jw.bean.Export;
 import org.test_jw.bean.just4test;
 

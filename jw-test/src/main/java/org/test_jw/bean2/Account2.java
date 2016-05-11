@@ -2,7 +2,7 @@ package org.test_jw.bean2;
 
 import java.util.Date;
 
-import org.jw.annotation.Table;
+import org.jw.annotation.persistence.Table;
 
 @Table("iot_user_account")
 public class Account2{

@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.jw.annotation.Dao;
-import org.jw.annotation.Sql;
+import org.jw.annotation.persistence.Dao;
+import org.jw.annotation.persistence.Sql;
 import org.test_jw.bean.Account;
 
 @Dao

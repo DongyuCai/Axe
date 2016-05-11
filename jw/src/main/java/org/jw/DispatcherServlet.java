@@ -18,18 +18,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jw.annotation.RequestParam;
-import org.jw.bean.Data;
-import org.jw.bean.Handler;
-import org.jw.bean.Param;
-import org.jw.bean.View;
+import org.jw.annotation.mvc.RequestParam;
+import org.jw.bean.mvc.Data;
+import org.jw.bean.mvc.Handler;
+import org.jw.bean.mvc.Param;
+import org.jw.bean.mvc.View;
 import org.jw.exception.RestException;
-import org.jw.helper.AjaxRequestHelper;
-import org.jw.helper.BeanHelper;
-import org.jw.helper.ConfigHelper;
-import org.jw.helper.ControllerHelper;
-import org.jw.helper.FormRequestHelper;
-import org.jw.interface_.Filter;
+import org.jw.helper.base.ConfigHelper;
+import org.jw.helper.ioc.BeanHelper;
+import org.jw.helper.mvc.AjaxRequestHelper;
+import org.jw.helper.mvc.ControllerHelper;
+import org.jw.helper.mvc.FormRequestHelper;
+import org.jw.interface_.mvc.Filter;
 import org.jw.util.JsonUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.RequestUtil;
@@ -126,6 +126,7 @@ public class DispatcherServlet extends HttpServlet{
 		} catch (RestException e){
 			writeBackToClient(e.getStatus(), e.getMessage(), response);
 		} catch (Exception e) {
+			LOGGER.error("server error",e);
 			//500
 			writeBackToClient(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response);
 		}

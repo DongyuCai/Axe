@@ -2,16 +2,16 @@ package org.jw;
 
 import javax.servlet.ServletContext;
 
-import org.jw.annotation.Dao;
-import org.jw.helper.AopHelper;
-import org.jw.helper.BeanHelper;
-import org.jw.helper.ClassHelper;
-import org.jw.helper.ControllerHelper;
-import org.jw.helper.DataBaseHelper;
-import org.jw.helper.FilterHelper;
-import org.jw.helper.FormRequestHelper;
-import org.jw.helper.IocHelper;
-import org.jw.helper.TableHelper;
+import org.jw.annotation.persistence.Dao;
+import org.jw.helper.aop.AopHelper;
+import org.jw.helper.ioc.BeanHelper;
+import org.jw.helper.ioc.ClassHelper;
+import org.jw.helper.ioc.IocHelper;
+import org.jw.helper.mvc.ControllerHelper;
+import org.jw.helper.mvc.FilterHelper;
+import org.jw.helper.mvc.FormRequestHelper;
+import org.jw.helper.persistence.DataBaseHelper;
+import org.jw.helper.persistence.TableHelper;
 import org.jw.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
