@@ -1,4 +1,5 @@
 分支版本 0.1.7
+版本号含义: 稳定版本大功能.小版本bug和小功能.jdk版本
 需要 jdk 版本 1.7
 ----------
 
@@ -38,9 +39,6 @@
 2.CreateTableUtil
 3.框架管理界面
 4.增加@RequestParam的default值
-5.修改url path中非变量的部分，不支持"-"符号
-6.增加Component注解
-7.修改bug，@Autowired成员变量不支持继承
 
 ----------
 

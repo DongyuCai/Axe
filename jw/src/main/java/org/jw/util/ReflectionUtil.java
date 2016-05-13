@@ -183,7 +183,6 @@ public final class ReflectionUtil {
 			LOGGER.error("invoke method failure",e);
 			throw new RuntimeException(e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			LOGGER.error("invoke method failure",e);
 			Throwable cause = e.getCause();
 			if(cause != null){
