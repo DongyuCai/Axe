@@ -33,12 +33,13 @@
             <version>2.0.1</version>
         </dependency>
 
-        <!-- Apache Commons DbUtils -->
+        <!-- Apache Commons DbUtils
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
             <version>1.6</version>
         </dependency>
+        -->
 
         <!-- mysql -->
         <dependency>

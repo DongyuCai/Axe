@@ -17,8 +17,8 @@ import org.test_jw.dao.TestDao;
 public class DaoTest {
 	
 	public static void main(String[] args) {
-//		testDaoEntity();
-		testDaoPaging();
+		testDaoEntity();
+//		testDaoPaging();
 //		HelperLoader.init();
 //		just4test just4test = new just4test();
 //		just4test.setName("aaa");

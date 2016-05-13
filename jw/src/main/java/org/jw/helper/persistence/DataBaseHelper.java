@@ -3,7 +3,9 @@ package org.jw.helper.persistence;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,11 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.MapHandler;
-import org.apache.commons.dbutils.handlers.MapListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.jw.bean.persistence.EntityFieldMethod;
 import org.jw.bean.persistence.SqlPackage;
 import org.jw.helper.base.ConfigHelper;
@@ -42,8 +39,6 @@ public class DataBaseHelper {
 
     private static final ThreadLocal<Connection> CONNECTION_HOLDER;
 
-    private static final QueryRunner QUERY_RUNNER;
-
     private static final BasicDataSource DATA_SOURCE;
 
     static {
@@ -55,7 +50,6 @@ public class DataBaseHelper {
         PASSWORD = ConfigHelper.getJdbcPassword();
         //#数据库连接池
         CONNECTION_HOLDER = new ThreadLocal<>();
-        QUERY_RUNNER = new QueryRunner();
         DATA_SOURCE = new BasicDataSource();
 
         try {
@@ -113,38 +107,41 @@ public class DataBaseHelper {
             }
         }
     }
-
+    
+    private static PreparedStatement getPrepareStatement(Connection conn, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException{
+    	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
+    	PreparedStatement ps = conn.prepareStatement(sp.getSql());
+    	for(int parameterIndex=1;parameterIndex<=sp.getParams().length;parameterIndex++){
+    		ps.setObject(parameterIndex, sp.getParams()[parameterIndex-1]);
+    	}
+    	return ps;
+    }
+    
     /**
      * 查询实体列表
      */
 	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
-        List<T> entityList;
+        List<T> entityList = new ArrayList<>();
         Connection conn = getConnection();
         try {
-        	//BeanListHandler 不支持Date，所以自己实现
-            //entityList = QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-        	entityList = QUERY_RUNNER.query(conn, sp.getSql(), new ResultSetHandler<List<T>>(){
-        		@Override
-        		public List<T> handle(ResultSet table) throws SQLException {
-        			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
-					List<T> list = new ArrayList<>();
-        			while(table.next()){
-						T entity = ReflectionUtil.newInstance(entityClass);
-						for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
-							Field field = entityFieldMethod.getField();
-							Method method = entityFieldMethod.getMethod();
-							String fieldName = field.getName();
-							String columnName = StringUtil.camelToUnderline(fieldName);
-							Object setMethodArg = table.getObject(columnName);
-							ReflectionUtil.invokeMethod(entity, method, setMethodArg);
-						}
-						list.add(entity);
-					}
-					return list;
-        		}
-        	},sp.getParams());
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	ResultSet table = ps.executeQuery();
+        	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
+			while(table.next()){
+				T entity = ReflectionUtil.newInstance(entityClass);
+				for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
+					Field field = entityFieldMethod.getField();
+					Method method = entityFieldMethod.getMethod();
+					String fieldName = field.getName();
+					String columnName = StringUtil.camelToUnderline(fieldName);
+					Object setMethodArg = table.getObject(columnName);
+					ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+				}
+				entityList.add(entity);
+			}
+			table.close();
+			ps.close();
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
             throw new RuntimeException(e);
@@ -165,32 +162,25 @@ public class DataBaseHelper {
      */
     public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
-        T entity;
+        T entity = null;
         Connection conn = getConnection();
         try {
-        	//BeanHandler 不支持Date，所以自己实现
-        	//entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-        	entity = QUERY_RUNNER.query(conn, sp.getSql(), new ResultSetHandler<T>(){
-
-				@Override
-				public T handle(ResultSet table) throws SQLException {
-					if(table.next()){
-	        			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
-						T entity = ReflectionUtil.newInstance(entityClass);
-						for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
-							Field field = entityFieldMethod.getField();
-							Method method = entityFieldMethod.getMethod();
-							String fieldName = field.getName();
-							String columnName = StringUtil.camelToUnderline(fieldName);
-							Object setMethodArg = table.getObject(columnName);
-							ReflectionUtil.invokeMethod(entity, method, setMethodArg);
-						}
-						return entity;
-					}
-					return null;
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	ResultSet table = ps.executeQuery();
+        	if(table.next()){
+    			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
+    			entity = ReflectionUtil.newInstance(entityClass);
+				for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
+					Field field = entityFieldMethod.getField();
+					Method method = entityFieldMethod.getMethod();
+					String fieldName = field.getName();
+					String columnName = StringUtil.camelToUnderline(fieldName);
+					Object setMethodArg = table.getObject(columnName);
+					ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 				}
-        	}, sp.getParams());
+			}
+			table.close();
+			ps.close();
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
             throw new RuntimeException(e);
@@ -214,8 +204,18 @@ public class DataBaseHelper {
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-            result = QUERY_RUNNER.query(conn, sp.getSql(), new MapListHandler(), sp.getParams());
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	ResultSet table = ps.executeQuery();
+        	ResultSetMetaData rsmd = ps.getMetaData();
+			while(table.next()){
+				Map<String, Object> row = new HashMap<>();
+				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+					row.put(rsmd.getColumnName(i), table.getObject(i));
+	        	}
+				result.add(row);
+			}
+			table.close();
+			ps.close();
         } catch (Exception e) {
             LOGGER.error("execute queryList failure", e);
             throw new RuntimeException(e);
@@ -236,11 +236,20 @@ public class DataBaseHelper {
      */
     public static Map<String, Object> queryMap(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = null;
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-            result = QUERY_RUNNER.query(conn, sp.getSql(), new MapHandler(), sp.getParams());
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	ResultSet table = ps.executeQuery();
+        	ResultSetMetaData rsmd = ps.getMetaData();
+        	if(table.next()){
+        		result = new HashMap<>();
+        		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+        			result.put(rsmd.getColumnName(i), table.getObject(i));
+	        	}
+			}
+			table.close();
+			ps.close();
         } catch (Exception e) {
             LOGGER.error("execute queryMap failure", e);
             throw new RuntimeException(e);
@@ -260,13 +269,21 @@ public class DataBaseHelper {
     /**
      * 执行返回结果是基本类型的查询
      */
-    public static <T> T queryPrimitive(String sql, Object[] params, Class<?>[] paramTypes) {
+    @SuppressWarnings("unchecked")
+	public static <T> T queryPrimitive(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
     	T result = null;
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-            result = QUERY_RUNNER.query(conn, sp.getSql(), new ScalarHandler<T>(), sp.getParams());
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	ResultSet table = ps.executeQuery();
+        	if(table.next()){
+            	ResultSetMetaData rsmd = ps.getMetaData();
+            	if(rsmd.getColumnCount() > 0);
+        			result = (T)table.getObject(1);
+			}
+			table.close();
+			ps.close();
         } catch (Exception e) {
             LOGGER.error("execute queryPrimitive failure", e);
             throw new RuntimeException(e);
@@ -305,15 +322,16 @@ public class DataBaseHelper {
 
 
     /**
-     * 执行更新语句 （包括 update、insert、delete）
+     * 执行更新语句 （包括 update、delete）
      */
     public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes) {
 		LOGGER.debug(sql);
         int rows = 0;
         Connection conn = getConnection();
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-            rows = QUERY_RUNNER.update(conn, sp.getSql(), sp.getParams());
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	rows = ps.executeUpdate();
+			ps.close();
         } catch (SQLException e) {
             LOGGER.error("execute update failure", e);
             throw new RuntimeException(e);
@@ -335,7 +353,6 @@ public class DataBaseHelper {
     public static int insertEntity(Object entity) {
     	if(entity == null)
     		throw new RuntimeException("insertEntity failure, insertEntity param is null!");
-    	
     	SqlPackage sp = SqlHelper.getInsertSqlPackage(entity);
         return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
     }
