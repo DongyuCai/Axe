@@ -9,7 +9,7 @@ package org.jw.interface_.persistence;
  * Created by CaiDongYu on 2016/5/5.
  */
 public interface BaseRepository {
-	public int insertEntity(Object entity);
+	public <T> T insertEntity(T entity);
 
 	/**
 	 * 需要entity类有@Id字段
@@ -32,6 +32,6 @@ public interface BaseRepository {
 	 * 如果entity有主键，并且主键已存在，执行update
 	 * TODO:返回Entity，并且是查询出来值塞满的，包括Id
 	 */
-	public int saveEntity(Object entity);
+	public <T> T saveEntity(T entity);
 	
 }

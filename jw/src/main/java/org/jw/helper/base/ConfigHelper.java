@@ -48,6 +48,14 @@ public final class ConfigHelper {
     public static String getJdbcPassword() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_PASSWORD);
     }
+    
+    /**
+     * 获取 JDBC 数据源
+     */
+    public static String getJdbcDatasource() {
+    	//默认使用jw提供的dbcp数据源
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, "org.jw.helper.persistence.DbcpDataSourceHelper");
+    }
 
     /**
      * 获取应用基础包路径

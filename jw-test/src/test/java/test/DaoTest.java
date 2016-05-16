@@ -8,22 +8,35 @@ import java.util.List;
 import org.jw.HelperLoader;
 import org.jw.bean.persistence.Page;
 import org.jw.helper.ioc.BeanHelper;
+import org.jw.helper.persistence.DataBaseHelper;
 import org.jw.util.JsonUtil;
 import org.jw.util.StringUtil;
 import org.test_jw.bean.Export;
+import org.test_jw.bean.TestTable;
 import org.test_jw.bean.just4test;
 import org.test_jw.dao.TestDao;
 
 public class DaoTest {
 	
 	public static void main(String[] args) {
-		testDaoEntity();
+//		testDaoEntity();
 //		testDaoPaging();
 //		HelperLoader.init();
 //		just4test just4test = new just4test();
 //		just4test.setName("aaa");
 //		TestDao testDao = BeanHelper.getBean(TestDao.class);
 //		testDao.insertEntity(just4test);
+		testInsert();
+	}
+	
+	public static void testInsert(){
+		HelperLoader.init();
+		
+		TestTable test = new TestTable();
+		test.setId(3);
+		test.setName("test3");
+		test = DataBaseHelper.insertOnDuplicateKeyEntity(test);
+		System.out.println(JsonUtil.toJson(test));
 		
 	}
 	
@@ -55,8 +68,8 @@ public class DaoTest {
 		
 		export.setCreateTime(new Date());
 		
-		rows = testDao.saveEntity(export);
-		System.out.println("saveEntity:"+rows);
+		export = testDao.saveEntity(export);
+		System.out.println("saveEntity:"+export);
 		
 		export.setName("新框架测试_SqlHelper");
 		rows = testDao.updateEntity(export);
@@ -71,7 +84,7 @@ public class DaoTest {
 		rows = testDao.updateEntity(export);
 		System.out.println("updateEntity:"+rows);
 		
-		rows = testDao.insertEntity(export);
+		export = testDao.insertEntity(export);
 		System.out.println("updateEntity:"+rows);
 	}
 	

@@ -7,66 +7,49 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import org.jw.annotation.persistence.Id;
 import org.jw.bean.persistence.EntityFieldMethod;
+import org.jw.bean.persistence.InsertResult;
 import org.jw.bean.persistence.SqlPackage;
 import org.jw.helper.base.ConfigHelper;
+import org.jw.helper.ioc.BeanHelper;
+import org.jw.interface_.persistence.DataSource;
+import org.jw.util.ClassUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * 数据库 助手类
  * Created by CaiDongYu on 2016/4/15.
  * TODO:增加外部数据源可配置，连接池
+ * TODO(OK):自动返回新增主键
  */
 public class DataBaseHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
     
-    
-    //#数据库
-    private static final String DRIVER;
-    private static final String URL;
-    private static final String USERNAME;
-    private static final String PASSWORD;
-
     private static final ThreadLocal<Connection> CONNECTION_HOLDER;
 
-    private static final BasicDataSource DATA_SOURCE;
-
+    private static final DataSource DATA_SOURCE;
     static {
 
-        //#初始化jdbc配置
-        DRIVER = ConfigHelper.getJdbcDriver();
-        URL = ConfigHelper.getJdbcUrl();
-        USERNAME = ConfigHelper.getJdbcUsername();
-        PASSWORD = ConfigHelper.getJdbcPassword();
         //#数据库连接池
         CONNECTION_HOLDER = new ThreadLocal<>();
-        DATA_SOURCE = new BasicDataSource();
-
-        try {
-            DATA_SOURCE.setDriverClassName(DRIVER);
-            DATA_SOURCE.setUrl(URL);
-            DATA_SOURCE.setUsername(USERNAME);
-            DATA_SOURCE.setPassword(PASSWORD);
-            
-            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
-        } catch (Exception e) {
-            LOGGER.error("jdbc driver : " + DRIVER);
-            LOGGER.error("jdbc url : " + URL);
-            LOGGER.error("jdbc username : " + USERNAME);
-            LOGGER.error("jdbc password : " + PASSWORD);
-            LOGGER.error("load jdbc driver failure", e);
-        }
         
+        Class<?> dataSourceClass = ClassUtil.loadClass(ConfigHelper.getJdbcDatasource(), false);
+        DATA_SOURCE = (DataSource) BeanHelper.getBean(dataSourceClass);
+        if(DATA_SOURCE == null){
+            throw new RuntimeException("can not find dataSouce bean of type : "+dataSourceClass);
+        }
     }
 
     
@@ -78,9 +61,9 @@ public class DataBaseHelper {
         if (conn == null) {
             try {
                 conn = DATA_SOURCE.getConnection();
-                LOGGER.debug("create connection:"+conn);
+                LOGGER.debug("get connection:"+conn);
             } catch (SQLException e) {
-                LOGGER.error("get jdbc connection failure", e);
+                LOGGER.error("get connection failure", e);
                 throw new RuntimeException(e);
             } finally {
                 CONNECTION_HOLDER.set(conn);
@@ -98,9 +81,10 @@ public class DataBaseHelper {
             try {
             	if(!conn.isClosed()){
             		conn.close();
+                    LOGGER.debug("release connection:"+conn);
             	}
             } catch (SQLException e) {
-                LOGGER.error("close jdbc connection failure", e);
+                LOGGER.error("release connection failure", e);
                 throw new RuntimeException(e);
             } finally {
                 CONNECTION_HOLDER.remove();
@@ -346,15 +330,73 @@ public class DataBaseHelper {
         }
         return rows;
     }
+    
+    /**
+     * 执行插入语句 insert
+     * 与executeUpdate类似，只是需要返回主键
+     */
+    public static InsertResult executeInsert(String sql, Object[] params, Class<?>[] paramTypes) {
+		LOGGER.debug(sql);
+        int rows = 0;
+        Object generatedKey = null;
+        Connection conn = getConnection();
+        try {
+        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
+        	PreparedStatement ps = conn.prepareStatement(sp.getSql(), Statement.RETURN_GENERATED_KEYS);
+        	for(int parameterIndex=1;parameterIndex<=sp.getParams().length;parameterIndex++){
+        		ps.setObject(parameterIndex, sp.getParams()[parameterIndex-1]);
+        	}
+        	rows = ps.executeUpdate();
+        	ResultSet rs = ps.getGeneratedKeys();
+        	if(rs.next()){
+        		generatedKey = rs.getObject(1);
+        	}
+        	rs.close();
+			ps.close();
+        } catch (SQLException e) {
+            LOGGER.error("execute insert failure", e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if(conn.getAutoCommit()){
+                    closeConnection();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new InsertResult(rows, generatedKey);
+    }
 
     /**
      * 插入实体
      */
-    public static int insertEntity(Object entity) {
+    public static <T> T insertEntity(T entity) {
     	if(entity == null)
     		throw new RuntimeException("insertEntity failure, insertEntity param is null!");
     	SqlPackage sp = SqlHelper.getInsertSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
+    	InsertResult executeInsert = executeInsert(sp.getSql(), sp.getParams(), sp.getParamTypes());
+    	do{
+    		if(executeInsert.getEffectedRows() <= 0) break;
+    		//插入成功
+    		if(executeInsert.getGeneratedKey() != null){
+    			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+    			for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
+    				Field field = entityFieldMethod.getField();
+    				if(field.isAnnotationPresent(Id.class)){
+    					Method method = entityFieldMethod.getMethod();
+    					Object idValue = ReflectionUtil.invokeMethod(entity, method);
+    					if(!executeInsert.getGeneratedKey().equals(idValue)){
+    						//如果id字段没有值，就用返回的自增主键赋值
+    						ReflectionUtil.setField(entity, field, executeInsert.getGeneratedKey());
+    					}
+    					break;
+    				}
+    			}
+    		}
+            return entity;
+    	}while(false);
+    	return null;
     }
 
     /**
@@ -370,11 +412,32 @@ public class DataBaseHelper {
     /**
      * 更新实体
      */
-    public static int insertOnDuplicateKeyEntity(Object entity) {
+    public static <T> T insertOnDuplicateKeyEntity(T entity) {
     	if(entity == null)
     		throw new RuntimeException("insertOnDuplicateKeyEntity failure, insertOnDuplicateKeyEntity param is null!");
         SqlPackage sp = SqlHelper.getInsertOnDuplicateKeyUpdateSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes());
+        InsertResult executeInsert = executeInsert(sp.getSql(), sp.getParams(), sp.getParamTypes());
+    	do{
+    		if(executeInsert.getEffectedRows() <= 0) break;
+    		//插入成功
+    		if(executeInsert.getGeneratedKey() != null){
+    			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+    			for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
+    				Field field = entityFieldMethod.getField();
+    				if(field.isAnnotationPresent(Id.class)){
+    					Method method = entityFieldMethod.getMethod();
+    					Object idValue = ReflectionUtil.invokeMethod(entity, method);
+    					if(!executeInsert.getGeneratedKey().equals(idValue)){
+    						//如果id字段没有值，就用返回的自增主键赋值
+    						ReflectionUtil.setField(entity, field, executeInsert.getGeneratedKey());
+    					}
+    					break;
+    				}
+    			}
+    		}
+            return entity;
+    	}while(false);
+    	return null;
     }
 
 

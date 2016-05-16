@@ -1,0 +1,57 @@
+package org.jw.helper.persistence;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.jw.annotation.ioc.Component;
+import org.jw.helper.base.ConfigHelper;
+import org.jw.interface_.persistence.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Component
+public class DbcpDataSourceHelper implements DataSource{
+	Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceHelper.class);
+	
+    //#数据库
+    private final String DRIVER;
+    private final String URL;
+    private final String USERNAME;
+    private final String PASSWORD;
+    private final BasicDataSource DATA_SOURCE;
+	
+	public DbcpDataSourceHelper() {
+        //#初始化jdbc配置
+        DRIVER = ConfigHelper.getJdbcDriver();
+        URL = ConfigHelper.getJdbcUrl();
+        USERNAME = ConfigHelper.getJdbcUsername();
+        PASSWORD = ConfigHelper.getJdbcPassword();
+        
+        DATA_SOURCE = new BasicDataSource();
+        init();
+	}
+	
+	private void init() {
+        
+        try {
+        	DATA_SOURCE.setDriverClassName(DRIVER);
+        	DATA_SOURCE.setUrl(URL);
+        	DATA_SOURCE.setUsername(USERNAME);
+        	DATA_SOURCE.setPassword(PASSWORD);
+            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
+        } catch (Exception e) {
+            LOGGER.error("jdbc driver : " + DRIVER);
+            LOGGER.error("jdbc url : " + URL);
+            LOGGER.error("jdbc username : " + USERNAME);
+            LOGGER.error("jdbc password : " + PASSWORD);
+            LOGGER.error("load jdbc driver failure", e);
+        }
+        
+	}
+
+	@Override
+	public Connection getConnection() throws SQLException {
+		return DATA_SOURCE.getConnection();
+	}
+}

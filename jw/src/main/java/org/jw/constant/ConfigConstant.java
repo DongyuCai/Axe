@@ -5,12 +5,13 @@ package org.jw.constant;
  * Created by CaiDongYu on 2016/4/8.
  */
 public interface ConfigConstant {
-    String CONFIG_FILE = "application.properties";
+    String CONFIG_FILE = "jw.properties";
 
     String JDBC_DRIVER = "jdbc.driver";
     String JDBC_URL = "jdbc.url";
     String JDBC_USERNAME = "jdbc.username";
     String JDBC_PASSWORD = "jdbc.password";
+    String JDBC_DATASOURCE = "jdbc.datasource";
     String JDBC_AUTOTABLE = "jdbc.autotable";
     
     String APP_BASE_PACKAGE = "app.base_package";

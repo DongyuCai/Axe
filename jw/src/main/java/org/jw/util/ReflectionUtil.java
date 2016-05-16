@@ -177,13 +177,13 @@ public final class ReflectionUtil {
         try {
 			result = method.invoke(obj,args);
 		} catch (IllegalAccessException e) {
-			LOGGER.error("invoke method failure",e);
+			LOGGER.error("invoke method failure,method : "+method+", args : "+args,e);
 			throw new RuntimeException(e);
 		} catch (IllegalArgumentException e) {
-			LOGGER.error("invoke method failure",e);
+			LOGGER.error("invoke method failure,method : "+method+", args : "+args,e);
 			throw new RuntimeException(e);
 		} catch (InvocationTargetException e) {
-			LOGGER.error("invoke method failure",e);
+			LOGGER.error("invoke method failure,method : "+method+", args : "+args,e);
 			Throwable cause = e.getCause();
 			if(cause != null){
 				if(cause instanceof RestException){
