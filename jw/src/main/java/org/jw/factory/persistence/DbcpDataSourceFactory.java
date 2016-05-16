@@ -1,4 +1,4 @@
-package org.jw.helper.persistence;
+package org.jw.factory.persistence;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class DbcpDataSourceHelper implements DataSource{
-	Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceHelper.class);
+public class DbcpDataSourceFactory implements DataSource{
+	Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceFactory.class);
 	
     //#数据库
     private final String DRIVER;
@@ -21,7 +21,7 @@ public class DbcpDataSourceHelper implements DataSource{
     private final String PASSWORD;
     private final BasicDataSource DATA_SOURCE;
 	
-	public DbcpDataSourceHelper() {
+	public DbcpDataSourceFactory() {
         //#初始化jdbc配置
         DRIVER = ConfigHelper.getJdbcDriver();
         URL = ConfigHelper.getJdbcUrl();
