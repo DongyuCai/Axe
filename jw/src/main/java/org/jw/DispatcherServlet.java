@@ -24,6 +24,8 @@ import org.jw.bean.mvc.Data;
 import org.jw.bean.mvc.Handler;
 import org.jw.bean.mvc.Param;
 import org.jw.bean.mvc.View;
+import org.jw.constant.CharacterEncoding;
+import org.jw.constant.ContentType;
 import org.jw.exception.RestException;
 import org.jw.helper.base.ConfigHelper;
 import org.jw.helper.ioc.BeanHelper;
@@ -73,6 +75,9 @@ public class DispatcherServlet extends HttpServlet{
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String contentType = ContentType.APPLICATION_JSON;
+    	String characterEncoding = CharacterEncoding.UTF_8;
         try {
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
@@ -88,7 +93,9 @@ public class DispatcherServlet extends HttpServlet{
                 //获取 Controller  类和 Bean 实例
                 Class<?> controllerClass = handler.getControllerClass();
                 Object controllerBean = BeanHelper.getBean(controllerClass);
-
+                contentType = handler.getContentType();
+                characterEncoding = handler.getCharacterEncoding();
+                
                 //创建你请求参数对象
                 Param param;
                 if(FormRequestHelper.isMultipart(request)){
@@ -125,21 +132,21 @@ public class DispatcherServlet extends HttpServlet{
     			throw new RestException(RestException.SC_NOT_FOUND, "404 Not Found");
             }
 		} catch (RestException e){
-			writeBackToClient(e.getStatus(), e.getMessage(), response);
+			writeBackToClient(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
 		} catch (Exception e) {
 			LOGGER.error("server error",e);
 			//500
-			writeBackToClient(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response);
+			writeBackToClient(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
 		}
     }
     
-    public void writeBackToClient(int status,String msg,HttpServletResponse response){
+    public void writeBackToClient(int status,String msg,HttpServletResponse response,String contentType,String characterEncoding){
     	try {
-    		response.setCharacterEncoding("utf-8");
-    		response.setContentType("application/json");
+        	response.setContentType(contentType);
+        	response.setCharacterEncoding(characterEncoding);
     		response.setStatus(status);
         	PrintWriter writer = response.getWriter();
-        	writer.write("{\"message\":\"<span name='RestException'>" + msg + "</span>\",\"code\":\"SERVER_ERROR\"}");
+        	writer.write(msg);
         	writer.flush();
         	writer.close();
 		} catch (Exception e) {
