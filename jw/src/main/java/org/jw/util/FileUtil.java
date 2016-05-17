@@ -11,7 +11,7 @@ import java.io.File;
  * 文件操作 工具类
  * Created by CaiDongYu on 2016/4/25.
  */
-public class FileUtil {
+public final class FileUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 
     private FileUtil() {}

@@ -49,12 +49,12 @@ public final class HelperLoader {
         
         //装载的类日志分析
         //TODO:详细日志
-        LOGGER.debug("Filter implements :\tx"+FilterHelper.getSortedFilterList().size());
-        LOGGER.debug("@Controllers :\tx"+ClassHelper.getControllerClassSet().size());
-        LOGGER.debug("@Service :\tx"+ClassHelper.getServiceClassSet().size());
-        LOGGER.debug("@Dao :\tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
-        LOGGER.debug("@Table :\tx"+TableHelper.getEntityClassMap().size());
-        LOGGER.debug("ACTION_LIST :\tx"+ControllerHelper.getActionList().size());
+        LOGGER.debug("Filter \tx"+FilterHelper.getSortedFilterList().size());
+        LOGGER.debug("Controller \tx"+ClassHelper.getControllerClassSet().size());
+        LOGGER.debug("Action \tx"+ControllerHelper.getActionList().size());
+        LOGGER.debug("Service \tx"+ClassHelper.getServiceClassSet().size());
+        LOGGER.debug("Dao \tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
+        LOGGER.debug("Table \tx"+TableHelper.getEntityClassMap().size());
         LOGGER.debug("jw framework started success!");
     }
 }

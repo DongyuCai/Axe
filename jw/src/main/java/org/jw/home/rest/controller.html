@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>jw controller</title>
+	</head>
+<body>
+	<table width="100%">
+		<java>
+			Set<Class<?>> controllerCLassSet = ClassHelper.getControllerClassSet();
+		</java>
+		<tr><td align="center"><font size="28">Controller set x"+controllerCLassSet.size()+"</font></td></tr>
+		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="center"><b>Level</b></td>
+					<td align="center"><b>Class</b></td>
+					<td align="center"><b>Mapping</b></td>
+					<td align="center"><b>NotMapping</b></td>
+				</tr>
+				<java>
+				for(Filter filter:filterList){
+				</java>
+				<tr>
+					<td align="center">"+filter.setLevel()+"</td>
+					<td align="center">"+filter.getClass()+"</td>
+					<java>
+						Pattern mappingPattern = filter.setMapping();
+						String mappingRegex = mappingPattern == null?"":mappingPattern.toString();
+					</java>
+					<td align="center">"+mappingRegex+"</td>
+					<java>
+						Pattern notMappingPattern = filter.setNotMapping();
+						String notMappingRegex = notMappingPattern==null?"":notMappingPattern.toString();
+					</java>
+					<td align="center">"+notMappingRegex+"</td>
+				</tr>
+				<java>
+				}
+				</java>
+			</table>
+		</td></tr>
+	</table>
+</body>
+</html>

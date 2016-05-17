@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -7,16 +7,17 @@
 <body>
 	<table width="100%">
 		<tr><td align="center"><font size="28">Welcome to use jw!</font></td></tr>
+		<tr><td height="2px" style="background-color:#AE0000"></td></tr>
 		<tr><td>
 			<table width="100%">
 				<tr>
-					<td align="center">Filter x1</td>
-					<td align="center">Controller x2</td>
-					<td align="center">Service x3</td>
-					<td align="center">Action x6</td>
-					<td align="center">Dao x4</td>
-					<td align="center">Table x5</td>
-					<td align="center">Datasource x7</td>
+					<td align="center"><a href="/jw/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
+					<td align="center"><a href="/jw/controller">Controller</a> x"+ClassHelper.getControllerClassSet().size()+"</td>
+					<td align="center"><a href="/jw/service">Service</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center"><a href="/jw/action">Action</a> x"+ClassHelper.getServiceClassSet().size()+"</td>
+					<td align="center"><a href="/jw/dao">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>
+					<td align="center"><a href="/jw/table">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
+					<td align="center"><a href="/jw/datasource">Datasource</a> x"+ClassHelper.getClassSetBySuper(DataSource.class).size()+"</td>
 				</tr>
 			</table>
 		</td></tr>
