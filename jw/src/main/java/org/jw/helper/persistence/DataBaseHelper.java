@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 数据库 助手类
  * Created by CaiDongYu on 2016/4/15.
- * TODO:增加外部数据源可配置，连接池
+ * TODO(OK):增加外部数据源可配置，连接池
  * TODO(OK):自动返回新增主键
  */
 public class DataBaseHelper {

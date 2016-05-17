@@ -34,7 +34,6 @@ public final class RequestUtil {
 	/**
 	 * 允许接受的字符串种类
 	 * 字母、数字、下划线、$
-	 * TODO: 多了个 \\- 暂时不知道有什么副作用
 	 */
 	private static final String REG_WORD = "A-Za-z0-9_\\$";
 	
@@ -43,10 +42,11 @@ public final class RequestUtil {
 	 * 只支持字母、斜杠、数字、下划线、$符
 	 * 以及占位变量符号{}
 	 * 占位符花括号不可以紧挨着，否则语意不明
+	 * TODO: 多了个 \\- 暂时不知道有什么副作用
 	 */
 	public static boolean checkMappingPath(String path){
 		do{
-			Pattern reg = Pattern.compile("^["+REG_WORD+"\\{\\}/\\-]*$");
+			Pattern reg = Pattern.compile("^["+REG_WORD+"\\{\\}/\\-\\.]*$");
 			Matcher matcher = reg.matcher(path);
 			if(!matcher.find()) return false;
 			

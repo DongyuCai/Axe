@@ -117,14 +117,15 @@ public class DispatcherServlet extends HttpServlet{
                 	//调用 Action方法
                 	Method actionMethod = handler.getActionMethod();
                 	Object result = this.invokeActionMethod(controllerBean, actionMethod, param, request, response);
-                	
-                	if(result instanceof View){
-                		handleViewResult((View)result,request,response);
-                	} else if (result instanceof Data){
-                		handleDataResult((Data)result,response,handler);
-                	} else {
-                		Data data = new Data(result);
-                		handleDataResult(data,response,handler);
+                	if(result != null){
+                		if(result instanceof View){
+                			handleViewResult((View)result,request,response);
+                		} else if (result instanceof Data){
+                			handleDataResult((Data)result,response,handler);
+                		} else {
+                			Data data = new Data(result);
+                			handleDataResult(data,response,handler);
+                		}
                 	}
                 }
             }else{
@@ -132,15 +133,15 @@ public class DispatcherServlet extends HttpServlet{
     			throw new RestException(RestException.SC_NOT_FOUND, "404 Not Found");
             }
 		} catch (RestException e){
-			writeBackToClient(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
+			writeError(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
 		} catch (Exception e) {
 			LOGGER.error("server error",e);
 			//500
-			writeBackToClient(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
+			writeError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
 		}
     }
     
-    public void writeBackToClient(int status,String msg,HttpServletResponse response,String contentType,String characterEncoding){
+    public void writeError(int status,String msg,HttpServletResponse response,String contentType,String characterEncoding){
     	try {
         	response.setContentType(contentType);
         	response.setCharacterEncoding(characterEncoding);
