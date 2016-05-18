@@ -1,5 +1,9 @@
 package org.jw.util;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -8,6 +12,85 @@ import org.apache.commons.lang3.StringUtils;
 public final class StringUtil {
 	private StringUtil() {}
 
+	/**
+	 * 按照字符顺序排序
+	 */
+	public static List<String> sortStringSet(Set<String> stringSet){
+		LinkedList<String> sortList = new LinkedList<>();
+		if(stringSet != null && stringSet.size() > 0){
+			for(String str:stringSet){
+				if(sortList.size() == 0){
+					sortList.add(str);
+					continue;
+				}
+				
+				int j=0;
+				for(;j<sortList.size();j++){
+					String sortStr = sortList.get(j);
+					if(str.compareTo(sortStr) <= 0){
+						sortList.add(j, str);
+						break;
+					}
+				}
+				if(j == sortList.size()){
+					sortList.add(str);
+				}
+			}
+		}
+		return sortList;
+	}
+	
+	/**
+	 * 按照字符顺序排序
+	 */
+	public static List<String> sortStringList(List<String> stringList){
+		LinkedList<String> sortList = new LinkedList<>();
+		if(CollectionUtil.isNotEmpty(stringList)){
+			for(String str:stringList){
+				if(sortList.size() == 0){
+					sortList.add(str);
+					continue;
+				}
+				int j=0;
+				for(;j<sortList.size();j++){
+					String sortStr = sortList.get(j);
+					if(str.compareTo(sortStr) <= 0){
+						sortList.add(j, str);
+						break;
+					}
+				}
+				if(j == sortList.size()){
+					sortList.add(str);
+				}
+			}
+		}
+		return sortList;
+	}
+	
+	public static List<String> sortStringAry(String[] stringAry){
+		LinkedList<String> sortList = new LinkedList<>();
+		if(stringAry != null && stringAry.length > 0){
+			for(String str:stringAry){
+				if(sortList.size() == 0){
+					sortList.add(str);
+					continue;
+				}
+				int j=0;
+				for(;j<sortList.size();j++){
+					String sortStr = sortList.get(j);
+					if(str.compareTo(sortStr) <= 0){
+						sortList.add(j, str);
+						break;
+					}
+				}
+				if(j == sortList.size()){
+					sortList.add(str);
+				}
+			}
+		}
+		return sortList;
+	}
+	
 	public static boolean isEmpty(String str) {
 		if (str != null) {
 			str = str.trim();
