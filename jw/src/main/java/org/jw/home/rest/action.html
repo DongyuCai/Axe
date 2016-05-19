@@ -81,7 +81,7 @@
 					<td align="left">"+(id++)+"</td>
 					<td align="left">"+mappingPath+"</td>
 					<td align="left">"+handler.getRequestMethod()+"</td>
-					<td align="left"><a href="/jw/controller-"+hashCode+"/action">"+handler.getControllerClass().getName()+"</a></td>
+					<td align="left"><a href=""+contextPath+"/jw/controller-"+hashCode+"/action">"+handler.getControllerClass().getName()+"</a></td>
 					<java>
 						hashCode = null;
 						code = mappingPath.hashCode();
@@ -91,7 +91,7 @@
 							hashCode = String.valueOf(code);
 						}
 					</java>
-					<td align="left"><a href="/jw/action/"+hashCode+"">"+handler.getActionMethod().getName()+"</a></td>
+					<td align="left"><a href=""+contextPath+"/jw/action/"+hashCode+"">"+handler.getActionMethod().getName()+"</a></td>
 					<td align="left">x"+handler.getFilterList().size()+"</td>
 				</tr>
 				<java>

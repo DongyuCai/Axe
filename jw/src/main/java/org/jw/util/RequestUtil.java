@@ -149,8 +149,19 @@ public final class RequestUtil {
     	return request.getMethod().toUpperCase();
     }
     
+    //TODO:获取准确的server请求路径
+    //jetty下request.getServletPath();可以直接使用
+    //tomcat 8.0 下不好使,需要改变策略
     public static String getRequestPath(HttpServletRequest request){
-    	return request.getServletPath();
+    	String requestPath = request.getServletPath();
+    	if(StringUtil.isEmpty(requestPath)){
+    		requestPath = request.getRequestURI();
+    		if(requestPath.contains("?"))
+    			requestPath = requestPath.substring(0,requestPath.indexOf("?"));
+    		String contextPath = request.getContextPath();
+    		requestPath = requestPath.replaceAll(contextPath, "");
+    	}
+    	return requestPath;
     }
     
     

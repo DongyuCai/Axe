@@ -16,13 +16,13 @@
 		<tr><td>
 			<table width="100%">
 				<tr>
-					<td align="center"><a href="/jw/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
-					<td align="center"><a href="/jw/controller">Controller</a> x"+ClassHelper.getControllerClassSet().size()+"</td>
-					<td align="center"><a href="/jw/action">Action</a> x"+ClassHelper.getServiceClassSet().size()+"</td>
-					<td align="center"><a href="/jw/service">Service</a> x"+ControllerHelper.getActionList().size()+"</td>
-					<td align="center"><a href="/jw/dao">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>
-					<td align="center"><a href="/jw/table">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
-					<td align="center"><a href="/jw/datasource">Datasource</a> x"+ClassHelper.getClassSetBySuper(DataSource.class).size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/controller">Controller</a> x"+ClassHelper.getControllerClassSet().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/action">Action</a> x"+ClassHelper.getServiceClassSet().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/service">Service</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/dao">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/table">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/datasource">Datasource</a> x"+ClassHelper.getClassSetBySuper(DataSource.class).size()+"</td>
 				</tr>
 			</table>
 		</td></tr>

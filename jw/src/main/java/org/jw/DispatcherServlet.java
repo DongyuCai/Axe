@@ -86,7 +86,6 @@ public class DispatcherServlet extends HttpServlet{
             if(requestPath != null && requestPath.equals("/favicon.ico")){
                 return;
             }
-            
             //获取 Action 处理器
             Handler handler = ControllerHelper.getHandler(requestMethod,requestPath);
             if(handler != null){

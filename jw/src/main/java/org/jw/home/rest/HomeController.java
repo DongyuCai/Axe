@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jw.annotation.ioc.Controller;
@@ -32,8 +33,9 @@ import org.jw.util.StringUtil;
 public class HomeController {
 
 	@Request(value = "", method = RequestMethod.GET)
-	public void home(HttpServletResponse response) {
+	public void home(HttpServletRequest request, HttpServletResponse response) {
 		try {
+			String contextPath = request.getContextPath();
 			StringBuilder html = new StringBuilder();
 
 			/**
@@ -57,19 +59,19 @@ public class HomeController {
 			html.append("<tr><td>");
 			html.append("<table width=\"100%\">");
 			html.append("<tr>");
-			html.append("<td align=\"center\"><a href=\"/jw/filter\">Filter</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/filter\">Filter</a> x"
 					+ FilterHelper.getSortedFilterList().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"/jw/controller\">Controller</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/controller\">Controller</a> x"
 					+ ClassHelper.getControllerClassSet().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"/jw/action\">Action</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/action\">Action</a> x"
 					+ ClassHelper.getServiceClassSet().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"/jw/service\">Service</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/service\">Service</a> x"
 					+ ControllerHelper.getActionList().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"/jw/dao\">Dao</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/dao\">Dao</a> x"
 					+ ClassHelper.getClassSetByAnnotation(Dao.class).size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"/jw/table\">Table</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/table\">Table</a> x"
 					+ TableHelper.getEntityClassMap().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"/jw/datasource\">Datasource</a> x"
+			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/datasource\">Datasource</a> x"
 					+ ClassHelper.getClassSetBySuper(DataSource.class).size() + "</td>");
 			html.append("</tr>");
 			html.append("</table>");
@@ -153,8 +155,9 @@ public class HomeController {
 	}
 
 	@Request(value = "/controller", method = RequestMethod.GET)
-	public void controller(HttpServletResponse response) {
+	public void controller(HttpServletRequest request, HttpServletResponse response) {
 		try {
+			String contextPath = request.getContextPath();
 			StringBuilder html = new StringBuilder();
 
 			/**
@@ -221,8 +224,8 @@ public class HomeController {
 					} else {
 						basePathHashCode = String.valueOf(code);
 					}
-					html.append("<td align=\"left\">x<a href=\"/jw/controller-" + basePathHashCode + "/action\">"
-							+ actionCount + "</a></td>");
+					html.append("<td align=\"left\">x<a href=\"" + contextPath + "/jw/controller-" + basePathHashCode
+							+ "/action\">" + actionCount + "</a></td>");
 					html.append("</tr>");
 				}
 			}
@@ -243,8 +246,9 @@ public class HomeController {
 	}
 
 	@Request(value = "/action", method = RequestMethod.GET)
-	public void action(HttpServletResponse response, String basePathHashCode) {
+	public void action(HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
 		try {
+			String contextPath = request.getContextPath();
 			StringBuilder html = new StringBuilder();
 
 			/**
@@ -261,31 +265,32 @@ public class HomeController {
 			List<Handler> handlerList = ControllerHelper.getActionList();
 			String basePath = "";
 			if (basePathHashCode != null) {
-			Map<Class<?>, String> hashCodeMap = new HashMap<>();
-			List<Handler> controllerHandlerList = new ArrayList<>();
-			for (Handler handler : handlerList) {
-			Class<?> controller = handler.getControllerClass();
-			String hashCode = null;
-			if (hashCodeMap.containsKey(controller)) {
-			hashCode = hashCodeMap.get(controller);
-			} else {
-			basePath = controller.getAnnotation(Controller.class).basePath();
-			int code = basePath.hashCode();
-			if (code < 0) {
-			hashCode = "_" + Math.abs(code);
-			} else {
-			hashCode = String.valueOf(code);
+				Map<Class<?>, String> hashCodeMap = new HashMap<>();
+				List<Handler> controllerHandlerList = new ArrayList<>();
+				for (Handler handler : handlerList) {
+					Class<?> controller = handler.getControllerClass();
+					String hashCode = null;
+					if (hashCodeMap.containsKey(controller)) {
+						hashCode = hashCodeMap.get(controller);
+					} else {
+						basePath = controller.getAnnotation(Controller.class).basePath();
+						int code = basePath.hashCode();
+						if (code < 0) {
+							hashCode = "_" + Math.abs(code);
+						} else {
+							hashCode = String.valueOf(code);
+						}
+						hashCodeMap.put(controller, hashCode);
+					}
+					if (hashCode.equals(basePathHashCode)) {
+						controllerHandlerList.add(handler);
+					}
+				}
+				handlerList = controllerHandlerList;
 			}
-			hashCodeMap.put(controller, hashCode);
-			}
-			if (hashCode.equals(basePathHashCode)) {
-			controllerHandlerList.add(handler);
-			}
-			}
-			handlerList = controllerHandlerList;
-			}
-			basePath = StringUtil.isEmpty(basePath)?"":basePath+" - ";
-			html.append("<tr><td align=\"center\"><font size=\"28\">"+basePath+"Action list x"+handlerList.size()+"</font></td></tr>");
+			basePath = StringUtil.isEmpty(basePath) ? "" : basePath + " - ";
+			html.append("<tr><td align=\"center\"><font size=\"28\">" + basePath + "Action list x" + handlerList.size()
+					+ "</font></td></tr>");
 			html.append("");
 			html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
 			html.append("&nbsp;<font color=\"white\"><b>Action</b></font>&nbsp;");
@@ -304,43 +309,45 @@ public class HomeController {
 			html.append("</tr>");
 			Map<String, List<Handler>> handlerMap = new HashMap<>();
 			for (Handler handler : handlerList) {
-			String mappingPath = handler.getMappingPath();
-			List<Handler> action = new ArrayList<>();
-			if (handlerMap.containsKey(mappingPath)) {
-			action = handlerMap.get(mappingPath);
-			} else {
-			handlerMap.put(mappingPath, action);
-			}
-			action.add(handler);
+				String mappingPath = handler.getMappingPath();
+				List<Handler> action = new ArrayList<>();
+				if (handlerMap.containsKey(mappingPath)) {
+					action = handlerMap.get(mappingPath);
+				} else {
+					handlerMap.put(mappingPath, action);
+				}
+				action.add(handler);
 			}
 			List<String> mappingPathList = StringUtil.sortStringSet(handlerMap.keySet());
 			int id = 1;
 			for (String mappingPath : mappingPathList) {
-			List<Handler> action = handlerMap.get(mappingPath);
-			for (Handler handler : action) {
-			int code = handler.getControllerClass().getAnnotation(Controller.class).basePath().hashCode();
-			String hashCode = null;
-			if (code < 0) {
-			hashCode = "_" + Math.abs(code);
-			} else {
-			hashCode = String.valueOf(code);
-			}
-			html.append("<tr>");
-			html.append("<td align=\"left\">"+(id++)+"</td>");
-			html.append("<td align=\"left\">"+mappingPath+"</td>");
-			html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
-			html.append("<td align=\"left\"><a href=\"/jw/controller-"+hashCode+"/action\">"+handler.getControllerClass().getName()+"</a></td>");
-			hashCode = null;
-			code = mappingPath.hashCode();
-			if(code < 0){
-			hashCode = "_"+Math.abs(code);
-			}else{
-			hashCode = String.valueOf(code);
-			}
-			html.append("<td align=\"left\"><a href=\"/jw/action/"+hashCode+"\">"+handler.getActionMethod().getName()+"</a></td>");
-			html.append("<td align=\"left\">x"+handler.getFilterList().size()+"</td>");
-			html.append("</tr>");
-			}
+				List<Handler> action = handlerMap.get(mappingPath);
+				for (Handler handler : action) {
+					int code = handler.getControllerClass().getAnnotation(Controller.class).basePath().hashCode();
+					String hashCode = null;
+					if (code < 0) {
+						hashCode = "_" + Math.abs(code);
+					} else {
+						hashCode = String.valueOf(code);
+					}
+					html.append("<tr>");
+					html.append("<td align=\"left\">" + (id++) + "</td>");
+					html.append("<td align=\"left\">" + mappingPath + "</td>");
+					html.append("<td align=\"left\">" + handler.getRequestMethod() + "</td>");
+					html.append("<td align=\"left\"><a href=\"" + contextPath + "/jw/controller-" + hashCode
+							+ "/action\">" + handler.getControllerClass().getName() + "</a></td>");
+					hashCode = null;
+					code = mappingPath.hashCode();
+					if (code < 0) {
+						hashCode = "_" + Math.abs(code);
+					} else {
+						hashCode = String.valueOf(code);
+					}
+					html.append("<td align=\"left\"><a href=\"" + contextPath + "/jw/action/" + hashCode + "\">"
+							+ handler.getActionMethod().getName() + "</a></td>");
+					html.append("<td align=\"left\">x" + handler.getFilterList().size() + "</td>");
+					html.append("</tr>");
+				}
 			}
 			html.append("</table>");
 			html.append("</td></tr>");
@@ -359,8 +366,8 @@ public class HomeController {
 	}
 
 	@Request(value = "/controller-{basePathHashCode}/action", method = RequestMethod.GET)
-	public void action(@RequestParam("basePathHashCode") String basePathHashCode, HttpServletResponse response) {
-		this.action(response, basePathHashCode);
+	public void action(@RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request, HttpServletResponse response) {
+		this.action(request, response, basePathHashCode);
 	}
 
 	@Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
@@ -385,23 +392,25 @@ public class HomeController {
 				html.append("<table width=\"100%\">");
 				List<Handler> handlerList = ControllerHelper.getActionList();
 				Handler handler = null;
-				for(Handler handler_:handlerList){
-				String hashCode = null;
-				int code = handler_.getMappingPath().hashCode();
-				if(code < 0){
-				hashCode = "_"+Math.abs(code);
-				}else{
-				hashCode = String.valueOf(code);
+				for (Handler handler_ : handlerList) {
+					String hashCode = null;
+					int code = handler_.getMappingPath().hashCode();
+					if (code < 0) {
+						hashCode = "_" + Math.abs(code);
+					} else {
+						hashCode = String.valueOf(code);
+					}
+					if (hashCode.equals(mappingHashCode)) {
+						handler = handler_;
+						break;
+					}
 				}
-				if(hashCode.equals(mappingHashCode)){
-				handler = handler_;
-				break;
-				}
-				}
-				if(handler == null) break;
+				if (handler == null)
+					break;
 
 				String basePath = handler.getControllerClass().getAnnotation(Controller.class).basePath();
-				html.append("<tr><td align=\"center\"><font size=\"28\">Action Detail - "+handler.getMappingPath()+"</font></td></tr>");
+				html.append("<tr><td align=\"center\"><font size=\"28\">Action Detail - " + handler.getMappingPath()
+						+ "</font></td></tr>");
 				html.append("");
 				html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
 				html.append("&nbsp;<font color=\"white\"><b>Action Detail</b></font>&nbsp;");
@@ -417,37 +426,37 @@ public class HomeController {
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">mapping</td>");
-				html.append("<td align=\"left\">"+handler.getMappingPath()+"</td>");
+				html.append("<td align=\"left\">" + handler.getMappingPath() + "</td>");
 				html.append("</tr>");
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">request-method</td>");
-				html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
+				html.append("<td align=\"left\">" + handler.getRequestMethod() + "</td>");
 				html.append("</tr>");
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">content-type</td>");
-				html.append("<td align=\"left\">"+handler.getContentType()+"</td>");
+				html.append("<td align=\"left\">" + handler.getContentType() + "</td>");
 				html.append("</tr>");
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">character-encoding</td>");
-				html.append("<td align=\"left\">"+handler.getCharacterEncoding()+"</td>");
+				html.append("<td align=\"left\">" + handler.getCharacterEncoding() + "</td>");
 				html.append("</tr>");
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">action-method</td>");
-				html.append("<td align=\"left\">"+handler.getActionMethod().toString()+"</td>");
+				html.append("<td align=\"left\">" + handler.getActionMethod().toString() + "</td>");
 				html.append("</tr>");
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">basePath</td>");
-				html.append("<td align=\"left\">"+basePath+"</td>");
+				html.append("<td align=\"left\">" + basePath + "</td>");
 				html.append("</tr>");
 				html.append("<tr>");
 				html.append("<td align=\"left\">&nbsp;</td>");
 				html.append("<td align=\"left\">action-controller</td>");
-				html.append("<td align=\"left\">"+handler.getControllerClass().getName()+"</td>");
+				html.append("<td align=\"left\">" + handler.getControllerClass().getName() + "</td>");
 				html.append("</tr>");
 				html.append("</table>");
 				html.append("</td></tr>");
@@ -467,19 +476,19 @@ public class HomeController {
 				html.append("<td align=\"left\"><b>NotMapping</b></td>");
 				html.append("</tr>");
 				List<Filter> filterList = handler.getFilterList();
-				int id=1;
-				for(Filter filter:filterList){
-				html.append("<tr>");
-				html.append("<td align=\"left\" style=\"background-color: #F0F0F0;\">"+(id++)+"</td>");
-				html.append("<td align=\"left\">"+filter.setLevel()+"</td>");
-				html.append("<td align=\"left\">"+filter.getClass()+"</td>");
-				Pattern mappingPattern = filter.setMapping();
-				String mappingRegex = mappingPattern == null?"":mappingPattern.toString();
-				html.append("<td align=\"left\">"+mappingRegex+"</td>");
-				Pattern notMappingPattern = filter.setNotMapping();
-				String notMappingRegex = notMappingPattern==null?"":notMappingPattern.toString();
-				html.append("<td align=\"left\">"+notMappingRegex+"</td>");
-				html.append("</tr>");
+				int id = 1;
+				for (Filter filter : filterList) {
+					html.append("<tr>");
+					html.append("<td align=\"left\" style=\"background-color: #F0F0F0;\">" + (id++) + "</td>");
+					html.append("<td align=\"left\">" + filter.setLevel() + "</td>");
+					html.append("<td align=\"left\">" + filter.getClass() + "</td>");
+					Pattern mappingPattern = filter.setMapping();
+					String mappingRegex = mappingPattern == null ? "" : mappingPattern.toString();
+					html.append("<td align=\"left\">" + mappingRegex + "</td>");
+					Pattern notMappingPattern = filter.setNotMapping();
+					String notMappingRegex = notMappingPattern == null ? "" : notMappingPattern.toString();
+					html.append("<td align=\"left\">" + notMappingRegex + "</td>");
+					html.append("</tr>");
 				}
 				html.append("</table>");
 				html.append("</td></tr>");
@@ -503,7 +512,7 @@ public class HomeController {
 		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/home.html");
 		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/filter.html");
 		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/controller.html");
-//		HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action.html");
-//		 HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action_detail.html");
+		HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action.html");
+		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action_detail.html");
 	}
 }
