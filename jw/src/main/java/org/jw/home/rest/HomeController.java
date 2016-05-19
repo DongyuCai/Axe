@@ -52,7 +52,33 @@ public class HomeController {
 			html.append("<tr><td align=\"center\"><font size=\"28\">Welcome to use jw!</font></td></tr>");
 			html.append("");
 			html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
-			html.append("&nbsp;<font color=\"white\"><b>概览</b></font>&nbsp;");
+			html.append("&nbsp;<font color=\"white\"><b>系统运行-概览</b></font>&nbsp;");
+			html.append("</td></tr></table></td></tr>");
+			html.append("");
+			html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr>");
+			html.append("<tr><td>");
+			html.append("<table width=\"100%\">");
+			html.append("<tr style=\"background-color: #F0F0F0;\">");
+			html.append("<td align=\"left\">&nbsp;</td>");
+			html.append("<td align=\"left\"><b>启动时间</b></td>");
+			html.append("<td align=\"left\"><b>运行时长</b></td>");
+			html.append("<td align=\"left\"><b>访问次数</b></td>");
+			html.append("<td align=\"left\"><b>GC次数</b></td>");
+			html.append("<td align=\"left\"><b>GC耗时</b></td>");
+			html.append("</tr>");
+			html.append("<tr>");
+			html.append("<td align=\"left\">&nbsp;</td>");
+			html.append("<td align=\"center\">;)</td>");
+			html.append("<td align=\"center\">;)</td>");
+			html.append("<td align=\"center\"><a href=\"访问者ip详情列表\">;)</a></td>");
+			html.append("<td align=\"center\">;)</td>");
+			html.append("<td align=\"center\">;)</td>");
+			html.append("</tr>");
+			html.append("</table>");
+			html.append("</td></tr>");
+			html.append("");
+			html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
+			html.append("&nbsp;<font color=\"white\"><b>MVC-概览</b></font>&nbsp;");
 			html.append("</td></tr></table></td></tr>");
 			html.append("");
 			html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr>");
@@ -366,7 +392,8 @@ public class HomeController {
 	}
 
 	@Request(value = "/controller-{basePathHashCode}/action", method = RequestMethod.GET)
-	public void action(@RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request, HttpServletResponse response) {
+	public void action(@RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request,
+			HttpServletResponse response) {
 		this.action(request, response, basePathHashCode);
 	}
 
@@ -509,10 +536,10 @@ public class HomeController {
 
 	public static void main(String[] args) {
 		// 从这里生成response包装页面代码
-		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/home.html");
+		HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/home.html");
 		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/filter.html");
 		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/controller.html");
-		HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action.html");
+		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action.html");
 		// HtmlUtil.convertHtmlCode("src/main/java/org/jw/home/rest/action_detail.html");
 	}
 }
