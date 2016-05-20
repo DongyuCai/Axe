@@ -1,3 +1,6 @@
+<java>
+StringBuilder html = new StringBuilder();
+</java>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -71,10 +74,21 @@
 				<tr>
 					<td align="center"><a href=""+contextPath+"/jw/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
 					<td align="center"><a href=""+contextPath+"/jw/controller">Controller</a> x"+ClassHelper.getControllerClassSet().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/action">Action</a> x"+ClassHelper.getServiceClassSet().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/service">Service</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/action">Action</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center">Service x"+ClassHelper.getServiceClassSet().size()+"</td>
+					<java>
+					Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
+					int tnsPointCount = 0;
+					for(Class<?> serviceClass:serviceClassSet){
+						List<Method> methods = ReflectionUtil.getMethodByAnnotation(serviceClass, Tns.class);
+						if(CollectionUtil.isNotEmpty(methods)){
+							tnsPointCount = tnsPointCount+methods.size();
+						}
+					}
+					</java>
+					<td align="center"><a href=""+contextPath+"/jw/tns">Tns point </a> x"+tnsPointCount+"</td>
 					<td align="center"><a href=""+contextPath+"/jw/dao">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/table">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
+					<td align="center">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
 					<td align="center"><a href=""+contextPath+"/jw/datasource">Datasource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
 				</tr>
 			</table>
@@ -82,3 +96,6 @@
 	</table>
 </body>
 </html>
+<java>
+printHtml(response, html.toString());
+</java>

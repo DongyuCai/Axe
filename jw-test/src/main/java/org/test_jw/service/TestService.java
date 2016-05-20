@@ -2,6 +2,7 @@ package org.test_jw.service;
 
 import org.jw.annotation.ioc.Autowired;
 import org.jw.annotation.ioc.Service;
+import org.jw.annotation.persistence.Tns;
 import org.test_jw.bean.just4test;
 import org.test_jw.dao.TestDao;
 
@@ -17,6 +18,7 @@ public class TestService {
 		return testDao.getOne(id);	
 	}
 	
+	@Tns
 	public Object getAll(){
 		return testDao.getAll();
 	}

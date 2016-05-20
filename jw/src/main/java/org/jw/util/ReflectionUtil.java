@@ -1,5 +1,6 @@
 package org.jw.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +24,22 @@ import org.slf4j.LoggerFactory;
 public final class ReflectionUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
+
+    
+    public static List<Method> getMethodByAnnotation(Class<?> cls,Class<? extends Annotation> annotationClass){
+    	List<Method> result = new ArrayList<Method>();
+    	Method[] methods = cls.getDeclaredMethods();
+    	for(Method method:methods){
+    		if(method.isAnnotationPresent(annotationClass)){
+    			result.add(method);
+    		}
+    	}
+    	Class<?> superClass = cls.getSuperclass();
+    	if(superClass != null){
+    		result.addAll(getMethodByAnnotation(superClass, annotationClass));
+    	}
+    	return result;
+    }
     
     /**
      * 获取Class中的成员变量，如果有父类，一并获取
