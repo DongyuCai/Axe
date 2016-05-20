@@ -504,7 +504,7 @@ public final class RequestUtil {
 						//String
 						Map<String,List<FormParam>> fieldMap = param.getFieldMap();
 						if(fieldMap.containsKey(fieldName)){
-							StringBuffer buffer = new StringBuffer("");
+							StringBuilder buffer = new StringBuilder("");
 							for(int j=0;j<formParamList.size();j++){
 								String value =  CastUtil.castString(formParamList.get(j).getFieldValue(), null);
 								if(value != null){

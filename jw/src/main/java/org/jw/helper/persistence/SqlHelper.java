@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * 剥离自DataBaseHelper
  * Created by CaiDongYu on 2016/5/6.
  */
-public class SqlHelper {
+public final class SqlHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SqlHelper.class);
 
 	public static Map<String,Class<?>> matcherEntityClassMap(String sql){
@@ -406,7 +406,7 @@ public class SqlHelper {
             			throw new RuntimeException("invalid sql param is arry: "+param);
             		}
             		if(List.class.isAssignableFrom(param.getClass())){
-            			StringBuffer getFlagReplaceBuffer = new StringBuffer();
+            			StringBuilder getFlagReplaceBuffer = new StringBuilder();
             			List<?> param2List = (List<?>)param;//这就是针对 in 操作的
             			if(CollectionUtil.isEmpty(param2List)){
             	    		throw new RuntimeException("invalid sql param is null or empty: "+param);
@@ -439,7 +439,7 @@ public class SqlHelper {
         		int paramIndex = CastUtil.castInteger(getFlagNumber)-1;
         		
         		Object param = params[paramIndex];
-        		StringBuffer getFlagReplaceBuffer = new StringBuffer();
+        		StringBuilder getFlagReplaceBuffer = new StringBuilder();
         		if(param != null){
         			if(param.getClass().isArray()){
             			throw new RuntimeException("invalid sql["+sql+"] param is arry: "+param);

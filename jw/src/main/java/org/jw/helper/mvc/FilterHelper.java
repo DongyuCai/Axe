@@ -16,7 +16,7 @@ import org.jw.util.ReflectionUtil;
  * Filter不应该放一起
  * Created by CaiDongYu on 2016/4/9.
  */
-public class FilterHelper {
+public final class FilterHelper {
 	private static final List<Filter> FILTER_LIST = new ArrayList<>();//保证顺序
     static {
         Set<Class<?>> filterClassSet = ClassHelper.getClassSetBySuper(Filter.class);

@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 
 import org.jw.annotation.persistence.Dao;
 import org.jw.helper.aop.AopHelper;
+import org.jw.helper.base.FrameworkStatusHelper;
 import org.jw.helper.ioc.BeanHelper;
 import org.jw.helper.ioc.ClassHelper;
 import org.jw.helper.ioc.IocHelper;
@@ -11,6 +12,7 @@ import org.jw.helper.mvc.ControllerHelper;
 import org.jw.helper.mvc.FilterHelper;
 import org.jw.helper.mvc.FormRequestHelper;
 import org.jw.helper.persistence.DataBaseHelper;
+import org.jw.helper.persistence.DataSourceHelper;
 import org.jw.helper.persistence.TableHelper;
 import org.jw.util.ClassUtil;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ public final class HelperLoader {
     }
     public static void init(ServletContext servletContext){
         Class<?>[] classList = {
+        		FrameworkStatusHelper.class,//框架基础信息初始化
                 ClassHelper.class,//加载package下所有class到CLASS_SET
                 BeanHelper.class,//实例化CLASS_SET里的类，放到BEAN_MAP里
                 FilterHelper.class,//实例化所有Filter，并按层级排好序
@@ -36,6 +39,7 @@ public final class HelperLoader {
                 IocHelper.class,//组装所有@Autowired
                 ControllerHelper.class,//加载ACTION_MAP
                 TableHelper.class,//加载所有的@Table
+                DataSourceHelper.class,//加载DataSource配置
                 DataBaseHelper.class//初始化数据库配置
         };
         for (Class<?> cls:classList){

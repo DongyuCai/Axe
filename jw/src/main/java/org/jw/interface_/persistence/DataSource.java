@@ -11,5 +11,11 @@ import java.sql.SQLException;
  */
 public interface DataSource {
 
+	/**
+	 * 数据源名称
+	 * 需要唯一标注
+	 */
+	public String setName();
+	
 	public Connection getConnection() throws SQLException ;
 }

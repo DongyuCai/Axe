@@ -16,20 +16,47 @@
 		<tr><td>
 			<table width="100%">
 				<tr style="background-color: #F0F0F0;">
-					<td align="left">&nbsp;</td>
-					<td align="left"><b>启动时间</b></td>
-					<td align="left"><b>运行时长</b></td>
-					<td align="left"><b>访问次数</b></td>
-					<td align="left"><b>GC次数</b></td>
-					<td align="left"><b>GC耗时</b></td>
+					<td align="center">&nbsp;</td>
+					<td align="center"><b>启动时间</b></td>
+					<td align="center"><b>运行时长</b></td>
+					<td align="center"><b>访问次数</b></td>
 				</tr>
 				<tr>
-					<td align="left">&nbsp;</td>
-					<td align="center">;)</td>
-					<td align="center">;)</td>
+					<td align="center">&nbsp;</td>
+					<java>
+					Date startupTime = FrameworkStatusHelper.getStartupTime();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					</java>
+					<td align="center">"+sdf.format(startupTime)+"</td>
+					<java>
+					long runTimeSec = (System.currentTimeMillis()-startupTime.getTime()) / 1000;
+					String runTime = "";
+					if (runTimeSec < 60) {
+						runTime = runTimeSec + "秒";
+					} else {
+						long runTimeMin = runTimeSec / 60;
+						if (runTimeMin < 60) {
+							runTimeSec = runTimeSec - (runTimeMin * 60);
+							runTime = runTimeMin + "分" + runTimeSec + "秒";
+						} else {
+							long runTimeHour = runTimeMin / 60;
+							if (runTimeHour < 24) {
+								runTimeMin = (runTimeSec-(runTimeHour * 60 * 60)) / 60;
+								runTimeSec = runTimeSec - (runTimeHour * 60 * 60) - (runTimeMin * 60);
+								runTime = runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+							} else {
+								long runTimeDay = runTimeHour / 24;
+								runTimeHour = (runTimeSec-(runTimeDay * 24 * 60 * 60))/24;
+								runTimeMin = (runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60))/60;
+								runTimeSec = runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60)
+										- (runTimeMin * 60);
+								runTime = runTimeDay + "天" + runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+							}
+						}
+					}
+					</java>
+					<td align="center">"+runTime+"</td>
 					<td align="center"><a href="访问者ip详情列表">;)</a></td>
-					<td align="center">;)</td>
-					<td align="center">;)</td>
 				</tr>
 			</table>
 		</td></tr>
@@ -48,7 +75,7 @@
 					<td align="center"><a href=""+contextPath+"/jw/service">Service</a> x"+ControllerHelper.getActionList().size()+"</td>
 					<td align="center"><a href=""+contextPath+"/jw/dao">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>
 					<td align="center"><a href=""+contextPath+"/jw/table">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/datasource">Datasource</a> x"+ClassHelper.getClassSetBySuper(DataSource.class).size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/datasource">Datasource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
 				</tr>
 			</table>
 		</td></tr>

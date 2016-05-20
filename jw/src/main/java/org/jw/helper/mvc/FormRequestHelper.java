@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * 表单提交请求 助手类
  * Created by CaiDongYu on 2016/4/25.
  */
-public class FormRequestHelper {
+public final class FormRequestHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(FormRequestHelper.class);
 
     /**

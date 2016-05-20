@@ -4,13 +4,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.jw.annotation.ioc.Component;
 import org.jw.helper.base.ConfigHelper;
 import org.jw.interface_.persistence.DataSource;
+import org.jw.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component
 public class DbcpDataSourceFactory implements DataSource{
 	Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceFactory.class);
 	
@@ -27,9 +26,16 @@ public class DbcpDataSourceFactory implements DataSource{
         URL = ConfigHelper.getJdbcUrl();
         USERNAME = ConfigHelper.getJdbcUsername();
         PASSWORD = ConfigHelper.getJdbcPassword();
-        
         DATA_SOURCE = new BasicDataSource();
-        init();
+        
+        do{
+        	if(StringUtil.isEmpty(DRIVER)) break;
+        	if(StringUtil.isEmpty(URL)) break;
+        	if(StringUtil.isEmpty(USERNAME)) break;
+        	if(StringUtil.isEmpty(PASSWORD)) break;
+        	//么有配置的话，默认不会初始化数据源
+        	init();
+        }while(false);
 	}
 	
 	private void init() {
@@ -53,5 +59,10 @@ public class DbcpDataSourceFactory implements DataSource{
 	@Override
 	public Connection getConnection() throws SQLException {
 		return DATA_SOURCE.getConnection();
+	}
+
+	@Override
+	public String setName() {
+		return "";
 	}
 }

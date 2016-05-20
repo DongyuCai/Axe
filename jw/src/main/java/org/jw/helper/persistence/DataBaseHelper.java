@@ -17,10 +17,6 @@ import org.jw.annotation.persistence.Id;
 import org.jw.bean.persistence.EntityFieldMethod;
 import org.jw.bean.persistence.InsertResult;
 import org.jw.bean.persistence.SqlPackage;
-import org.jw.helper.base.ConfigHelper;
-import org.jw.helper.ioc.BeanHelper;
-import org.jw.interface_.persistence.DataSource;
-import org.jw.util.ClassUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.StringUtil;
 import org.slf4j.Logger;
@@ -33,23 +29,17 @@ import org.slf4j.LoggerFactory;
  * TODO(OK):增加外部数据源可配置，连接池
  * TODO(OK):自动返回新增主键
  */
-public class DataBaseHelper {
+public final class DataBaseHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
     
     private static final ThreadLocal<Connection> CONNECTION_HOLDER;
 
-    private static final DataSource DATA_SOURCE;
     static {
 
         //#数据库连接池
         CONNECTION_HOLDER = new ThreadLocal<>();
         
-        Class<?> dataSourceClass = ClassUtil.loadClass(ConfigHelper.getJdbcDatasource(), false);
-        DATA_SOURCE = (DataSource) BeanHelper.getBean(dataSourceClass);
-        if(DATA_SOURCE == null){
-            throw new RuntimeException("can not find dataSouce bean of type : "+dataSourceClass);
-        }
     }
 
     
@@ -60,7 +50,7 @@ public class DataBaseHelper {
         Connection conn = CONNECTION_HOLDER.get();
         if (conn == null) {
             try {
-                conn = DATA_SOURCE.getConnection();
+                conn = DataSourceHelper.getDataSource().getConnection();
                 LOGGER.debug("get connection:"+conn);
             } catch (SQLException e) {
                 LOGGER.error("get connection failure", e);

@@ -6,7 +6,9 @@ package org.jw.constant;
  */
 public interface ConfigConstant {
     String CONFIG_FILE = "jw.properties";
+    //#系统参数配置
 
+    //#持久层配置
     String JDBC_DRIVER = "jdbc.driver";
     String JDBC_URL = "jdbc.url";
     String JDBC_USERNAME = "jdbc.username";
@@ -14,6 +16,7 @@ public interface ConfigConstant {
     String JDBC_DATASOURCE = "jdbc.datasource";
     String JDBC_AUTOTABLE = "jdbc.autotable";
     
+    //#项目基本配置
     String APP_BASE_PACKAGE = "app.base_package";
     String APP_JSP_PATH = "app.jsp_path";
     String APP_ASSET_PATH = "app.asset_path";

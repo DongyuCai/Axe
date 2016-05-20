@@ -15,7 +15,7 @@ import org.jw.util.RequestUtil;
  * 请求助手类
  * Created by CaiDongYu on 2016/4/25.
  */
-public class AjaxRequestHelper {
+public final class AjaxRequestHelper {
     public static Param createParam(HttpServletRequest request,String requestPath,String mappingPath)throws IOException{
         List<FormParam> formParamList = new ArrayList<>();
         formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));

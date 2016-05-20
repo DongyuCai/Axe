@@ -2,7 +2,9 @@ package org.jw.home.rest;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +21,11 @@ import org.jw.annotation.mvc.RequestParam;
 import org.jw.annotation.persistence.Dao;
 import org.jw.bean.mvc.Handler;
 import org.jw.constant.RequestMethod;
+import org.jw.helper.base.FrameworkStatusHelper;
 import org.jw.helper.ioc.ClassHelper;
 import org.jw.helper.mvc.ControllerHelper;
 import org.jw.helper.mvc.FilterHelper;
+import org.jw.helper.persistence.DataSourceHelper;
 import org.jw.helper.persistence.TableHelper;
 import org.jw.interface_.mvc.Filter;
 import org.jw.interface_.persistence.DataSource;
@@ -59,20 +63,43 @@ public class HomeController {
 			html.append("<tr><td>");
 			html.append("<table width=\"100%\">");
 			html.append("<tr style=\"background-color: #F0F0F0;\">");
-			html.append("<td align=\"left\">&nbsp;</td>");
-			html.append("<td align=\"left\"><b>启动时间</b></td>");
-			html.append("<td align=\"left\"><b>运行时长</b></td>");
-			html.append("<td align=\"left\"><b>访问次数</b></td>");
-			html.append("<td align=\"left\"><b>GC次数</b></td>");
-			html.append("<td align=\"left\"><b>GC耗时</b></td>");
+			html.append("<td align=\"center\">&nbsp;</td>");
+			html.append("<td align=\"center\"><b>启动时间</b></td>");
+			html.append("<td align=\"center\"><b>运行时长</b></td>");
+			html.append("<td align=\"center\"><b>访问次数</b></td>");
 			html.append("</tr>");
 			html.append("<tr>");
-			html.append("<td align=\"left\">&nbsp;</td>");
-			html.append("<td align=\"center\">;)</td>");
-			html.append("<td align=\"center\">;)</td>");
+			html.append("<td align=\"center\">&nbsp;</td>");
+			Date startupTime = FrameworkStatusHelper.getStartupTime();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			html.append("<td align=\"center\">"+sdf.format(startupTime)+"</td>");
+			long runTimeSec = (System.currentTimeMillis()-startupTime.getTime()) / 1000;
+			String runTime = "";
+			if (runTimeSec < 60) {
+			runTime = runTimeSec + "秒";
+			} else {
+			long runTimeMin = runTimeSec / 60;
+			if (runTimeMin < 60) {
+			runTimeSec = runTimeSec - (runTimeMin * 60);
+			runTime = runTimeMin + "分" + runTimeSec + "秒";
+			} else {
+			long runTimeHour = runTimeMin / 60;
+			if (runTimeHour < 24) {
+			runTimeMin = (runTimeSec-(runTimeHour * 60 * 60)) / 60;
+			runTimeSec = runTimeSec - (runTimeHour * 60 * 60) - (runTimeMin * 60);
+			runTime = runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+			} else {
+			long runTimeDay = runTimeHour / 24;
+			runTimeHour = (runTimeSec-(runTimeDay * 24 * 60 * 60))/24;
+			runTimeMin = (runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60))/60;
+			runTimeSec = runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60)
+			- (runTimeMin * 60);
+			runTime = runTimeDay + "天" + runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+			}
+			}
+			}
+			html.append("<td align=\"center\">"+runTime+"</td>");
 			html.append("<td align=\"center\"><a href=\"访问者ip详情列表\">;)</a></td>");
-			html.append("<td align=\"center\">;)</td>");
-			html.append("<td align=\"center\">;)</td>");
 			html.append("</tr>");
 			html.append("</table>");
 			html.append("</td></tr>");
@@ -85,26 +112,20 @@ public class HomeController {
 			html.append("<tr><td>");
 			html.append("<table width=\"100%\">");
 			html.append("<tr>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/filter\">Filter</a> x"
-					+ FilterHelper.getSortedFilterList().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/controller\">Controller</a> x"
-					+ ClassHelper.getControllerClassSet().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/action\">Action</a> x"
-					+ ClassHelper.getServiceClassSet().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/service\">Service</a> x"
-					+ ControllerHelper.getActionList().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/dao\">Dao</a> x"
-					+ ClassHelper.getClassSetByAnnotation(Dao.class).size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/table\">Table</a> x"
-					+ TableHelper.getEntityClassMap().size() + "</td>");
-			html.append("<td align=\"center\"><a href=\"" + contextPath + "/jw/datasource\">Datasource</a> x"
-					+ ClassHelper.getClassSetBySuper(DataSource.class).size() + "</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/filter\">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/controller\">Controller</a> x"+ClassHelper.getControllerClassSet().size()+"</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/action\">Action</a> x"+ClassHelper.getServiceClassSet().size()+"</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/service\">Service</a> x"+ControllerHelper.getActionList().size()+"</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/dao\">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/table\">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>");
+			html.append("<td align=\"center\"><a href=\""+contextPath+"/jw/datasource\">Datasource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>");
 			html.append("</tr>");
 			html.append("</table>");
 			html.append("</td></tr>");
 			html.append("</table>");
 			html.append("</body>");
 			html.append("</html>");
+
 
 			PrintWriter writer = response.getWriter();
 			writer.write(html.toString());
