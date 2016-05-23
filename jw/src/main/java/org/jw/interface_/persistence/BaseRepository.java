@@ -30,7 +30,7 @@ public interface BaseRepository {
 	 * 保存entity
 	 * 这是个 INSERT ... ON DUPLICATE KEY UPDATE 操作
 	 * 如果entity有主键，并且主键已存在，执行update
-	 * TODO:返回Entity，并且是查询出来值塞满的，包括Id
+	 * TODO(OK):返回Entity，并且是查询出来值塞满的，包括Id
 	 */
 	public <T> T saveEntity(T entity);
 	

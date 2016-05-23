@@ -1,0 +1,1 @@
+mvn deploy:deploy-file -DgroupId=org.jw -DartifactId=jw -Dversion=0.1.7 -Dpackaging=jar -Dfile=D:\jw-0.1.7.jar -Durl=http://mvn.lngtop.com/nexus/content/repositories/Lngtop-Releases/ -DrepositoryId=lngtop-releases

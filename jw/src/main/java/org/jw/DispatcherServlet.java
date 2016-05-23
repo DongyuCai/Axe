@@ -33,6 +33,7 @@ import org.jw.helper.mvc.AjaxRequestHelper;
 import org.jw.helper.mvc.ControllerHelper;
 import org.jw.helper.mvc.FormRequestHelper;
 import org.jw.interface_.mvc.Filter;
+import org.jw.util.CollectionUtil;
 import org.jw.util.JsonUtil;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.RequestUtil;
@@ -108,9 +109,11 @@ public class DispatcherServlet extends HttpServlet{
                 //先执行Filter链
                 List<Filter> filterList = handler.getFilterList();
                 boolean doFilterSuccess = true;
-                for(Filter filter:filterList){
-                	doFilterSuccess = filter.doFilter(request, response, param, handler);
-                	if(!doFilterSuccess) break;
+                if(CollectionUtil.isNotEmpty(filterList)){
+                	for(Filter filter:filterList){
+                		doFilterSuccess = filter.doFilter(request, response, param, handler);
+                		if(!doFilterSuccess) break;
+                	}
                 }
                 if(doFilterSuccess){
                 	//调用 Action方法

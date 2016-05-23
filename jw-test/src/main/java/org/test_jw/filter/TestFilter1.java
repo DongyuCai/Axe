@@ -35,9 +35,6 @@ public class TestFilter1 implements Filter{
 	}
 
 	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void init() {}
 
 }

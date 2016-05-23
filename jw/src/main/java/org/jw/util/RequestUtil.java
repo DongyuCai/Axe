@@ -149,7 +149,7 @@ public final class RequestUtil {
     	return request.getMethod().toUpperCase();
     }
     
-    //TODO:获取准确的server请求路径
+    //TODO(OK):获取准确的server请求路径
     //jetty下request.getServletPath();可以直接使用
     //tomcat 8.0 下不好使,需要改变策略
     public static String getRequestPath(HttpServletRequest request){
@@ -177,8 +177,10 @@ public final class RequestUtil {
 		if(fieldMap.containsKey(fieldName)){
 			List<FormParam> formParamList = fieldMap.get(fieldName);
 			List<Object> list = new ArrayList<>();
-			for(FormParam formParam:formParamList){
-				list.add(formParam.getFieldValue());
+			if(CollectionUtil.isNotEmpty(formParamList)){
+				for(FormParam formParam:formParamList){
+					list.add(formParam.getFieldValue());
+				}
 			}
 			parameterValue = list.size()>0?list:null;
 		}else if(fileMap.containsKey(fieldName)){
@@ -197,8 +199,10 @@ public final class RequestUtil {
 		if(fieldMap.containsKey(fieldName)){
 			List<FormParam> formParamList = fieldMap.get(fieldName);
 			List<String> list = new ArrayList<>();
-			for(FormParam formParam:formParamList){
-				list.add(formParam.getFieldValue());
+			if(formParamList != null){
+				for(FormParam formParam:formParamList){
+					list.add(formParam.getFieldValue());
+				}
 			}
 			parameterValue = list.size()>0?list:null;
 		}
@@ -327,6 +331,9 @@ public final class RequestUtil {
 							parameterValue = RequestUtil.getParamList(fieldName, param);
 						}else{
 							List<FormParam> formParamList = param.getFieldMap().get(fieldName);
+							if(formParamList == null){
+								formParamList = new ArrayList<>();
+							}
 							Class<?> listParamClass = (Class<?>)listParamType;
 							if(ReflectionUtil.compareType(Object.class, listParamClass)){
 								//List<Object>
@@ -409,6 +416,9 @@ public final class RequestUtil {
 				Class<?> parameterClass = (Class<?>)parameterType;
 				if(parameterClass.isArray()){
 					List<FormParam> formParamList = param.getFieldMap().get(fieldName);
+					if(formParamList == null){
+						formParamList = new ArrayList<>();
+					}
 					if(ReflectionUtil.compareType( parameterClass.getComponentType(), Object.class)){
 						//Object
 						List<?> paramList = RequestUtil.getParamList(fieldName, param);
@@ -494,6 +504,9 @@ public final class RequestUtil {
 					}
 				}else{
 					List<FormParam> formParamList = param.getFieldMap().get(fieldName);
+					if(formParamList == null){
+						formParamList = new ArrayList<>();
+					}
 					if(ReflectionUtil.compareType(List.class, parameterClass)){
 						//List
 						parameterValue = RequestUtil.getParamList(fieldName, param);
