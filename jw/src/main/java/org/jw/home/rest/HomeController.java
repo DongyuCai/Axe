@@ -107,7 +107,7 @@ public class HomeController {
 		runTime = runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
 		} else {
 		long runTimeDay = runTimeHour / 24;
-		runTimeHour = (runTimeSec-(runTimeDay * 24 * 60 * 60))/24;
+		runTimeHour = (runTimeSec-(runTimeDay * 24 * 60 * 60))/60/24;
 		runTimeMin = (runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60))/60;
 		runTimeSec = runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60)
 		- (runTimeMin * 60);

@@ -21,6 +21,7 @@ public final class ClassHelper {
 
     /**
      * 存放所有加载的类
+     * TODO:CLASS_SET占用的空间其实在框架初始化之后，就没用了。
      */
     private static final Set<Class<?>> CLASS_SET = new HashSet<>();
 
@@ -85,14 +86,27 @@ public final class ClassHelper {
     }
     
     /**
-     * 获取所有的 Bean，包括Controller和Service
-     * TODO:待优化，不用重复获取
+     * 获取所有的 Bean
      */
     public static Set<Class<?>> getBeanClassSet(){
         Set<Class<?>> beanClassSet = new HashSet<>();
-        beanClassSet.addAll(getComponentClassSet());
-        beanClassSet.addAll(getServiceClassSet());
-        beanClassSet.addAll(getControllerClassSet());
+        for(Class<?> cls:CLASS_SET){
+    		//#Component.class
+    		if(cls.isAnnotationPresent(Component.class)){
+    			beanClassSet.add(cls);
+    		}
+        	//#Controller
+    		if(cls.isAnnotationPresent(Controller.class)){
+    			beanClassSet.add(cls);
+    		}
+    		//#Service
+    		if(cls.isAnnotationPresent(Service.class)){
+    			beanClassSet.add(cls);
+    		}
+    	}
+//        beanClassSet.addAll(getComponentClassSet());
+//        beanClassSet.addAll(getServiceClassSet());
+//        beanClassSet.addAll(getControllerClassSet());
         return beanClassSet;
     }
 
@@ -120,5 +134,9 @@ public final class ClassHelper {
     		}
     	}
         return classSet;
+    }
+    
+    public static void release(){
+    	CLASS_SET.clear();
     }
 }

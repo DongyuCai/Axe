@@ -51,6 +51,10 @@ public final class HelperLoader {
             FormRequestHelper.init(servletContext);
         }
         
+        
+        //释放ClassHelper占用的内存
+        ClassHelper.release();
+        
         //装载的类日志分析
         //TODO:详细日志
         LOGGER.debug("Filter \tx"+FilterHelper.getSortedFilterList().size());
