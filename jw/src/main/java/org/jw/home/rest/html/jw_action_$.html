@@ -1,5 +1,10 @@
 <java>
-StringBuilder html = new StringBuilder();
+@Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
+	public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, HttpServletResponse response) {
+		do {
+			if (StringUtil.isEmpty(mappingHashCode))
+				break;
+				StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>
 <html>
@@ -123,5 +128,7 @@ StringBuilder html = new StringBuilder();
 </body>
 </html>
 <java>
-printHtml(response, html.toString());
+		printHtml(response, html.toString());
+	} while (false);
+}
 </java>

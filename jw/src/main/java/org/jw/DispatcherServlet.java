@@ -33,6 +33,7 @@ import org.jw.helper.mvc.AjaxRequestHelper;
 import org.jw.helper.mvc.ControllerHelper;
 import org.jw.helper.mvc.FormRequestHelper;
 import org.jw.interface_.mvc.Filter;
+import org.jw.interface_.mvc.Interceptor;
 import org.jw.util.CollectionUtil;
 import org.jw.util.JsonUtil;
 import org.jw.util.ReflectionUtil;
@@ -96,7 +97,7 @@ public class DispatcherServlet extends HttpServlet{
                 contentType = handler.getContentType();
                 characterEncoding = handler.getCharacterEncoding();
                 
-                //创建你请求参数对象
+                //##1.创建你请求参数对象
                 Param param;
                 if(FormRequestHelper.isMultipart(request)){
                     //如果是文件上传
@@ -106,7 +107,7 @@ public class DispatcherServlet extends HttpServlet{
                     param = AjaxRequestHelper.createParam(request,requestPath,handler.getMappingPath());
                 }
                 
-                //先执行Filter链
+                //##2.先执行Filter链
                 List<Filter> filterList = handler.getFilterList();
                 boolean doFilterSuccess = true;
                 if(CollectionUtil.isNotEmpty(filterList)){
@@ -115,7 +116,17 @@ public class DispatcherServlet extends HttpServlet{
                 		if(!doFilterSuccess) break;
                 	}
                 }
-                if(doFilterSuccess){
+                //##3.执行Interceptor 列表
+                List<Interceptor> interceptorList = handler.getInterceptorList();
+                boolean doInterceptorSuccess = true;
+                if(CollectionUtil.isNotEmpty(interceptorList)){
+                	for(Interceptor interceptor:interceptorList){
+                		doInterceptorSuccess = interceptor.doInterceptor(request, response, param, handler);
+                		if(!doInterceptorSuccess) break;
+                	}
+                }
+                //##4.执行action
+                if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
                 	Method actionMethod = handler.getActionMethod();
                 	Object result = this.invokeActionMethod(controllerBean, actionMethod, param, request, response);

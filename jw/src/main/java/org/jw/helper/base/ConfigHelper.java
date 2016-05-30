@@ -15,6 +15,22 @@ public final class ConfigHelper {
     private static final Properties CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
 
     /**
+     * 获取jw_home框架控制台配置
+     */
+    public static boolean getJwHome(){
+    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JW_HOME, true);
+    }
+
+    /**
+     * 是否释放框架初始化完成后的，ClassHelper内的classSet集合
+     * 这个集合如果在实际项目中，可能会很大，因为不知道有多少资源会全部被扫描进来
+     * 如果需要完全使用jw_home，可以不关闭，否则默认关闭
+     */
+    public static boolean getJwClassHelperKeep(){
+    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JW_CLASSHELPER_KEEP, false);
+    }
+    
+    /**
      * 获取 JDBC 驱动
      */
     public static String getJdbcDriver() {
@@ -61,7 +77,7 @@ public final class ConfigHelper {
      * 获取应用基础包路径
      */
     public static String getAppBasePackage() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_BASE_PACKAGE,null);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_BASE_PACKAGE);
     }
 
     /**

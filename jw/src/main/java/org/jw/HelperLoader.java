@@ -11,6 +11,7 @@ import org.jw.helper.ioc.IocHelper;
 import org.jw.helper.mvc.ControllerHelper;
 import org.jw.helper.mvc.FilterHelper;
 import org.jw.helper.mvc.FormRequestHelper;
+import org.jw.helper.mvc.InterceptorHelper;
 import org.jw.helper.persistence.DataBaseHelper;
 import org.jw.helper.persistence.DataSourceHelper;
 import org.jw.helper.persistence.TableHelper;
@@ -34,7 +35,8 @@ public final class HelperLoader {
         		FrameworkStatusHelper.class,//框架基础信息初始化
                 ClassHelper.class,//加载package下所有class到CLASS_SET
                 BeanHelper.class,//实例化CLASS_SET里的类，放到BEAN_MAP里
-                FilterHelper.class,//实例化所有Filter，并按层级排好序
+                FilterHelper.class,//实例化所有Filter链表，并按层级排好序
+                InterceptorHelper.class,//实例化所有Interceptor Map，interceptor没有顺序
                 AopHelper.class,//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
                 IocHelper.class,//组装所有@Autowired
                 ControllerHelper.class,//加载ACTION_MAP
@@ -51,18 +53,19 @@ public final class HelperLoader {
             FormRequestHelper.init(servletContext);
         }
         
-        
-        //释放ClassHelper占用的内存
-        ClassHelper.release();
-        
         //装载的类日志分析
         //TODO:详细日志
         LOGGER.debug("Filter \tx"+FilterHelper.getSortedFilterList().size());
+        LOGGER.debug("Interceptor \tx"+InterceptorHelper.getInterceptorMap().size());
         LOGGER.debug("Controller \tx"+ClassHelper.getControllerClassSet().size());
         LOGGER.debug("Action \tx"+ControllerHelper.getActionList().size());
         LOGGER.debug("Service \tx"+ClassHelper.getServiceClassSet().size());
         LOGGER.debug("Dao \tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
         LOGGER.debug("Table \tx"+TableHelper.getEntityClassMap().size());
         LOGGER.debug("jw framework started success!");
+        
+        //释放ClassHelper占用的内存
+        //TODO:目前来看，框架自身只有加载91个资源，并不很多
+        ClassHelper.release();
     }
 }

@@ -4,8 +4,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.jw.HelperLoader;
 import org.jw.bean.mvc.FileParam;
 import org.jw.bean.mvc.Param;
+import org.jw.helper.ioc.ClassHelper;
 import org.test_jw.rest.TestController;
 
 /**
@@ -16,7 +18,9 @@ public class Test{
 
     public static void main(String[] args) {
     	
-    	try {
+    	HelperLoader.init();
+    	System.out.println(ClassHelper.getClassSet().size());
+    	/*try {
 			Method method = TestController.class.getDeclaredMethod("postPathParam2",new Class<?>[]{String.class,Param.class});
 			Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 			
@@ -24,7 +28,7 @@ public class Test{
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
-		}
+		}*/
     	
     	/*List<Account> list = new ArrayList<Account>();
     	Account a1 = new Account();

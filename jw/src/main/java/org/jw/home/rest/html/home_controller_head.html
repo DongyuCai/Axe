@@ -1,0 +1,62 @@
+<java>
+package org.jw.home.rest;
+
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.jw.annotation.ioc.Controller;
+import org.jw.annotation.ioc.Service;
+import org.jw.annotation.mvc.FilterFuckOff;
+import org.jw.annotation.mvc.Interceptor;
+import org.jw.annotation.mvc.Request;
+import org.jw.annotation.mvc.RequestParam;
+import org.jw.annotation.persistence.Dao;
+import org.jw.annotation.persistence.Tns;
+import org.jw.bean.mvc.Handler;
+import org.jw.constant.CharacterEncoding;
+import org.jw.constant.ContentType;
+import org.jw.constant.RequestMethod;
+import org.jw.helper.base.ConfigHelper;
+import org.jw.helper.base.FrameworkStatusHelper;
+import org.jw.helper.ioc.ClassHelper;
+import org.jw.helper.mvc.ControllerHelper;
+import org.jw.helper.mvc.FilterHelper;
+import org.jw.helper.mvc.InterceptorHelper;
+import org.jw.helper.persistence.DataSourceHelper;
+import org.jw.helper.persistence.TableHelper;
+import org.jw.home.interceptor.HomeInterceptor;
+import org.jw.interface_.mvc.Filter;
+import org.jw.interface_.persistence.DataSource;
+import org.jw.util.CollectionUtil;
+import org.jw.util.ReflectionUtil;
+import org.jw.util.StringUtil;
+
+@FilterFuckOff
+@Interceptor(HomeInterceptor.class)
+@Controller(basePath = "/jw")
+public class HomeController {
+
+	private void printHtml(HttpServletResponse response, String html) {
+		try {
+			response.setCharacterEncoding(CharacterEncoding.UTF_8);
+			response.setContentType(ContentType.APPLICATION_HTML);
+			PrintWriter writer = response.getWriter();
+			writer.write(html);
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+</java>

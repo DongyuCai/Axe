@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public final class HtmlUtil {
+public final class Html2JavaUtil {
 	public static void convertHtmlCode(String htmlFileName){
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(htmlFileName)));

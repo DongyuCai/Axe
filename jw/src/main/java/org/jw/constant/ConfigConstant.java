@@ -5,9 +5,13 @@ package org.jw.constant;
  * Created by CaiDongYu on 2016/4/8.
  */
 public interface ConfigConstant {
-    String CONFIG_FILE = "jw.properties";
+    //#jw配置文件名称
+	String CONFIG_FILE = "jw.properties";
+    
     //#系统参数配置
-
+	String JW_HOME = "jw.home";
+	String JW_CLASSHELPER_KEEP = "jw.classhelper.keep";
+	
     //#持久层配置
     String JDBC_DRIVER = "jdbc.driver";
     String JDBC_URL = "jdbc.url";

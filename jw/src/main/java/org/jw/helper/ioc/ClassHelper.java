@@ -42,6 +42,7 @@ public final class ClassHelper {
 
     /**
      * 获取所有加载的类
+     * 这是个极其消耗资源的操作，个人认为
      */
     public static Set<Class<?>> getClassSet() {
         return CLASS_SET;
@@ -138,6 +139,8 @@ public final class ClassHelper {
     }
     
     public static void release(){
-    	CLASS_SET.clear();
+    	if(!ConfigHelper.getJwClassHelperKeep()){
+    		CLASS_SET.clear();
+    	}
     }
 }

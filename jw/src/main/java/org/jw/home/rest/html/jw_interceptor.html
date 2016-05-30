@@ -1,0 +1,49 @@
+<java>
+@Request(value = "/interceptor", method = RequestMethod.GET)
+public void interceptor(HttpServletResponse response) {
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>jw interceptor</title>
+	</head>
+<body>
+	<table width="100%">
+		<java>
+		Map<Class<? extends org.jw.interface_.mvc.Interceptor>,org.jw.interface_.mvc.Interceptor> interceptorMap = InterceptorHelper.getInterceptorMap();
+		</java>
+		<tr><td align="center"><font size="28">Interceptor list x"+interceptorMap.size()+"</font></td></tr>
+
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>Interceptor</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>Class</b></td>
+				</tr>
+				<java>
+				int id=1;
+				for(Class<? extends org.jw.interface_.mvc.Interceptor> interceptorClass:interceptorMap.keySet()){
+				</java>
+				<tr>
+					<td align="left">"+(id++)+"</td>
+					<td align="left">"+interceptorClass.toString()+"</td>
+				</tr>
+				<java>
+				}
+				</java>
+			</table>
+		</td></tr>
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+</java>

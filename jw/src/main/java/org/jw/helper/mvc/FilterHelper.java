@@ -21,31 +21,33 @@ public final class FilterHelper {
     static {
         Set<Class<?>> filterClassSet = ClassHelper.getClassSetBySuper(Filter.class);
         List<Filter> filterSortedList = new LinkedList<>();
-        for(Class<?> filterClass:filterClassSet){
-        	Filter filter = ReflectionUtil.newInstance(filterClass);
-        	filter.init();//初始化Filter
-        	
-        	//排序比较，按顺序插入到Filter链里
-        	if(CollectionUtil.isEmpty(filterSortedList)){
-        		filterSortedList.add(filter);
-        	}else{
-        		int index = 0;
-        		for(Filter filter_:filterSortedList){
-        			if(filter.setLevel() < filter_.setLevel()){
-        				filterSortedList.add(index, filter);
-        				break;
-        			}else{
-        				index++;
+        if(CollectionUtil.isNotEmpty(filterClassSet)){
+        	for(Class<?> filterClass:filterClassSet){
+        		Filter filter = ReflectionUtil.newInstance(filterClass);
+        		filter.init();//初始化Filter
+        		
+        		//排序比较，按顺序插入到Filter链里
+        		if(CollectionUtil.isEmpty(filterSortedList)){
+        			filterSortedList.add(filter);
+        		}else{
+        			int index = 0;
+        			for(Filter filter_:filterSortedList){
+        				if(filter.setLevel() < filter_.setLevel()){
+        					filterSortedList.add(index, filter);
+        					break;
+        				}else{
+        					index++;
+        				}
+        			}
+        			if(index == filterSortedList.size()){
+        				filterSortedList.add(filter);
         			}
         		}
-        		if(index == filterSortedList.size()){
-        			filterSortedList.add(filter);
-        		}
+        		
         	}
-        	
+        	FILTER_LIST.addAll(filterSortedList);
         }
         
-        FILTER_LIST.addAll(filterSortedList);
     }
     
     public static List<Filter> getSortedFilterList(){

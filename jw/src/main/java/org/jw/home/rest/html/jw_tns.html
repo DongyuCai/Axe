@@ -1,5 +1,7 @@
 <java>
-StringBuilder html = new StringBuilder();
+@Request(value = "/tns", method = RequestMethod.GET)
+public void tns(HttpServletResponse response) {
+	StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>
 <html>
@@ -48,5 +50,6 @@ StringBuilder html = new StringBuilder();
 </body>
 </html>
 <java>
-printHtml(response, html.toString());
+	printHtml(response, html.toString());
+}
 </java>

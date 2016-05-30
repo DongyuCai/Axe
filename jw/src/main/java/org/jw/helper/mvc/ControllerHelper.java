@@ -15,6 +15,7 @@ import org.jw.annotation.mvc.Request;
 import org.jw.bean.mvc.Handler;
 import org.jw.helper.ioc.ClassHelper;
 import org.jw.interface_.mvc.Filter;
+import org.jw.interface_.mvc.Interceptor;
 import org.jw.util.ArrayUtil;
 import org.jw.util.CollectionUtil;
 import org.jw.util.ReflectionUtil;
@@ -32,7 +33,7 @@ public final class ControllerHelper {
 	 * 因为框架不会用到这个变量，记录这份原始数据列表，是为了以便开发者使用
 	 * 所以用LinkedList 为了合理利用点内存嘛
 	 */
-	private static final List<Handler> ACTION_LIST = new LinkedList<Handler>();
+	private static final List<Handler> ACTION_LIST = new LinkedList<>();
     /**
      * 存放映射关系 Action Map
      * Action Map是Action List整理之后的树关系
@@ -83,6 +84,11 @@ public final class ControllerHelper {
                         }
                     }
                 }
+                
+        	/**
+        	 * 框架不会用到这个变量
+        	 */
+//            CONTROLLER_CLASS_LIST.add(controllerClass);
             }
         }
     }
@@ -111,6 +117,7 @@ public final class ControllerHelper {
     		//到最后了
     		nodeName = requestMethod+":"+nodeName;
     		if(!node.containsKey(nodeName)){
+    			//##Filter 链
     			List<Filter> filterList = new ArrayList<>();
     			for(Filter filter:FilterHelper.getSortedFilterList()){
     				//#首先判断是否匹配mappingPath
@@ -156,7 +163,36 @@ public final class ControllerHelper {
     				//到这里，说明此过滤器匹配上了这个actionMethod，而且没被排除
     				filterList.add(filter);
     			}
-    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass, actionMethod,filterList);
+    			//##Interceptor 列表
+    			Map<Class<? extends Interceptor>,Interceptor> interceptorMap = new HashMap<>();
+    			//#controller上指定的拦截器
+    			if(controllerClass.isAnnotationPresent(org.jw.annotation.mvc.Interceptor.class)){
+    				org.jw.annotation.mvc.Interceptor interceptorAnnotation = controllerClass.getAnnotation(org.jw.annotation.mvc.Interceptor.class);
+    				Class<? extends Interceptor>[] interceptorClassAry = interceptorAnnotation.value();
+    				Map<Class<? extends Interceptor>, Interceptor> INTERCEPTOR_MAP = InterceptorHelper.getInterceptorMap();
+    				if(interceptorClassAry != null){
+    					for(Class<? extends Interceptor> interceptorClass:interceptorClassAry){
+    						if(INTERCEPTOR_MAP.containsKey(interceptorClass)){
+    							interceptorMap.put(interceptorClass,INTERCEPTOR_MAP.get(interceptorClass));
+    						}
+    					}
+    				}
+    			}
+    			//#action method上指定的拦截器，注意去重
+    			if(actionMethod.isAnnotationPresent(org.jw.annotation.mvc.Interceptor.class)){
+    				org.jw.annotation.mvc.Interceptor interceptorAnnotation = actionMethod.getAnnotation(org.jw.annotation.mvc.Interceptor.class);
+    				Class<? extends Interceptor>[] interceptorClassAry = interceptorAnnotation.value();
+    				Map<Class<? extends Interceptor>, Interceptor> INTERCEPTOR_MAP = InterceptorHelper.getInterceptorMap();
+    				if(interceptorClassAry != null){
+    					for(Class<? extends Interceptor> interceptorClass:interceptorClassAry){
+    						if(INTERCEPTOR_MAP.containsKey(interceptorClass) && !interceptorMap.containsKey(interceptorClass)){
+    							interceptorMap.put(interceptorClass,INTERCEPTOR_MAP.get(interceptorClass));
+    						}
+    					}
+    				}
+    			}
+    			List<Interceptor> interceptorList = new ArrayList<>(interceptorMap.values());
+    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass, actionMethod,filterList,interceptorList);
     			//构建树
     			node.put(nodeName, handler);
     			//存根到ACTIN_LIST

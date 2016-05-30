@@ -1,5 +1,8 @@
 <java>
-StringBuilder html = new StringBuilder();
+@Request(value = "", method = RequestMethod.GET)
+public void home(HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
+	StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>
 <html>
@@ -22,7 +25,6 @@ StringBuilder html = new StringBuilder();
 					<td align="center">&nbsp;</td>
 					<td align="center"><b>启动时间</b></td>
 					<td align="center"><b>运行时长</b></td>
-					<td align="center"><b>访问次数</b></td>
 				</tr>
 				<tr>
 					<td align="center">&nbsp;</td>
@@ -59,7 +61,6 @@ StringBuilder html = new StringBuilder();
 					}
 					</java>
 					<td align="center">"+runTime+"</td>
-					<td align="center"><a href="访问者ip详情列表">;)</a></td>
 				</tr>
 			</table>
 		</td></tr>
@@ -73,21 +74,34 @@ StringBuilder html = new StringBuilder();
 			<table width="100%">
 				<tr>
 					<td align="center"><a href=""+contextPath+"/jw/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/controller">Controller</a> x"+ClassHelper.getControllerClassSet().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/action">Action</a> x"+ControllerHelper.getActionList().size()+"</td>
-					<td align="center">Service x"+ClassHelper.getServiceClassSet().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/interceptor">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>
 					<java>
-					Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
-					int tnsPointCount = 0;
-					for(Class<?> serviceClass:serviceClassSet){
-						List<Method> methods = ReflectionUtil.getMethodByAnnotation(serviceClass, Tns.class);
-						if(CollectionUtil.isNotEmpty(methods)){
-							tnsPointCount = tnsPointCount+methods.size();
+					String controllerSize = "?";
+					String serviceSize = "?";
+					String tnsPointCount = "?";
+					String daoSize = "?";
+					if(ConfigHelper.getJwClassHelperKeep()){
+						controllerSize = ClassHelper.getControllerClassSet().size()+"";
+						Set<Class<?>> serviceClassSet = ClassHelper.getServiceClassSet();
+						serviceSize = serviceClassSet.size()+"";
+						int count = 0;
+						for(Class<?> serviceClass:serviceClassSet){
+							List<Method> methods = ReflectionUtil.getMethodByAnnotation(serviceClass, Tns.class);
+							if(CollectionUtil.isNotEmpty(methods)){
+								count = count+methods.size();
+							}
 						}
+						tnsPointCount = count+"";
+						daoSize = ClassHelper.getClassSetByAnnotation(Dao.class).size()+"";
 					}
 					</java>
+					<td align="center"><a href=""+contextPath+"/jw/controller">Controller</a> x"+controllerSize+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/action">Action</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center">Service x"+serviceSize+"</td>
+					<java>
+					</java>
 					<td align="center"><a href=""+contextPath+"/jw/tns">Tns point </a> x"+tnsPointCount+"</td>
-					<td align="center"><a href=""+contextPath+"/jw/dao">Dao</a> x"+ClassHelper.getClassSetByAnnotation(Dao.class).size()+"</td>
+					<td align="center"><a href=""+contextPath+"/jw/dao">Dao</a> x"+daoSize+"</td>
 					<td align="center">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
 					<td align="center"><a href=""+contextPath+"/jw/datasource">Datasource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
 				</tr>
@@ -97,5 +111,6 @@ StringBuilder html = new StringBuilder();
 </body>
 </html>
 <java>
-printHtml(response, html.toString());
+	printHtml(response, html.toString());
+}
 </java>

@@ -1,5 +1,8 @@
 <java>
-StringBuilder html = new StringBuilder();
+@Request(value = "/action", method = RequestMethod.GET)
+public void action(HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
+	String contextPath = request.getContextPath();
+	StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>
 <html>
@@ -107,5 +110,6 @@ StringBuilder html = new StringBuilder();
 </body>
 </html>
 <java>
-printHtml(response, html.toString());
+	printHtml(response, html.toString());
+}
 </java>
