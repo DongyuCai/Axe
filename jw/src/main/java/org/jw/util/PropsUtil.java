@@ -1,11 +1,10 @@
 package org.jw.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 配置文件工具类
@@ -21,15 +20,13 @@ public final class PropsUtil {
      * 加载属性文件
      */
     public static Properties loadProps(String fileName) {
-        Properties props = null;
+        Properties props = new Properties();
         InputStream is = null;
         try {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
-            if (is == null) {
-                throw new FileNotFoundException(fileName + "");
+            if (is != null) {
+                props.load(is);
             }
-            props = new Properties();
-            props.load(is);
         } catch (Exception e) {
             LOGGER.error("load properties file [" + fileName + "] failure", e);
         } finally {

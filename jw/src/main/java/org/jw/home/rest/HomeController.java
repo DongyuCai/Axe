@@ -1011,7 +1011,6 @@ html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-
 html.append("<title>jw save properties</title>");
 html.append("<script type=\"text/javascript\">");
 html.append("var number = 10;");
-html.append("document.getElementById(\"number\").innerHTML = number;");
 html.append("");
 html.append("var int=self.setInterval(\"toHome()\",1000);");
 html.append("");
