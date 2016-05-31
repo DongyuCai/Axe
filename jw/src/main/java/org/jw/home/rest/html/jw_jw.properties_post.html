@@ -3,7 +3,7 @@
 public void jwProperties(HttpServletRequest request, HttpServletResponse response,Param param) {
 	String contextPath = request.getContextPath();
 	
-	homeService.saveJwProperties(param);
+	String configFile = homeService.saveJwProperties(param);
 
 	StringBuilder html = new StringBuilder();
 </java>
@@ -31,7 +31,7 @@ public void jwProperties(HttpServletRequest request, HttpServletResponse respons
 <body>
 	<table width="100%">
 		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/jw">/jw首页</a></td></tr>
-		<tr><td align="center"><font size="28"><b>保存配置成功，请查看 classes 目录下"+ConfigConstant.CONFIG_FILE+"</b></font></td></tr>
+		<tr><td align="center"><font size="28"><b>保存配置成功，"+configFile+"</b></font></td></tr>
 	</table>
 </body>
 </html>

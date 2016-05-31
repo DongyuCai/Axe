@@ -16,7 +16,7 @@ import org.jw.util.StringUtil;
 @Service
 public class HomeService {
 
-	public void saveJwProperties(Param param){
+	public String saveJwProperties(Param param){
 		URL resource = Thread.currentThread().getContextClassLoader().getResource(ConfigConstant.CONFIG_FILE);
 		File configFile = null;
 		if(resource != null){
@@ -44,5 +44,6 @@ public class HomeService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return configFile.getAbsolutePath();
 	}
 }

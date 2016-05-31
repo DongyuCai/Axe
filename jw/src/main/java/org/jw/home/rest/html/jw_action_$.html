@@ -83,7 +83,7 @@
 					<td align="left">"+handler.getControllerClass().getName()+"</td>
 				</tr>
 			</table>
-		</td></tr>
+		</td></tr><tr><td>&nbsp;</td></tr>
 
 
 		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
@@ -123,7 +123,33 @@
 				}
 				</java>
 			</table>
-		</td></tr>
+		</td></tr><tr><td>&nbsp;</td></tr>
+		
+		
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>Interceptor list</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>Class</b></td>
+				</tr>
+				<java>
+				List<org.jw.interface_.mvc.Interceptor> interceptorList = handler.getInterceptorList();
+				id=1;
+				for(org.jw.interface_.mvc.Interceptor interceptor:interceptorList){
+				</java>
+				<tr>
+					<td align="left">"+(id++)+"</td>
+					<td align="left">"+interceptor.getClass()+"</td>
+				</tr>
+				<java>
+				}
+				</java>
+			</table>
+		</td></tr><tr><td>&nbsp;</td></tr>
 	</table>
 </body>
 </html>
