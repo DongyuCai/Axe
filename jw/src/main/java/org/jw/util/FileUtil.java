@@ -1,11 +1,13 @@
 package org.jw.util;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 /**
  * 文件操作 工具类
@@ -31,7 +33,7 @@ public final class FileUtil {
         try {
             file = new File(filePath);
             File parentDir = file.getParentFile();
-            if(!parentDir.exists()){
+            if(parentDir != null && !parentDir.exists()){
                 FileUtils.forceMkdir(parentDir);
             }
         }catch (Exception e){
@@ -39,6 +41,26 @@ public final class FileUtil {
             throw new RuntimeException(e);
         }
         return file;
+    }
+    
+    public static File backupAndCreateNewFile(String filePath){
+        try {
+        	File file = new File(filePath);
+            File parentDir = file.getParentFile();
+            if(parentDir != null && !parentDir.exists()){
+                FileUtils.forceMkdir(parentDir);
+            }else{
+            	if(file.exists()){
+            		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            		file.renameTo(new File(filePath+"-"+sdf.format(new Date())));
+            	}
+            }
+            file = new File(filePath);
+            return file;
+        }catch (Exception e){
+            LOGGER.error("create file failure",e);
+            throw new RuntimeException(e);
+        }
     }
 
 }

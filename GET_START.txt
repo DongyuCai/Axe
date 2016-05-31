@@ -16,6 +16,10 @@
 
 ##FileParam
 
+##Data
+
+##View
+
 ##Filter
 
 ##Interceptor
@@ -30,4 +34,8 @@
 
 ##Transaction Tns
 
+##DataSourceFactory
+
 ##Proxy
+
+##/jw

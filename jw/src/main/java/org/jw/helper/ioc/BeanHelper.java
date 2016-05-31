@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.jw.helper.Helper;
 import org.jw.util.ReflectionUtil;
 
 /**
@@ -14,17 +15,22 @@ import org.jw.util.ReflectionUtil;
  * BeanHelper 只是实例化，但是没有注入依赖，依赖注入靠IocHelper
  * Created by CaiDongYu on 2016/4/9.
  */
-public final class BeanHelper {
+public final class BeanHelper implements Helper{
     /**
      * 定义 Bean 映射（用于存放 Bean 类与 Bean 实例的映射
      */
-    private static final Map<Class<?>,Object> BEAN_MAP = new HashMap<>();
-    static {
-        Set<Class<?>> beanClassSet = ClassHelper.getBeanClassSet();
-        for(Class<?> beanClass:beanClassSet){
-            Object obj = ReflectionUtil.newInstance(beanClass);
-            BEAN_MAP.put(beanClass, obj);
-        }
+    private static Map<Class<?>,Object> BEAN_MAP;
+    
+    @Override
+    public void init() {
+    	synchronized (this) {
+    		BEAN_MAP = new HashMap<>();
+        	Set<Class<?>> beanClassSet = ClassHelper.getBeanClassSet();
+            for(Class<?> beanClass:beanClassSet){
+                Object obj = ReflectionUtil.newInstance(beanClass);
+                BEAN_MAP.put(beanClass, obj);
+            }
+		}
     }
 
     /**

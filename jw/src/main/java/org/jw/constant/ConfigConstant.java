@@ -18,7 +18,6 @@ public interface ConfigConstant {
     String JDBC_USERNAME = "jdbc.username";
     String JDBC_PASSWORD = "jdbc.password";
     String JDBC_DATASOURCE = "jdbc.datasource";
-    String JDBC_AUTOTABLE = "jdbc.autotable";
     
     //#项目基本配置
     String APP_BASE_PACKAGE = "app.base_package";

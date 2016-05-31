@@ -13,6 +13,7 @@ import org.jw.annotation.ioc.Controller;
 import org.jw.annotation.mvc.FilterFuckOff;
 import org.jw.annotation.mvc.Request;
 import org.jw.bean.mvc.Handler;
+import org.jw.helper.Helper;
 import org.jw.helper.ioc.ClassHelper;
 import org.jw.interface_.mvc.Filter;
 import org.jw.interface_.mvc.Interceptor;
@@ -26,72 +27,72 @@ import org.jw.util.RequestUtil;
  * 组合请求与处理的映射关系
  * Created by CaiDongYu on 2016/4/11.
  */
-public final class ControllerHelper {
+public final class ControllerHelper implements Helper{
 
 	/**
 	 * Action List
 	 * 因为框架不会用到这个变量，记录这份原始数据列表，是为了以便开发者使用
 	 * 所以用LinkedList 为了合理利用点内存嘛
 	 */
-	private static final List<Handler> ACTION_LIST = new LinkedList<>();
+	private static List<Handler> ACTION_LIST;
     /**
      * 存放映射关系 Action Map
      * Action Map是Action List整理之后的树关系
      */
-	private static final Map<String, Object> ACTION_MAP = new HashMap<>();
+	private static Map<String, Object> ACTION_MAP;
 
-    static {
-        //获取所有的 Controller 类
-        Set<Class<?>> controllerClassSet = ClassHelper.getControllerClassSet();
-        if (CollectionUtil.isNotEmpty(controllerClassSet)) {
-            for (Class<?> controllerClass : controllerClassSet) {
-            	String basePath = controllerClass.getAnnotation(Controller.class).basePath();
-                Method[] methods = controllerClass.getDeclaredMethods();
-                if (ArrayUtil.isNotEmpty(methods)) {
-                    for (Method method : methods) {
-                        //判断方法是否带有 Action 注解
-                        if (method.isAnnotationPresent(Request.class)) {
-                        	Request action = method.getAnnotation(Request.class);
-                            String mappingPath = basePath+"/"+action.value();
-                            String requestMethod = action.method().REQUEST_METHOD;
-                            
-                            //检查mappingPath是否合规
-                            if(!RequestUtil.checkMappingPath(mappingPath)){
-                            	throw new RuntimeException("invalid @Request.value ["+mappingPath+"] of action: "+method);
-                            }
-                            
-                            //检查actionMethod是否合规
-                            try {
-                            	RequestUtil.checkActionMethod(method);
-							} catch (Exception e) {
-								throw new RuntimeException("invalid Controler method : "+e.getMessage());
-							}
-                            
-                            //格式化
-                            mappingPath = RequestUtil.formatUrl(mappingPath);
-                            
-                            String[] nodeNames = mappingPath.split("/");
-                            String nodeName = "";
-                            String[] subNodeNameLineAry = {};
-                            if(nodeNames.length > 0){
-                            	nodeName = nodeNames[0];
-                            	subNodeNameLineAry = new String[nodeNames.length-1];
-                            	for(int i=0;i<subNodeNameLineAry.length;i++){
-                            		subNodeNameLineAry[i] = nodeNames[i+1];
-                            	}
-                            }
-                            generateActionMap(nodeName, ACTION_MAP, controllerClass, method, subNodeNameLineAry,requestMethod,mappingPath);
-                        }
-                    }
-                }
-                
-        	/**
-        	 * 框架不会用到这个变量
-        	 */
-//            CONTROLLER_CLASS_LIST.add(controllerClass);
-            }
-        }
-    }
+	@Override
+	public void init() {
+		synchronized (this) {
+			ACTION_LIST = new LinkedList<>();
+			ACTION_MAP = new HashMap<>();
+			//获取所有的 Controller 类
+	        Set<Class<?>> controllerClassSet = ClassHelper.getControllerClassSet();
+	        if (CollectionUtil.isNotEmpty(controllerClassSet)) {
+	            for (Class<?> controllerClass : controllerClassSet) {
+	            	String basePath = controllerClass.getAnnotation(Controller.class).basePath();
+	                Method[] methods = controllerClass.getDeclaredMethods();
+	                if (ArrayUtil.isNotEmpty(methods)) {
+	                    for (Method method : methods) {
+	                        //判断方法是否带有 Action 注解
+	                        if (method.isAnnotationPresent(Request.class)) {
+	                        	Request action = method.getAnnotation(Request.class);
+	                            String mappingPath = basePath+"/"+action.value();
+	                            String requestMethod = action.method().REQUEST_METHOD;
+	                            
+	                            //检查mappingPath是否合规
+	                            if(!RequestUtil.checkMappingPath(mappingPath)){
+	                            	throw new RuntimeException("invalid @Request.value ["+mappingPath+"] of action: "+method);
+	                            }
+	                            
+	                            //检查actionMethod是否合规
+	                            try {
+	                            	RequestUtil.checkActionMethod(method);
+								} catch (Exception e) {
+									throw new RuntimeException("invalid Controler method : "+e.getMessage());
+								}
+	                            
+	                            //格式化
+	                            mappingPath = RequestUtil.formatUrl(mappingPath);
+	                            
+	                            String[] nodeNames = mappingPath.split("/");
+	                            String nodeName = "";
+	                            String[] subNodeNameLineAry = {};
+	                            if(nodeNames.length > 0){
+	                            	nodeName = nodeNames[0];
+	                            	subNodeNameLineAry = new String[nodeNames.length-1];
+	                            	for(int i=0;i<subNodeNameLineAry.length;i++){
+	                            		subNodeNameLineAry[i] = nodeNames[i+1];
+	                            	}
+	                            }
+	                            generateActionMap(nodeName, ACTION_MAP, controllerClass, method, subNodeNameLineAry,requestMethod,mappingPath);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+		}
+	}
 
     
     @SuppressWarnings("unchecked")

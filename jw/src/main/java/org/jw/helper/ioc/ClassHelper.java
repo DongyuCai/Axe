@@ -8,6 +8,7 @@ import org.jw.annotation.ioc.Component;
 import org.jw.annotation.ioc.Controller;
 import org.jw.annotation.ioc.Service;
 import org.jw.constant.ConfigConstant;
+import org.jw.helper.Helper;
 import org.jw.helper.base.ConfigHelper;
 import org.jw.util.ClassUtil;
 
@@ -17,27 +18,32 @@ import org.jw.util.ClassUtil;
  * 只能完成加载，但是不能完成所有类的实例化
  * Created by CaiDongYu on 2016/4/8.
  */
-public final class ClassHelper {
+public final class ClassHelper implements Helper{
 
     /**
      * 存放所有加载的类
      * TODO:CLASS_SET占用的空间其实在框架初始化之后，就没用了。
      */
-    private static final Set<Class<?>> CLASS_SET = new HashSet<>();
-
-    static{
-    	String jwPackage = "org.jw";
-        //客户自定义应用扫描包路径
-        String appBasePackage = ConfigHelper.getAppBasePackage();
-        String[] basePackages = appBasePackage.split(",");
-        for(String basePackage:basePackages){
-        	if(basePackage.startsWith(jwPackage)){
-        		throw new RuntimeException(ConfigConstant.APP_BASE_PACKAGE+":"+"不可以使用"+jwPackage+"开头,"+jwPackage+"被框架保留!");
-        	}
-        	CLASS_SET.addAll(ClassUtil.getClassSet(basePackage));
-        }
-        //增加jw框架包路径
-        CLASS_SET.addAll(ClassUtil.getClassSet(jwPackage));
+    private static Set<Class<?>> CLASS_SET;
+    
+    @Override
+    public void init() {
+    	synchronized (this) {
+    		CLASS_SET = new HashSet<>();
+        	
+        	String jwPackage = "org.jw";
+            //客户自定义应用扫描包路径
+            String appBasePackage = ConfigHelper.getAppBasePackage();
+            String[] basePackages = appBasePackage.split(",");
+            for(String basePackage:basePackages){
+            	if(basePackage.startsWith(jwPackage)){
+            		throw new RuntimeException(ConfigConstant.APP_BASE_PACKAGE+":"+"不可以使用"+jwPackage+"开头,"+jwPackage+"被框架保留!");
+            	}
+            	CLASS_SET.addAll(ClassUtil.getClassSet(basePackage));
+            }
+            //增加jw框架包路径
+            CLASS_SET.addAll(ClassUtil.getClassSet(jwPackage));
+    	}
     }
 
     /**

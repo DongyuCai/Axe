@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jw.annotation.aop.Aspect;
+import org.jw.helper.Helper;
 import org.jw.helper.ioc.BeanHelper;
 import org.jw.helper.ioc.ClassHelper;
 import org.jw.proxy.base.Proxy;
@@ -21,25 +22,28 @@ import org.slf4j.LoggerFactory;
  * 方法拦截助手类
  * Created by CaiDongYu on 2016/4/14.
  */
-public final class AopHelper {
+public final class AopHelper implements Helper{
     private static final Logger LOGGER = LoggerFactory.getLogger(AopHelper.class);
 
-    static {
-        try {
-            Map<Class<?>,Set<Class<?>>> proxyMap = createProxyMap();
-            Map<Class<?>,List<Proxy>> targetMap = createTargetMap(proxyMap);
-            for (Map.Entry<Class<?>,List<Proxy>> targetEntry:targetMap.entrySet()){
-                Class<?> targetClass = targetEntry.getKey();
-                List<Proxy> proxyList = targetEntry.getValue();
-                //真正的创建目标类的代理对象
-                Object proxy = ProxyManger.createProxy(targetClass,proxyList);
-                BeanHelper.setBean(targetClass,proxy);
+    @Override
+    public void init() {
+    	synchronized (this) {
+    		try {
+                Map<Class<?>,Set<Class<?>>> proxyMap = createProxyMap();
+                Map<Class<?>,List<Proxy>> targetMap = createTargetMap(proxyMap);
+                for (Map.Entry<Class<?>,List<Proxy>> targetEntry:targetMap.entrySet()){
+                    Class<?> targetClass = targetEntry.getKey();
+                    List<Proxy> proxyList = targetEntry.getValue();
+                    //真正的创建目标类的代理对象
+                    Object proxy = ProxyManger.createProxy(targetClass,proxyList);
+                    BeanHelper.setBean(targetClass,proxy);
+                }
+            } catch (Exception e){
+                LOGGER.error("aop failure",e);
             }
-        } catch (Exception e){
-            LOGGER.error("aop failure",e);
-        }
+		}
     }
-
+    
     /**
      * 返回代理类与目标类集合的映射
      * 比如代理类A，代理了B、C、D三个类

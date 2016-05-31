@@ -16,6 +16,9 @@ public class HomeControllerGenerator {
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/jw_tns.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/jw_dao.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/jw_dataSource.html");
+		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/jw_jw.properties.html");
+		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/jw_jw.properties_post.html");
+		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/jw_refresh_config.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/jw/home/rest/html/home_controller_foot.html");
 	}
 }

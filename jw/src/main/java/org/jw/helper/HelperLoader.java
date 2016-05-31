@@ -1,9 +1,10 @@
-package org.jw;
+package org.jw.helper;
 
 import javax.servlet.ServletContext;
 
 import org.jw.annotation.persistence.Dao;
 import org.jw.helper.aop.AopHelper;
+import org.jw.helper.base.ConfigHelper;
 import org.jw.helper.base.FrameworkStatusHelper;
 import org.jw.helper.ioc.BeanHelper;
 import org.jw.helper.ioc.ClassHelper;
@@ -15,7 +16,6 @@ import org.jw.helper.mvc.InterceptorHelper;
 import org.jw.helper.persistence.DataBaseHelper;
 import org.jw.helper.persistence.DataSourceHelper;
 import org.jw.helper.persistence.TableHelper;
-import org.jw.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,26 +26,37 @@ import org.slf4j.LoggerFactory;
 public final class HelperLoader {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HelperLoader.class);
 	
+	private static Helper[] helpers;
 	
     public static void init(){
         init(null);
     }
     public static void init(ServletContext servletContext){
-        Class<?>[] classList = {
-        		FrameworkStatusHelper.class,//框架基础信息初始化
-                ClassHelper.class,//加载package下所有class到CLASS_SET
-                BeanHelper.class,//实例化CLASS_SET里的类，放到BEAN_MAP里
-                FilterHelper.class,//实例化所有Filter链表，并按层级排好序
-                InterceptorHelper.class,//实例化所有Interceptor Map，interceptor没有顺序
-                AopHelper.class,//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
-                IocHelper.class,//组装所有@Autowired
-                ControllerHelper.class,//加载ACTION_MAP
-                TableHelper.class,//加载所有的@Table
-                DataSourceHelper.class,//加载DataSource配置
-                DataBaseHelper.class//初始化数据库配置
+    	initHelpersAry();
+    	refresHelpers(servletContext);
+    }
+    
+    
+    private static synchronized void initHelpersAry(){
+    	helpers = new Helper[]{
+    			new ConfigHelper(),//基础配置初始化
+        		new FrameworkStatusHelper(),//框架基础信息初始化
+                new ClassHelper(),//加载package下所有class到CLASS_SET
+                new BeanHelper(),//实例化CLASS_SET里的类，放到BEAN_MAP里
+                new FilterHelper(),//实例化所有Filter链表，并按层级排好序
+                new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
+                new AopHelper(),//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
+                new IocHelper(),//组装所有@Autowired
+                new ControllerHelper(),//加载ACTION_MAP
+                new TableHelper(),//加载所有的@Table
+                new DataSourceHelper(),//加载DataSource配置
+                new DataBaseHelper()//初始化数据库配置
         };
-        for (Class<?> cls:classList){
-            ClassUtil.loadClass(cls.getName(),true);
+    }
+    
+    public static synchronized void refresHelpers(ServletContext servletContext){
+    	for (Helper helper:helpers){
+    		helper.init();
         }
         
         //特别初始化

@@ -12,7 +12,8 @@
 * 主动规避重复action（如果定义了相同的action，框架初始化会报错）
 * 路径参数pathParam，多拼参数，类似 [/get/{id}_{name}]() 这样
 * actionMethod 方法参数的随意化，支持[HttpRequest]()、[HttpResponse]()、[Param]()、[Map<String,Object>]() 注入，注意Map<String,Object> 只会注入Body内容。
-* [Filter]()过滤器 ，支持filter链（有序），支持在Controller上或Controller方法上[@FilterFuckOff]()排除指定Filter，默认排除所有
+* [Filter]()过滤器，支持filter链（有序），支持在Controller上或Controller方法上[@FilterFuckOff]()排除指定Filter，默认排除所有
+* [Interceptor]()拦截器，拦截器没有顺序可言，是针对Controller方法的拦截，多个拦截器同时作用在某个方法上，必须都返回true才能进入方法。
 * dao层（miniDao4Mysql），底层是apache DbUtils，Bean映射框架自己实现（因为DbUtils不支持Date类型）
 * dao层  支持表名用类名表示，表字段用类字段表示，类似HQL
 * dao通过继承 [Repository]()接口可直接获得saveEntity、insertEntity、updateEntity、getEntity、deleteEntity直接面向对象的方法。
@@ -33,7 +34,7 @@
 * 多数据源
 * dao层支持数据库主从分离
 * 分布式服务管理支持
-* Interceptor
+* 运行时重载配置
 
 ----------
 

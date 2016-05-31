@@ -6,14 +6,21 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 </java>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<title>jw homepage</title>
-	</head>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>jw homepage</title>
+	<script type="text/javascript">
+		var refreshInt = setInterval("refresh()",1000*60);
+		function refresh(){
+			window.location = ""+contextPath+"/jw";
+		}
+	</script>
+</head>
 <body>
 	<table width="100%">
-		<tr><td align="center"><font size="28">Welcome to use jw!</font></td></tr>
+		<tr><td align="center"><font size="28">欢迎使用 jw!</font></td></tr>
 
+		<!--系统运行 概览-->
 		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
 		&nbsp;<font color="white"><b>系统运行-概览</b></font>&nbsp;
 		</td></tr></table></td></tr>
@@ -22,17 +29,17 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 		<tr><td>
 			<table width="100%">
 				<tr style="background-color: #F0F0F0;">
-					<td align="center">&nbsp;</td>
-					<td align="center"><b>启动时间</b></td>
-					<td align="center"><b>运行时长</b></td>
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>启动时间</b></td>
+					<td align="left"><b>运行时长</b></td>
 				</tr>
 				<tr>
-					<td align="center">&nbsp;</td>
+					<td align="left">&nbsp;</td>
 					<java>
 					Date startupTime = FrameworkStatusHelper.getStartupTime();
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					</java>
-					<td align="center">"+sdf.format(startupTime)+"</td>
+					<td align="left">"+sdf.format(startupTime)+"</td>
 					<java>
 					long runTimeSec = (System.currentTimeMillis()-startupTime.getTime()) / 1000;
 					String runTime = "";
@@ -46,25 +53,112 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 						} else {
 							long runTimeHour = runTimeMin / 60;
 							if (runTimeHour < 24) {
-								runTimeMin = (runTimeSec-(runTimeHour * 60 * 60)) / 60;
-								runTimeSec = runTimeSec - (runTimeHour * 60 * 60) - (runTimeMin * 60);
+								runTimeMin = runTimeMin - runTimeHour * 60;
+								runTimeSec = runTimeSec - ((runTimeHour * 60) + runTimeMin) * 60;
 								runTime = runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
 							} else {
 								long runTimeDay = runTimeHour / 24;
-								runTimeHour = (runTimeSec-(runTimeDay * 24 * 60 * 60))/24;
-								runTimeMin = (runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60))/60;
-								runTimeSec = runTimeSec - (runTimeDay * 24 * 60 * 60) - (runTimeHour * 60 * 60)
-										- (runTimeMin * 60);
+								runTimeHour = runTimeHour-(runTimeDay * 24);
+								runTimeMin = runTimeMin - ((runTimeDay * 24) + runTimeHour) * 60;
+								runTimeSec = runTimeSec - ((((runTimeDay * 24) + runTimeHour) * 60) + runTimeMin) * 60;
 								runTime = runTimeDay + "天" + runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
 							}
 						}
 					}
 					</java>
-					<td align="center">"+runTime+"</td>
+					<td align="left">"+runTime+"</td>
 				</tr>
 			</table>
-		</td></tr>
+		</td></tr><tr><td>&nbsp;</td></tr>
 
+		<!--系统参数-->
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>系统参数 jw.properties</b></font>&nbsp;
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/jw/jw.properties'">
+		&nbsp;<font color="white"><b>编辑</b></font>&nbsp;
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/jw/refresh-config'">
+		&nbsp;<font color="white"><b>重载 jw.properties 配置</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color:#AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>参数-键</b></td>
+					<td align="left"><b>参数-值</b></td>
+					<td align="left"><b>参数描述</b></td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jw.home</td>
+					<td align="left">"+ConfigHelper.getJwHome()+"</td>
+					<td align="left">是否开启/jw的访问</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jw.classhelper.keep</td>
+					<td align="left">"+ConfigHelper.getJwClassHelperKeep()+"</td>
+					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.driver</td>
+					<td align="left">"+ConfigHelper.getJdbcDriver()+"</td>
+					<td align="left">jdbc-driver</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.url</td>
+					<td align="left">"+ConfigHelper.getJdbcUrl()+"</td>
+					<td align="left">jdbc-url</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.username</td>
+					<td align="left">"+ConfigHelper.getJdbcUsername()+"</td>
+					<td align="left">jdbc-username</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.password</td>
+					<td align="left">"+ConfigHelper.getJdbcPassword()+"</td>
+					<td align="left">jdbc-password</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.datasource</td>
+					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
+					<td align="left">指定DataSource实现类</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.base_package</td>
+					<td align="left">"+ConfigHelper.getAppBasePackage()+"</td>
+					<td align="left">指定框架扫描的包路径，多个路径使用“,”号分割</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.jsp_path</td>
+					<td align="left">"+ConfigHelper.getAppJspPath()+"</td>
+					<td align="left">指定jsp存放路径</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.asset_path</td>
+					<td align="left">"+ConfigHelper.getAppAssetPath()+"</td>
+					<td align="left">指定静态文件(html、js、css、图片等)存放路径</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.upload_limit</td>
+					<td align="left">"+ConfigHelper.getAppUploadLimit()+"</td>
+					<td align="left">文件上传限制单次文件大小，单位M，默认0不限制</td>
+				</tr>
+			</table>
+		</td></tr><tr><td>&nbsp;</td></tr>
+
+		<!--MVC 概览-->
 		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
 		&nbsp;<font color="white"><b>MVC-概览</b></font>&nbsp;
 		</td></tr></table></td></tr>
@@ -106,7 +200,8 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 					<td align="center"><a href=""+contextPath+"/jw/datasource">Datasource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
 				</tr>
 			</table>
-		</td></tr>
+		</td></tr><tr><td>&nbsp;</td></tr>
+
 	</table>
 </body>
 </html>

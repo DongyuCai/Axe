@@ -27,6 +27,7 @@ import org.jw.bean.mvc.View;
 import org.jw.constant.CharacterEncoding;
 import org.jw.constant.ContentType;
 import org.jw.exception.RestException;
+import org.jw.helper.HelperLoader;
 import org.jw.helper.base.ConfigHelper;
 import org.jw.helper.ioc.BeanHelper;
 import org.jw.helper.mvc.AjaxRequestHelper;
@@ -56,6 +57,10 @@ public class DispatcherServlet extends HttpServlet{
     public void init(ServletConfig servletConfig) throws ServletException{
         //获取 ServletContext 对象（用于注册servlet）
         ServletContext servletContext = servletConfig.getServletContext();
+
+        //初始化框架相关 helper 类
+        HelperLoader.init(servletContext);
+        
         //注册处理JSP的Servlet
         String appJspPath = ConfigHelper.getAppJspPath();
         if(StringUtil.isNotEmpty(appJspPath)){
@@ -70,9 +75,6 @@ public class DispatcherServlet extends HttpServlet{
         	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
         	defaultServlet.addMapping(appAssetPath+"*");
         }
-
-        //初始化框架相关 helper 类
-        HelperLoader.init(servletContext);
     }
 
     @Override

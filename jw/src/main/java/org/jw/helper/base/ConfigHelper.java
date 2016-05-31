@@ -1,21 +1,29 @@
 package org.jw.helper.base;
 
-import org.jw.constant.ConfigConstant;
-import org.jw.util.PropsUtil;
-
 import java.util.Properties;
+
+import org.jw.constant.ConfigConstant;
+import org.jw.helper.Helper;
+import org.jw.util.PropsUtil;
 
 /**
  * 配置文件助手类
  * <p>
  * Created by CaiDongYu on 2016/4/8.
  */
-public final class ConfigHelper {
+public final class ConfigHelper implements Helper{
 
-    private static final Properties CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
+    private static Properties CONFIG_PROPS;
 
+    @Override
+    public void init() {
+    	synchronized (this) {
+    		CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
+		}
+    }
+    
     /**
-     * 获取jw_home框架控制台配置
+     * 是否开启/jw的访问
      */
     public static boolean getJwHome(){
     	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JW_HOME, true);
@@ -34,35 +42,28 @@ public final class ConfigHelper {
      * 获取 JDBC 驱动
      */
     public static String getJdbcDriver() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DRIVER);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DRIVER, null);
     }
 
     /**
      * 获取 JDBC URL
      */
     public static String getJdbcUrl() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_URL);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_URL, null);
     }
 
     /**
      * 获取 JDBC 用户名
      */
     public static String getJdbcUsername() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_USERNAME);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_USERNAME, null);
     }
     
-    /**
-     * 获取 JDBC 是否自动同步表结构
-     */
-    public static String getJdbcAutotable() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_AUTOTABLE);
-    }
-
     /**
      * 获取 JDBC 密码
      */
     public static String getJdbcPassword() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_PASSWORD);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_PASSWORD, null);
     }
     
     /**
@@ -74,28 +75,28 @@ public final class ConfigHelper {
     }
 
     /**
-     * 获取应用基础包路径
+     * 指定框架扫描的包路径，多个路径使用“,”号分割
      */
     public static String getAppBasePackage() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_BASE_PACKAGE);
     }
 
     /**
-     * 获取应用 JSP 路径（建议 /WEB-INF/view/ ）
+     * 指定jsp存放路径（建议 /WEB-INF/view/ ）
      */
     public static String getAppJspPath() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_JSP_PATH, null);
     }
 
     /**
-     * 获取应用 静态资源 路径（建议 /asset/）
+     * 指定静态文件(html、js、css、图片等)存放路径（建议 /asset/）
      */
     public static String getAppAssetPath() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_ASSET_PATH, null);
     }
 
     /**
-     * 获取应用 文件上传限制 单位M
+     * 文件上传限制单次文件大小，单位M
      */
     public static int getAppUploadLimit() {
         return PropsUtil.getInt(CONFIG_PROPS, ConfigConstant.APP_UPLOAD_LIMIT, 0);

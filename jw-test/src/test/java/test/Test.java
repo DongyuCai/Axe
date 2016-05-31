@@ -4,10 +4,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.jw.HelperLoader;
 import org.jw.bean.mvc.FileParam;
 import org.jw.bean.mvc.Param;
+import org.jw.helper.HelperLoader;
 import org.jw.helper.ioc.ClassHelper;
+import org.jw.util.FileUtil;
 import org.test_jw.rest.TestController;
 
 /**
@@ -17,9 +18,14 @@ public class Test{
 	
 
     public static void main(String[] args) {
+    	try {
+    		FileUtil.backupAndCreateNewFile("mysql-keyword.txt");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
     	
-    	HelperLoader.init();
-    	System.out.println(ClassHelper.getClassSet().size());
+//    	HelperLoader.init();
+//    	System.out.println(ClassHelper.getClassSet().size());
     	/*try {
 			Method method = TestController.class.getDeclaredMethod("postPathParam2",new Class<?>[]{String.class,Param.class});
 			Annotation[][] parameterAnnotations = method.getParameterAnnotations();

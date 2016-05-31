@@ -17,6 +17,7 @@ import org.jw.annotation.persistence.Id;
 import org.jw.bean.persistence.EntityFieldMethod;
 import org.jw.bean.persistence.InsertResult;
 import org.jw.bean.persistence.SqlPackage;
+import org.jw.helper.Helper;
 import org.jw.util.ReflectionUtil;
 import org.jw.util.StringUtil;
 import org.slf4j.Logger;
@@ -29,17 +30,18 @@ import org.slf4j.LoggerFactory;
  * TODO(OK):增加外部数据源可配置，连接池
  * TODO(OK):自动返回新增主键
  */
-public final class DataBaseHelper {
+public final class DataBaseHelper implements Helper{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
     
-    private static final ThreadLocal<Connection> CONNECTION_HOLDER;
+    private static ThreadLocal<Connection> CONNECTION_HOLDER;
 
-    static {
-
-        //#数据库连接池
-        CONNECTION_HOLDER = new ThreadLocal<>();
-        
+    @Override
+    public void init() {
+    	synchronized (this) {
+    		 //#数据库连接池
+            CONNECTION_HOLDER = new ThreadLocal<>();
+		}
     }
 
     

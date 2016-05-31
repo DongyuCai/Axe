@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jw.annotation.persistence.Table;
+import org.jw.helper.Helper;
 import org.jw.helper.ioc.ClassHelper;
 
 /**
@@ -12,10 +13,10 @@ import org.jw.helper.ioc.ClassHelper;
  * 剥离自DataBaseHelper 
  * Created by CaiDongYu on 2016/5/6. 
  */
-public final class TableHelper {
+public final class TableHelper implements Helper{
 
 	// #@Table 实体
-	private static final Map<String, Class<?>> ENTITY_CLASS_MAP = new HashMap<>();
+	private static Map<String, Class<?>> ENTITY_CLASS_MAP;
 
 	/**
 	 * MySql 关键字
@@ -62,16 +63,20 @@ public final class TableHelper {
 			+ "VARYING,WHEN,WHERE,WHILE,WITH,WRITE,X509,XOR,YEAR_MONTH,ZEROFILL,"
 			+ "ACTION,BIT,DATE,ENUM,NO,TEXT,TIME,TIMESTAMP,";
 
-	static {
-		// #加载所有@Table指定的Entity类
-		Set<Class<?>> entityClassSet = ClassHelper.getClassSetByAnnotation(Table.class);
-		for (Class<?> entityClass : entityClassSet) {
-			String entityClassSimpleName = entityClass.getSimpleName();
-			if (ENTITY_CLASS_MAP.containsKey(entityClassSimpleName)) {
-				throw new RuntimeException("find the same entity class: " + entityClass.getName() + " == "
-						+ ENTITY_CLASS_MAP.get(entityClassSimpleName).getName());
+	@Override
+	public void init() {
+		synchronized (this) {
+			ENTITY_CLASS_MAP = new HashMap<>();
+			// #加载所有@Table指定的Entity类
+			Set<Class<?>> entityClassSet = ClassHelper.getClassSetByAnnotation(Table.class);
+			for (Class<?> entityClass : entityClassSet) {
+				String entityClassSimpleName = entityClass.getSimpleName();
+				if (ENTITY_CLASS_MAP.containsKey(entityClassSimpleName)) {
+					throw new RuntimeException("find the same entity class: " + entityClass.getName() + " == "
+							+ ENTITY_CLASS_MAP.get(entityClassSimpleName).getName());
+				}
+				ENTITY_CLASS_MAP.put(entityClassSimpleName, entityClass);
 			}
-			ENTITY_CLASS_MAP.put(entityClassSimpleName, entityClass);
 		}
 	}
 
