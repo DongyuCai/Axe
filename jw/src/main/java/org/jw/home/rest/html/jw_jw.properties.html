@@ -183,7 +183,7 @@ public void jwProperties(HttpServletRequest request, HttpServletResponse respons
 					<td align="left">&nbsp;</td>
 					<td align="left">jdbc.datasource</td>
 					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
-					<td align="left">指定DataSource实现类</td>
+					<td align="left">指定DataSource数据源实现类，多个源用“,”分割</td>
 					<td align="left">
 						<input name="jdbc.datasource" type="text" value=""+ConfigHelper.getJdbcDatasource()+"" onchange="setProperty('jdbc.datasource',this.value)" />
 					</td>

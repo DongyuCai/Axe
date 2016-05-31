@@ -11,6 +11,7 @@ import org.jw.constant.ConfigConstant;
 import org.jw.helper.Helper;
 import org.jw.helper.base.ConfigHelper;
 import org.jw.util.ClassUtil;
+import org.jw.util.StringUtil;
 
 /**
  * 类操作助手类
@@ -34,12 +35,14 @@ public final class ClassHelper implements Helper{
         	String jwPackage = "org.jw";
             //客户自定义应用扫描包路径
             String appBasePackage = ConfigHelper.getAppBasePackage();
-            String[] basePackages = appBasePackage.split(",");
-            for(String basePackage:basePackages){
-            	if(basePackage.startsWith(jwPackage)){
-            		throw new RuntimeException(ConfigConstant.APP_BASE_PACKAGE+":"+"不可以使用"+jwPackage+"开头,"+jwPackage+"被框架保留!");
+            if(StringUtil.isNotEmpty(appBasePackage)){
+            	String[] basePackages = appBasePackage.split(",");
+            	for(String basePackage:basePackages){
+            		if(basePackage.startsWith(jwPackage)){
+            			throw new RuntimeException(ConfigConstant.APP_BASE_PACKAGE+":"+"不可以使用"+jwPackage+"开头,"+jwPackage+"被框架保留!");
+            		}
+            		CLASS_SET.addAll(ClassUtil.getClassSet(basePackage));
             	}
-            	CLASS_SET.addAll(ClassUtil.getClassSet(basePackage));
             }
             //增加jw框架包路径
             CLASS_SET.addAll(ClassUtil.getClassSet(jwPackage));
