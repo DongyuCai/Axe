@@ -1,6 +1,7 @@
 <java>
 @Request(value = "/filter", method = RequestMethod.GET)
-public void filter(@RequestParam("token")String token, HttpServletResponse response) {
+public void filter(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>

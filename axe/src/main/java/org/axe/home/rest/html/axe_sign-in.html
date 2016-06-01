@@ -197,7 +197,7 @@ public View signIn(HttpServletRequest request, HttpServletResponse response,@Req
 			document.getElementById("number").innerHTML = number;
 			if(number <= 0){
 				window.clearInterval(int);
-				window.location = ""+contextPath+"/axe";
+				window.location = ""+contextPath+"/axe/sign-in";
 			}
 		}
 		
@@ -205,7 +205,7 @@ public View signIn(HttpServletRequest request, HttpServletResponse response,@Req
 </head>
 <body>
 	<table width="100%">
-		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/axe/sigin-in">/axe/sigin-in 重新登录</a></td></tr>
+		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/axe/sign-in">/axe/sign-in 重新登录</a></td></tr>
 		<tr><td align="center"><font size="28"><b>登录失败，用户名或密码错误！</b></font></td></tr>
 	</table>
 </body>

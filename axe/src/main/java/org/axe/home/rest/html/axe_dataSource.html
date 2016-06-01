@@ -1,6 +1,7 @@
 <java>
 @Request(value="/dataSource", method=RequestMethod.GET)
-public void dataSource(@RequestParam("token")String token, HttpServletResponse response){
+public void dataSource(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>

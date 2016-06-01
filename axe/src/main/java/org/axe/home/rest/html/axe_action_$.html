@@ -1,10 +1,11 @@
 <java>
 @Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
-	public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletResponse response) {
-		do {
-			if (StringUtil.isEmpty(mappingHashCode))
-				break;
-				StringBuilder html = new StringBuilder();
+public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
+	do {
+		if (StringUtil.isEmpty(mappingHashCode))
+			break;
+			StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>
 <html>

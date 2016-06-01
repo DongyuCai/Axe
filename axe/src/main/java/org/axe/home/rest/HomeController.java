@@ -263,7 +263,7 @@ html.append("number = number-1;");
 html.append("document.getElementById(\"number\").innerHTML = number;");
 html.append("if(number <= 0){");
 html.append("window.clearInterval(int);");
-html.append("window.location = \""+contextPath+"/axe\";");
+html.append("window.location = \""+contextPath+"/axe/sign-in\";");
 html.append("}");
 html.append("}");
 html.append("");
@@ -271,7 +271,7 @@ html.append("</script>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
-html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe/sigin-in\">/axe/sigin-in 重新登录</a></td></tr>");
+html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe/sign-in\">/axe/sign-in 重新登录</a></td></tr>");
 html.append("<tr><td align=\"center\"><font size=\"28\"><b>登录失败，用户名或密码错误！</b></font></td></tr>");
 html.append("</table>");
 html.append("</body>");
@@ -500,7 +500,8 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/filter", method = RequestMethod.GET)
-public void filter(@RequestParam("token")String token, HttpServletResponse response) {
+public void filter(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -555,7 +556,8 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/interceptor", method = RequestMethod.GET)
-public void interceptor(@RequestParam("token")String token, HttpServletResponse response) {
+public void interceptor(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -795,7 +797,8 @@ HttpServletResponse response) {
 this.action(token, request, response, basePathHashCode);
 }
 @Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
-public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletResponse response) {
+public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+String contextPath = request.getContextPath();
 do {
 if (StringUtil.isEmpty(mappingHashCode))
 break;
@@ -943,7 +946,8 @@ printHtml(response, html.toString());
 } while (false);
 }
 @Request(value = "/tns", method = RequestMethod.GET)
-public void tns(@RequestParam("token")String token, HttpServletResponse response) {
+public void tns(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -994,7 +998,8 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/dao", method = RequestMethod.GET)
-public void dao(@RequestParam("token")String token, HttpServletResponse response) {
+public void dao(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -1038,7 +1043,8 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value="/dataSource", method=RequestMethod.GET)
-public void dataSource(@RequestParam("token")String token, HttpServletResponse response){
+public void dataSource(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
