@@ -18,7 +18,6 @@ public class HomeControllerGenerator {
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_dao.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_dataSource.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_axe.properties.html");
-		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_axe.properties_post.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_refresh_config.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/home_controller_foot.html");
 	}

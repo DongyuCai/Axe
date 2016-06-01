@@ -1,6 +1,6 @@
 <java>
 @Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
-	public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, HttpServletResponse response) {
+	public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletResponse response) {
 		do {
 			if (StringUtil.isEmpty(mappingHashCode))
 				break;
@@ -14,6 +14,16 @@
 </head>
 <body>
 	<table width="100%">
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
 		<java>
 		List<Handler> handlerList = ControllerHelper.getActionList();
 		Handler handler = null;

@@ -1,6 +1,6 @@
 <java>
 @Request(value = "/interceptor", method = RequestMethod.GET)
-public void interceptor(HttpServletResponse response) {
+public void interceptor(@RequestParam("token")String token, HttpServletResponse response) {
 	StringBuilder html = new StringBuilder();
 </java>
 <!DOCTYPE html>
@@ -11,6 +11,16 @@ public void interceptor(HttpServletResponse response) {
 </head>
 <body>
 	<table width="100%">
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
 		<java>
 		Map<Class<? extends org.axe.interface_.mvc.Interceptor>,org.axe.interface_.mvc.Interceptor> interceptorMap = InterceptorHelper.getInterceptorMap();
 		</java>

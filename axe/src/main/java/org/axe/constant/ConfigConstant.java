@@ -9,8 +9,10 @@ public interface ConfigConstant {
 	String CONFIG_FILE = "axe.properties";
     
     //#系统参数配置
-	String JW_HOME = "axe.home";
-	String JW_CLASSHELPER_KEEP = "axe.classhelper.keep";
+	String AXE_HOME = "axe.home";
+	String AXE_SIGN_IN = "axe.signin";
+	String AXE_SIGN_IN_TOKEN = "axe.signin.token";
+	String AXE_CLASSHELPER_KEEP = "axe.classhelper.keep";
 	
     //#持久层配置
     String JDBC_DRIVER = "jdbc.driver";

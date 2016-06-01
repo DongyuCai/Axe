@@ -148,7 +148,7 @@ public final class ClassHelper implements Helper{
     }
     
     public static void release(){
-    	if(!ConfigHelper.getJwClassHelperKeep()){
+    	if(!ConfigHelper.getAxeClassHelperKeep()){
     		CLASS_SET.clear();
     	}
     }

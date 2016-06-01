@@ -1,6 +1,6 @@
 <java>
 @Request(value = "/controller", method = RequestMethod.GET)
-public void controller(HttpServletRequest request, HttpServletResponse response) {
+public void controller(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
 </java>
@@ -12,6 +12,16 @@ public void controller(HttpServletRequest request, HttpServletResponse response)
 </head>
 <body>
 	<table width="100%">
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
 		<java>
 			Set<Class<?>> controllerCLassSet = ClassHelper.getControllerClassSet();
 		</java>
@@ -70,7 +80,7 @@ public void controller(HttpServletRequest request, HttpServletResponse response)
 						basePathHashCode = String.valueOf(code);
 					}
 					</java>
-					<td align="left">x<a href=""+contextPath+"/axe/controller-"+basePathHashCode+"/action">"+actionCount+"</a></td>
+					<td align="left">x<a href=""+contextPath+"/axe/controller-"+basePathHashCode+"/action?token="+token+"">"+actionCount+"</a></td>
 				</tr>
 				<java>
 					}

@@ -1,6 +1,6 @@
 <java>
 @Request(value = "/refresh-config", method = RequestMethod.GET)
-public void refreshConfig(HttpServletRequest request, HttpServletResponse response) {
+public void refreshConfig(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	
 	ServletContext servletContext = request.getServletContext();
@@ -23,7 +23,7 @@ public void refreshConfig(HttpServletRequest request, HttpServletResponse respon
 			document.getElementById("number").innerHTML = number;
 			if(number <= 0){
 				window.clearInterval(int);
-				window.location = ""+contextPath+"/axe";
+				window.location = ""+contextPath+"/axe?token="+token+"";
 			}
 		}
 		
@@ -31,7 +31,17 @@ public void refreshConfig(HttpServletRequest request, HttpServletResponse respon
 </head>
 <body>
 	<table width="100%">
-		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/axe">/axe首页</a></td></tr>
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
+		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/axe?token="+token+"">/axe首页</a></td></tr>
 		<tr><td align="center"><font size="28"><b>刷新配置成功！</b></font></td></tr>
 	</table>
 </body>

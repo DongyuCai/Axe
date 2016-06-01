@@ -19,6 +19,7 @@
 * actionMethod 方法参数的随意化，支持[HttpRequest]()、[HttpResponse]()、[Param]()、[Map<String,Object>]() 注入，注意Map<String,Object> 只会注入Body内容。
 * [Filter]()过滤器，支持filter链（有序），支持在Controller上或Controller方法上[@FilterFuckOff]()排除指定Filter，默认排除所有
 * [Interceptor]()拦截器，拦截器没有顺序可言，是针对Controller方法的拦截，多个拦截器同时作用在某个方法上，必须都返回true才能进入方法。
+* 过滤器拦截器，都支持放弃继续执行，中途跳转的行为，使用[RedirectorException]()实现。
 * dao层（miniDao4Mysql），底层是apache DbUtils，Bean映射框架自己实现（因为DbUtils不支持Date类型）
 * dao层  支持表名用类名表示，表字段用类字段表示，类似HQL
 * dao通过继承 [Repository]()接口可直接获得saveEntity、insertEntity、updateEntity、getEntity、deleteEntity直接面向对象的方法。

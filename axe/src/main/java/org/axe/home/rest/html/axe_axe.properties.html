@@ -1,6 +1,6 @@
 <java>
 @Request(value = "/axe.properties", method = RequestMethod.GET)
-public void axeProperties(HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
+public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
 </java>
@@ -11,8 +11,9 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 	<title>axe axe.properties 配置</title>
 	<script type="text/javascript">
 		var config = {
-			'axe.home':'"+ConfigHelper.getJwClassHelperKeep()+"',
-			'axe.classhelper.keep':'"+ConfigHelper.getJwClassHelperKeep()+"',
+			'axe.home':'"+ConfigHelper.getAxeClassHelperKeep()+"',
+			'axe.signin':'"+ConfigHelper.getAxeSignIn()+"',
+			'axe.classhelper.keep':'"+ConfigHelper.getAxeClassHelperKeep()+"',
 			'jdbc.driver':'"+ConfigHelper.getJdbcDriver()+"',
 			'jdbc.url':'"+ConfigHelper.getJdbcUrl()+"',
 			'jdbc.username':'"+ConfigHelper.getJdbcUsername()+"',
@@ -68,6 +69,16 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 </head>
 <body>
 	<table width="100%">
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
 		<tr><td align="center"><font size="28">axe.properties</font></td></tr>
 
 		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
@@ -78,7 +89,7 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 		
 		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
 		<tr><td>
-			<form id="saveForm" method="POST" action=""+contextPath+"/axe/axe.properties">
+			<form id="saveForm" method="POST" action=""+contextPath+"/axe/axe.properties?token="+token+"">
 				<table width="100%">
 				<tr style="background-color: #F0F0F0;">
 					<td align="left">&nbsp;</td>
@@ -90,13 +101,13 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 				<tr>
 					<td align="left">&nbsp;</td>
 					<td align="left">axe.home</td>
-					<td align="left">"+ConfigHelper.getJwHome()+"</td>
+					<td align="left">"+ConfigHelper.getAxeHome()+"</td>
 					<td align="left">是否开启/axe的访问</td>
 					<td align="left">
 						<select name="axe.home" onchange="setProperty('axe.home',this.value)">
 							<option value="true" 
 							<java>
-								if(ConfigHelper.getJwHome()){
+								if(ConfigHelper.getAxeHome()){
 							</java>
 							selected="true"
 							<java>
@@ -105,7 +116,7 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 							>是</option>
 							<option value="false" 
 							<java>
-								if(!ConfigHelper.getJwHome()){
+								if(!ConfigHelper.getAxeHome()){
 							</java>
 							selected="true"
 							<java>
@@ -117,14 +128,14 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">axe.classhelper.keep</td>
-					<td align="left">"+ConfigHelper.getJwClassHelperKeep()+"</td>
-					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
+					<td align="left">axe.signin</td>
+					<td align="left">"+ConfigHelper.getAxeSignIn()+"</td>
+					<td align="left">是否开启/axe的登录访问</td>
 					<td align="left">
-						<select name="axe.classhelper.keep" onchange="setProperty('axe.classhelper.keep',this.value)">
+						<select name="axe.signin" onchange="setProperty('axe.signin',this.value);openPassword(this.value);">
 							<option value="true" 
 							<java>
-								if(ConfigHelper.getJwClassHelperKeep()){
+								if(ConfigHelper.getAxeSignIn()){
 							</java>
 							selected="true"
 							<java>
@@ -133,7 +144,53 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 							>是</option>
 							<option value="false" 
 							<java>
-								if(!ConfigHelper.getJwClassHelperKeep()){
+								if(!ConfigHelper.getAxeSignIn()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>否</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">登录ID</td>
+					<td align="left">不存储</td>
+					<td align="left">axe登录ID，不存到配置文件</td>
+					<td align="left">
+						<input name="NOSAVE.axe.signin.id" type="text" value='' onchange="setProperty('NOSAVE.axe.signin.id',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">登录密码</td>
+					<td align="left">不存储</td>
+					<td align="left">axe登录密码，不存到配置文件</td>
+					<td align="left">
+						<input name="NOSAVE.axe.signin.password" type="text" value='' onchange="setProperty('NOSAVE.axe.signin.id',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">axe.classhelper.keep</td>
+					<td align="left">"+ConfigHelper.getAxeClassHelperKeep()+"</td>
+					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
+					<td align="left">
+						<select name="axe.classhelper.keep" onchange="setProperty('axe.classhelper.keep',this.value)">
+							<option value="true" 
+							<java>
+								if(ConfigHelper.getAxeClassHelperKeep()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>是</option>
+							<option value="false" 
+							<java>
+								if(!ConfigHelper.getAxeClassHelperKeep()){
 							</java>
 							selected="true"
 							<java>
@@ -227,6 +284,46 @@ public void axeProperties(HttpServletRequest request, HttpServletResponse respon
 			</table>
 			</form>
 		</td></tr>
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+
+@Request(value = "/axe.properties", method = RequestMethod.POST)
+public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response,Param param) {
+	String contextPath = request.getContextPath();
+	
+	String configFile = homeService.saveAxeProperties(param);
+
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>axe save properties</title>
+	<script type="text/javascript">
+		var number = 10;
+
+		var int=self.setInterval("toHome()",1000);
+
+		function toHome(){
+			number = number-1;
+			document.getElementById("number").innerHTML = number;
+			if(number <= 0){
+				window.clearInterval(int);
+				window.location = ""+contextPath+"/axe?token="+token+"";
+			}
+		}
+		
+	</script>
+</head>
+<body>
+	<table width="100%">
+		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/axe?token="+token+"">/axe首页</a></td></tr>
+		<tr><td align="center"><font size="28"><b>保存配置成功，"+configFile+"</b></font></td></tr>
 	</table>
 </body>
 </html>

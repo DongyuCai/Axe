@@ -1,6 +1,6 @@
 <java>
 @Request(value = "", method = RequestMethod.GET)
-public void home(HttpServletRequest request, HttpServletResponse response) {
+public void home(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
 </java>
@@ -12,12 +12,22 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 	<script type="text/javascript">
 		var refreshInt = setInterval("refresh()",1000*60);
 		function refresh(){
-			window.location = ""+contextPath+"/axe";
+			window.location = ""+contextPath+"/axe?token="+token+"";
 		}
 	</script>
 </head>
 <body>
 	<table width="100%">
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
 		<tr><td align="center"><font size="28">欢迎使用 Axe!</font></td></tr>
 
 		<!--系统运行 概览-->
@@ -74,9 +84,9 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 		<!--系统参数-->
 		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
 		&nbsp;<font color="white"><b>系统参数 axe.properties</b></font>&nbsp;
-		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/axe/axe.properties'">
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/axe/axe.properties?token="+token+"'">
 		&nbsp;<font color="white"><b>编辑</b></font>&nbsp;
-		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/axe/refresh-config'">
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/axe/refresh-config?token="+token+"'">
 		&nbsp;<font color="white"><b>重载 axe.properties 配置</b></font>&nbsp;
 		</td></tr></table></td></tr>
 		
@@ -92,13 +102,19 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 				<tr>
 					<td align="left">&nbsp;</td>
 					<td align="left">axe.home</td>
-					<td align="left">"+ConfigHelper.getJwHome()+"</td>
+					<td align="left">"+ConfigHelper.getAxeHome()+"</td>
 					<td align="left">是否开启/axe的访问</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
+					<td align="left">axe.signin</td>
+					<td align="left">"+ConfigHelper.getAxeSignIn()+"</td>
+					<td align="left">是否开启/axe的登录访问</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
 					<td align="left">axe.classhelper.keep</td>
-					<td align="left">"+ConfigHelper.getJwClassHelperKeep()+"</td>
+					<td align="left">"+ConfigHelper.getAxeClassHelperKeep()+"</td>
 					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
 				</tr>
 				<tr>
@@ -167,14 +183,14 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 		<tr><td>
 			<table width="100%">
 				<tr>
-					<td align="center"><a href=""+contextPath+"/axe/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/axe/interceptor">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/filter?token="+token+"">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/interceptor?token="+token+"">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>
 					<java>
 					String controllerSize = "?";
 					String serviceSize = "?";
 					String tnsPointCount = "?";
 					String daoSize = "?";
-					if(ConfigHelper.getJwClassHelperKeep()){
+					if(ConfigHelper.getAxeClassHelperKeep()){
 						controllerSize = ClassHelper.getControllerClassSet().size()+"";
 						Set<Class<?>> serviceClassSet = ClassHelper.getServiceClassSet();
 						serviceSize = serviceClassSet.size()+"";
@@ -189,15 +205,15 @@ public void home(HttpServletRequest request, HttpServletResponse response) {
 						daoSize = ClassHelper.getClassSetByAnnotation(Dao.class).size()+"";
 					}
 					</java>
-					<td align="center"><a href=""+contextPath+"/axe/controller">Controller</a> x"+controllerSize+"</td>
-					<td align="center"><a href=""+contextPath+"/axe/action">Action</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/controller?token="+token+"">Controller</a> x"+controllerSize+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/action?token="+token+"">Action</a> x"+ControllerHelper.getActionList().size()+"</td>
 					<td align="center">Service x"+serviceSize+"</td>
 					<java>
 					</java>
-					<td align="center"><a href=""+contextPath+"/axe/tns">Tns point </a> x"+tnsPointCount+"</td>
-					<td align="center"><a href=""+contextPath+"/axe/dao">Dao</a> x"+daoSize+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/tns?token="+token+"">Tns point </a> x"+tnsPointCount+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/dao?token="+token+"">Dao</a> x"+daoSize+"</td>
 					<td align="center">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
-					<td align="center"><a href=""+contextPath+"/axe/dataSource">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/dataSource?token="+token+"">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
 				</tr>
 			</table>
 		</td></tr><tr><td>&nbsp;</td></tr>

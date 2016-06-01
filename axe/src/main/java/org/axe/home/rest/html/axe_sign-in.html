@@ -137,19 +137,19 @@ public void signIn(HttpServletRequest request, HttpServletResponse response,Para
 					
 					<table>
 						<tr><td>
-							<img src="https://github.com/DongyuCai/Axe/raw/branch-jdk1.7/axe/favicon.png">
+							<img width="200px" height="200px" src="https://github.com/DongyuCai/Axe/raw/branch-jdk1.7/axe/favicon.png">
 						</td><td>&nbsp;</td><td valign="top">
 							<form method="POST" action=""+contextPath+"/axe/sign-in">
-								<table width="300px">
+								<table>
 									<tr>
 										<td><b style="font-size: 30px;color: #8E8E8E">欢迎登陆Axe!</b></td>
-									</tr><tr><td height="2px"></td></tr>
+									</tr><tr><td height="10px"></td></tr>
 									<tr>
 										<td><input name="id" type="text" class="mytxt" value="ID" onFocus="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999999"  /></td>
-									</tr><tr><td height="2px"></td></tr>
+									</tr><tr><td height="3px"></td></tr>
 									<tr>
 										<td><input name="password" type="text" class="mytxt" value="密码" onFocus="if(value==defaultValue){value='';this.style.color='#000';this.type='password';}" onBlur="if(!value){value=defaultValue;this.style.color='#999';this.type='text';}" style="color:#999999" /></td>
-									</tr><tr><td height="2px"></td></tr>
+									</tr><tr><td height="3px"></td></tr>
 									<tr>
 										<td align="right"><a style="font-size: 10px;color: #d0d0d0" href=""+contextPath+"/axe/forgot-password">忘记密码?</a></td>
 									</tr>
@@ -169,5 +169,58 @@ public void signIn(HttpServletRequest request, HttpServletResponse response,Para
 </html>
 <java>
 	printHtml(response, html.toString());
+}
+
+@Request(value = "/sign-in", method = RequestMethod.POST)
+public View signIn(HttpServletRequest request, HttpServletResponse response,@RequestParam("id")String id,@RequestParam("password")String password) {
+	String contextPath = request.getContextPath();
+
+	boolean success = homeService.signIn(request, id, password);
+	if(success){
+		return new View("/axe?token="+ConfigHelper.getAxeSignInToken());
+	}
+
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>axe sign in</title>
+	<script type="text/javascript">
+		var number = 10;
+
+		var int=self.setInterval("toHome()",1000);
+
+		function toHome(){
+			number = number-1;
+			document.getElementById("number").innerHTML = number;
+			if(number <= 0){
+				window.clearInterval(int);
+				window.location = ""+contextPath+"/axe";
+			}
+		}
+		
+	</script>
+</head>
+<body>
+	<table width="100%">
+		<tr><td align="center"><span id="number">10</span>秒后自动跳转<a href=""+contextPath+"/axe/sigin-in">/axe/sigin-in 重新登录</a></td></tr>
+		<tr><td align="center"><font size="28"><b>登录失败，用户名或密码错误！</b></font></td></tr>
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+
+	return null;
+}
+
+
+
+@Request(value = "/sign-out", method = RequestMethod.GET)
+public View signOut(@RequestParam("token")String token, HttpServletResponse response) {
+	homeService.signOut();
+	return new View("/axe/sign-in");
 }
 </java>

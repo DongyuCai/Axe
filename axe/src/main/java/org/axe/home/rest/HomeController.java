@@ -26,6 +26,7 @@ import org.axe.annotation.persistence.Dao;
 import org.axe.annotation.persistence.Tns;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
 import org.axe.constant.RequestMethod;
@@ -39,6 +40,7 @@ import org.axe.helper.mvc.InterceptorHelper;
 import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.home.interceptor.HomeInterceptor;
+import org.axe.home.interceptor.SignInInterceptor;
 import org.axe.home.service.HomeService;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.persistence.DataSource;
@@ -47,7 +49,7 @@ import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 
 @FilterFuckOff
-@Interceptor(HomeInterceptor.class)
+@Interceptor({HomeInterceptor.class, SignInInterceptor.class})
 @Controller(basePath = "/axe")
 public class HomeController {
 
@@ -203,19 +205,19 @@ html.append("<tr><td align=\"center\">");
 html.append("");
 html.append("<table>");
 html.append("<tr><td>");
-html.append("<img src=\"https://github.com/DongyuCai/Axe/raw/branch-jdk1.7/axe/favicon.png\">");
+html.append("<img width=\"200px\" height=\"200px\" src=\"https://github.com/DongyuCai/Axe/raw/branch-jdk1.7/axe/favicon.png\">");
 html.append("</td><td>&nbsp;</td><td valign=\"top\">");
 html.append("<form method=\"POST\" action=\""+contextPath+"/axe/sign-in\">");
-html.append("<table width=\"300px\">");
+html.append("<table>");
 html.append("<tr>");
 html.append("<td><b style=\"font-size: 30px;color: #8E8E8E\">欢迎登陆Axe!</b></td>");
-html.append("</tr><tr><td height=\"2px\"></td></tr>");
+html.append("</tr><tr><td height=\"10px\"></td></tr>");
 html.append("<tr>");
 html.append("<td><input name=\"id\" type=\"text\" class=\"mytxt\" value=\"ID\" onFocus=\"if(value==defaultValue){value='';this.style.color='#000'}\" onBlur=\"if(!value){value=defaultValue;this.style.color='#999'}\" style=\"color:#999999\"  /></td>");
-html.append("</tr><tr><td height=\"2px\"></td></tr>");
+html.append("</tr><tr><td height=\"3px\"></td></tr>");
 html.append("<tr>");
 html.append("<td><input name=\"password\" type=\"text\" class=\"mytxt\" value=\"密码\" onFocus=\"if(value==defaultValue){value='';this.style.color='#000';this.type='password';}\" onBlur=\"if(!value){value=defaultValue;this.style.color='#999';this.type='text';}\" style=\"color:#999999\" /></td>");
-html.append("</tr><tr><td height=\"2px\"></td></tr>");
+html.append("</tr><tr><td height=\"3px\"></td></tr>");
 html.append("<tr>");
 html.append("<td align=\"right\"><a style=\"font-size: 10px;color: #d0d0d0\" href=\""+contextPath+"/axe/forgot-password\">忘记密码?</a></td>");
 html.append("</tr>");
@@ -235,8 +237,59 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
+
+@Request(value = "/sign-in", method = RequestMethod.POST)
+public View signIn(HttpServletRequest request, HttpServletResponse response,@RequestParam("id")String id,@RequestParam("password")String password) {
+String contextPath = request.getContextPath();
+
+boolean success = homeService.signIn(request, id, password);
+if(success){
+return new View("/axe?token="+ConfigHelper.getAxeSignInToken());
+}
+
+StringBuilder html = new StringBuilder();
+html.append("<!DOCTYPE html>");
+html.append("<html>");
+html.append("<head>");
+html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
+html.append("<title>axe sign in</title>");
+html.append("<script type=\"text/javascript\">");
+html.append("var number = 10;");
+html.append("");
+html.append("var int=self.setInterval(\"toHome()\",1000);");
+html.append("");
+html.append("function toHome(){");
+html.append("number = number-1;");
+html.append("document.getElementById(\"number\").innerHTML = number;");
+html.append("if(number <= 0){");
+html.append("window.clearInterval(int);");
+html.append("window.location = \""+contextPath+"/axe\";");
+html.append("}");
+html.append("}");
+html.append("");
+html.append("</script>");
+html.append("</head>");
+html.append("<body>");
+html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe/sigin-in\">/axe/sigin-in 重新登录</a></td></tr>");
+html.append("<tr><td align=\"center\"><font size=\"28\"><b>登录失败，用户名或密码错误！</b></font></td></tr>");
+html.append("</table>");
+html.append("</body>");
+html.append("</html>");
+printHtml(response, html.toString());
+
+return null;
+}
+
+
+
+@Request(value = "/sign-out", method = RequestMethod.GET)
+public View signOut(@RequestParam("token")String token, HttpServletResponse response) {
+homeService.signOut();
+return new View("/axe/sign-in");
+}
 @Request(value = "", method = RequestMethod.GET)
-public void home(HttpServletRequest request, HttpServletResponse response) {
+public void home(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
@@ -247,12 +300,18 @@ html.append("<title>axe homepage</title>");
 html.append("<script type=\"text/javascript\">");
 html.append("var refreshInt = setInterval(\"refresh()\",1000*60);");
 html.append("function refresh(){");
-html.append("window.location = \""+contextPath+"/axe\";");
+html.append("window.location = \""+contextPath+"/axe?token="+token+"\";");
 html.append("}");
 html.append("</script>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 html.append("<tr><td align=\"center\"><font size=\"28\">欢迎使用 Axe!</font></td></tr>");
 html.append("");
 html.append("<!--系统运行 概览-->");
@@ -305,9 +364,9 @@ html.append("");
 html.append("<!--系统参数-->");
 html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
 html.append("&nbsp;<font color=\"white\"><b>系统参数 axe.properties</b></font>&nbsp;");
-html.append("</td><td>&nbsp;</td><td style=\"background-color: #007500;cursor: pointer;\" onclick=\"window.location='"+contextPath+"/axe/axe.properties'\">");
+html.append("</td><td>&nbsp;</td><td style=\"background-color: #007500;cursor: pointer;\" onclick=\"window.location='"+contextPath+"/axe/axe.properties?token="+token+"'\">");
 html.append("&nbsp;<font color=\"white\"><b>编辑</b></font>&nbsp;");
-html.append("</td><td>&nbsp;</td><td style=\"background-color: #007500;cursor: pointer;\" onclick=\"window.location='"+contextPath+"/axe/refresh-config'\">");
+html.append("</td><td>&nbsp;</td><td style=\"background-color: #007500;cursor: pointer;\" onclick=\"window.location='"+contextPath+"/axe/refresh-config?token="+token+"'\">");
 html.append("&nbsp;<font color=\"white\"><b>重载 axe.properties 配置</b></font>&nbsp;");
 html.append("</td></tr></table></td></tr>");
 html.append("");
@@ -323,13 +382,19 @@ html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.home</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJwHome()+"</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getAxeHome()+"</td>");
 html.append("<td align=\"left\">是否开启/axe的访问</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">axe.signin</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getAxeSignIn()+"</td>");
+html.append("<td align=\"left\">是否开启/axe的登录访问</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.classhelper.keep</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJwClassHelperKeep()+"</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getAxeClassHelperKeep()+"</td>");
 html.append("<td align=\"left\">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>");
 html.append("</tr>");
 html.append("<tr>");
@@ -398,13 +463,13 @@ html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr
 html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/filter\">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/interceptor\">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/filter?token="+token+"\">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/interceptor?token="+token+"\">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>");
 String controllerSize = "?";
 String serviceSize = "?";
 String tnsPointCount = "?";
 String daoSize = "?";
-if(ConfigHelper.getJwClassHelperKeep()){
+if(ConfigHelper.getAxeClassHelperKeep()){
 controllerSize = ClassHelper.getControllerClassSet().size()+"";
 Set<Class<?>> serviceClassSet = ClassHelper.getServiceClassSet();
 serviceSize = serviceClassSet.size()+"";
@@ -418,13 +483,13 @@ count = count+methods.size();
 tnsPointCount = count+"";
 daoSize = ClassHelper.getClassSetByAnnotation(Dao.class).size()+"";
 }
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/controller\">Controller</a> x"+controllerSize+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/action\">Action</a> x"+ControllerHelper.getActionList().size()+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/controller?token="+token+"\">Controller</a> x"+controllerSize+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/action?token="+token+"\">Action</a> x"+ControllerHelper.getActionList().size()+"</td>");
 html.append("<td align=\"center\">Service x"+serviceSize+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/tns\">Tns point </a> x"+tnsPointCount+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/dao\">Dao</a> x"+daoSize+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/tns?token="+token+"\">Tns point </a> x"+tnsPointCount+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/dao?token="+token+"\">Dao</a> x"+daoSize+"</td>");
 html.append("<td align=\"center\">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/dataSource\">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>");
+html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/dataSource?token="+token+"\">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>");
 html.append("</tr>");
 html.append("</table>");
 html.append("</td></tr><tr><td>&nbsp;</td></tr>");
@@ -435,7 +500,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/filter", method = RequestMethod.GET)
-public void filter(HttpServletResponse response) {
+public void filter(@RequestParam("token")String token, HttpServletResponse response) {
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -445,6 +510,12 @@ html.append("<title>axe filter</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 List<Filter> filterList = FilterHelper.getSortedFilterList();
 html.append("<tr><td align=\"center\"><font size=\"28\">Filter list x"+filterList.size()+"</font></td></tr>");
 html.append("");
@@ -484,7 +555,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/interceptor", method = RequestMethod.GET)
-public void interceptor(HttpServletResponse response) {
+public void interceptor(@RequestParam("token")String token, HttpServletResponse response) {
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -494,6 +565,12 @@ html.append("<title>axe interceptor</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 Map<Class<? extends org.axe.interface_.mvc.Interceptor>,org.axe.interface_.mvc.Interceptor> interceptorMap = InterceptorHelper.getInterceptorMap();
 html.append("<tr><td align=\"center\"><font size=\"28\">Interceptor list x"+interceptorMap.size()+"</font></td></tr>");
 html.append("");
@@ -523,7 +600,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/controller", method = RequestMethod.GET)
-public void controller(HttpServletRequest request, HttpServletResponse response) {
+public void controller(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
@@ -534,6 +611,12 @@ html.append("<title>axe controller</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 Set<Class<?>> controllerCLassSet = ClassHelper.getControllerClassSet();
 html.append("<tr><td align=\"center\"><font size=\"28\">Controller set x"+controllerCLassSet.size()+"</font></td></tr>");
 html.append("");
@@ -586,7 +669,7 @@ basePathHashCode = "_"+Math.abs(code);
 }else{
 basePathHashCode = String.valueOf(code);
 }
-html.append("<td align=\"left\">x<a href=\""+contextPath+"/axe/controller-"+basePathHashCode+"/action\">"+actionCount+"</a></td>");
+html.append("<td align=\"left\">x<a href=\""+contextPath+"/axe/controller-"+basePathHashCode+"/action?token="+token+"\">"+actionCount+"</a></td>");
 html.append("</tr>");
 }
 }
@@ -598,7 +681,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/action", method = RequestMethod.GET)
-public void action(HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
+public void action(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
@@ -609,6 +692,12 @@ html.append("<title>axe action</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 List<Handler> handlerList = ControllerHelper.getActionList();
 String basePath = "";
 if (basePathHashCode != null) {
@@ -680,7 +769,7 @@ html.append("<tr>");
 html.append("<td align=\"left\">"+(id++)+"</td>");
 html.append("<td align=\"left\">"+mappingPath+"</td>");
 html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
-html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller-"+hashCode+"/action\">"+handler.getControllerClass().getName()+"</a></td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"\">"+handler.getControllerClass().getName()+"</a></td>");
 hashCode = null;
 code = mappingPath.hashCode();
 if(code < 0){
@@ -688,7 +777,7 @@ hashCode = "_"+Math.abs(code);
 }else{
 hashCode = String.valueOf(code);
 }
-html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/action/"+hashCode+"\">"+handler.getActionMethod().getName()+"</a></td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/action/"+hashCode+"?token="+token+"\">"+handler.getActionMethod().getName()+"</a></td>");
 html.append("<td align=\"left\">x"+handler.getFilterList().size()+"</td>");
 html.append("</tr>");
 }
@@ -701,12 +790,12 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/controller-{basePathHashCode}/action", method = RequestMethod.GET)
-public void action(@RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request,
+public void action(@RequestParam("token")String token, @RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request,
 HttpServletResponse response) {
-this.action(request, response, basePathHashCode);
+this.action(token, request, response, basePathHashCode);
 }
 @Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
-public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, HttpServletResponse response) {
+public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletResponse response) {
 do {
 if (StringUtil.isEmpty(mappingHashCode))
 break;
@@ -719,6 +808,12 @@ html.append("<title>axe action detail</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 List<Handler> handlerList = ControllerHelper.getActionList();
 Handler handler = null;
 for(Handler handler_:handlerList){
@@ -848,7 +943,7 @@ printHtml(response, html.toString());
 } while (false);
 }
 @Request(value = "/tns", method = RequestMethod.GET)
-public void tns(HttpServletResponse response) {
+public void tns(@RequestParam("token")String token, HttpServletResponse response) {
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -858,6 +953,12 @@ html.append("<title>axe tns</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
 List<Method> tnsMethods = new ArrayList<>();
 for(Class<?> serviceClass:serviceClassSet){
@@ -893,7 +994,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/dao", method = RequestMethod.GET)
-public void dao(HttpServletResponse response) {
+public void dao(@RequestParam("token")String token, HttpServletResponse response) {
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -903,6 +1004,12 @@ html.append("<title>axe dao</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 Set<Class<?>> daoClassSet = ClassHelper.getClassSetByAnnotation(Dao.class);
 html.append("<tr><td align=\"center\"><font size=\"28\">Dao x"+daoClassSet.size()+"</font></td></tr>");
 html.append("");
@@ -931,7 +1038,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value="/dataSource", method=RequestMethod.GET)
-public void dataSource(HttpServletResponse response){
+public void dataSource(@RequestParam("token")String token, HttpServletResponse response){
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
 html.append("<html>");
@@ -941,6 +1048,12 @@ html.append("<title>axe datasource</title>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 Map<String,DataSource> dataSourceMap = DataSourceHelper.getDataSourceAll();
 html.append("<tr><td align=\"center\"><font size=\"28\">DataSource x"+dataSourceMap.size()+"</font></td></tr>");
 html.append("");
@@ -972,7 +1085,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/axe.properties", method = RequestMethod.GET)
-public void axeProperties(HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
+public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
@@ -982,8 +1095,9 @@ html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-
 html.append("<title>axe axe.properties 配置</title>");
 html.append("<script type=\"text/javascript\">");
 html.append("var config = {");
-html.append("'axe.home':'"+ConfigHelper.getJwClassHelperKeep()+"',");
-html.append("'axe.classhelper.keep':'"+ConfigHelper.getJwClassHelperKeep()+"',");
+html.append("'axe.home':'"+ConfigHelper.getAxeClassHelperKeep()+"',");
+html.append("'axe.signin':'"+ConfigHelper.getAxeSignIn()+"',");
+html.append("'axe.classhelper.keep':'"+ConfigHelper.getAxeClassHelperKeep()+"',");
 html.append("'jdbc.driver':'"+ConfigHelper.getJdbcDriver()+"',");
 html.append("'jdbc.url':'"+ConfigHelper.getJdbcUrl()+"',");
 html.append("'jdbc.username':'"+ConfigHelper.getJdbcUsername()+"',");
@@ -1039,6 +1153,12 @@ html.append("</script>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
 html.append("<tr><td align=\"center\"><font size=\"28\">axe.properties</font></td></tr>");
 html.append("");
 html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
@@ -1049,7 +1169,7 @@ html.append("</td></tr></table></td></tr>");
 html.append("");
 html.append("<tr><td height=\"2px\" style=\"background-color: #AE0000\"></td></tr>");
 html.append("<tr><td>");
-html.append("<form id=\"saveForm\" method=\"POST\" action=\""+contextPath+"/axe/axe.properties\">");
+html.append("<form id=\"saveForm\" method=\"POST\" action=\""+contextPath+"/axe/axe.properties?token="+token+"\">");
 html.append("<table width=\"100%\">");
 html.append("<tr style=\"background-color: #F0F0F0;\">");
 html.append("<td align=\"left\">&nbsp;</td>");
@@ -1061,17 +1181,17 @@ html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.home</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJwHome()+"</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getAxeHome()+"</td>");
 html.append("<td align=\"left\">是否开启/axe的访问</td>");
 html.append("<td align=\"left\">");
 html.append("<select name=\"axe.home\" onchange=\"setProperty('axe.home',this.value)\">");
 html.append("<option value=\"true\"");
-if(ConfigHelper.getJwHome()){
+if(ConfigHelper.getAxeHome()){
 html.append("selected=\"true\"");
 }
 html.append(">是</option>");
 html.append("<option value=\"false\"");
-if(!ConfigHelper.getJwHome()){
+if(!ConfigHelper.getAxeHome()){
 html.append("selected=\"true\"");
 }
 html.append(">否</option>");
@@ -1080,18 +1200,56 @@ html.append("</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">axe.classhelper.keep</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJwClassHelperKeep()+"</td>");
-html.append("<td align=\"left\">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>");
+html.append("<td align=\"left\">axe.signin</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getAxeSignIn()+"</td>");
+html.append("<td align=\"left\">是否开启/axe的登录访问</td>");
 html.append("<td align=\"left\">");
-html.append("<select name=\"axe.classhelper.keep\" onchange=\"setProperty('axe.classhelper.keep',this.value)\">");
+html.append("<select name=\"axe.signin\" onchange=\"setProperty('axe.signin',this.value);openPassword(this.value);\">");
 html.append("<option value=\"true\"");
-if(ConfigHelper.getJwClassHelperKeep()){
+if(ConfigHelper.getAxeSignIn()){
 html.append("selected=\"true\"");
 }
 html.append(">是</option>");
 html.append("<option value=\"false\"");
-if(!ConfigHelper.getJwClassHelperKeep()){
+if(!ConfigHelper.getAxeSignIn()){
+html.append("selected=\"true\"");
+}
+html.append(">否</option>");
+html.append("</select>");
+html.append("</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">登录ID</td>");
+html.append("<td align=\"left\">不存储</td>");
+html.append("<td align=\"left\">axe登录ID，不存到配置文件</td>");
+html.append("<td align=\"left\">");
+html.append("<input name=\"NOSAVE.axe.signin.id\" type=\"text\" value='' onchange=\"setProperty('NOSAVE.axe.signin.id',this.value)\" />");
+html.append("</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">登录密码</td>");
+html.append("<td align=\"left\">不存储</td>");
+html.append("<td align=\"left\">axe登录密码，不存到配置文件</td>");
+html.append("<td align=\"left\">");
+html.append("<input name=\"NOSAVE.axe.signin.password\" type=\"text\" value='' onchange=\"setProperty('NOSAVE.axe.signin.id',this.value)\" />");
+html.append("</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">axe.classhelper.keep</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getAxeClassHelperKeep()+"</td>");
+html.append("<td align=\"left\">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>");
+html.append("<td align=\"left\">");
+html.append("<select name=\"axe.classhelper.keep\" onchange=\"setProperty('axe.classhelper.keep',this.value)\">");
+html.append("<option value=\"true\"");
+if(ConfigHelper.getAxeClassHelperKeep()){
+html.append("selected=\"true\"");
+}
+html.append(">是</option>");
+html.append("<option value=\"false\"");
+if(!ConfigHelper.getAxeClassHelperKeep()){
 html.append("selected=\"true\"");
 }
 html.append(">否</option>");
@@ -1187,11 +1345,12 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
+
 @Request(value = "/axe.properties", method = RequestMethod.POST)
-public void axeProperties(HttpServletRequest request, HttpServletResponse response,Param param) {
+public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response,Param param) {
 String contextPath = request.getContextPath();
 
-String configFile = homeService.saveJwProperties(param);
+String configFile = homeService.saveAxeProperties(param);
 
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");
@@ -1209,7 +1368,7 @@ html.append("number = number-1;");
 html.append("document.getElementById(\"number\").innerHTML = number;");
 html.append("if(number <= 0){");
 html.append("window.clearInterval(int);");
-html.append("window.location = \""+contextPath+"/axe\";");
+html.append("window.location = \""+contextPath+"/axe?token="+token+"\";");
 html.append("}");
 html.append("}");
 html.append("");
@@ -1217,7 +1376,7 @@ html.append("</script>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
-html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe\">/axe首页</a></td></tr>");
+html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe?token="+token+"\">/axe首页</a></td></tr>");
 html.append("<tr><td align=\"center\"><font size=\"28\"><b>保存配置成功，"+configFile+"</b></font></td></tr>");
 html.append("</table>");
 html.append("</body>");
@@ -1225,7 +1384,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 @Request(value = "/refresh-config", method = RequestMethod.GET)
-public void refreshConfig(HttpServletRequest request, HttpServletResponse response) {
+public void refreshConfig(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 
 ServletContext servletContext = request.getServletContext();
@@ -1247,7 +1406,7 @@ html.append("number = number-1;");
 html.append("document.getElementById(\"number\").innerHTML = number;");
 html.append("if(number <= 0){");
 html.append("window.clearInterval(int);");
-html.append("window.location = \""+contextPath+"/axe\";");
+html.append("window.location = \""+contextPath+"/axe?token="+token+"\";");
 html.append("}");
 html.append("}");
 html.append("");
@@ -1255,7 +1414,13 @@ html.append("</script>");
 html.append("</head>");
 html.append("<body>");
 html.append("<table width=\"100%\">");
-html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe\">/axe首页</a></td></tr>");
+html.append("<tr><td align=\"right\">");
+if(ConfigHelper.getAxeSignIn()){
+html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+}
+html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
+html.append("</td></tr>");
+html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe?token="+token+"\">/axe首页</a></td></tr>");
 html.append("<tr><td align=\"center\"><font size=\"28\"><b>刷新配置成功！</b></font></td></tr>");
 html.append("</table>");
 html.append("</body>");

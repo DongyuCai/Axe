@@ -27,6 +27,7 @@ import org.axe.annotation.persistence.Dao;
 import org.axe.annotation.persistence.Tns;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
 import org.axe.constant.RequestMethod;
@@ -40,6 +41,7 @@ import org.axe.helper.mvc.InterceptorHelper;
 import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.home.interceptor.HomeInterceptor;
+import org.axe.home.interceptor.SignInInterceptor;
 import org.axe.home.service.HomeService;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.persistence.DataSource;
@@ -48,7 +50,7 @@ import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 
 @FilterFuckOff
-@Interceptor(HomeInterceptor.class)
+@Interceptor({HomeInterceptor.class, SignInInterceptor.class})
 @Controller(basePath = "/axe")
 public class HomeController {
 	

@@ -26,6 +26,7 @@ import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
+import org.axe.exception.RedirectorException;
 import org.axe.exception.RestException;
 import org.axe.helper.HelperLoader;
 import org.axe.helper.base.ConfigHelper;
@@ -147,6 +148,12 @@ public class DispatcherServlet extends HttpServlet{
             	//404
     			throw new RestException(RestException.SC_NOT_FOUND, "404 Not Found");
             }
+		} catch (RedirectorException e){
+			//需要跳转的异常
+			View view = new View(e.getPath());
+			try {
+				handleViewResult(view,request,response);
+			} catch (Exception e1) {e1.printStackTrace();}
 		} catch (RestException e){
 			writeError(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
 		} catch (Exception e) {

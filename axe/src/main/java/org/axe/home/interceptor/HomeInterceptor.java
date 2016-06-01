@@ -10,16 +10,16 @@ import org.axe.interface_.mvc.Interceptor;
 
 public class HomeInterceptor implements Interceptor{
 	
-	private boolean JW_HOME = false;
+	private boolean AXE_HOME = false;
 	@Override
 	public void init() {
-		JW_HOME = ConfigHelper.getJwHome();
+		AXE_HOME = ConfigHelper.getAxeHome();
 	}
 
 	@Override
 	public boolean doInterceptor(HttpServletRequest request, HttpServletResponse response, Param param,
 			Handler handler) {
-		return JW_HOME;
+		return AXE_HOME;
 	}
 
 }
