@@ -203,7 +203,7 @@ html.append("<tr><td align=\"center\">");
 html.append("");
 html.append("<table>");
 html.append("<tr><td>");
-html.append("<img width=\"260px\" height=\"260px\" src=\"https://github.com/DongyuCai/Axe/raw/branch-jdk1.7/axe/favicon.jpg\">");
+html.append("<img src=\"https://github.com/DongyuCai/Axe/raw/branch-jdk1.7/axe/favicon.png\">");
 html.append("</td><td>&nbsp;</td><td valign=\"top\">");
 html.append("<form method=\"POST\" action=\""+contextPath+"/axe/sign-in\">");
 html.append("<table width=\"300px\">");
