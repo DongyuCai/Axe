@@ -1,0 +1,48 @@
+<java>
+@Request(value = "/dao", method = RequestMethod.GET)
+public void dao(HttpServletResponse response) {
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>axe dao</title>
+</head>
+<body>
+	<table width="100%">
+		<java>
+		Set<Class<?>> daoClassSet = ClassHelper.getClassSetByAnnotation(Dao.class);
+		</java>
+		<tr><td align="center"><font size="28">Dao x"+daoClassSet.size()+"</font></td></tr>
+
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>Dao</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>Method</b></td>
+				</tr>
+				<java>
+				for(Class<?> daoClass:daoClassSet){
+				</java>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">"+daoClass.getName()+"</td>
+				</tr>
+				<java>
+				}
+				</java>
+			</table>
+		</td></tr>
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+</java>

@@ -1,0 +1,236 @@
+<java>
+@Request(value = "/axe.properties", method = RequestMethod.GET)
+public void axeProperties(HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
+	String contextPath = request.getContextPath();
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>axe axe.properties 配置</title>
+	<script type="text/javascript">
+		var config = {
+			'axe.home':'"+ConfigHelper.getJwClassHelperKeep()+"',
+			'axe.classhelper.keep':'"+ConfigHelper.getJwClassHelperKeep()+"',
+			'jdbc.driver':'"+ConfigHelper.getJdbcDriver()+"',
+			'jdbc.url':'"+ConfigHelper.getJdbcUrl()+"',
+			'jdbc.username':'"+ConfigHelper.getJdbcUsername()+"',
+			'jdbc.password':'"+ConfigHelper.getJdbcPassword()+"',
+			'jdbc.datasource':'"+ConfigHelper.getJdbcDatasource()+"',
+			'app.base_package':'"+ConfigHelper.getAppBasePackage()+"',
+			'app.jsp_path':'"+ConfigHelper.getAppJspPath()+"',
+			'app.asset_path':'"+ConfigHelper.getAppAssetPath()+"',
+			'app.upload_limit':'"+ConfigHelper.getAppUploadLimit()+"'
+		};
+
+		function setProperty(property,value){
+			console.log(property+'=='+config[property]+'=='+value);
+			config[property] = value;
+		}
+
+		function saveProperties(){
+			if(!config['axe.home'] || config['axe.home'] == 'null' || config['axe.home'] == null || config['axe.home'] == ''){
+				alert('axe.home 必填');
+				return false;
+			}
+			if(!config['axe.classhelper.keep'] || config['axe.classhelper.keep'] == 'null' || config['axe.classhelper.keep'] == null || config['axe.classhelper.keep'] == ''){
+				alert('axe.classhelper.keep 必填');
+				return false;
+			}
+			if(!config['jdbc.datasource'] || config['jdbc.datasource'] == 'null' || config['jdbc.datasource'] == null || config['jdbc.datasource'] == ''){
+				if(!config['jdbc.driver'] || config['jdbc.driver'] == 'null' || config['jdbc.driver'] == null || config['jdbc.driver'] == ''){
+					alert('jdbc.driver 必填');
+					return false;
+				}
+				if(!config['jdbc.url'] || config['jdbc.url'] == 'null' || config['jdbc.url'] == null || config['jdbc.url'] == ''){
+					alert('jdbc.url 必填');
+					return false;
+				}
+				if(!config['jdbc.username'] || config['jdbc.username'] == 'null' || config['jdbc.username'] == null || config['jdbc.username'] == ''){
+					alert('jdbc.username 必填');
+					return false;
+				}
+				if(!config['jdbc.password'] || config['jdbc.password'] == 'null' || config['jdbc.password'] == null || config['jdbc.password'] == ''){
+					alert('jdbc.password 必填');
+					return false;
+				}
+			}
+			if(!config['app.base_package'] || config['app.base_package'] == 'null' || config['app.base_package'] == null || config['app.base_package'] == ''){
+				alert('app.base_package 必填');
+				return false;
+			}
+
+			var saveForm = document.getElementById("saveForm");
+			saveForm.submit();
+		}
+	</script>
+</head>
+<body>
+	<table width="100%">
+		<tr><td align="center"><font size="28">axe.properties</font></td></tr>
+
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>修改并生成新的配置</b></font>&nbsp;
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="saveProperties()">
+		&nbsp;<font color="white"><b>保存</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
+		<tr><td>
+			<form id="saveForm" method="POST" action=""+contextPath+"/axe/axe.properties">
+				<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>参数-键</b></td>
+					<td align="left"><b>参数-值</b></td>
+					<td align="left"><b>参数描述</b></td>
+					<td align="left"><b>调整值</b></td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">axe.home</td>
+					<td align="left">"+ConfigHelper.getJwHome()+"</td>
+					<td align="left">是否开启/axe的访问</td>
+					<td align="left">
+						<select name="axe.home" onchange="setProperty('axe.home',this.value)">
+							<option value="true" 
+							<java>
+								if(ConfigHelper.getJwHome()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>是</option>
+							<option value="false" 
+							<java>
+								if(!ConfigHelper.getJwHome()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>否</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">axe.classhelper.keep</td>
+					<td align="left">"+ConfigHelper.getJwClassHelperKeep()+"</td>
+					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
+					<td align="left">
+						<select name="axe.classhelper.keep" onchange="setProperty('axe.classhelper.keep',this.value)">
+							<option value="true" 
+							<java>
+								if(ConfigHelper.getJwClassHelperKeep()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>是</option>
+							<option value="false" 
+							<java>
+								if(!ConfigHelper.getJwClassHelperKeep()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>否</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.driver</td>
+					<td align="left">"+ConfigHelper.getJdbcDriver()+"</td>
+					<td align="left">jdbc-driver</td>
+					<td align="left">
+						<input name="jdbc.driver" type="text" value=""+ConfigHelper.getJdbcDriver()+"" onchange="setProperty('jdbc.driver',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.url</td>
+					<td align="left">"+ConfigHelper.getJdbcUrl()+"</td>
+					<td align="left">jdbc-url</td>
+					<td align="left">
+						<input name="jdbc.url" type="text" value=""+ConfigHelper.getJdbcUrl()+"" onchange="setProperty('jdbc.url',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.username</td>
+					<td align="left">"+ConfigHelper.getJdbcUsername()+"</td>
+					<td align="left">jdbc-username</td>
+					<td align="left">
+						<input name="jdbc.username" type="text" value=""+ConfigHelper.getJdbcUsername()+"" onchange="setProperty('jdbc.username',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.password</td>
+					<td align="left">"+ConfigHelper.getJdbcPassword()+"</td>
+					<td align="left">jdbc-password</td>
+					<td align="left">
+						<input name="jdbc.password" type="text" value=""+ConfigHelper.getJdbcPassword()+"" onchange="setProperty('jdbc.password',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.datasource</td>
+					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
+					<td align="left">指定DataSource数据源实现类，多个源用“,”分割</td>
+					<td align="left">
+						<input name="jdbc.datasource" type="text" value=""+ConfigHelper.getJdbcDatasource()+"" onchange="setProperty('jdbc.datasource',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.base_package</td>
+					<td align="left">"+ConfigHelper.getAppBasePackage()+"</td>
+					<td align="left">指定框架扫描的包路径，多个路径使用“,”号分割</td>
+					<td align="left">
+						<input name="app.base_package" type="text" value=""+ConfigHelper.getAppBasePackage()+"" onchange="setProperty('app.base_package',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.jsp_path</td>
+					<td align="left">"+ConfigHelper.getAppJspPath()+"</td>
+					<td align="left">指定jsp存放路径</td>
+					<td align="left">
+						<input name="app.jsp_path" type="text" value=""+ConfigHelper.getAppJspPath()+"" onchange="setProperty('app.jsp_path',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.asset_path</td>
+					<td align="left">"+ConfigHelper.getAppAssetPath()+"</td>
+					<td align="left">指定静态文件(html、js、css、图片等)存放路径</td>
+					<td align="left">
+						<input name="app.asset_path" type="text" value=""+ConfigHelper.getAppAssetPath()+"" onchange="setProperty('app.asset_path',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.upload_limit</td>
+					<td align="left">"+ConfigHelper.getAppUploadLimit()+"</td>
+					<td align="left">文件上传限制单次文件大小，单位M，默认0不限制</td>
+					<td align="left">
+						<input name="app.upload_limit" type="text" value=""+ConfigHelper.getAppUploadLimit()+"" onchange="setProperty('app.upload_limit',this.value)" />
+					</td>
+				</tr>
+			</table>
+			</form>
+		</td></tr>
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+</java>

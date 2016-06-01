@@ -1,0 +1,211 @@
+<java>
+@Request(value = "", method = RequestMethod.GET)
+public void home(HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>axe homepage</title>
+	<script type="text/javascript">
+		var refreshInt = setInterval("refresh()",1000*60);
+		function refresh(){
+			window.location = ""+contextPath+"/axe";
+		}
+	</script>
+</head>
+<body>
+	<table width="100%">
+		<tr><td align="center"><font size="28">欢迎使用 axe!</font></td></tr>
+
+		<!--系统运行 概览-->
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>系统运行-概览</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color:#AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>启动时间</b></td>
+					<td align="left"><b>运行时长</b></td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<java>
+					Date startupTime = FrameworkStatusHelper.getStartupTime();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					</java>
+					<td align="left">"+sdf.format(startupTime)+"</td>
+					<java>
+					long runTimeSec = (System.currentTimeMillis()-startupTime.getTime()) / 1000;
+					String runTime = "";
+					if (runTimeSec < 60) {
+						runTime = runTimeSec + "秒";
+					} else {
+						long runTimeMin = runTimeSec / 60;
+						if (runTimeMin < 60) {
+							runTimeSec = runTimeSec - (runTimeMin * 60);
+							runTime = runTimeMin + "分" + runTimeSec + "秒";
+						} else {
+							long runTimeHour = runTimeMin / 60;
+							if (runTimeHour < 24) {
+								runTimeMin = runTimeMin - runTimeHour * 60;
+								runTimeSec = runTimeSec - ((runTimeHour * 60) + runTimeMin) * 60;
+								runTime = runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+							} else {
+								long runTimeDay = runTimeHour / 24;
+								runTimeHour = runTimeHour-(runTimeDay * 24);
+								runTimeMin = runTimeMin - ((runTimeDay * 24) + runTimeHour) * 60;
+								runTimeSec = runTimeSec - ((((runTimeDay * 24) + runTimeHour) * 60) + runTimeMin) * 60;
+								runTime = runTimeDay + "天" + runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+							}
+						}
+					}
+					</java>
+					<td align="left">"+runTime+"</td>
+				</tr>
+			</table>
+		</td></tr><tr><td>&nbsp;</td></tr>
+
+		<!--系统参数-->
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>系统参数 axe.properties</b></font>&nbsp;
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/axe/axe.properties'">
+		&nbsp;<font color="white"><b>编辑</b></font>&nbsp;
+		</td><td>&nbsp;</td><td style="background-color: #007500;cursor: pointer;" onclick="window.location='"+contextPath+"/axe/refresh-config'">
+		&nbsp;<font color="white"><b>重载 axe.properties 配置</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color:#AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>参数-键</b></td>
+					<td align="left"><b>参数-值</b></td>
+					<td align="left"><b>参数描述</b></td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">axe.home</td>
+					<td align="left">"+ConfigHelper.getJwHome()+"</td>
+					<td align="left">是否开启/axe的访问</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">axe.classhelper.keep</td>
+					<td align="left">"+ConfigHelper.getJwClassHelperKeep()+"</td>
+					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.driver</td>
+					<td align="left">"+ConfigHelper.getJdbcDriver()+"</td>
+					<td align="left">jdbc-driver</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.url</td>
+					<td align="left">"+ConfigHelper.getJdbcUrl()+"</td>
+					<td align="left">jdbc-url</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.username</td>
+					<td align="left">"+ConfigHelper.getJdbcUsername()+"</td>
+					<td align="left">jdbc-username</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.password</td>
+					<td align="left">"+ConfigHelper.getJdbcPassword()+"</td>
+					<td align="left">jdbc-password</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.datasource</td>
+					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
+					<td align="left">指定DataSource数据源实现类，多个源用“,”分割</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.base_package</td>
+					<td align="left">"+ConfigHelper.getAppBasePackage()+"</td>
+					<td align="left">指定框架扫描的包路径，多个路径使用“,”号分割</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.jsp_path</td>
+					<td align="left">"+ConfigHelper.getAppJspPath()+"</td>
+					<td align="left">指定jsp存放路径</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.asset_path</td>
+					<td align="left">"+ConfigHelper.getAppAssetPath()+"</td>
+					<td align="left">指定静态文件(html、js、css、图片等)存放路径</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">app.upload_limit</td>
+					<td align="left">"+ConfigHelper.getAppUploadLimit()+"</td>
+					<td align="left">文件上传限制单次文件大小，单位M，默认0不限制</td>
+				</tr>
+			</table>
+		</td></tr><tr><td>&nbsp;</td></tr>
+
+		<!--MVC 概览-->
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>MVC-概览</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color:#AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr>
+					<td align="center"><a href=""+contextPath+"/axe/filter">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/interceptor">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>
+					<java>
+					String controllerSize = "?";
+					String serviceSize = "?";
+					String tnsPointCount = "?";
+					String daoSize = "?";
+					if(ConfigHelper.getJwClassHelperKeep()){
+						controllerSize = ClassHelper.getControllerClassSet().size()+"";
+						Set<Class<?>> serviceClassSet = ClassHelper.getServiceClassSet();
+						serviceSize = serviceClassSet.size()+"";
+						int count = 0;
+						for(Class<?> serviceClass:serviceClassSet){
+							List<Method> methods = ReflectionUtil.getMethodByAnnotation(serviceClass, Tns.class);
+							if(CollectionUtil.isNotEmpty(methods)){
+								count = count+methods.size();
+							}
+						}
+						tnsPointCount = count+"";
+						daoSize = ClassHelper.getClassSetByAnnotation(Dao.class).size()+"";
+					}
+					</java>
+					<td align="center"><a href=""+contextPath+"/axe/controller">Controller</a> x"+controllerSize+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/action">Action</a> x"+ControllerHelper.getActionList().size()+"</td>
+					<td align="center">Service x"+serviceSize+"</td>
+					<java>
+					</java>
+					<td align="center"><a href=""+contextPath+"/axe/tns">Tns point </a> x"+tnsPointCount+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/dao">Dao</a> x"+daoSize+"</td>
+					<td align="center">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
+					<td align="center"><a href=""+contextPath+"/axe/dataSource">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
+				</tr>
+			</table>
+		</td></tr><tr><td>&nbsp;</td></tr>
+
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+</java>
