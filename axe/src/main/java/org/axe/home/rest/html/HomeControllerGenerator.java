@@ -6,6 +6,7 @@ public class HomeControllerGenerator {
 
 	public static void main(String[] args) {
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/home_controller_head.html");
+		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_sign-in.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_filter.html");
 		Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_interceptor.html");
