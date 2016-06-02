@@ -70,7 +70,6 @@ e.printStackTrace();
 }
 @Request(value = "/sign-in", method = RequestMethod.GET)
 public void signIn(HttpServletRequest request, HttpServletResponse response,Param param) {
-	int i=1/0;
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");

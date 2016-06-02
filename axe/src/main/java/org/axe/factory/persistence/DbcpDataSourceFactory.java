@@ -25,14 +25,14 @@ public class DbcpDataSourceFactory implements DataSource{
         DRIVER = ConfigHelper.getJdbcDriver();
         URL = ConfigHelper.getJdbcUrl();
         USERNAME = ConfigHelper.getJdbcUsername();
-        PASSWORD = ConfigHelper.getJdbcPassword();
+        PASSWORD = ConfigHelper.getJdbcPassword() == null?"":ConfigHelper.getJdbcPassword();
         DATA_SOURCE = new BasicDataSource();
         
         do{
         	if(StringUtil.isEmpty(DRIVER)) break;
         	if(StringUtil.isEmpty(URL)) break;
         	if(StringUtil.isEmpty(USERNAME)) break;
-        	if(StringUtil.isEmpty(PASSWORD)) break;
+//        	if(StringUtil.isEmpty(PASSWORD)) break;
         	//么有配置的话，默认不会初始化数据源
         	init();
         }while(false);
