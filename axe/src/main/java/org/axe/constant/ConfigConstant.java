@@ -10,6 +10,7 @@ public interface ConfigConstant {
     
     //#系统参数配置
 	String AXE_HOME = "axe.home";
+	String AXE_EMAIL = "axe.email";
 	String AXE_SIGN_IN = "axe.signin";
 	String AXE_SIGN_IN_TOKEN = "axe.signin.token";
 	String AXE_CLASSHELPER_KEEP = "axe.classhelper.keep";

@@ -6,6 +6,7 @@ import org.axe.annotation.persistence.Dao;
 import org.axe.helper.aop.AopHelper;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.base.FrameworkStatusHelper;
+import org.axe.helper.base.MailHelper;
 import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.helper.ioc.IocHelper;
@@ -50,7 +51,8 @@ public final class HelperLoader {
                 new ControllerHelper(),//加载ACTION_MAP
                 new TableHelper(),//加载所有的@Table
                 new DataSourceHelper(),//加载DataSource配置
-                new DataBaseHelper()//初始化数据库配置
+                new DataBaseHelper(),//初始化数据库配置
+                new MailHelper()//初始化邮件助手的配置
         };
     }
     

@@ -1,8 +1,9 @@
 package org.axe.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.axe.bean.persistence.EntityFieldMethod;
+import org.axe.exception.RedirectorInterrupt;
 import org.axe.exception.RestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +194,29 @@ public final class ReflectionUtil {
         Object result;
         method.setAccessible(true);
         try {
+        	MethodHandle mh=MethodHandles.lookup().unreflect(method);
+        	ArrayList<Object> argList = new ArrayList<>();
+        	argList.add(obj);
+        	if(args != null){
+        		for(Object arg:args){
+        			argList.add(arg);
+        		}
+        	}
+        	result = mh.invokeWithArguments(argList);
+		} catch (Throwable cause) {
+			LOGGER.error("invoke method failure,method : "+method+", args : "+args,cause);
+			if(cause instanceof RestException){
+				//Rest中断异常，需要返回前台异常信息
+				throw (RestException)cause;
+			}else if(cause instanceof RedirectorInterrupt){
+				//重定向中断，需要跳转
+				throw (RedirectorInterrupt)cause;
+			}else{
+				throw new RuntimeException(cause);
+			}
+		}
+        
+        /*try {
 			result = method.invoke(obj,args);
 		} catch (IllegalAccessException e) {
 			LOGGER.error("invoke method failure,method : "+method+", args : "+args,e);
@@ -204,7 +229,11 @@ public final class ReflectionUtil {
 			Throwable cause = e.getCause();
 			if(cause != null){
 				if(cause instanceof RestException){
+					//Rest中断异常，需要返回前台异常信息
 					throw (RestException)e.getCause();
+				}else if(cause instanceof RedirectorInterrupt){
+					//重定向中断，需要跳转
+					throw (RedirectorInterrupt)e.getCause();
 				}else{
 					throw new RuntimeException(cause);
 				}
@@ -212,7 +241,7 @@ public final class ReflectionUtil {
 				throw new RuntimeException(e);
 				
 			}
-		}
+		}*/
         return result;
     }
 

@@ -41,3 +41,19 @@
 ##Proxy
 
 ##/axe
+
+##Sign In
+
+##Email
+
+##Release Resources
+
+##Aspect Proxy
+####begin
+####intercept
+####before
+####after
+####error
+####end
+
+

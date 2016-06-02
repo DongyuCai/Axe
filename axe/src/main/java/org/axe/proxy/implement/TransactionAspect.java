@@ -7,7 +7,6 @@ import org.axe.annotation.ioc.Service;
 import org.axe.annotation.persistence.Tns;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.proxy.base.AspectProxy;
-import org.axe.proxy.base.ProxyChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +28,36 @@ public class TransactionAspect extends AspectProxy {
     };
 
     @Override
+    public void before(Class<?> cls, Method method, Object[] params) throws Throwable {
+        boolean flag = FLAG_HOLDER.get();
+        if(!flag && method.isAnnotationPresent(Tns.class)){
+            FLAG_HOLDER.set(true);
+            DataBaseHelper.beginTransaction();
+            LOGGER.debug("begin transaction by TNS");
+        }
+    }
+    
+    @Override
+    public void after(Class<?> cls, Method method, Object[] params, Object result) throws Throwable {
+    	boolean flag = FLAG_HOLDER.get();
+    	if(flag && method.isAnnotationPresent(Tns.class)){
+        	DataBaseHelper.commitTransaction();
+        	LOGGER.debug("commit transaction by TNS");
+        	FLAG_HOLDER.remove();
+        }
+    }
+    
+    @Override
+    public void error(Class<?> cls, Method method, Object[] params, Throwable e) {
+    	boolean flag = FLAG_HOLDER.get();
+    	if(flag && method.isAnnotationPresent(Tns.class)){
+    		 DataBaseHelper.rollbackTransaction();
+             LOGGER.debug("rollback transaction",e);
+             FLAG_HOLDER.remove();
+    	}
+    }
+    
+    /*@Override
     public Object doProxy(ProxyChain proxyChain) throws Throwable {
         Object result;
         boolean flag = FLAG_HOLDER.get();
@@ -52,5 +81,5 @@ public class TransactionAspect extends AspectProxy {
             result = proxyChain.doProxyChain();
         }
         return result;
-    }
+    }*/
 }

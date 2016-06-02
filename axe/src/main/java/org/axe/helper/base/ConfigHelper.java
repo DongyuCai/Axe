@@ -30,6 +30,15 @@ public final class ConfigHelper implements Helper{
     }
     
     /**
+     * 系统联系人邮箱地址
+     * 系统错误、密码找回等邮件的通知地址
+     * 多个地址用“,”逗号分割
+     */
+    public static String getAxeEmail(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL, null);
+    }
+    
+    /**
      * 是否开启/axe的登录访问
      * 默认不需要登录
      */
@@ -86,6 +95,7 @@ public final class ConfigHelper implements Helper{
     
     /**
      * 获取 JDBC 数据源
+     * 多个值用“,”逗号分隔
      */
     public static String getJdbcDatasource() {
     	//默认使用axe提供的dbcp数据源

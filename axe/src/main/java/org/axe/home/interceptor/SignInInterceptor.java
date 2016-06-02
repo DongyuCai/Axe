@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.axe.bean.mvc.FormParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
-import org.axe.exception.RedirectorException;
+import org.axe.exception.RedirectorInterrupt;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.ioc.BeanHelper;
 import org.axe.home.service.HomeService;
@@ -49,7 +49,7 @@ public class SignInInterceptor implements Interceptor{
 			}
 		}
 		
-		throw new RedirectorException("/axe/sign-in");
+		throw new RedirectorInterrupt("/axe/sign-in");
 	}
 
 }

@@ -107,6 +107,12 @@ public void home(@RequestParam("token")String token, HttpServletRequest request,
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
+					<td align="left">axe.email</td>
+					<td align="left">"+ConfigHelper.getAxeEmail()+"</td>
+					<td align="left">系统异常、密码找回邮件通知地址</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
 					<td align="left">axe.signin</td>
 					<td align="left">"+ConfigHelper.getAxeSignIn()+"</td>
 					<td align="left">是否开启/axe的登录访问</td>
@@ -145,13 +151,13 @@ public void home(@RequestParam("token")String token, HttpServletRequest request,
 					<td align="left">&nbsp;</td>
 					<td align="left">jdbc.datasource</td>
 					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
-					<td align="left">指定DataSource数据源实现类，多个源用“,”分割</td>
+					<td align="left">指定DataSource数据源实现类</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
 					<td align="left">app.base_package</td>
 					<td align="left">"+ConfigHelper.getAppBasePackage()+"</td>
-					<td align="left">指定框架扫描的包路径，多个路径使用“,”号分割</td>
+					<td align="left">指定框架扫描的包路径</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>

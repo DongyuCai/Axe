@@ -26,10 +26,11 @@ import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
-import org.axe.exception.RedirectorException;
+import org.axe.exception.RedirectorInterrupt;
 import org.axe.exception.RestException;
 import org.axe.helper.HelperLoader;
 import org.axe.helper.base.ConfigHelper;
+import org.axe.helper.base.MailHelper;
 import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.mvc.AjaxRequestHelper;
 import org.axe.helper.mvc.ControllerHelper;
@@ -148,18 +149,27 @@ public class DispatcherServlet extends HttpServlet{
             	//404
     			throw new RestException(RestException.SC_NOT_FOUND, "404 Not Found");
             }
-		} catch (RedirectorException e){
-			//需要跳转的异常
+		} catch (RedirectorInterrupt e){
+			//被中断，跳转
 			View view = new View(e.getPath());
 			try {
 				handleViewResult(view,request,response);
 			} catch (Exception e1) {e1.printStackTrace();}
 		} catch (RestException e){
+			//需要返回前台信息的异常
 			writeError(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
 		} catch (Exception e) {
 			LOGGER.error("server error",e);
 			//500
 			writeError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
+			
+	    	try {
+	    		//邮件通知
+				MailHelper.errorMail(e);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				LOGGER.error("mail error",e1);
+			}
 		}
     }
     

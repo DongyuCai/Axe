@@ -12,6 +12,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 	<script type="text/javascript">
 		var config = {
 			'axe.home':'"+ConfigHelper.getAxeClassHelperKeep()+"',
+			'axe.email':'"+ConfigHelper.getAxeEmail()+"',
 			'axe.signin':'"+ConfigHelper.getAxeSignIn()+"',
 			'axe.classhelper.keep':'"+ConfigHelper.getAxeClassHelperKeep()+"',
 			'jdbc.driver':'"+ConfigHelper.getJdbcDriver()+"',
@@ -33,6 +34,10 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 		function saveProperties(){
 			if(!config['axe.home'] || config['axe.home'] == 'null' || config['axe.home'] == null || config['axe.home'] == ''){
 				alert('axe.home 必填');
+				return false;
+			}
+			if(!config['axe.email'] || config['axe.email'] == 'null' || config['axe.email'] == null || config['axe.email'] == ''){
+				alert('axe.email 必填');
 				return false;
 			}
 			if(!config['axe.classhelper.keep'] || config['axe.classhelper.keep'] == 'null' || config['axe.classhelper.keep'] == null || config['axe.classhelper.keep'] == ''){
@@ -96,6 +101,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left"><b>参数-键</b></td>
 					<td align="left"><b>参数-值</b></td>
 					<td align="left"><b>参数描述</b></td>
+					<td align="left"><b>多个值分割符</b></td>
 					<td align="left"><b>调整值</b></td>
 				</tr>
 				<tr>
@@ -103,6 +109,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">axe.home</td>
 					<td align="left">"+ConfigHelper.getAxeHome()+"</td>
 					<td align="left">是否开启/axe的访问</td>
+					<td align="left"></td>
 					<td align="left">
 						<select name="axe.home" onchange="setProperty('axe.home',this.value)">
 							<option value="true" 
@@ -128,9 +135,20 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
+					<td align="left">axe.email</td>
+					<td align="left">"+ConfigHelper.getAxeEmail()+"</td>
+					<td align="left">系统异常、密码找回邮件通知地址</td>
+					<td align="left">,</td>
+					<td align="left">
+						<input name="axe.email" type="text" value=""+ConfigHelper.getAxeEmail()+"" onchange="setProperty('axe.email',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
 					<td align="left">axe.signin</td>
 					<td align="left">"+ConfigHelper.getAxeSignIn()+"</td>
 					<td align="left">是否开启/axe的登录访问</td>
+					<td align="left"></td>
 					<td align="left">
 						<select name="axe.signin" onchange="setProperty('axe.signin',this.value);openPassword(this.value);">
 							<option value="true" 
@@ -159,6 +177,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">登录ID</td>
 					<td align="left">不存储</td>
 					<td align="left">axe登录ID，不存到配置文件</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="NOSAVE.axe.signin.id" type="text" value='' onchange="setProperty('NOSAVE.axe.signin.id',this.value)" />
 					</td>
@@ -168,6 +187,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">登录密码</td>
 					<td align="left">不存储</td>
 					<td align="left">axe登录密码，不存到配置文件</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="NOSAVE.axe.signin.password" type="text" value='' onchange="setProperty('NOSAVE.axe.signin.id',this.value)" />
 					</td>
@@ -177,6 +197,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">axe.classhelper.keep</td>
 					<td align="left">"+ConfigHelper.getAxeClassHelperKeep()+"</td>
 					<td align="left">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>
+					<td align="left"></td>
 					<td align="left">
 						<select name="axe.classhelper.keep" onchange="setProperty('axe.classhelper.keep',this.value)">
 							<option value="true" 
@@ -205,6 +226,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">jdbc.driver</td>
 					<td align="left">"+ConfigHelper.getJdbcDriver()+"</td>
 					<td align="left">jdbc-driver</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="jdbc.driver" type="text" value=""+ConfigHelper.getJdbcDriver()+"" onchange="setProperty('jdbc.driver',this.value)" />
 					</td>
@@ -214,6 +236,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">jdbc.url</td>
 					<td align="left">"+ConfigHelper.getJdbcUrl()+"</td>
 					<td align="left">jdbc-url</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="jdbc.url" type="text" value=""+ConfigHelper.getJdbcUrl()+"" onchange="setProperty('jdbc.url',this.value)" />
 					</td>
@@ -223,6 +246,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">jdbc.username</td>
 					<td align="left">"+ConfigHelper.getJdbcUsername()+"</td>
 					<td align="left">jdbc-username</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="jdbc.username" type="text" value=""+ConfigHelper.getJdbcUsername()+"" onchange="setProperty('jdbc.username',this.value)" />
 					</td>
@@ -232,6 +256,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">jdbc.password</td>
 					<td align="left">"+ConfigHelper.getJdbcPassword()+"</td>
 					<td align="left">jdbc-password</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="jdbc.password" type="text" value=""+ConfigHelper.getJdbcPassword()+"" onchange="setProperty('jdbc.password',this.value)" />
 					</td>
@@ -240,7 +265,8 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">&nbsp;</td>
 					<td align="left">jdbc.datasource</td>
 					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
-					<td align="left">指定DataSource数据源实现类，多个源用“,”分割</td>
+					<td align="left">指定DataSource数据源实现类</td>
+					<td align="left">,</td>
 					<td align="left">
 						<input name="jdbc.datasource" type="text" value=""+ConfigHelper.getJdbcDatasource()+"" onchange="setProperty('jdbc.datasource',this.value)" />
 					</td>
@@ -249,7 +275,8 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">&nbsp;</td>
 					<td align="left">app.base_package</td>
 					<td align="left">"+ConfigHelper.getAppBasePackage()+"</td>
-					<td align="left">指定框架扫描的包路径，多个路径使用“,”号分割</td>
+					<td align="left">指定框架扫描的包路径</td>
+					<td align="left">,</td>
 					<td align="left">
 						<input name="app.base_package" type="text" value=""+ConfigHelper.getAppBasePackage()+"" onchange="setProperty('app.base_package',this.value)" />
 					</td>
@@ -259,6 +286,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">app.jsp_path</td>
 					<td align="left">"+ConfigHelper.getAppJspPath()+"</td>
 					<td align="left">指定jsp存放路径</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="app.jsp_path" type="text" value=""+ConfigHelper.getAppJspPath()+"" onchange="setProperty('app.jsp_path',this.value)" />
 					</td>
@@ -268,6 +296,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">app.asset_path</td>
 					<td align="left">"+ConfigHelper.getAppAssetPath()+"</td>
 					<td align="left">指定静态文件(html、js、css、图片等)存放路径</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="app.asset_path" type="text" value=""+ConfigHelper.getAppAssetPath()+"" onchange="setProperty('app.asset_path',this.value)" />
 					</td>
@@ -277,6 +306,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">app.upload_limit</td>
 					<td align="left">"+ConfigHelper.getAppUploadLimit()+"</td>
 					<td align="left">文件上传限制单次文件大小，单位M，默认0不限制</td>
+					<td align="left"></td>
 					<td align="left">
 						<input name="app.upload_limit" type="text" value=""+ConfigHelper.getAppUploadLimit()+"" onchange="setProperty('app.upload_limit',this.value)" />
 					</td>
