@@ -18,4 +18,12 @@ public interface DataSource {
 	public String setName();
 	
 	public Connection getConnection() throws SQLException ;
+	
+	public String setJdbcDriver();
+	
+	public String setJdbcUrl();
+	
+	public String setJdbcUserName();
+	
+	public String setJdbcPassword();
 }

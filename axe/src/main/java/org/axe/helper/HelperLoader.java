@@ -78,7 +78,7 @@ public final class HelperLoader {
         LOGGER.debug("Axe system started success!");
         
         //释放ClassHelper占用的内存
-        //TODO:目前来看，框架自身只有加载91个资源，并不很多
+        //TODO:(ok)目前来看，框架自身只有加载91个资源，并不很多
         ClassHelper.release();
     }
 }

@@ -47,7 +47,7 @@ public final class DataSourceHelper implements Helper{
 		return getDataSource("");
 	}
 	
-	//TODO:按时还不开放此方法
+	//TODO:暂时还不开放此方法，未来准备支持多数据源
 	@Deprecated
 	public static DataSource getDataSource(String name){
 		return DATA_SOURCE.get(name);

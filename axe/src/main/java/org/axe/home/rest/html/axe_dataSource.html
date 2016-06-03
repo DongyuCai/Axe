@@ -36,8 +36,12 @@ public void dataSource(@RequestParam("token")String token, HttpServletRequest re
 			<table width="100%">
 				<tr style="background-color: #F0F0F0;">
 					<td align="left">&nbsp;</td>
-					<td align="left"><b>Class</b></td>
 					<td align="left"><b>Name</b></td>
+					<td align="left"><b>Driver</b></td>
+					<td align="left"><b>Url</b></td>
+					<td align="left"><b>Username</b></td>
+					<td align="left"><b>Password</b></td>
+					<td align="left"><b>Class</b></td>
 				</tr>
 				<java>
 				for(Map.Entry<String,DataSource> entry:dataSourceMap.entrySet()){
@@ -45,8 +49,12 @@ public void dataSource(@RequestParam("token")String token, HttpServletRequest re
 				</java>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">"+dataSource.getClass()+"</td>
 					<td align="left">"+dataSource.setName()+"</td>
+					<td align="left">"+dataSource.setJdbcDriver()+"</td>
+					<td align="left">"+dataSource.setJdbcUrl()+"</td>
+					<td align="left">"+dataSource.setJdbcUserName()+"</td>
+					<td align="left">"+dataSource.setJdbcPassword()+"</td>
+					<td align="left">"+dataSource.getClass()+"</td>
 				</tr>
 				<java>
 				}

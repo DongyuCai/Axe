@@ -1078,15 +1078,23 @@ html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr style=\"background-color: #F0F0F0;\">");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\"><b>Class</b></td>");
 html.append("<td align=\"left\"><b>Name</b></td>");
+html.append("<td align=\"left\"><b>Driver</b></td>");
+html.append("<td align=\"left\"><b>Url</b></td>");
+html.append("<td align=\"left\"><b>Username</b></td>");
+html.append("<td align=\"left\"><b>Password</b></td>");
+html.append("<td align=\"left\"><b>Class</b></td>");
 html.append("</tr>");
 for(Map.Entry<String,DataSource> entry:dataSourceMap.entrySet()){
 DataSource dataSource = entry.getValue();
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">"+dataSource.getClass()+"</td>");
 html.append("<td align=\"left\">"+dataSource.setName()+"</td>");
+html.append("<td align=\"left\">"+dataSource.setJdbcDriver()+"</td>");
+html.append("<td align=\"left\">"+dataSource.setJdbcUrl()+"</td>");
+html.append("<td align=\"left\">"+dataSource.setJdbcUserName()+"</td>");
+html.append("<td align=\"left\">"+dataSource.setJdbcPassword()+"</td>");
+html.append("<td align=\"left\">"+dataSource.getClass()+"</td>");
 html.append("</tr>");
 }
 html.append("</table>");

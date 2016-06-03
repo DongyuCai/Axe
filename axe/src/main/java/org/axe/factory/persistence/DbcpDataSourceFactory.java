@@ -22,10 +22,10 @@ public class DbcpDataSourceFactory implements DataSource{
 	
 	public DbcpDataSourceFactory() {
         //#初始化jdbc配置
-        DRIVER = ConfigHelper.getJdbcDriver();
-        URL = ConfigHelper.getJdbcUrl();
-        USERNAME = ConfigHelper.getJdbcUsername();
-        PASSWORD = ConfigHelper.getJdbcPassword() == null?"":ConfigHelper.getJdbcPassword();
+        DRIVER = setJdbcDriver();
+        URL = setJdbcUrl();
+        USERNAME = setJdbcUserName();
+        PASSWORD = setJdbcPassword();
         DATA_SOURCE = new BasicDataSource();
         
         do{
@@ -64,5 +64,25 @@ public class DbcpDataSourceFactory implements DataSource{
 	@Override
 	public String setName() {
 		return "";
+	}
+
+	@Override
+	public String setJdbcDriver() {
+		return ConfigHelper.getJdbcDriver();
+	}
+
+	@Override
+	public String setJdbcUrl() {
+		return ConfigHelper.getJdbcUrl();
+	}
+
+	@Override
+	public String setJdbcUserName() {
+		return ConfigHelper.getJdbcUsername();
+	}
+
+	@Override
+	public String setJdbcPassword() {
+		return ConfigHelper.getJdbcPassword() == null?"":ConfigHelper.getJdbcPassword();
 	}
 }

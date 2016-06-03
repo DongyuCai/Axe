@@ -69,7 +69,6 @@ public final class ClassHelper implements Helper{
 
     /**
      * 获取加载的类中，所有的Service
-     * TODO:待优化，不用重复获取
      */
     public static Set<Class<?>> getServiceClassSet(){
     	Set<Class<?>> classSet = new HashSet<>();
@@ -83,7 +82,6 @@ public final class ClassHelper implements Helper{
 
     /**
      * 获取加载的类中，所有的Controller
-     * TODO:待优化，不用重复获取
      */
     public static Set<Class<?>> getControllerClassSet(){
     	Set<Class<?>> classSet = new HashSet<>();
