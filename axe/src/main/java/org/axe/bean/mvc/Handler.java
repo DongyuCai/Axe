@@ -65,8 +65,8 @@ public class Handler {
 	private void init() {
     	if(this.actionMethod.isAnnotationPresent(Request.class)){
     		Request request = this.actionMethod.getAnnotation(Request.class);
-    		this.contentType = request.contentType();
-    		this.characterEncoding = request.characterEncoding();
+    		this.contentType = request.contentType().CONTENT_TYPE;
+    		this.characterEncoding = request.characterEncoding().CHARACTER_ENCODING;
     	}
 	}
 

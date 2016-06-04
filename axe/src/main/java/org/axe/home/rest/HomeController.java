@@ -58,8 +58,8 @@ private HomeService homeService;
 
 private void printHtml(HttpServletResponse response, String html) {
 try {
-response.setCharacterEncoding(CharacterEncoding.UTF_8);
-response.setContentType(ContentType.APPLICATION_HTML);
+response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+response.setContentType(ContentType.APPLICATION_HTML.CONTENT_TYPE);
 PrintWriter writer = response.getWriter();
 writer.write(html);
 writer.flush();

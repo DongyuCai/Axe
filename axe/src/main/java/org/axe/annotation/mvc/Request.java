@@ -30,10 +30,10 @@ public @interface Request {
     /**
      * 返回结果  MIME 类型
      */
-    String contentType() default ContentType.APPLICATION_JSON;
+    ContentType contentType() default ContentType.APPLICATION_JSON;
     
     /**
      * 编码类型
      */
-    String characterEncoding() default CharacterEncoding.UTF_8;
+    CharacterEncoding characterEncoding() default CharacterEncoding.UTF_8;
 }

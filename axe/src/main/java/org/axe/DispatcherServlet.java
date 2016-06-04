@@ -82,8 +82,8 @@ public class DispatcherServlet extends HttpServlet{
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) {
     	
-    	String contentType = ContentType.APPLICATION_JSON;
-    	String characterEncoding = CharacterEncoding.UTF_8;
+    	String contentType = ContentType.APPLICATION_JSON.CONTENT_TYPE;
+    	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
         try {
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
