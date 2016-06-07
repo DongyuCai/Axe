@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.axe.helper.Helper;
+import org.axe.interface_.base.Helper;
 import org.axe.util.CollectionUtil;
 import org.axe.util.StringUtil;
 import org.axe.util.mail.MailSenderInfo;

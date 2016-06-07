@@ -14,9 +14,11 @@ import org.axe.helper.mvc.ControllerHelper;
 import org.axe.helper.mvc.FilterHelper;
 import org.axe.helper.mvc.FormRequestHelper;
 import org.axe.helper.mvc.InterceptorHelper;
+import org.axe.helper.mvc.ListenerHelper;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.TableHelper;
+import org.axe.interface_.base.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ public final class HelperLoader {
                 new BeanHelper(),//实例化CLASS_SET里的类，放到BEAN_MAP里
                 new FilterHelper(),//实例化所有Filter链表，并按层级排好序
                 new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
+                new ListenerHelper(),//实例化所有ListenerHelper
                 new AopHelper(),//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
                 new IocHelper(),//组装所有@Autowired
                 new ControllerHelper(),//加载ACTION_MAP

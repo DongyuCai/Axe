@@ -3,8 +3,8 @@ package org.axe.helper.persistence;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.axe.helper.Helper;
 import org.axe.helper.base.ConfigHelper;
+import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.DataSource;
 import org.axe.util.ClassUtil;
 import org.axe.util.ReflectionUtil;

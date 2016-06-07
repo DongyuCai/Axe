@@ -3,6 +3,8 @@ package org.axe.proxy.base;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.axe.interface_.proxy.Proxy;
+
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;

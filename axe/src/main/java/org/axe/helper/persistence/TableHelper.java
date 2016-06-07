@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.axe.annotation.persistence.Table;
-import org.axe.helper.Helper;
 import org.axe.helper.ioc.ClassHelper;
+import org.axe.interface_.base.Helper;
 
 /**
  * @Table 数据库 entity 助手类 解析表名，字段名 

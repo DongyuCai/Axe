@@ -1,8 +1,9 @@
 package org.axe.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JSON 工具类
@@ -18,7 +19,7 @@ public final class JsonUtil {
     /**
      * 将 POJO 转为 JSON
      */
-    public static <T> String toJson(T obj){
+    public static String toJson(Object obj){
         String json;
         try {
             json = OBJECT_MAPPER.writeValueAsString(obj);
@@ -42,4 +43,5 @@ public final class JsonUtil {
         }
         return pojo;
     }
+    
 }

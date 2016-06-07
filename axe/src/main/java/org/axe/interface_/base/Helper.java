@@ -1,4 +1,4 @@
-package org.axe.helper;
+package org.axe.interface_.base;
 
 /**
  * Helper 助手类顶层接口，负责初始化

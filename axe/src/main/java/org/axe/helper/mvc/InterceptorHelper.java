@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.axe.helper.Helper;
 import org.axe.helper.ioc.ClassHelper;
+import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Interceptor;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;

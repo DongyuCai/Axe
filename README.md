@@ -46,9 +46,9 @@
 
 ##正在进行：
 1.框架管理界面、系统监控
-2.完善Filter
-3.CreateTableUtil
-4.增加@RequestParam的default值
+2.CreateTableUtil
+3.增加@RequestParam的default值
+4.增加支持插件系统，正在增加hoke插件，解决大数据查询速度缓慢，方法结果缓存策略
 
 ----------
 

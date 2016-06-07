@@ -2,7 +2,7 @@ package org.axe.helper.base;
 
 import java.util.Date;
 
-import org.axe.helper.Helper;
+import org.axe.interface_.base.Helper;
 
 /**
  * 框架自生状态 助手类

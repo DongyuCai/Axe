@@ -9,6 +9,9 @@
     <version>0.1.7</version>
     <packaging>jar</packaging>
 
+	<name>axe</name>
+	<url>http://maven.apache.org</url>
+	
     <dependencies>
 
         <!-- ######################### 文件上传 ############################### -->

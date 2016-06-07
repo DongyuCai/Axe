@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.axe.annotation.aop.Aspect;
-import org.axe.helper.Helper;
 import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.ioc.ClassHelper;
-import org.axe.proxy.base.Proxy;
+import org.axe.interface_.base.Helper;
+import org.axe.interface_.proxy.Proxy;
 import org.axe.proxy.base.ProxyManger;
 import org.axe.util.ReflectionUtil;
 import org.slf4j.Logger;

@@ -8,8 +8,8 @@ import org.axe.annotation.ioc.Component;
 import org.axe.annotation.ioc.Controller;
 import org.axe.annotation.ioc.Service;
 import org.axe.constant.ConfigConstant;
-import org.axe.helper.Helper;
 import org.axe.helper.base.ConfigHelper;
+import org.axe.interface_.base.Helper;
 import org.axe.util.ClassUtil;
 import org.axe.util.StringUtil;
 

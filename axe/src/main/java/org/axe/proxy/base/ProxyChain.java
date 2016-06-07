@@ -1,10 +1,12 @@
 package org.axe.proxy.base;
 
-import net.sf.cglib.proxy.MethodProxy;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.axe.interface_.proxy.Proxy;
+
+import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * 代理链
@@ -20,7 +22,11 @@ public class ProxyChain {
 
     private List<Proxy> proxyList = new ArrayList<Proxy>();
 
-    private int proxyIndex = 0;
+    private ThreadLocal<Integer> proxyIndex = new ThreadLocal<Integer>(){
+    	protected Integer initialValue() {
+    		return 0;
+    	};
+    };
 
     public ProxyChain(Class<?> targetClass, Object targetObject, Method targetMethod, MethodProxy methodProxy, Object[] methodParams, List<Proxy> proxyList) {
         this.targetClass = targetClass;
@@ -46,11 +52,17 @@ public class ProxyChain {
     public Method getTargetMethod() {
         return targetMethod;
     }
+    
+    public MethodProxy getMethodProxy() {
+		return methodProxy;
+	}
 
     public Object doProxyChain() throws Throwable{
         Object methodResult;
         if(!isLastProxy()){
-            methodResult = proxyList.get(proxyIndex++).doProxy(this);
+        	int proxyIndexNum = proxyIndex.get();
+        	proxyIndex.set(proxyIndexNum+1);
+        	methodResult = proxyList.get(proxyIndexNum).doProxy(this);
         } else {
             methodResult = methodProxy.invokeSuper(targetObject, methodParams);
         }
@@ -58,6 +70,6 @@ public class ProxyChain {
     }
     
     public boolean isLastProxy(){
-    	return proxyIndex >= proxyList.size();
+    	return proxyIndex.get() >= proxyList.size();
     }
 }

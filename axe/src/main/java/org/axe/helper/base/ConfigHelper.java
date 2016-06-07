@@ -3,7 +3,7 @@ package org.axe.helper.base;
 import java.util.Properties;
 
 import org.axe.constant.ConfigConstant;
-import org.axe.helper.Helper;
+import org.axe.interface_.base.Helper;
 import org.axe.util.PropsUtil;
 
 /**

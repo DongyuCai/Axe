@@ -18,7 +18,7 @@ import org.axe.bean.persistence.PageConfig;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.helper.persistence.SqlHelper;
 import org.axe.interface_.persistence.BaseRepository;
-import org.axe.proxy.base.Proxy;
+import org.axe.interface_.proxy.Proxy;
 import org.axe.proxy.base.ProxyChain;
 import org.axe.util.ReflectionUtil;
 

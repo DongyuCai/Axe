@@ -17,7 +17,7 @@ import org.axe.annotation.persistence.Id;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.InsertResult;
 import org.axe.bean.persistence.SqlPackage;
-import org.axe.helper.Helper;
+import org.axe.interface_.base.Helper;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 import org.slf4j.Logger;

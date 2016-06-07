@@ -1,5 +1,6 @@
 package org.axe.proxy.base;
 
+import org.axe.interface_.proxy.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

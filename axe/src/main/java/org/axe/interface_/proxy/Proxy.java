@@ -1,4 +1,6 @@
-package org.axe.proxy.base;
+package org.axe.interface_.proxy;
+
+import org.axe.proxy.base.ProxyChain;
 
 /**
  * 代理借口
