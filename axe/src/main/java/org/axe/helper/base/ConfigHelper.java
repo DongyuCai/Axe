@@ -22,6 +22,10 @@ public final class ConfigHelper implements Helper{
 		}
     }
     
+    public static Properties getCONFIG_PROPS() {
+		return CONFIG_PROPS;
+	}
+    
     /**
      * 是否开启/axe的访问
      */
