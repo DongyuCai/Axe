@@ -61,22 +61,27 @@ public class DispatcherServlet extends HttpServlet{
         ServletContext servletContext = servletConfig.getServletContext();
 
         //初始化框架相关 helper 类
-        HelperLoader.init(servletContext);
-        
-        //注册处理JSP的Servlet
-        String appJspPath = ConfigHelper.getAppJspPath();
-        if(StringUtil.isNotEmpty(appJspPath)){
-        	appJspPath = appJspPath.endsWith("/") ? appJspPath : appJspPath+"/";
-        	ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
-        	jspServlet.addMapping(appJspPath+"*");
-        }
-        //注册处理静态资源的默认Servlet
-        String appAssetPath = ConfigHelper.getAppAssetPath();
-        if(StringUtil.isNotEmpty(appAssetPath)){
-        	appAssetPath = appAssetPath.endsWith("/") ? appAssetPath : appAssetPath+"/";
-        	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
-        	defaultServlet.addMapping(appAssetPath+"*");
-        }
+        try {
+			HelperLoader.init(servletContext);
+			
+			//注册处理JSP的Servlet
+	        String appJspPath = ConfigHelper.getAppJspPath();
+	        if(StringUtil.isNotEmpty(appJspPath)){
+	        	appJspPath = appJspPath.endsWith("/") ? appJspPath : appJspPath+"/";
+	        	ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
+	        	jspServlet.addMapping(appJspPath+"*");
+	        }
+	        //注册处理静态资源的默认Servlet
+	        String appAssetPath = ConfigHelper.getAppAssetPath();
+	        if(StringUtil.isNotEmpty(appAssetPath)){
+	        	appAssetPath = appAssetPath.endsWith("/") ? appAssetPath : appAssetPath+"/";
+	        	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
+	        	defaultServlet.addMapping(appAssetPath+"*");
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
     }
 
     @Override
@@ -293,7 +298,7 @@ public class DispatcherServlet extends HttpServlet{
         //返回JSON数据
         Object model = data.getModel();
         if(model != null){
-            String json = JsonUtil.toJson(model);
+            String json = model instanceof String ? String.valueOf(model):JsonUtil.toJson(model);
             if(json != null){
             	PrintWriter writer = response.getWriter();
             	writer.write(json);

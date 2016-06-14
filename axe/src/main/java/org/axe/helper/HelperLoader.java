@@ -31,10 +31,10 @@ public final class HelperLoader {
 	
 	private static Helper[] helpers;
 	
-    public static void init(){
+    public static void init() throws Exception{
         init(null);
     }
-    public static void init(ServletContext servletContext){
+    public static void init(ServletContext servletContext) throws Exception{
     	initHelpersAry();
     	refresHelpers(servletContext);
     }
@@ -59,7 +59,7 @@ public final class HelperLoader {
         };
     }
     
-    public static synchronized void refresHelpers(ServletContext servletContext){
+    public static synchronized void refresHelpers(ServletContext servletContext) throws Exception{
     	for (Helper helper:helpers){
     		helper.init();
         }

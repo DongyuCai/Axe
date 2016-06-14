@@ -6,6 +6,6 @@ package org.axe.interface_.mvc;
  */
 public interface Listener {
 
-	public void init();
+	public void init() throws Exception;
 	
 }

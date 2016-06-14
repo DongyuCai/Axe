@@ -4,7 +4,11 @@ public void refreshConfig(@RequestParam("token")String token, HttpServletRequest
 	String contextPath = request.getContextPath();
 	
 	ServletContext servletContext = request.getServletContext();
-	HelperLoader.refresHelpers(servletContext);
+	try {
+		HelperLoader.refresHelpers(servletContext);
+	} catch (Exception e) {
+		throw new RestException(e.getMessage());
+	}
 
 	StringBuilder html = new StringBuilder();
 </java>

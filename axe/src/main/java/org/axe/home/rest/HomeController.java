@@ -30,6 +30,7 @@ import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
 import org.axe.constant.RequestMethod;
+import org.axe.exception.RestException;
 import org.axe.helper.HelperLoader;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.base.FrameworkStatusHelper;
@@ -1438,7 +1439,11 @@ public void refreshConfig(@RequestParam("token")String token, HttpServletRequest
 String contextPath = request.getContextPath();
 
 ServletContext servletContext = request.getServletContext();
+try {
 HelperLoader.refresHelpers(servletContext);
+} catch (Exception e) {
+throw new RestException(e.getMessage());
+}
 
 StringBuilder html = new StringBuilder();
 html.append("<!DOCTYPE html>");

@@ -7,5 +7,5 @@ package org.axe.interface_.base;
 public interface Helper {
 	
 
-	public void init();
+	public void init() throws Exception;
 }
