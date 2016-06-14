@@ -14,7 +14,7 @@ public class CaptainListener implements Listener{
 			CaptainClient captainClient = new CaptainClient();
 			boolean signIn = captainClient.signIn();
 			if(signIn){
-				//#成功注册
+				//#成功注册，开启心跳监控线程
 				
 			}
 		}

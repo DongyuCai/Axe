@@ -26,15 +26,17 @@ public final class CaptainClient {
 			String myHost = CaptainConfigHelper.getAxeCaptainMyHost();
 			if(StringUtil.isNotEmpty(myHost)){
 				
-				String signIn = captain;
-				if(signIn.endsWith("/")){
-					signIn = signIn+"captain/signIn";
+				StringBuilder signIn = new StringBuilder(captain);
+				if(captain.endsWith("/")){
+					signIn.append("captain/signIn");
 				}else{
-					signIn = signIn+"/captain/signIn";
+					signIn.append("/captain/signIn");
 				}
-				signIn = signIn+"?host="+myHost;
+				signIn
+				.append("?captain=").append(captain)
+				.append("&host=").append(myHost);
 				
-				String result = HttpUtil.sendGet(signIn);
+				String result = HttpUtil.sendGet(signIn.toString());
 				CaptainExceptionEnum exception = CaptainExceptionEnum.getException(result);
 				if(exception != null){
 					throw new Exception("Captain start failed ："+exception.desc);
