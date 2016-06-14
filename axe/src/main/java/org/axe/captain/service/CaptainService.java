@@ -19,6 +19,10 @@ public class CaptainService {
 		synchronized (TeamTable.hosts) {
 			//##是否已存在
 			for(String h:TeamTable.hosts){
+				if(h.equals(captain)) {
+					//##跳过captain
+					continue;
+				}
 				if(h.equals(host)){
 					return CaptainExceptionEnum.HOST_EXISTED.code;
 				}

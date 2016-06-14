@@ -22,7 +22,7 @@ public class CaptainRestController {
 	}
 	
 
-	@Request(value = "signIn",method = RequestMethod.GET)
+	@Request(value = "monitor",method = RequestMethod.GET)
 	public Object monitor(){
 		return "1";//活着
 	}
@@ -34,7 +34,6 @@ public class CaptainRestController {
 		return captainService.heartBeat(captain, host);
 	}
 	
-
 	@Request(value = "teamTable",method = RequestMethod.GET)
 	public Object teamTable(){
 		return TeamTable.hosts;
