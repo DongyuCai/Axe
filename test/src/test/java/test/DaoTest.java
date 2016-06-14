@@ -26,10 +26,15 @@ public class DaoTest {
 //		just4test.setName("aaa");
 //		TestDao testDao = BeanHelper.getBean(TestDao.class);
 //		testDao.insertEntity(just4test);
-		testInsert();
+		try {
+			testInsert();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public static void testInsert(){
+	public static void testInsert() throws Exception{
 		HelperLoader.init();
 		
 		TestTable test = new TestTable();
@@ -40,7 +45,7 @@ public class DaoTest {
 		
 	}
 	
-	public static void testDaoPaging(){
+	public static void testDaoPaging() throws Exception{
 		HelperLoader.init();
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
 		List<just4test> all = testDao.getAll();
@@ -56,7 +61,7 @@ public class DaoTest {
 		System.out.println();
 	}
 	
-	public static void testDaoEntity(){
+	public static void testDaoEntity() throws Exception{
 		HelperLoader.init();
 		
 		TestDao testDao = BeanHelper.getBean(TestDao.class);

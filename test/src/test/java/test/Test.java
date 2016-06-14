@@ -19,7 +19,11 @@ public class Test{
 
     public static void main(String[] args) {
     	try {
-    		FileUtil.backupAndCreateNewFile("mysql-keyword.txt");
+    		Method[] methods = Test.class.getDeclaredMethods();
+    		for(Method method:methods){
+    			System.out.println(method.getDeclaringClass().getName()+"."+method.getName()+"_"+method.toString().hashCode());
+    		}
+//    		FileUtil.backupAndCreateNewFile("mysql-keyword.txt");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -178,5 +182,8 @@ public class Test{
     public static void changeStr(String str){
     	str = str+"###";
     }
-    
+
+    public static void changeStr(String str,String str1){
+    	str = str+"###";
+    }
 }

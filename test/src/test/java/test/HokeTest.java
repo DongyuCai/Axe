@@ -8,7 +8,12 @@ import org.test.service.BannerService;
 
 public class HokeTest {
 	public static void main(String[] args) {
-		testHoke();
+		try {
+			testHoke();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		/*Object[] params = {"abc",new HokeTest(),1};
 		//366808998
@@ -21,7 +26,7 @@ public class HokeTest {
 		System.out.println(hashCode);*/
 	}
 	
-	public static void testHoke(){
+	public static void testHoke() throws Exception{
 		HelperLoader.init();
 		for(int i=0;i<100;i++){
 			new Thread("thread-"+i){
