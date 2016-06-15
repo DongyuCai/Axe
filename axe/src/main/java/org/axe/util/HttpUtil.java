@@ -18,7 +18,7 @@ import org.axe.constant.CharacterEncoding;
 public final class HttpUtil {
 
 
-	public static String sendGet(String url) {
+	public static String sendGet(String url) throws Exception {
 		return sendGet(url, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
 	
@@ -29,29 +29,31 @@ public final class HttpUtil {
 	 *            URL包括参数，http://HOST/XX?XX=XX&XXX=XXX
 	 * @param charset
 	 * @return
+	 * @throws Exception 
 	 */
-	public static String sendGet(String url, String charset) {
+	public static String sendGet(String url, String charset) throws Exception {
 		String result = "";
 		BufferedReader in = null;
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
-			URLConnection connection = realUrl.openConnection();
+			URLConnection conn = realUrl.openConnection();
 			// 设置通用的请求属性
-			connection.setRequestProperty("accept", "*/*");
-			connection.setRequestProperty("connection", "Keep-Alive");
-			connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+//			connection.setRequestProperty("accept", "*/*");
+//			connection.setRequestProperty("connection", "Keep-Alive");
+			conn.setRequestProperty("connection", "close");
+//			connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
 			// 建立实际的连接
-			connection.connect();
+			conn.connect();
 			// 定义 BufferedReader输入流来读取URL的响应
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream(), charset));
+			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), charset));
 			String line;
 			while ((line = in.readLine()) != null) {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送GET请求出现异常！" + e);
-			e.printStackTrace();
+			System.out.println("发送GET请求出现异常！" + e.getMessage());
+			throw e;
 		}
 		// 使用finally块来关闭输入流
 		finally {
@@ -66,7 +68,7 @@ public final class HttpUtil {
 		return result;
 	}
 
-	public static String sendPostUrl(String url, String param) {
+	public static String sendPostUrl(String url, String param) throws Exception {
 		return sendPostUrl(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
 	/**
@@ -78,8 +80,9 @@ public final class HttpUtil {
 	 *            请求数据
 	 * @param charset
 	 *            编码方式
+	 * @throws Exception 
 	 */
-	public static String sendPostUrl(String url, String param, String charset) {
+	public static String sendPostUrl(String url, String param, String charset) throws Exception {
 
 		PrintWriter out = null;
 		BufferedReader in = null;
@@ -89,9 +92,11 @@ public final class HttpUtil {
 			// 打开和URL之间的连接
 			URLConnection conn = realUrl.openConnection();
 			// 设置通用的请求属性
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+//			conn.setRequestProperty("accept", "*/*");
+//			conn.setRequestProperty("connection", "Keep-Alive");
+			//#Keep-Alive 长连接，不适用普通的调用，消耗内存倒是其次了已经，在Captain做心跳请求时候，会极大的增加cpu的io消耗，两端都消耗。
+			conn.setRequestProperty("connection", "close");
+//			conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
 			// 发送POST请求必须设置如下两行
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
@@ -108,8 +113,8 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送 POST 请求出现异常！" + e);
-			e.printStackTrace();
+			System.out.println("发送 POST 请求出现异常！" + e.getMessage());
+			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流
 		finally {
@@ -127,7 +132,7 @@ public final class HttpUtil {
 		return result;
 	}
 
-	public static String sendPost(String url, Map<String, String> param) {
+	public static String sendPost(String url, Map<String, String> param) throws Exception {
 		return sendPost(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
 	/**
@@ -139,8 +144,9 @@ public final class HttpUtil {
 	 *            请求数据
 	 * @param charset
 	 *            编码方式
+	 * @throws Exception 
 	 */
-	public static String sendPost(String url, Map<String, String> param, String charset) {
+	public static String sendPost(String url, Map<String, String> param, String charset) throws Exception {
 
 		StringBuffer buffer = new StringBuffer();
 		if (param != null && !param.isEmpty()) {
@@ -162,9 +168,10 @@ public final class HttpUtil {
 			// 打开和URL之间的连接
 			URLConnection conn = realUrl.openConnection();
 			// 设置通用的请求属性
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+//			conn.setRequestProperty("accept", "*/*");
+//			conn.setRequestProperty("connection", "Keep-Alive");
+			conn.setRequestProperty("connection", "close");
+//			conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
 			// 发送POST请求必须设置如下两行
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
@@ -181,8 +188,8 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送 POST 请求出现异常！" + e);
-			e.printStackTrace();
+			System.out.println("发送 POST 请求出现异常！" + e.getMessage());
+			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流
 		finally {
@@ -201,7 +208,11 @@ public final class HttpUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(sendGet("http://192.168.11.116:8080/bigdata/iot-data/coy/A3E1FFE53F1145A3893C37D7AD10BD77/GBOX_SPD_S_T_S_F", "UTF-8"));;
+		try {
+			System.out.println(sendGet("http://192.168.11.116:8080/bigdata/iot-data/coy/A3E1FFE53F1145A3893C37D7AD10BD77/GBOX_SPD_S_T_S_F", "UTF-8"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
 	}
 
 }

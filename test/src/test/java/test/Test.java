@@ -1,15 +1,9 @@
 package test;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.axe.bean.mvc.FileParam;
-import org.axe.bean.mvc.Param;
-import org.axe.helper.HelperLoader;
-import org.axe.helper.ioc.ClassHelper;
-import org.axe.util.FileUtil;
-import org.test.rest.TestController;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -18,7 +12,39 @@ public class Test{
 	
 
     public static void main(String[] args) {
-    	try {
+    	List<String> list1 = new ArrayList<>();
+    	list1.add("1");
+    	list1.add("2");
+    	list1.add("3");
+    	list1.add("4");
+    	List<String> list2 = new ArrayList<>();
+    	list2.addAll(list1.subList(1, list1.size()));
+    	for(String str:list2){
+    		System.out.println(str);
+    	}
+    	
+    	
+    	/*Thread t = new Thread(){
+    		
+    		@Override
+    		public void run() {
+    			System.out.println("thread running ----");
+    		}
+    	};
+    	t.start();
+    	
+    	while(t.isAlive()){
+    		try {
+    			System.out.println("thread is alive");
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
+    	System.out.println("thread died");*/
+    	
+    	
+    	/*try {
     		Method[] methods = Test.class.getDeclaredMethods();
     		for(Method method:methods){
     			System.out.println(method.getDeclaringClass().getName()+"."+method.getName()+"_"+method.toString().hashCode());
@@ -26,7 +52,7 @@ public class Test{
 //    		FileUtil.backupAndCreateNewFile("mysql-keyword.txt");
 		} catch (Exception e) {
 			// TODO: handle exception
-		}
+		}*/
     	
 //    	HelperLoader.init();
 //    	System.out.println(ClassHelper.getClassSet().size());

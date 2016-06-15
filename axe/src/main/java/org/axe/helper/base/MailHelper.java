@@ -61,5 +61,8 @@ public final class MailHelper implements Helper{
 			}
 		}
 	}
+
+	@Override
+	public void onStartUp() throws Exception {}
 	
 }

@@ -8,4 +8,6 @@ public interface Helper {
 	
 
 	public void init() throws Exception;
+
+	public void onStartUp() throws Exception;
 }

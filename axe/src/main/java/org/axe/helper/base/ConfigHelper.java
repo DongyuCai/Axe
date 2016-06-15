@@ -133,4 +133,7 @@ public final class ConfigHelper implements Helper{
     public static int getAppUploadLimit() {
         return PropsUtil.getInt(CONFIG_PROPS, ConfigConstant.APP_UPLOAD_LIMIT, 0);
     }
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

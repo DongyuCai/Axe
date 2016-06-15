@@ -58,4 +58,7 @@ public final class BeanHelper implements Helper{
     public static void setBean(Class<?> cls,Object obj){
         BEAN_MAP.put(cls, obj);
     }
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

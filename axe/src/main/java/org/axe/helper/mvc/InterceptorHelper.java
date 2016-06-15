@@ -26,7 +26,6 @@ public final class InterceptorHelper implements Helper{
 	        if(CollectionUtil.isNotEmpty(interceptorClassSet)){
 	        	for(Class<?> interceptorClass:interceptorClassSet){
 	        		Interceptor interceptor = ReflectionUtil.newInstance(interceptorClass);
-	        		interceptor.init();//初始化Filter
 	        		INTERCEPTOR_MAP.put(interceptor.getClass(), interceptor);
 	        	}
 	        }
@@ -35,6 +34,17 @@ public final class InterceptorHelper implements Helper{
 	
 	public static Map<Class<? extends Interceptor>, Interceptor> getInterceptorMap() {
 		return INTERCEPTOR_MAP;
+	}
+
+	@Override
+	public void onStartUp() throws Exception {
+		synchronized (this) {
+			if (CollectionUtil.isNotEmpty(INTERCEPTOR_MAP)) {
+				for(Map.Entry<Class<? extends Interceptor>,Interceptor> entry:INTERCEPTOR_MAP.entrySet()){
+					entry.getValue().init();// 初始化Interceptor
+				}
+			}
+		}
 	}
 	
 }

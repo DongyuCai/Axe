@@ -58,4 +58,12 @@
 ####error
 ####end
 
+##Captain
+####axe.captain.captain_host
+####axe.captain.my_host
+####Captain
+####Man
+####CaptainHelper
+####ManHelper
+
 

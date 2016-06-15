@@ -1,8 +1,9 @@
 package org.axe.helper.mvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Listener;
@@ -15,15 +16,28 @@ import org.axe.util.ReflectionUtil;
  */
 public final class ListenerHelper implements Helper{
 	
+	private static List<Listener> LISTENER_LIST;
+	
 	@Override
 	public void init() throws Exception {
 		synchronized (this) {
+			LISTENER_LIST = new ArrayList<>();
 			Set<Class<?>> classSet = ClassHelper.getClassSetBySuper(Listener.class);
 			if(CollectionUtil.isNotEmpty(classSet)){
 				for(Class<?> listenerClass:classSet){
 					Listener listener = ReflectionUtil.newInstance(listenerClass);
+					LISTENER_LIST.add(listener);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onStartUp() throws Exception {
+		synchronized (this) {
+			if (CollectionUtil.isNotEmpty(LISTENER_LIST)) {
+				for(Listener listener:LISTENER_LIST){
 					listener.init();//初始化
-					BeanHelper.setBean(listenerClass,listener);
 				}
 			}
 		}

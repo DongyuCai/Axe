@@ -105,4 +105,7 @@ public final class AopHelper implements Helper{
         }
         return targetMap;
     }
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

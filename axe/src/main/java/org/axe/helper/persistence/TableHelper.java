@@ -101,4 +101,7 @@ public final class TableHelper implements Helper{
 	public static boolean checkIsMysqlKeyword(String word){
 		return MYSQL_KEYWORD.contains(","+word+",");
 	}
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

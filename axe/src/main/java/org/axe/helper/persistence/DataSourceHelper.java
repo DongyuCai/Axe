@@ -52,4 +52,7 @@ public final class DataSourceHelper implements Helper{
 	public static DataSource getDataSource(String name){
 		return DATA_SOURCE.get(name);
 	}
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

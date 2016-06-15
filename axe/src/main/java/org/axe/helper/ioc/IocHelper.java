@@ -44,4 +44,7 @@ public final class IocHelper implements Helper{
 	        }
 		}
 	}
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

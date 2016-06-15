@@ -18,13 +18,13 @@ public class CaptainRestController {
 	public Object signIn(
 			@RequestParam("captain")String captain,
 			@RequestParam("host")String host){
-		return captainService.signIn(captain, host);
+		return captainService.replySignIn(captain, host);
 	}
 	
 
 	@Request(value = "monitor",method = RequestMethod.GET)
 	public Object monitor(){
-		return "1";//活着
+		return captainService.replyMonitor();
 	}
 	
 	@Request(value = "heartBeat",method = RequestMethod.GET)
@@ -37,5 +37,10 @@ public class CaptainRestController {
 	@Request(value = "teamTable",method = RequestMethod.GET)
 	public Object teamTable(){
 		return TeamTable.hosts;
+	}
+	
+	@Request(value = "askQuestion",method = RequestMethod.GET)
+	public Object askQuestion(@RequestParam("question")String question){
+		return captainService.answerQuestion(question);
 	}
 }

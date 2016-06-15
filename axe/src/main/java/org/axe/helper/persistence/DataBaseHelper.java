@@ -514,5 +514,9 @@ public final class DataBaseHelper implements Helper{
             }
         }
     }
+
+
+	@Override
+	public void onStartUp() throws Exception {}
     
 }

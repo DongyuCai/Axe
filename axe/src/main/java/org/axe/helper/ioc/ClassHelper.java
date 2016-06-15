@@ -150,4 +150,7 @@ public final class ClassHelper implements Helper{
     		CLASS_SET.clear();
     	}
     }
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

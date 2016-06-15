@@ -45,10 +45,20 @@
 ----------
 
 ##正在进行：
-1.框架管理界面、系统监控
-2.CreateTableUtil
-3.增加@RequestParam的default值
-4.增加支持插件系统，正在增加hoke插件，解决大数据查询速度缓慢，方法结果缓存策略
+* 框架管理界面、系统监控
+* CreateTableUtil
+* 增加@RequestParam的default值
+* 增加支持插件系统，正在增加hoke插件，解决大数据查询速度缓慢，方法结果缓存策略
+* 增加Captain系统，支持分布式通信
+
+##需要验证:
+* captain
+ * Captain机停，组员自动选举Captain
+ * 组员停，信息自动保持一致
+ * 组员全停
+ * 组员加入
+ * Captain重启
+
 
 ----------
 

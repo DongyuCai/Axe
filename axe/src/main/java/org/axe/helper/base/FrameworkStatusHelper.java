@@ -25,4 +25,7 @@ public final class FrameworkStatusHelper implements Helper{
 	public static Date getStartupTime() {
 		return STARTUP_TIME;
 	}
+
+	@Override
+	public void onStartUp() throws Exception {}
 }

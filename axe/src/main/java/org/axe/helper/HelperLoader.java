@@ -63,6 +63,10 @@ public final class HelperLoader {
     	for (Helper helper:helpers){
     		helper.init();
         }
+    	for (Helper helper:helpers){
+    		helper.onStartUp();;
+        }
+    	
         
         //特别初始化
         if(servletContext != null){//因为表单请求可能带有文件上传，需要初始化Servlet相关设置

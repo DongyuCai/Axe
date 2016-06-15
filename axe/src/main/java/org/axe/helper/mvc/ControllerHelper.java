@@ -292,4 +292,8 @@ public final class ControllerHelper implements Helper{
     public static List<Handler> getActionList() {
 		return ACTION_LIST;
 	}
+
+
+	@Override
+	public void onStartUp() throws Exception {}
 }
