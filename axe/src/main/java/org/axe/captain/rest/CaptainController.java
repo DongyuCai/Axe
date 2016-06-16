@@ -1,5 +1,7 @@
 package org.axe.captain.rest;
 
+import java.util.List;
+
 import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Controller;
 import org.axe.annotation.mvc.Request;
@@ -14,19 +16,6 @@ public class CaptainController {
 	@Autowired
 	private CaptainService captainService;
 	
-	@Request(value = "signIn",method = RequestMethod.GET)
-	public Object signIn(
-			@RequestParam("captain")String captain,
-			@RequestParam("host")String host){
-		return captainService.replySignIn(captain, host);
-	}
-	
-
-	@Request(value = "monitor",method = RequestMethod.GET)
-	public Object monitor(){
-		return captainService.replyMonitor();
-	}
-	
 	@Request(value = "heartBeat",method = RequestMethod.GET)
 	public Object heartBeat(
 			@RequestParam("captain")String captain,
@@ -34,9 +23,20 @@ public class CaptainController {
 		return captainService.heartBeat(captain, host);
 	}
 	
+	@Request(value = "monitor",method = RequestMethod.GET)
+	public Object monitor(){
+		return captainService.replyMonitor();
+	}
+	
 	@Request(value = "teamTable",method = RequestMethod.GET)
 	public Object teamTable(){
 		return TeamTable.hosts;
+	}
+	
+	@Request(value = "teamTable",method = RequestMethod.PUT)
+	public Object signIn(
+			@RequestParam("host")List<String> host){
+		return TeamTable.resetHosts(host);
 	}
 	
 	@Request(value = "askQuestion",method = RequestMethod.GET)

@@ -1,25 +1,15 @@
 package org.axe.captain.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Service;
 import org.axe.captain.bean.TeamTable;
-import org.axe.captain.constant.CaptainExceptionEnum;
-import org.axe.captain.helper.CaptainConfigHelper;
-import org.axe.captain.helper.CaptainHttpHelper;
 import org.axe.captain.interface_.Captain;
 import org.axe.captain.thread.CaptainMonitorThread;
 import org.axe.captain.thread.HeartBeatThread;
-import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.axe.util.CollectionUtil;
 
 @Service
 public class CaptainService {
-	private Logger LOGGER = LoggerFactory.getLogger(CaptainService.class);
-
 	@Autowired
 	private Captain captain;
 	
@@ -30,42 +20,6 @@ public class CaptainService {
 	
 	private CaptainMonitorThread captainMonitorThread = new CaptainMonitorThread();
 	private HeartBeatThread beatThread = new HeartBeatThread();
-
-
-	public boolean signIn() throws Exception {
-		String captain = CaptainConfigHelper.getAxeCaptainCaptainHost();
-		if(StringUtil.isNotEmpty(captain)){
-			String myHost = CaptainConfigHelper.getAxeCaptainMyHost();
-			if(StringUtil.isNotEmpty(myHost)){
-				
-				StringBuilder signIn = new StringBuilder(captain);
-				if(captain.endsWith("/")){
-					signIn.append("captain/signIn");
-				}else{
-					signIn.append("/captain/signIn");
-				}
-				signIn
-				.append("?captain=").append(captain)
-				.append("&host=").append(myHost);
-				
-				CaptainHttpHelper.askAndRefreshTeamTable(signIn.toString());
-				
-				if(LOGGER.isInfoEnabled()){
-					LOGGER.info("Captain client signIn success!");
-					LOGGER.info("###Team Table START###");
-					for(Object host:TeamTable.hosts){
-						LOGGER.info(String.valueOf(host));
-					}
-					LOGGER.info("###Team Table END###");
-				}
-				
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
 	/**
 	 * 启动心跳线程
 	 */
@@ -86,37 +40,30 @@ public class CaptainService {
 		beatThread.stop();
 	}
 	
-	/**
-	 * 响应组员启动注册
-	 */
-	public Object replySignIn(String captain, String host) {
-		//#注册
-		List<String> hostsCopy = new ArrayList<>();
-		hostsCopy.add(captain);
-		synchronized (TeamTable.hosts) {
-			//##是否已存在
-			for(String h:TeamTable.hosts){
-				if(h.equals(captain)) {
-					//##跳过captain
-					continue;
-				}
-				if(h.equals(host)){
-					return CaptainExceptionEnum.HOST_EXISTED.code;
-				}
-				hostsCopy.add(h);
-			}
-			hostsCopy.add(host);
-			TeamTable.hosts.clear();
-			TeamTable.hosts.addAll(hostsCopy);
-		}
-		return hostsCopy;
-	}
-	
 	public Object heartBeat(String captain, String host){
+		//##如果Team表还是空的，说明本机是Captain，而且还是第一个人来请求，那么需要把请求来的Captain加到Team表里
+		if(CollectionUtil.isEmpty(TeamTable.hosts)){
+			synchronized(TeamTable.hosts){
+				if(CollectionUtil.isEmpty(TeamTable.hosts)){
+					TeamTable.hosts.add(captain);
+				}
+			}
+		}
+
+		//##如果请求的组员不在Team表里，更新进去
+		if(!TeamTable.hosts.contains(host)){
+			synchronized (TeamTable.hosts) {
+				if(!TeamTable.hosts.contains(host)){
+					TeamTable.hosts.add(host);
+				}
+			}
+		}
+		
+		
 		//#接收到心跳请求的话，说明有人选举本机成为Captain
 		startCaptainMonitorThread(captain);
 		//#返回Team表
-		return TeamTable.hosts;
+		return TeamTable.getTeamTableCopy();
 	}
 
 	/**

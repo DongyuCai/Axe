@@ -34,14 +34,10 @@ public class CaptainListener implements Listener{
 						
 					}
 					
-					//#尝试注册
 					CaptainService captainService = BeanHelper.getBean(CaptainService.class);
 					captainService.setCaptain(captain);
-					boolean signIn = captainService.signIn();
-					if(signIn){
-						//#成功注册，开启心跳监控线程
-						captainService.startHeartBeatThread();
-					}
+					//#开启心跳监控线程
+					captainService.startHeartBeatThread();
 				}
 			}
 		}

@@ -19,7 +19,8 @@ public final class HeartBeatThread {
 	public void start(){
 		if(heartBeatThread == null){
 			synchronized (this) {
-				if(heartBeatThread == null){
+				final String captain = TeamTable.getCaptain();
+				if(heartBeatThread == null && StringUtil.isNotEmpty(captain)){
 					heartBeatThread = new Thread("CAPTAIN_HBT"){
 						private Logger LOGGER = LoggerFactory.getLogger("CAPTAIN_HBT");
 						
@@ -38,11 +39,9 @@ public final class HeartBeatThread {
 						
 						@Override
 						public void run() {
-							keep = true;
-							String captain = TeamTable.getCaptain();
 							String myHost = CaptainConfigHelper.getAxeCaptainMyHost();
+							keep = true;
 							while(keep){
-								
 								String heartBeatUrl = this.generateHeartBeatUrl(captain, myHost);
 								//#心跳
 								try {
@@ -57,12 +56,12 @@ public final class HeartBeatThread {
 									}
 								} catch (Exception e1) {
 									//#心跳失败，更改captain人选
-									captain = TeamTable.getCaptain(captain);
-									if(StringUtil.isEmpty(captain)){
+									String newCaptain = TeamTable.getCaptain(captain);
+									if(StringUtil.isEmpty(newCaptain)){
 										//#如果已经到底了，就算了
 										break;
 									}
-									if(captain.equals(myHost)){
+									if(newCaptain.equals(myHost)){
 										//#如果captain就是自己，那么也没必要再心跳了
 										break;
 									}

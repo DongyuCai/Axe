@@ -71,5 +71,8 @@
 ####只剩一个组员的时候
 * 这时候如果有新的组员加入，并且以最后一个组员为Captain，那么最后一个组员会自动变成Captain。
 * 如果重启Captain机器了，那么最后一个组员会与Captian失联，因为心跳线程已经停止，所以不会主动联系重启后的Captain，可以通过人工访问最后一个组员的/captain/monitor来激活他的心跳。
-
+####修正Team表
+* 正常情况下，如果我们希望修正大家的Team表，只需要修正Captain的就可以了
+* 也有情况是，需要修改组员Team表来逼迫组员归属到指定Captain，那么修改具体组员的Team表即可
+* 修改方式都是通过PUT方式访问 /captain/teamTable?host=host1&host=host2这样
 

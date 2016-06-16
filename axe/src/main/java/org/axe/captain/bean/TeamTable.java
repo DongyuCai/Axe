@@ -3,7 +3,9 @@ package org.axe.captain.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.axe.captain.helper.CaptainConfigHelper;
 import org.axe.util.CollectionUtil;
+import org.axe.util.StringUtil;
 
 /**
  * Team 表，存放host
@@ -11,6 +13,14 @@ import org.axe.util.CollectionUtil;
  */
 public final class TeamTable {
 	public static List<String> hosts = new ArrayList<>();
+	static{
+		String axeCaptainCaptainHost = CaptainConfigHelper.getAxeCaptainCaptainHost();
+		String axeCaptainMyHost = CaptainConfigHelper.getAxeCaptainMyHost();
+		if(StringUtil.isNotEmpty(axeCaptainCaptainHost) && StringUtil.isNotEmpty(axeCaptainMyHost)){
+			hosts.add(axeCaptainCaptainHost);
+			hosts.add(axeCaptainMyHost);//#这个第二的位置，将来被Captain同步后可能就不是自己了
+		}
+	}
 	
 	public static List<String> getTeamTableCopy() {
 		List<String> hostsCopy = new ArrayList<>();
@@ -53,5 +63,15 @@ public final class TeamTable {
 			}
 		}
 		return captain;
+	}
+
+	public static Object resetHosts(List<String> host) {
+		if(CollectionUtil.isNotEmpty(host)){
+			synchronized (hosts) {
+				hosts.clear();
+				hosts.addAll(host);
+			}
+		}
+		return getTeamTableCopy();
 	}
 }

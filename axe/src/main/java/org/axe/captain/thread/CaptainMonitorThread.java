@@ -25,9 +25,9 @@ public final class CaptainMonitorThread {
 					public void run() {
 						keep = true;
 						while(keep){
-							if(CollectionUtil.isEmpty(TeamTable.hosts) && TeamTable.hosts.size() <= 1){
+							if(CollectionUtil.isEmpty(TeamTable.hosts) || TeamTable.hosts.size() <= 1){
 								synchronized (TeamTable.hosts) {
-									if(CollectionUtil.isEmpty(TeamTable.hosts) && TeamTable.hosts.size() <= 1){
+									if(CollectionUtil.isEmpty(TeamTable.hosts) || TeamTable.hosts.size() <= 1){
 										//#当只剩下host，其他的都掉线了，就停止吧
 										break;
 									}
