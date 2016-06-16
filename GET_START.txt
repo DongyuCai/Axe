@@ -65,5 +65,11 @@
 ####Man
 ####CaptainHelper
 ####ManHelper
+####Captain 死掉
+####组员死掉
+####只剩Captain的时候
+####只剩一个组员的时候
+* 这时候如果有新的组员加入，并且以最后一个组员为Captain，那么最后一个组员会自动变成Captain。
+* 如果重启Captain机器了，那么最后一个组员会与Captian失联，因为心跳线程已经停止，所以不会主动联系重启后的Captain，可以通过人工访问最后一个组员的/captain/monitor来激活他的心跳。
 
 

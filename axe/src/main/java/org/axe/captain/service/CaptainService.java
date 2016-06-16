@@ -23,6 +23,10 @@ public class CaptainService {
 	@Autowired
 	private Captain captain;
 	
+	public void setCaptain(Captain captain) {
+		this.captain = captain;
+	}
+	
 	
 	private CaptainMonitorThread captainMonitorThread = new CaptainMonitorThread();
 	private HeartBeatThread beatThread = new HeartBeatThread();
@@ -69,7 +73,7 @@ public class CaptainService {
 		//#通知心跳线程启动
 		beatThread.start();
 		//#通知监控线程停止
-		
+		captainMonitorThread.stop();
 	}
 	
 	/**

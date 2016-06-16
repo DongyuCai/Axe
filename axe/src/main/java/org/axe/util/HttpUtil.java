@@ -11,11 +11,14 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 import org.axe.constant.CharacterEncoding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Http 帮助类 Created by CaiDongYu on 2016年6月14日 上午11:26:32.
  */
 public final class HttpUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
 
 
 	public static String sendGet(String url) throws Exception {
@@ -52,7 +55,7 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送GET请求出现异常！" + e.getMessage());
+			LOGGER.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输入流
@@ -113,7 +116,7 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送 POST 请求出现异常！" + e.getMessage());
+			LOGGER.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流
@@ -188,7 +191,7 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送 POST 请求出现异常！" + e.getMessage());
+			LOGGER.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流

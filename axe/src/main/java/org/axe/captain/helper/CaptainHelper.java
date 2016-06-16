@@ -22,7 +22,7 @@ public final class CaptainHelper {
 			url.append("/captain/askQuestion");
 		}
 		url
-		.append("?question=").append(captain);
+		.append("?question=").append(question);
 		try {
 			String result = HttpUtil.sendGet(url.toString());
 			return result;

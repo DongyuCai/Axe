@@ -51,7 +51,7 @@ import org.axe.util.StringUtil;
 
 @FilterFuckOff
 @Interceptor({HomeInterceptor.class, SignInInterceptor.class})
-@Controller(basePath = "/axe")
+@Controller(basePath = "axe")
 public class HomeController {
 
 @Autowired

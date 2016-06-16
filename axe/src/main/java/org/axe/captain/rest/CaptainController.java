@@ -9,7 +9,7 @@ import org.axe.captain.service.CaptainService;
 import org.axe.constant.RequestMethod;
 
 @Controller(basePath="captain")
-public class CaptainRestController {
+public class CaptainController {
 
 	@Autowired
 	private CaptainService captainService;
