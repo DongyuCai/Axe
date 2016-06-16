@@ -40,7 +40,9 @@ public class CaptainController {
 	}
 	
 	@Request(value = "askQuestion",method = RequestMethod.GET)
-	public Object askQuestion(@RequestParam("question")String question){
-		return captainService.answerQuestion(question);
+	public Object askQuestion(
+			@RequestParam("questionType")String questionType,
+			@RequestParam("question")String question){
+		return captainService.answerQuestion(questionType, question);
 	}
 }

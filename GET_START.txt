@@ -61,9 +61,9 @@
 ##Captain
 ####axe.captain.captain_host
 ####axe.captain.my_host
-####Captain
-####Man
-####CaptainHelper
+####Captain 实现
+####Man 实现
+####CaptainHelper 注入
 ####ManHelper
 ####Captain 死掉
 ####组员死掉

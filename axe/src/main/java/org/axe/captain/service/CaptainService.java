@@ -3,6 +3,7 @@ package org.axe.captain.service;
 import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Service;
 import org.axe.captain.bean.TeamTable;
+import org.axe.captain.helper.CaptainHelper;
 import org.axe.captain.interface_.Captain;
 import org.axe.captain.thread.CaptainMonitorThread;
 import org.axe.captain.thread.HeartBeatThread;
@@ -11,12 +12,7 @@ import org.axe.util.CollectionUtil;
 @Service
 public class CaptainService {
 	@Autowired
-	private Captain captain;
-	
-	public void setCaptain(Captain captain) {
-		this.captain = captain;
-	}
-	
+	private CaptainHelper captainHelper;
 	
 	private CaptainMonitorThread captainMonitorThread = new CaptainMonitorThread();
 	private HeartBeatThread beatThread = new HeartBeatThread();
@@ -76,9 +72,10 @@ public class CaptainService {
 		return "1";//活着
 	}
 
-	public Object answerQuestion(String question) {
-		if(captain != null){
-			return captain.answerQuestion(question);
+	public Object answerQuestion(String questionType, String question) {
+		Captain captin = captainHelper.getCaptain(questionType);
+		if(captin != null){
+			return captin.answerQuestion(question);
 		}
 		return null;
 	}
