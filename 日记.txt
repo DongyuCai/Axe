@@ -19,5 +19,13 @@ method£¬¾Í²¶»ñ²»µ½£¬Õâ¾ÍËµÃ÷²»ÊÇ·´ÉäµÄÎÊÌâÁË¡£Ò²¿ÉÄÜÊÇwebÈÝÆ÷¶Ô·´ÉäµÄ½âÎö²»Ò»Ñù¡
 	ÕâÊ±ºò£¬¿ÉÄÜ»á·×Õù³ÉÁ½ÅÅ£¬¸÷×ÔÓÐ¸öCaptain£¬¶¼Áì×Å×Ô¼ºµÄ×éÔ±£¬»¥²»¸ÉÉæ£¬»òÕß¸ü¼«¶ËµÄ³öÏÖºÜ¶à¸öÐ¡×éËéÆ¬£¬¶¼¸÷×ÔÎªÕþ¡£
 	Ä¿Ç°£¬ÕâÖÖÇé¿ö£¬Ö»ÄÜÍ¨¹ýÈË¹¤ºÏ²¢ËéÆ¬£¬×îºóºÏ³ÉÒ»¸ö´óµÄÐ¡×é£¬Ò»¸öCaptainÁË¡£
 	²»¹ý£¬ÂÒÊÀ¸ÅÂÊ£¬»¹ÊÇºÜÐ¡µÄ¡£
-	
-  
+
+
+2016/6/15
+	×òÌìËµCaptain¿ÉÄÜ»áÓöµ½¡°ÂÒÊÀ¡±µÄ¿ÉÄÜ£¬×òÍíÒÑ¾­×ö³öÁËÒ»¸öÔÝÊ±µÄ¹¶ÇÒ¶Ô²ß£¬µ±·¢ÏÖ¡°ÂÒÊÀ¡±ºó£¬¿ÉÒÔÍ¨¹ý·ÃÎÊ/captain/teamTableÌá½»²¢ÐÂ±íÀ´Ìæ»»CaptainµÄTeam±í£¬Õâ¸öurlÊÇPUTÀàÐÍµÄ£¬GET·½Ê½·ÃÎÊÖ»ÄÜ»ñÈ¡£¬¶øÇÒ£¬
+ÒòÎªCaptain²ÅÄÜÐÞ¶©Team±í²¢ÏÂ·¢¸ø×éÔ±£¬ËùÒÔÖ»ÓÐÐÞ¸ÄCaptainµÄ±í²ÅÓÐÐ§¡£
+	Ë³±ãËµÒ»Ëµ£¬ÎªÊ²Ã´Axe»áÓÐMast·ÖÖ§ÔÝÍ£¿ª·¢£¬·´¶øÒ»Ö±ÔÚ¸üÐÂbranch jdk1.7·ÖÖ§ÄØ£¿
+	°¥£¬ÕâÀïÒªËµËµÁË£¬µ±Ê±Äê¼ÍÇá°¡£¬¿´µ½1.8ÐÂ£¬ÓÚÊÇAxeµÄ³öÉú¾Í»ùÓÚjdk 1.8À´×öµÄ£¬È»¶øÒ»¸öºÃÓÃµÄ¹¤¾ß£¬Ó¦¸ÃÊÇÒª²»¶Ï±»Ê¹ÓÃ£¬²»¶Ï±»¸Ä½øµÄ£¬ËùÒÔÎªÁËÔÚÏÖÓÐµÄÏîÄ¿ÖÐ´óÁ¿Êµ¼ùaxe£¬²»µÃ²»Ë«Ïß²¢·¢£¬¿ªÁË¸öbranch jdk1.7·ÖÖ§£¬
+ÄÇÊ±ºòµÄaxe»¹·Ç³£Ð¡£¬ÂýÂýµÄ£¬axeµÄÊµ¼ùÔ½À´Ô½¶à£¬branch jdk1.7Óëmast·ÖÖ§µÄ²îÒì¾ÍÔ½À´Ô½´ó£¬ËùÒÔmast¾ÍÔÝÍ£¿ª·¢ÁË£¬ÆäÊµmastÒ²Ö»ÊÇ¶àÁËÒ»¸ölamda±í´ïÊ½ºÍStreamµÄÊ¹ÓÃ£¬»¹ÓÐ¾ÍÊÇ·´Éä·½ÃæµÄapi²î±ð¡£
+	Ä¿Ç°À´¿´£¬branch1.7»áÒ»Ö±ÎÈ¶¨µÄ¸üÐÂÏÂÈ¥£¬mast²»É¾£¬ºóÃæ¿ÉÄÜ»áµ÷Õû£¬axeÒ²Ò»¶¨»á¸ú×ÅjdkµÄ·¢Õ¹½Å²½£¬½áºÏÊµ¼ÊÊ¹ÓÃÇé¿ö£¬²»¶Ï¸üÐÂ×Ô¼ºµÄ¡£
+ 

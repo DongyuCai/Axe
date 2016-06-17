@@ -39,10 +39,18 @@ public class CaptainController {
 		return TeamTable.resetHosts(host);
 	}
 	
-	@Request(value = "askQuestion",method = RequestMethod.GET)
-	public Object askQuestion(
+	@Request(value = "askCaptain",method = RequestMethod.GET)
+	public Object askCaptain(
 			@RequestParam("questionType")String questionType,
 			@RequestParam("question")String question){
-		return captainService.answerQuestion(questionType, question);
+		return captainService.captainAnswer(questionType, question);
+	}
+	
+
+	@Request(value = "askMan",method = RequestMethod.GET)
+	public Object askManQuestion(
+			@RequestParam("questionType")String questionType,
+			@RequestParam("question")String question){
+		return captainService.manAnswer(questionType, question);
 	}
 }

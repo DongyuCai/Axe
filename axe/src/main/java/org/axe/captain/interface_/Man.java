@@ -1,13 +1,13 @@
 package org.axe.captain.interface_;
-
 /**
- * Captain 角色的行为抽象
+ * 组员行为的抽象
  * Created by CaiDongYu on 2016年6月17日 上午9:47:18.
  */
-public interface Captain {
+public interface Man {
+
 
 	/**
-	 * 接受什么样的问题类型
+	 * 接受什么类型问题
 	 */
 	public String accpetQuestionType();
 	

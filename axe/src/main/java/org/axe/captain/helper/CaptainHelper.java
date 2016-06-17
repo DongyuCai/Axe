@@ -30,16 +30,16 @@ public final class CaptainHelper {
 		return captains.get(questionType);
 	}
 	
-	public String askCaptain(String questionType, String question) throws Exception{
+	public String askCaptain(String questionType, String question){
 		questionType = questionType == null?"":questionType;
 		question = question == null?"":question;
 
 		String captain = TeamTable.getCaptain();
 		StringBuilder url = new StringBuilder(captain);
 		if(captain.endsWith("/")){
-			url.append("captain/askQuestion");
+			url.append("captain/askCaptain");
 		}else{
-			url.append("/captain/askQuestion");
+			url.append("/captain/askCaptain");
 		}
 		url
 		.append("?questionType=").append(questionType)
@@ -48,7 +48,7 @@ public final class CaptainHelper {
 			String result = HttpUtil.sendGet(url.toString());
 			return result;
 		} catch (Exception e) {
-			throw new Exception("ask Captain["+url.toString()+"] failed ："+e.getMessage());
+			return "";
 		}
 	}
 

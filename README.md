@@ -1,6 +1,6 @@
 <img src='https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/axe/favicon.png'/>
 
-###Axe 意为快斧，是一款免费开源的web服务端框架，非常精简，称手利器！
+###Axe 意为快斧，是一款免费开源的web服务端框架，非常精简，称手利器！不为复杂，只为好用！
 
 #####分支版本 0.1.7
 #####版本号含义: 稳定版本大功能.小版本bug和小功能.jdk版本

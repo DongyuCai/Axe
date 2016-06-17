@@ -4,7 +4,9 @@ import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Service;
 import org.axe.captain.bean.TeamTable;
 import org.axe.captain.helper.CaptainHelper;
+import org.axe.captain.helper.ManHelper;
 import org.axe.captain.interface_.Captain;
+import org.axe.captain.interface_.Man;
 import org.axe.captain.thread.CaptainMonitorThread;
 import org.axe.captain.thread.HeartBeatThread;
 import org.axe.util.CollectionUtil;
@@ -13,6 +15,8 @@ import org.axe.util.CollectionUtil;
 public class CaptainService {
 	@Autowired
 	private CaptainHelper captainHelper;
+	@Autowired
+	private ManHelper manHelper;
 	
 	private CaptainMonitorThread captainMonitorThread = new CaptainMonitorThread();
 	private HeartBeatThread beatThread = new HeartBeatThread();
@@ -72,7 +76,7 @@ public class CaptainService {
 		return "1";//活着
 	}
 
-	public Object answerQuestion(String questionType, String question) {
+	public Object captainAnswer(String questionType, String question) {
 		Captain captin = captainHelper.getCaptain(questionType);
 		if(captin != null){
 			return captin.answerQuestion(question);
@@ -80,4 +84,12 @@ public class CaptainService {
 		return null;
 	}
 	
+
+	public Object manAnswer(String questionType, String question) {
+		Man man = manHelper.getMan(questionType);
+		if(man != null){
+			return man.answerQuestion(question);
+		}
+		return null;
+	}
 }

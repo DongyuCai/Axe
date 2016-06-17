@@ -13,12 +13,13 @@ import org.axe.util.StringUtil;
  */
 public final class TeamTable {
 	public static List<String> hosts = new ArrayList<>();
+	public static String myHost = null;
 	static{
 		String axeCaptainCaptainHost = CaptainConfigHelper.getAxeCaptainCaptainHost();
-		String axeCaptainMyHost = CaptainConfigHelper.getAxeCaptainMyHost();
-		if(StringUtil.isNotEmpty(axeCaptainCaptainHost) && StringUtil.isNotEmpty(axeCaptainMyHost)){
+		myHost = CaptainConfigHelper.getAxeCaptainMyHost();
+		if(StringUtil.isNotEmpty(axeCaptainCaptainHost) && StringUtil.isNotEmpty(myHost)){
 			hosts.add(axeCaptainCaptainHost);
-			hosts.add(axeCaptainMyHost);//#这个第二的位置，将来被Captain同步后可能就不是自己了
+			hosts.add(myHost);//#这个第二的位置，将来被Captain同步后可能就不是自己了
 		}
 	}
 	
