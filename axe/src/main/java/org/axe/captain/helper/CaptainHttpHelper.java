@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.axe.captain.bean.TeamTable;
 import org.axe.captain.constant.CaptainExceptionEnum;
+import org.axe.util.CollectionUtil;
 import org.axe.util.HttpUtil;
 import org.axe.util.JsonUtil;
 import org.axe.util.StringUtil;
@@ -15,7 +16,7 @@ import org.axe.util.StringUtil;
  */
 public final class CaptainHttpHelper {
 
-	public static void askAndRefreshTeamTable(String url) throws Exception{
+	public static String askAndRefreshTeamTable(String url) throws Exception{
 		String result = HttpUtil.sendGet(url);
 		CaptainExceptionEnum exception = CaptainExceptionEnum.getException(result);
 		if(exception != null){
@@ -29,10 +30,13 @@ public final class CaptainHttpHelper {
 			List<?> newHosts = JsonUtil.fromJson(result,ArrayList.class);
 			synchronized (TeamTable.hosts) {
 				TeamTable.hosts.clear();
-				for(Object obj:newHosts){
-					TeamTable.hosts.add(String.valueOf(obj));
+				if(CollectionUtil.isNotEmpty(newHosts)){
+					for(Object obj:newHosts){
+						TeamTable.hosts.add(String.valueOf(obj));
+					}
 				}
 			}
+			return CollectionUtil.isNotEmpty(newHosts)?String.valueOf(newHosts.get(0)):null;
 		} catch (Throwable e) {
 			throw new Exception("Captain http failed ："+result);
 		}

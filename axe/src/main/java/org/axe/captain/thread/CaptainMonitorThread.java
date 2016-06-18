@@ -81,7 +81,6 @@ public final class CaptainMonitorThread {
 	public void stop(){
 		synchronized (this) {
 			if(captainMonitorThread != null){
-				captainMonitorThread = null;
 				keep = false;
 				while(captainMonitorThread.isAlive()){
 					try {

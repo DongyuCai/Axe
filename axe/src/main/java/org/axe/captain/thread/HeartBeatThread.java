@@ -39,13 +39,15 @@ public final class HeartBeatThread {
 						
 						@Override
 						public void run() {
+							//#newCaptain表示新任队长，第一次的时候，就是captain
+							String newCaptain = captain;
 							String myHost = CaptainConfigHelper.getAxeCaptainMyHost();
 							keep = true;
 							while(keep){
-								String heartBeatUrl = this.generateHeartBeatUrl(captain, myHost);
+								String heartBeatUrl = this.generateHeartBeatUrl(newCaptain, myHost);
 								//#心跳
 								try {
-									CaptainHttpHelper.askAndRefreshTeamTable(heartBeatUrl);
+									newCaptain = CaptainHttpHelper.askAndRefreshTeamTable(heartBeatUrl);
 									if(LOGGER.isInfoEnabled()){
 										LOGGER.info("Captain client heat beat success!");
 										LOGGER.info("###Team Table START###");
@@ -56,7 +58,7 @@ public final class HeartBeatThread {
 									}
 								} catch (Exception e1) {
 									//#心跳失败，更改captain人选
-									String newCaptain = TeamTable.getCaptain(captain);
+									newCaptain = TeamTable.getCaptain(newCaptain);
 									if(StringUtil.isEmpty(newCaptain)){
 										//#如果已经到底了，就算了
 										break;
