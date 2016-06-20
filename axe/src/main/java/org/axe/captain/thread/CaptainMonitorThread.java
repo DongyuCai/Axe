@@ -82,15 +82,14 @@ public final class CaptainMonitorThread {
 		synchronized (this) {
 			if(captainMonitorThread != null){
 				keep = false;
-				while(captainMonitorThread.isAlive()){
+				while(captainMonitorThread != null){
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				captainMonitorThread = null;			
-			}
+				}
 		}
 	}
 }

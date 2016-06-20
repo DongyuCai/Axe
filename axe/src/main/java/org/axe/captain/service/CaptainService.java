@@ -1,8 +1,11 @@
 package org.axe.captain.service;
 
+import java.util.List;
+
 import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Service;
 import org.axe.captain.bean.TeamTable;
+import org.axe.captain.constant.ThreadModeEnum;
 import org.axe.captain.helper.CaptainHelper;
 import org.axe.captain.helper.ManHelper;
 import org.axe.captain.interface_.Captain;
@@ -18,26 +21,36 @@ public class CaptainService {
 	@Autowired
 	private ManHelper manHelper;
 	
+	private ThreadModeEnum mode = ThreadModeEnum.AUTO;
+	
 	private CaptainMonitorThread captainMonitorThread = new CaptainMonitorThread();
 	private HeartBeatThread beatThread = new HeartBeatThread();
 	/**
 	 * 启动心跳线程
 	 */
 	public void startHeartBeatThread() {
-		//#通知心跳线程启动
-		beatThread.start();
-		//#通知监控线程停止
-		captainMonitorThread.stop();
+		synchronized (mode) {
+			if(mode == ThreadModeEnum.AUTO){
+				//#通知心跳线程启动
+				beatThread.start();
+				//#通知监控线程停止
+				captainMonitorThread.stop();
+			}
+		}
 	}
 	
 	/**
 	 * 启动监控线程
 	 */
 	public void startCaptainMonitorThread(String captain){
-		//#通知守护线程
-		captainMonitorThread.start(captain);
-		//#停止HeartBeat心跳线程
-		beatThread.stop();
+		synchronized (mode) {
+			if(mode == ThreadModeEnum.AUTO){
+				//#通知守护线程
+				captainMonitorThread.start(captain);
+				//#停止HeartBeat心跳线程
+				beatThread.stop();
+			}
+		}
 	}
 	
 	public Object heartBeat(String captain, String host){
@@ -91,5 +104,23 @@ public class CaptainService {
 			return man.answerQuestion(question);
 		}
 		return null;
+	}
+
+	public Object captain2man() {
+		synchronized (mode) {
+			mode = ThreadModeEnum.AUTO;
+		}
+		return this.replyMonitor();
+	}
+
+	public Object resetHosts(List<String> host) {
+		synchronized (mode) {
+			mode = ThreadModeEnum.MANUAL;
+		}
+		//#通知心跳线程停止
+		beatThread.stop();
+		//#通知监控线程停止
+		captainMonitorThread.stop();
+		return TeamTable.resetHosts(host);
 	}
 }

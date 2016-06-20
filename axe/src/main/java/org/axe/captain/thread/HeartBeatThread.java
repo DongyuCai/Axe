@@ -86,14 +86,13 @@ public final class HeartBeatThread {
 		synchronized (this) {
 			if(heartBeatThread != null){
 				keep = false;
-				while(heartBeatThread.isAlive()){
+				while(heartBeatThread != null){
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				heartBeatThread = null;
 			}
 		}
 	}

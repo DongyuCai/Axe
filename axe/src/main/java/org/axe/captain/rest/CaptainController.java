@@ -33,10 +33,15 @@ public class CaptainController {
 		return TeamTable.hosts;
 	}
 	
+	@Request(value = "captain2man",method = RequestMethod.PUT)
+	public Object captain2man(){
+		return captainService.captain2man();
+	}
+
 	@Request(value = "teamTable",method = RequestMethod.PUT)
 	public Object signIn(
 			@RequestParam("host")List<String> host){
-		return TeamTable.resetHosts(host);
+		return captainService.resetHosts(host);
 	}
 	
 	@Request(value = "askCaptain",method = RequestMethod.GET)
