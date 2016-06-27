@@ -13,6 +13,7 @@ import org.axe.interface_.mvc.Listener;
 import org.axe.util.ReflectionUtil;
 
 public class CaptainListener implements Listener{
+//	private Logger LOGGER = LoggerFactory.getLogger(CaptainListener.class);
 	
 	private Boolean inited = false;
 
@@ -53,6 +54,10 @@ public class CaptainListener implements Listener{
 					//#开启心跳监控线程
 					CaptainService captainService = BeanHelper.getBean(CaptainService.class);
 					captainService.startHeartBeatThread();
+					
+					//TODO:home页
+			        System.out.println(">>>>>>>>>\t Axe-Captain started success! \t<<<<<<<<<<");
+			        System.out.println(">>>>>>>>>\t Manager is \"/axe-captain\"  \t<<<<<<<<<<");
 				}
 			}
 		}

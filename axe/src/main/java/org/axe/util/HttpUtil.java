@@ -29,7 +29,6 @@ public final class HttpUtil {
 	 * 使用Get方式获取数据
 	 * 
 	 * @param url
-	 *            URL包括参数，http://HOST/XX?XX=XX&XXX=XXX
 	 * @param charset
 	 * @return
 	 * @throws Exception 

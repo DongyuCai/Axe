@@ -58,7 +58,9 @@
 ####error
 ####end
 
-##Captain
+##框架启动顺序
+
+##内嵌Captain
 ####axe.captain.captain_host
 ####axe.captain.my_host
 ####Captain 实现

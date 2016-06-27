@@ -2,7 +2,6 @@ package org.axe.helper;
 
 import javax.servlet.ServletContext;
 
-import org.axe.annotation.persistence.Dao;
 import org.axe.helper.aop.AopHelper;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.base.FrameworkStatusHelper;
@@ -19,15 +18,13 @@ import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.interface_.base.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 加载并初始化 Helper 类
  * Created by CaiDongYu on 2016/4/11.
  */
 public final class HelperLoader {
-	private static final Logger LOGGER = LoggerFactory.getLogger(HelperLoader.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(HelperLoader.class);
 	
 	private static Helper[] helpers;
 	
@@ -74,15 +71,8 @@ public final class HelperLoader {
         }
         
         //装载的类日志分析
-        //TODO:详细日志
-        LOGGER.debug("Filter \tx"+FilterHelper.getSortedFilterList().size());
-        LOGGER.debug("Interceptor \tx"+InterceptorHelper.getInterceptorMap().size());
-        LOGGER.debug("Controller \tx"+ClassHelper.getControllerClassSet().size());
-        LOGGER.debug("Action \tx"+ControllerHelper.getActionList().size());
-        LOGGER.debug("Service \tx"+ClassHelper.getServiceClassSet().size());
-        LOGGER.debug("Dao \tx"+ClassHelper.getClassSetByAnnotation(Dao.class).size());
-        LOGGER.debug("Table \tx"+TableHelper.getEntityClassMap().size());
-        LOGGER.debug("Axe system started success!");
+        System.out.println(">>>>>>>>>\t Axe started success! \t<<<<<<<<<<");
+        System.out.println(">>>>>>>>>\t Manager is \"/axe\"  \t<<<<<<<<<<");
         
         //释放ClassHelper占用的内存
         //TODO:(ok)目前来看，框架自身只有加载91个资源，并不很多
