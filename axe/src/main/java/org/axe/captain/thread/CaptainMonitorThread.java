@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.axe.captain.bean.TeamTable;
-import org.axe.util.CollectionUtil;
 import org.axe.util.HttpUtil;
 
 /**
@@ -25,18 +24,14 @@ public final class CaptainMonitorThread {
 					public void run() {
 						keep = true;
 						while(keep){
-							if(CollectionUtil.isEmpty(TeamTable.hosts) || TeamTable.hosts.size() <= 1){
-								synchronized (TeamTable.hosts) {
-									if(CollectionUtil.isEmpty(TeamTable.hosts) || TeamTable.hosts.size() <= 1){
-										//#当只剩下host，其他的都掉线了，就停止吧
-										break;
-									}
-								}
+							//#当只剩下host，其他的都掉线了，就停止吧
+							if(TeamTable.isAllDown()){
+								break;
 							}
 							
 							//#不停的监听Team表中的host
 							List<String> hostsCopy = new ArrayList<>();
-							for(String h:TeamTable.hosts){
+							for(String h:TeamTable.getTeamTableCopy()){
 								if(captain.equals(h)){
 									hostsCopy.add(h);
 									continue;
@@ -44,9 +39,9 @@ public final class CaptainMonitorThread {
 								
 								StringBuilder monitor = new StringBuilder(h);
 								if(h.endsWith("/")){
-									monitor.append("captain/monitor");
+									monitor.append("axe-captain/monitor");
 								}else{
-									monitor.append("/captain/monitor");
+									monitor.append("/axe-captain/monitor");
 								}
 								String result;
 								try {
@@ -58,10 +53,7 @@ public final class CaptainMonitorThread {
 								} catch (Exception e) {}
 							}
 							
-							synchronized (TeamTable.hosts) {
-								TeamTable.hosts.clear();
-								TeamTable.hosts.addAll(hostsCopy);
-							}
+							TeamTable.resetHosts(hostsCopy);
 							
 							try {
 								Thread.sleep(5000);

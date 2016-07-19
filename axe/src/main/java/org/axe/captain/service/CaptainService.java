@@ -12,7 +12,6 @@ import org.axe.captain.interface_.Captain;
 import org.axe.captain.interface_.Man;
 import org.axe.captain.thread.CaptainMonitorThread;
 import org.axe.captain.thread.HeartBeatThread;
-import org.axe.util.CollectionUtil;
 
 @Service
 public class CaptainService {
@@ -53,25 +52,9 @@ public class CaptainService {
 		}
 	}
 	
-	public Object heartBeat(String captain, String host){
-		//##如果Team表还是空的，说明本机是Captain，而且还是第一个人来请求，那么需要把请求来的Captain加到Team表里
-		if(CollectionUtil.isEmpty(TeamTable.hosts)){
-			synchronized(TeamTable.hosts){
-				if(CollectionUtil.isEmpty(TeamTable.hosts)){
-					TeamTable.hosts.add(captain);
-				}
-			}
-		}
-
-		//##如果请求的组员不在Team表里，更新进去
-		if(!TeamTable.hosts.contains(host)){
-			synchronized (TeamTable.hosts) {
-				if(!TeamTable.hosts.contains(host)){
-					TeamTable.hosts.add(host);
-				}
-			}
-		}
-		
+	public Object replyHeartBeat(String captain, String host){
+		TeamTable.initCaptain(captain);
+		TeamTable.addMan(host);
 		
 		//#接收到心跳请求的话，说明有人选举本机成为Captain
 		startCaptainMonitorThread(captain);

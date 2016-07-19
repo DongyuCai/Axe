@@ -1,8 +1,14 @@
 package org.axe.captain.thread;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.axe.captain.bean.TeamTable;
+import org.axe.captain.constant.CaptainExceptionEnum;
 import org.axe.captain.helper.CaptainConfigHelper;
-import org.axe.captain.helper.CaptainHttpHelper;
+import org.axe.util.CollectionUtil;
+import org.axe.util.HttpUtil;
+import org.axe.util.JsonUtil;
 import org.axe.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +33,39 @@ public final class HeartBeatThread {
 						private String generateHeartBeatUrl(String captain, String myHost){
 							StringBuilder heartBeat = new StringBuilder(captain);
 							if(captain.endsWith("/")){
-								heartBeat.append("captain/heartBeat");
+								heartBeat.append("axe-captain/heartBeat");
 							}else{
-								heartBeat.append("/captain/heartBeat");
+								heartBeat.append("/axe-captain/heartBeat");
 							}
 							heartBeat
 							.append("?captain=").append(captain)
 							.append("&host=").append(myHost);
 							return heartBeat.toString();
+						}
+						
+						public String doHearBeat(String url) throws Exception{
+							String result = HttpUtil.sendGet(url);
+							CaptainExceptionEnum exception = CaptainExceptionEnum.getException(result);
+							if(exception != null){
+								throw new Exception("Captain heartBeat failed ："+exception.desc);
+							}
+							try {
+								if(StringUtil.isEmpty(result)){
+									throw new Exception("http response result is empty");
+								}
+								//#新表
+								List<?> newHosts = JsonUtil.fromJson(result,ArrayList.class);
+								List<String> hosts = new ArrayList<>();
+								if(CollectionUtil.isNotEmpty(newHosts)){
+									for(Object obj:newHosts){
+										hosts.add(String.valueOf(obj));
+									}
+								}
+								TeamTable.resetHosts(hosts);
+								return CollectionUtil.isNotEmpty(hosts)?hosts.get(0):null;
+							} catch (Throwable e) {
+								throw new Exception("Captain http failed ："+result);
+							}
 						}
 						
 						@Override
@@ -47,18 +78,18 @@ public final class HeartBeatThread {
 								String heartBeatUrl = this.generateHeartBeatUrl(newCaptain, myHost);
 								//#心跳
 								try {
-									newCaptain = CaptainHttpHelper.askAndRefreshTeamTable(heartBeatUrl);
+									newCaptain = this.doHearBeat(heartBeatUrl);
 									if(LOGGER.isInfoEnabled()){
 										LOGGER.info("Captain client heat beat success!");
 										LOGGER.info("###Team Table START###");
-										for(Object host:TeamTable.hosts){
+										for(Object host:TeamTable.getTeamTableCopy()){
 											LOGGER.info(String.valueOf(host));
 										}
 										LOGGER.info("###Team Table END###");
 									}
 								} catch (Exception e1) {
 									//#心跳失败，更改captain人选
-									newCaptain = TeamTable.getCaptain(newCaptain);
+									newCaptain = TeamTable.getNextCaptain(newCaptain);
 									if(StringUtil.isEmpty(newCaptain)){
 										//#如果已经到底了，就算了
 										break;

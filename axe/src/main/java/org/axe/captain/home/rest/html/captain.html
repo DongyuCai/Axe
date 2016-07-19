@@ -1,0 +1,95 @@
+<java>
+@Request(value = "", method = RequestMethod.GET)
+public void home(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>captain homepage</title>
+	<script type="text/javascript">
+		var refreshInt = setInterval("refresh()",1000*60);
+		function refresh(){
+			window.location = ""+contextPath+"/axe-captain?token="+token+"";
+		}
+	</script>
+</head>
+<body>
+	<table width="100%">
+		<tr><td align="right">
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>axe</b></a>
+		</td></tr>
+		<tr><td align="center"><font size="28">欢迎使用 Axe Captain!</font></td></tr>
+		
+		<!--系统运行 概览-->
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>Captain</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color:#AE0000"></td></tr>
+		<tr><td align="center">
+			<java>
+			List<String> teamTable = TeamTable.getTeamTableCopy();
+			if(CollectionUtil.isNotEmpty(teamTable)){
+			</java>
+			<table cellpadding="4px" style="border-collapse: collapse;border-spacing: 0px">
+				<tr>
+					<java>
+					for(String host:teamTable){
+					</java>
+					<td valign="top">
+						<table>
+						<tr>
+							<td style="background-color: #AE0000" align="center">
+								&nbsp;<font color="white"><b>"+host+"</b></font>&nbsp;
+							</td>
+						</tr>
+						<java>
+						String teamTableUrl = host+"/axe-captain/teamTable";
+						try{
+							String result = HttpUtil.sendGet(teamTableUrl);
+							List<?> hosts = JsonUtil.fromJson(result,ArrayList.class);
+							for(Object obj:hosts){
+						</java>
+							<tr>
+								<td style="background-color: #0000E3" align="center">
+									&nbsp;<font color="white"><b>"+String.valueOf(obj)+"</b></font>&nbsp;
+								</td>
+							</tr>
+						<java>
+							}
+						}catch(Exception e){
+						</java>
+						<tr>
+							<td style="background-color: #0000E3" align="center">
+								通讯异常!
+							</td>
+						</tr>
+						<java>
+						}
+						</java>
+						</table>
+					</td>
+					<java>
+					}
+					</java>
+				</tr>
+			</table>
+			<java>
+			} else {
+			</java>
+			无
+			<java>
+			}
+			</java>
+		</td></tr><tr><td>&nbsp;</td></tr>
+
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+</java>

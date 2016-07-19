@@ -1,0 +1,43 @@
+<java>
+package org.axe.captain.home.rest;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.axe.annotation.ioc.Controller;
+import org.axe.annotation.mvc.FilterFuckOff;
+import org.axe.annotation.mvc.Interceptor;
+import org.axe.annotation.mvc.Request;
+import org.axe.annotation.mvc.RequestParam;
+import org.axe.captain.bean.TeamTable;
+import org.axe.constant.CharacterEncoding;
+import org.axe.constant.ContentType;
+import org.axe.constant.RequestMethod;
+import org.axe.home.interceptor.HomeInterceptor;
+import org.axe.home.interceptor.SignInInterceptor;
+import org.axe.util.CollectionUtil;
+import org.axe.util.HttpUtil;
+import org.axe.util.JsonUtil;
+
+@FilterFuckOff
+@Interceptor({ HomeInterceptor.class, SignInInterceptor.class })
+@Controller(basePath = "axe-captain")
+public class HomeController {
+
+	private void printHtml(HttpServletResponse response, String html) {
+		try {
+			response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+			response.setContentType(ContentType.APPLICATION_HTML.CONTENT_TYPE);
+			PrintWriter writer = response.getWriter();
+			writer.write(html);
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+</java>

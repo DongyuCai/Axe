@@ -37,9 +37,9 @@ public final class CaptainHelper {
 		String captain = TeamTable.getCaptain();
 		StringBuilder url = new StringBuilder(captain);
 		if(captain.endsWith("/")){
-			url.append("captain/askCaptain");
+			url.append("axe-captain/askCaptain");
 		}else{
-			url.append("/captain/askCaptain");
+			url.append("/axe-captain/askCaptain");
 		}
 		url
 		.append("?questionType=").append(questionType)

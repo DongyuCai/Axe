@@ -35,9 +35,9 @@ public final class ManHelper {
 
 		StringBuilder url = new StringBuilder(host);
 		if(host.endsWith("/")){
-			url.append("captain/askMan");
+			url.append("axe-captain/askMan");
 		}else{
-			url.append("/captain/askMan");
+			url.append("/axe-captain/askMan");
 		}
 		url
 		.append("?questionType=").append(questionType)
