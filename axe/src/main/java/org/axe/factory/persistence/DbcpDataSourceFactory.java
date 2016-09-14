@@ -45,7 +45,6 @@ public class DbcpDataSourceFactory implements DataSource{
         	DATA_SOURCE.setUrl(URL);
         	DATA_SOURCE.setUsername(USERNAME);
         	DATA_SOURCE.setPassword(PASSWORD);
-            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
         } catch (Exception e) {
             LOGGER.error("jdbc driver : " + DRIVER);
             LOGGER.error("jdbc url : " + URL);

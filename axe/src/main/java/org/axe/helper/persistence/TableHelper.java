@@ -68,6 +68,7 @@ public final class TableHelper implements Helper{
 		synchronized (this) {
 			ENTITY_CLASS_MAP = new HashMap<>();
 			// #加载所有@Table指定的Entity类
+			// select a.* from ClassA    这句sql里的ClassA，就是entityClassMap里的key
 			Set<Class<?>> entityClassSet = ClassHelper.getClassSetByAnnotation(Table.class);
 			for (Class<?> entityClass : entityClassSet) {
 				String entityClassSimpleName = entityClass.getSimpleName();
@@ -77,6 +78,7 @@ public final class TableHelper implements Helper{
 				}
 				ENTITY_CLASS_MAP.put(entityClassSimpleName, entityClass);
 			}
+            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
 		}
 	}
 
@@ -104,4 +106,12 @@ public final class TableHelper implements Helper{
 
 	@Override
 	public void onStartUp() throws Exception {}
+	
+	
+	/**
+	 * 自动建表
+	 */
+	private static void autoCreateTable(){
+		
+	}
 }

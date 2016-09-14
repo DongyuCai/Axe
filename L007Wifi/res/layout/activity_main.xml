@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cn.eoe.wifi.MainActivity" >
+
+    <Button
+        android:id="@+id/btnPlayer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="加入游戏" />
+
+ 	<Button
+        android:id="@+id/btnHoster"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="组建游戏" />
+
+    
+</LinearLayout>
