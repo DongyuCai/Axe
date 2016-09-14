@@ -33,8 +33,14 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 		
-		Button btnHoster = (Button) findViewById(R.id.btnPlayer);
-		
+		Button btnHoster = (Button) findViewById(R.id.btnHoster);
+		btnHoster.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(MainActivity.this, HosterActivity.class));
+			}
+		});
 	}
 
 
