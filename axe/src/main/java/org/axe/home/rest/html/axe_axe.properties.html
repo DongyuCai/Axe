@@ -20,6 +20,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 			'jdbc.username':'"+ConfigHelper.getJdbcUsername()+"',
 			'jdbc.password':'"+ConfigHelper.getJdbcPassword()+"',
 			'jdbc.datasource':'"+ConfigHelper.getJdbcDatasource()+"',
+			'jdbc.auto_create_table':'"+ConfigHelper.getJdbcAutoCreateTable()+"',
 			'app.base_package':'"+ConfigHelper.getAppBasePackage()+"',
 			'app.jsp_path':'"+ConfigHelper.getAppJspPath()+"',
 			'app.asset_path':'"+ConfigHelper.getAppAssetPath()+"',
@@ -269,6 +270,16 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">,</td>
 					<td align="left">
 						<input name="jdbc.datasource" type="text" value=""+ConfigHelper.getJdbcDatasource()+"" onchange="setProperty('jdbc.datasource',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.auto_create_table</td>
+					<td align="left">"+ConfigHelper.getJdbcAutoCreateTable()+"</td>
+					<td align="left">是否框架启动后自动建表</td>
+					<td align="left"></td>
+					<td align="left">
+						<input name="jdbc.auto_create_table" type="text" value=""+ConfigHelper.getJdbcAutoCreateTable()+"" onchange="setProperty('jdbc.auto_create_table',this.value)" />
 					</td>
 				</tr>
 				<tr>

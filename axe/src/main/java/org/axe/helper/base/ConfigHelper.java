@@ -103,9 +103,16 @@ public final class ConfigHelper implements Helper{
      */
     public static String getJdbcDatasource() {
     	//默认使用axe提供的dbcp数据源
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, "org.axe.factory.persistence.DbcpDataSourceFactory");
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, "org.axe.factory.persistence.DbcpDataSourceFactory");
     }
 
+    /**
+     * 是否自动建表
+     */
+    public static boolean getJdbcAutoCreateTable() {
+    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JDBC_AUTO_CREATE_TABLE, false);
+    }
+    
     /**
      * 指定框架扫描的包路径，多个路径使用“,”号分割
      */

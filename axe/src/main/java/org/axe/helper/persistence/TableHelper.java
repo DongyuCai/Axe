@@ -93,13 +93,19 @@ public final class TableHelper implements Helper{
 	 * 根据Entity获取表名 如果有@Table注解，就取注解值 如果没有，就取类名做表名
 	 */
 	public static String getTableName(Class<?> entityClass) {
-		String tableName = entityClass.getSimpleName();
 		if (entityClass.isAnnotationPresent(Table.class)) {
-			tableName = entityClass.getAnnotation(Table.class).value();
+			return entityClass.getAnnotation(Table.class).value();
 		}else{
-			throw new RuntimeException(tableName + " is not a table entity class,no @Table annotation is found on it");
+			throw new RuntimeException(entityClass.getName() + " is not a table entity class,no @Table annotation is found on it");
 		}
-		return tableName;
+	}
+	
+	public static boolean isTableAutoCreate(Class<?> entityClass){
+		if (entityClass.isAnnotationPresent(Table.class)) {
+			return entityClass.getAnnotation(Table.class).autoCreate();
+		}else{
+			throw new RuntimeException(entityClass.getName() + " is not a table entity class,no @Table annotation is found on it");
+		}
 	}
 	
 	public static boolean checkIsMysqlKeyword(String word){
@@ -107,7 +113,5 @@ public final class TableHelper implements Helper{
 	}
 
 	@Override
-	public void onStartUp() throws Exception {
-        //启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
-	}
+	public void onStartUp() throws Exception {}
 }

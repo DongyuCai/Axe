@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Id;
 import org.axe.bean.persistence.EntityFieldMethod;
-import org.axe.helper.persistence.TableHelper;
+import org.axe.helper.base.ConfigHelper;
+import org.axe.interface_.base.Helper;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -17,96 +19,135 @@ import org.axe.util.StringUtil;
  * @author CaiDongyu
  * 数据库Schema 助手类
  */
-public class SchemaHelper {
+public class SchemaHelper implements Helper{
 
 	//#所有列出的java到mysql的类型转换
-	private static Map<String,String> JAVATYPE2MYSQL_MAP = new HashMap<>();
-	static{
-		JAVATYPE2MYSQL_MAP.put("byte", "tinyint(4) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Byte", "tinyint(4) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("short", "smallint(6) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Short", "smallint(6) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("int", "int(11) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Integer", "int(11) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("long", "bigint(20) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Long", "bigint(20) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("float", "float DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Float", "float DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("double", "double DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Double", "double DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("char", "char(1) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Character", "char(1) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("boolean", "bit(1) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.Boolean", "bit(1) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.lang.String", "varchar(255) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.math.BigDecimal", "decimal(19,2) DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.sql.Date", "datetime DEFAULT NULL");
-		JAVATYPE2MYSQL_MAP.put("java.util.Date", "date DEFAULT NULL");
+	private static Map<String,String> JAVA2MYSQL_MAP = new HashMap<>();
+	
+	@Override
+	public void init() throws Exception {
+		JAVA2MYSQL_MAP.put("byte", "tinyint(4)");
+		JAVA2MYSQL_MAP.put("java.lang.Byte", "tinyint(4)");
+		JAVA2MYSQL_MAP.put("short", "smallint(6)");
+		JAVA2MYSQL_MAP.put("java.lang.Short", "smallint(6)");
+		JAVA2MYSQL_MAP.put("int", "int(11)");
+		JAVA2MYSQL_MAP.put("java.lang.Integer", "int(11)");
+		JAVA2MYSQL_MAP.put("long", "bigint(20)");
+		JAVA2MYSQL_MAP.put("java.lang.Long", "bigint(20)");
+		JAVA2MYSQL_MAP.put("float", "float");
+		JAVA2MYSQL_MAP.put("java.lang.Float", "float");
+		JAVA2MYSQL_MAP.put("double", "double");
+		JAVA2MYSQL_MAP.put("java.lang.Double", "double");
+		JAVA2MYSQL_MAP.put("char", "char(1)");
+		JAVA2MYSQL_MAP.put("java.lang.Character", "char(1)");
+		JAVA2MYSQL_MAP.put("boolean", "bit(1)");
+		JAVA2MYSQL_MAP.put("java.lang.Boolean", "bit(1)");
+		JAVA2MYSQL_MAP.put("java.lang.String", "varchar(255)");
+		JAVA2MYSQL_MAP.put("java.math.BigDecimal", "decimal(19,2)");
+		JAVA2MYSQL_MAP.put("java.sql.Date", "datetime");
+		JAVA2MYSQL_MAP.put("java.util.Date", "date");
 		//byte[]
-		JAVATYPE2MYSQL_MAP.put("[B", "tinyblob");
+		JAVA2MYSQL_MAP.put("[B", "tinyblob");
+	}
+
+	@Override
+	public void onStartUp() throws Exception {
+		//在框架的Helper都初始化后，同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
+		Map<String, Class<?>> ENTITY_CLASS_MAP = TableHelper.getEntityClassMap();
+		if(ConfigHelper.getJdbcAutoCreateTable()){
+			DataBaseHelper.beginTransaction();
+			for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
+				SchemaHelper.createTable(entityClass);
+			}
+			DataBaseHelper.commitTransaction();
+		}
 	}
 	
-	public static void createTable(Class<?> entity){
-		StringBuilder createTableSqlBufer = new StringBuilder(); 
-		String tableName = TableHelper.getTableName(entity);
-		createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("` (");
-		//#取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity);
-		//#转类字段到数据库表字段定义
-		List<Field> primaryKeyFieldList = new ArrayList<>();
-		for(int i=0;i<entityFieldMethodList.size();i++){
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-        	String column = StringUtil.camelToUnderline(field.getName());
-			createTableSqlBufer.append("`").append(column).append("`");
-			String javaType = field.getType().getName();
-			String columnDefine = javaType2MysqlType(javaType);
-			if(StringUtil.isEmpty(columnDefine)){
-				throw new RuntimeException(entity.getName()+"#["+field.getName()+"] connot convert to mysql type from "+javaType);
+	public static void createTable(Class<?> entityClass){
+		if(TableHelper.isTableAutoCreate(entityClass)){
+			String tableName = TableHelper.getTableName(entityClass);
+			StringBuilder createTableSqlBufer = new StringBuilder(); 
+			createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("` (");
+			//#取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
+			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
+			//#转类非主键字段到数据库表字段定义
+			List<Field> primaryKeyFieldList = new ArrayList<>();
+			List<Field> normalKeyFieldList = new ArrayList<>();
+			for(int i=0;i<entityFieldMethodList.size();i++){
+				EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
+				Field field = entityFieldMethod.getField();
+				if(field.isAnnotationPresent(Id.class)){
+					//#等会儿主键处理
+					primaryKeyFieldList.add(field);
+				}else{
+					//#普通建处理
+					normalKeyFieldList.add(field);
+				}
 			}
-			createTableSqlBufer.append(" ").append(columnDefine);
-			
-			if(i<entityFieldMethodList.size()-1){
-				createTableSqlBufer.append(",");
-			}
-			
-			if(field.isAnnotationPresent(Id.class)){
-				primaryKeyFieldList.add(field);
-			}
-		}
-		//#主键定义
-		if(CollectionUtil.isNotEmpty(primaryKeyFieldList)){
-			createTableSqlBufer.append(",");
-			createTableSqlBufer.append("PRIMARY KEY (");
-			
-			for(int i=0;i<primaryKeyFieldList.size();i++){
-				Field primaryKeyField = primaryKeyFieldList.get(i);
-	        	String column = StringUtil.camelToUnderline(primaryKeyField.getName());
+			//#普通建处理
+			for(int i=0;i<normalKeyFieldList.size();i++){
+				Field field = normalKeyFieldList.get(i);
+				String column = StringUtil.camelToUnderline(field.getName());
 				createTableSqlBufer.append("`").append(column).append("`");
-				if(i<primaryKeyFieldList.size()-1){
+				String columnDefine = javaType2MysqlColumnDefine(field,true);
+				if(StringUtil.isEmpty(columnDefine)){
+					throw new RuntimeException(entityClass.getName()+"#["+field.getName()+"] connot convert to mysql type from "+field.getType().getName());
+				}
+				createTableSqlBufer.append(" ").append(columnDefine);
+				
+				if(i<normalKeyFieldList.size()-1){
 					createTableSqlBufer.append(",");
 				}
 			}
-			createTableSqlBufer.append(")");
-			
-			if(primaryKeyFieldList.size() == 1){
-				//#若只有一个@Id主键，那么默认 AUTO_INCREMENT
-				Field idField = primaryKeyFieldList.get(0);
-				String column = StringUtil.camelToUnderline(idField.getName());
-	        	String javaType = idField.getType().getName();
-				String columnDefine = javaType2MysqlType(javaType);
-				int index = createTableSqlBufer.indexOf("`"+column+"`");
-				index = index+1+column.length()+2+columnDefine.length();
-				createTableSqlBufer.insert(index, " AUTO_INCREMENT");
+			//#主键定义
+			if(CollectionUtil.isNotEmpty(primaryKeyFieldList)){
+				createTableSqlBufer.append(",");
+				
+				for(int i=0;i<primaryKeyFieldList.size();i++){
+					Field primaryKeyField = primaryKeyFieldList.get(i);
+					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
+					createTableSqlBufer.append("`").append(column).append("`");
+					String columnDefine = javaType2MysqlColumnDefine(primaryKeyField,false);
+					if(StringUtil.isEmpty(columnDefine)){
+						throw new RuntimeException(entityClass.getName()+"#["+primaryKeyField.getName()+"] connot convert to mysql type from "+primaryKeyField.getType().getName());
+					}
+					createTableSqlBufer.append(" ").append(columnDefine);
+					if(primaryKeyFieldList.size() == 1){
+						//#若只有一个@Id主键，那么默认 AUTO_INCREMENT
+						Field field = primaryKeyFieldList.get(0);
+						if(!field.isAnnotationPresent(ColumnDefine.class)){
+							createTableSqlBufer.append(" AUTO_INCREMENT");
+						}
+					}
+					createTableSqlBufer.append(",");
+				}
+				
+				createTableSqlBufer.append("PRIMARY KEY (");
+				for(int i=0;i<primaryKeyFieldList.size();i++){
+					Field primaryKeyField = primaryKeyFieldList.get(i);
+					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
+					createTableSqlBufer.append("`").append(column).append("`");
+					if(i<primaryKeyFieldList.size()-1){
+						createTableSqlBufer.append(",");
+					}
+				}
+				createTableSqlBufer.append(")");
 			}
+			
+			createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+			
+			DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{});
 		}
-		
-		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-		
-		System.out.println(createTableSqlBufer.toString());
 	}
 	
-	public static String javaType2MysqlType(String javaType){
-		return JAVATYPE2MYSQL_MAP.get(javaType);
+	public static String javaType2MysqlColumnDefine(Field field,boolean nullAble){
+		String columnDefine = null;
+		if(field.isAnnotationPresent(ColumnDefine.class)){
+			columnDefine = field.getAnnotation(ColumnDefine.class).value();
+		}else{
+			String javaType = field.getType().getName();
+			columnDefine = nullAble?JAVA2MYSQL_MAP.get(javaType)+" DEFAULT NULL":JAVA2MYSQL_MAP.get(javaType)+" NOT NULL";
+		}
+		return columnDefine;
 	}
 }

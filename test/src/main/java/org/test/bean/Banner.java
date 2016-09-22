@@ -3,7 +3,7 @@ package org.test.bean;
 import org.axe.annotation.persistence.Id;
 import org.axe.annotation.persistence.Table;
 
-@Table("banner")
+@Table(value = "banner",autoCreate = false)
 public class Banner {
 	@Id
 	private long id;

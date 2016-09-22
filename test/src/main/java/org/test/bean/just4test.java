@@ -5,7 +5,7 @@ import org.axe.annotation.persistence.Table;
 /**
  * Created by CaiDongYu on 2016/4/19.
  */
-@Table("just4test")
+@Table(value = "just4test",autoCreate = false)
 public class just4test {
     private long id;
     private String name;

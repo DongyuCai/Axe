@@ -3,7 +3,7 @@ package org.test.bean;
 import java.util.Date;
 
 import org.axe.annotation.persistence.Table;
-@Table("iot_user_group2user")
+@Table(value = "iot_user_group2user",autoCreate = false)
 public class GroupUser extends IdEntity {
 
 	private Long userId;

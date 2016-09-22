@@ -21,6 +21,8 @@
 ##View
 
 ##Filter
+####有顺序的Filter链
+####FuckOff
 
 ##Interceptor
 
@@ -28,9 +30,13 @@
 
 ##RedirectorException
 
-##FuckOff
 
 ##Service
+
+##Table
+####Table自建
+####主键、联合主键
+####如果不需要持久化的方式
 
 ##Dao
 

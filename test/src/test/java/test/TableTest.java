@@ -1,6 +1,6 @@
 package test;
 
-import org.axe.helper.persistence.SchemaHelper;
+import org.axe.helper.HelperLoader;
 
 public class TableTest {
 
@@ -9,6 +9,10 @@ public class TableTest {
 	}
 	
 	public static void testCreateTable(){
-		SchemaHelper.createTable(BillTest.class);
+		try {
+			HelperLoader.init();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

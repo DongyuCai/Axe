@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.axe.annotation.persistence.Table;
 
-@Table("iot_export")
+@Table(value = "iot_export",autoCreate = false)
 public class Export extends IdEntity{
 	//任务名
 	private String name;

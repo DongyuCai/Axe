@@ -19,15 +19,15 @@ import org.test.dao.TestDao;
 public class DaoTest {
 	
 	public static void main(String[] args) {
-//		testDaoEntity();
-//		testDaoPaging();
-//		HelperLoader.init();
-//		just4test just4test = new just4test();
-//		just4test.setName("aaa");
-//		TestDao testDao = BeanHelper.getBean(TestDao.class);
-//		testDao.insertEntity(just4test);
 		try {
-			testInsert();
+//			testDaoEntity();
+//			testDaoPaging();
+	//		HelperLoader.init();
+	//		just4test just4test = new just4test();
+	//		just4test.setName("aaa");
+	//		TestDao testDao = BeanHelper.getBean(TestDao.class);
+	//		testDao.insertEntity(just4test);
+				testInsert();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,6 +43,13 @@ public class DaoTest {
 		test = DataBaseHelper.insertOnDuplicateKeyEntity(test);
 		System.out.println(JsonUtil.toJson(test));
 		
+		/*Export export = new Export();
+		export.setName("abc");
+		TestDao testDao = BeanHelper.getBean(TestDao.class);
+		export = testDao.saveEntity(export);
+		System.out.println(export.getId());*/
+		
+		System.exit(0);
 	}
 	
 	public static void testDaoPaging() throws Exception{
@@ -66,7 +73,7 @@ public class DaoTest {
 		
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
 		Export export = new Export();
-		export.setId(68l);
+		export.setId(1l);
 		int rows = 0;
 		export = testDao.getEntity(export);
 		System.out.println("getEntity:"+JsonUtil.toJson(export));
@@ -91,6 +98,8 @@ public class DaoTest {
 		
 		export = testDao.insertEntity(export);
 		System.out.println("updateEntity:"+rows);
+		
+		System.exit(0);
 	}
 	
 	public static void mysqlKeywords(){
