@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Sql 接卸 助手类
+ * Sql 解析 助手类
  * 剥离自DataBaseHelper
  * Created by CaiDongYu on 2016/5/6.
  */
@@ -57,7 +57,7 @@ public final class SqlHelper {
         	Field field = entityFieldMethod.getField();
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
-            columns.append(column).append(", ");
+            columns.append("`").append(column).append("`, ");
             values.append("?, ");
             params[i] = ReflectionUtil.invokeMethod(entity, method);
         }
@@ -84,10 +84,10 @@ public final class SqlHelper {
         	String column = StringUtil.camelToUnderline(field.getName());
         	if(!field.isAnnotationPresent(Id.class)){
         		//#没有@Id注解的字段作为修改内容
-        		columns.append(column).append("=?, ");
+        		columns.append("`").append(column).append("`=?, ");
         	}else{
         		//#有@Id的字段作为主键，用来当修改条件
-        		where.append(" and "+column+"=?");
+        		where.append(" and `").append(column).append("`=?");
         		hashIdField = true;
         	}
         	params[i] = ReflectionUtil.invokeMethod(entity, method);
@@ -105,6 +105,7 @@ public final class SqlHelper {
 	
 	public static SqlPackage getInsertOnDuplicateKeyUpdateSqlPackage(Object entity){
 		String sql = "INSERT INTO " + TableHelper.getTableName(entity.getClass());
+		//#只取拥有get方法的字段作为数据库映射字段，没有get方法的字段，认为是不需要持久化的字段
         List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
         //#字段
         StringBuilder columnsInsert = new StringBuilder("(");
@@ -120,7 +121,7 @@ public final class SqlHelper {
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
         	
-        	columnsInsert.append(column).append(", ");
+        	columnsInsert.append("`").append(column).append("`, ");
         	valuesInsert.append("?, ");
         	params.add(ReflectionUtil.invokeMethod(entity, method));
         }
@@ -174,7 +175,7 @@ public final class SqlHelper {
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
         	//#有@Id的字段作为主键，用来当修改条件
-    		where.append(" and "+column+"=?");
+    		where.append(" and `").append(column).append("`=?");
     		params[i] = ReflectionUtil.invokeMethod(entity, method);
         }
         sql = sql+where.toString();
@@ -212,7 +213,7 @@ public final class SqlHelper {
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
         	//#有@Id的字段作为主键，用来当修改条件
-    		where.append(" and "+column+"=?");
+    		where.append(" and `").append(column).append("`=?");
     		params[i] = ReflectionUtil.invokeMethod(entity, method);
         }
         sql = sql+where.toString();

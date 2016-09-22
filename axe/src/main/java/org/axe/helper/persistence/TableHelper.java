@@ -78,7 +78,7 @@ public final class TableHelper implements Helper{
 				}
 				ENTITY_CLASS_MAP.put(entityClassSimpleName, entityClass);
 			}
-            //TODO:启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
+			
 		}
 	}
 
@@ -96,6 +96,8 @@ public final class TableHelper implements Helper{
 		String tableName = entityClass.getSimpleName();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			tableName = entityClass.getAnnotation(Table.class).value();
+		}else{
+			throw new RuntimeException(tableName + " is not a table entity class,no @Table annotation is found on it");
 		}
 		return tableName;
 	}
@@ -105,13 +107,7 @@ public final class TableHelper implements Helper{
 	}
 
 	@Override
-	public void onStartUp() throws Exception {}
-	
-	
-	/**
-	 * 自动建表
-	 */
-	private static void autoCreateTable(){
-		
+	public void onStartUp() throws Exception {
+        //启动时同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
 	}
 }
