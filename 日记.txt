@@ -29,3 +29,5 @@ method£¬¾Í²¶»ñ²»µ½£¬Õâ¾ÍËµÃ÷²»ÊÇ·´ÉäµÄÎÊÌâÁË¡£Ò²¿ÉÄÜÊÇwebÈÝÆ÷¶Ô·´ÉäµÄ½âÎö²»Ò»Ñù¡
 ÄÇÊ±ºòµÄaxe»¹·Ç³£Ð¡£¬ÂýÂýµÄ£¬axeµÄÊµ¼ùÔ½À´Ô½¶à£¬branch jdk1.7Óëmast·ÖÖ§µÄ²îÒì¾ÍÔ½À´Ô½´ó£¬ËùÒÔmast¾ÍÔÝÍ£¿ª·¢ÁË£¬ÆäÊµmastÒ²Ö»ÊÇ¶àÁËÒ»¸ölamda±í´ïÊ½ºÍStreamµÄÊ¹ÓÃ£¬»¹ÓÐ¾ÍÊÇ·´Éä·½ÃæµÄapi²î±ð¡£
 	Ä¿Ç°À´¿´£¬branch1.7»áÒ»Ö±ÎÈ¶¨µÄ¸üÐÂÏÂÈ¥£¬mast²»É¾£¬ºóÃæ¿ÉÄÜ»áµ÷Õû£¬axeÒ²Ò»¶¨»á¸ú×ÅjdkµÄ·¢Õ¹½Å²½£¬½áºÏÊµ¼ÊÊ¹ÓÃÇé¿ö£¬²»¶Ï¸üÐÂ×Ô¼ºµÄ¡£
  
+2016/9/23
+	×òÌìÓÐÁË´óµÄ·¢Õ¹£¬ÒòÎªÍÏí³ÒÑ¾ÃµÄ×Ô¶¯½¨±í£¬ÔÚ×òÌìËãÊÇ¸æÒ»¶ÎÂä£¬Õâ´ÎÌá½»ÊµÏÖÁËcreate table if not exitµÄÄ£Ê½£¬Õâ¸ö¹ý³Ì·¢ÉúÔÚ¿ò¼ÜÆô¶¯Ö®ºóµÄÁ¢Âí£¬µ±È»Ðè²»ÐèÒªaxe°ïÎÒÃÇ×Ô¶¯½¨±í£¬»¹ÊÇ¿ÉÒÔÍ¨¹ý²ÎÊýÅäÖÃ¹Ø±Õ´ò¿ªµÄ£¬¾ÍÏñÆäËûorm¿ò¼Ü±ÈÈçhibernateÒ»Ñù¡£²»¹ý²»Í¬µÄÊÇ£¬axeÌá¹©µÄ×Ô¶¯½¨±í£¬±È½Ï¼ò£¬Ö»Ìá¹©ÁË½¨±í¹¦ÄÜ£¬Ò²¾ÍÊÇ£¬ÄãÒªaxe°ïÄã½¨±í¿ÉÒÔ£¬ÒªËû°ïÄãÉ¾ÁË£¬²»ÐÐ£¬ÒªËû°ïÄã¸Ä±í£¬²»ÐÐ£¬ÎªÊ²Ã´Ö»Ìá¹©ÕâÒ»´¸×ÓÂòÂô£¬ÒòÎªÎÒÕâ¸öÐ¡³ÌÐòÔ±·¢ÏÖ£¬Ê¹ÓÃhibernateµ±È»Ò²ÓÐ×Ô¶¯½¨±í¹¦ÄÜ£¬Ëû¿ÉÒÔÍ¨¹ýÅäÖÃhibernate.hbm2ddl.autoÕâ¸ö²ÎÊýÀ´Ñ¡Ôñ×Ô¶¯½¨±íµÄÄ£Ê½£¬ÄÇÃ´Ëû³ýÁËcreateÒÔÍâ£¬»¹Ìá¹©ÁËdropºÍupdate£¬ºóÁ½ÕßÊÇÊ²Ã´ÄØ£¬Ïë±Ø´ó¼Ò¶¼ÊÇ²»Ä°ÉúµÄ£¬±ÈÈçupdate£¬ËûÄÜ¼ì²âµ½ÄãµÄpojoÀà·¢Éú½á¹¹±ä»¯£¬ÄÇÃ´ÏàÓ¦µÄÐÞ¸Ä¶ÔÓ¦µÄ ±í½á¹¹£¬µ«ÊÇ£¬ÕâÀïÎÒÃÇ¾­³£·¢ÏÖ£¬±ÈÈçÄã°ÑÄ³¸öPojoÀàAµÄset¡¢get×Ö¶Îfield¸ø¸ÄÃû¶ùÁË£¬ÄÇÃ´Ô­À´µÄÃû×Ö¶ÔÓ¦µÄÊý¾Ý¿â±íµÄ×Ö¶Î£¬²»»áÉ¾µô£¬»¹Áô×Å£¬È»ºóÐÂ¶à³öÀ´¸ö×Ö¶Î£¬°¦~¾ÍÊÇ¸ÄÁËµÄÕâ¸ö×Ö¶ÎÃû¶ù¶ÔÓ¦£¬Õâ£¬»ù±¾ÎÒ¶¼µÃÉ¾µôÄÇ¸ö×Ö¶Î£¬ÕâÊÇupdateµÄÊ±ºò£¬»¹ÓÐdrop£¬ÄÇÓÐÊ±ºò£¬ÎÒÊÇ²»ÏëÎÒµÄ±í±»É¾µôµÄ£¬ËäÈ»ÄÇÑù³¹µ×ÁË£¬µ«ÊÇÊý¾ÝÒ²Ö±½ÓÃ»ÁË£¬ËùÒÔÕâÁ½ÖÖ³¡¾°¶¼²»¹»²»¹»²»¹»Í¨ÓÃ£¬²»ÄÜÍêÈ«ÍêÈ«·ÅÊÖ£¬ËùÒÔ£¬ÎÒ¾Í²»Ïë¸øaxe¼ÓÁË£¬×Ô¶¯½¨±íÒÑ¾­ÔÚ¿ª·¢Ê±ºò¸øÎÒÃÇÊ¡ÏÂºÜ¶àÁ¦Æø£¬µ±ÔÚ¿ª·¢Ê±³öÏÖ×Ö¶Î±ä¸ü£¬Ò²Ö»ÒªÊÖ¶¯dropÏÂ±í£¬ÔÙÆô¶¯¿ò¼Ü¾Í»á¸ø½¨ÉÏ£¬Èç¹û²»ÏëÖØÀ´£¬Ò²¿ÉÒÔ×Ô¼ºalter table£¬¿ò¼Ü·¢ÏÖ±í»¹ÔÚ£¬¾Í²»»á¹ÜÄãµÄ¡£
