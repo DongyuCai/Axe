@@ -22,6 +22,31 @@ public class Param {
         this.formParamList = formParamList;
         this.fileParamList = fileParamList;
         this.bodyParamMap = bodyParamMap;
+        
+        //formParamList和bodyParamMap互相补全
+        Map<String,Object> tmpMap = new HashMap<>();
+        if(this.bodyParamMap != null){
+        	for(Map.Entry<String, Object> entry:this.bodyParamMap.entrySet()){
+        		tmpMap.put(entry.getKey(), entry.getValue());
+        	}
+        }
+        
+        if(this.formParamList != null){
+        	for(FormParam fp:formParamList){
+        		if(this.bodyParamMap == null){
+        			this.bodyParamMap = new HashMap<>();
+        		}
+        		this.bodyParamMap.put(fp.getFieldName(), fp.getFieldValue());
+        	}
+        }
+        
+        if(tmpMap.size() > 0){
+        	for(Map.Entry<String, Object> entry:this.bodyParamMap.entrySet()){
+        		String fieldName = entry.getKey();
+        		String fieldValue = String.valueOf(entry.getValue());
+        		formParamList.add(new FormParam(fieldName, fieldValue));
+        	}
+        }
     }
 
     /**

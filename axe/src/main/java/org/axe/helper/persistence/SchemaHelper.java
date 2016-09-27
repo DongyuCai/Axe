@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Id;
+import org.axe.annotation.persistence.Unique;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
@@ -72,7 +73,8 @@ public class SchemaHelper implements Helper{
 			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
 			//#转类非主键字段到数据库表字段定义
 			List<Field> primaryKeyFieldList = new ArrayList<>();
-			List<Field> normalKeyFieldList = new ArrayList<>();
+			List<Field> normalKeyFieldList = new ArrayList<>();;
+			List<Field> uniqueKeyFieldList = new ArrayList<>();
 			for(int i=0;i<entityFieldMethodList.size();i++){
 				EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
 				Field field = entityFieldMethod.getField();
@@ -82,6 +84,10 @@ public class SchemaHelper implements Helper{
 				}else{
 					//#普通建处理
 					normalKeyFieldList.add(field);
+					if(field.isAnnotationPresent(Unique.class)){
+						//#唯一键
+						uniqueKeyFieldList.add(field);
+					}
 				}
 			}
 			//#普通建处理
@@ -132,7 +138,26 @@ public class SchemaHelper implements Helper{
 					}
 				}
 				createTableSqlBufer.append(")");
+				
+				
+				
 			}
+			
+			//#唯一键约束
+			if(CollectionUtil.isNotEmpty(uniqueKeyFieldList)){
+				createTableSqlBufer.append(",");
+				createTableSqlBufer.append("UNIQUE KEY (");
+				for(int i=0;i<uniqueKeyFieldList.size();i++){
+					Field primaryKeyField = uniqueKeyFieldList.get(i);
+					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
+					createTableSqlBufer.append("`").append(column).append("`");
+					if(i<uniqueKeyFieldList.size()-1){
+						createTableSqlBufer.append(",");
+					}
+				}
+				createTableSqlBufer.append(")");
+			}
+			
 			
 			createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
 			
