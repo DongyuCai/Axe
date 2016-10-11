@@ -146,7 +146,9 @@ public class SchemaHelper implements Helper{
 			//#唯一键约束
 			if(CollectionUtil.isNotEmpty(uniqueKeyFieldList)){
 				createTableSqlBufer.append(",");
-				createTableSqlBufer.append("UNIQUE KEY (");
+				
+				String keyName = tableName+"_uq";
+				createTableSqlBufer.append("UNIQUE KEY "+keyName+" (");
 				for(int i=0;i<uniqueKeyFieldList.size();i++){
 					Field primaryKeyField = uniqueKeyFieldList.get(i);
 					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
