@@ -3,7 +3,6 @@ package org.test.service;
 import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Service;
 import org.axe.annotation.persistence.Tns;
-import org.axe.hoke.annotation.Hoke;
 import org.test.bean.just4test;
 import org.test.dao.TestDao;
 

@@ -13,12 +13,14 @@ import org.slf4j.LoggerFactory;
 public class DbcpDataSourceFactory implements DataSource{
 	Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceFactory.class);
 	
+	public final String DATA_SOURCE_NAME = "axe-dbcp-datasource";
+	
     //#数据库
     private final String DRIVER;
     private final String URL;
     private final String USERNAME;
     private final String PASSWORD;
-    private final BasicDataSource DATA_SOURCE;
+    private BasicDataSource DATA_SOURCE;
 	
 	public DbcpDataSourceFactory() {
         //#初始化jdbc配置
@@ -26,7 +28,6 @@ public class DbcpDataSourceFactory implements DataSource{
         URL = setJdbcUrl();
         USERNAME = setJdbcUserName();
         PASSWORD = setJdbcPassword();
-        DATA_SOURCE = new BasicDataSource();
         
         do{
         	if(StringUtil.isEmpty(DRIVER)) break;
@@ -41,6 +42,7 @@ public class DbcpDataSourceFactory implements DataSource{
 	private void init() {
         
         try {
+            DATA_SOURCE = new BasicDataSource();
         	DATA_SOURCE.setDriverClassName(DRIVER);
         	DATA_SOURCE.setUrl(URL);
         	DATA_SOURCE.setUsername(USERNAME);
@@ -62,7 +64,11 @@ public class DbcpDataSourceFactory implements DataSource{
 
 	@Override
 	public String setName() {
-		return "";
+		if(DATA_SOURCE != null){
+			return DATA_SOURCE_NAME;
+		}else{
+			return null;//不会被托管，GC会回收掉
+		}
 	}
 
 	@Override

@@ -30,11 +30,12 @@ public final class DataSourceHelper implements Helper{
 				Class<?> dataSourceClass = ClassUtil.loadClass(dataSourceClassPath, false);
 				DataSource dataSource = ReflectionUtil.newInstance(dataSourceClass);
 				//TODO:目前还不支持多数据源，默认数据源名称只能是""，即便重写了DataSource.setName()方法也不会有效
-				//String name = dataSource.setName();
-				String name = "";
-				if(DATA_SOURCE.containsKey(name))
-					throw new RuntimeException("find the same name DataSource:"+DATA_SOURCE.get(name).getClass()+"==="+dataSource.getClass());
-				DATA_SOURCE.put(name, dataSource);
+				String name = dataSource.setName();
+				if(name != null){
+					if(DATA_SOURCE.containsKey(name))
+						throw new RuntimeException("find the same name DataSource:"+DATA_SOURCE.get(name).getClass()+"==="+dataSource.getClass());
+					DATA_SOURCE.put(name, dataSource);
+				}
 			}
 		}
 	}

@@ -30,6 +30,21 @@
 
 
         <!-- ######################### java web ################################# -->
+		<!-- cross domain 可选，如果不跨域可以去掉 -->
+
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>java-property-utils</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>cors-filter</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+		<!-- -->
         <!-- Servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
