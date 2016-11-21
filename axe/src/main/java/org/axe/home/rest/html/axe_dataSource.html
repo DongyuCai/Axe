@@ -23,7 +23,7 @@ public void dataSource(@RequestParam("token")String token, HttpServletRequest re
 			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
 		</td></tr>
 		<java>
-		Map<String,DataSource> dataSourceMap = DataSourceHelper.getDataSourceAll();
+		Map<String,BaseDataSource> dataSourceMap = DataSourceHelper.getDataSourceAll();
 		</java>
 		<tr><td align="center"><font size="28">DataSource x"+dataSourceMap.size()+"</font></td></tr>
 
@@ -44,12 +44,13 @@ public void dataSource(@RequestParam("token")String token, HttpServletRequest re
 					<td align="left"><b>Class</b></td>
 				</tr>
 				<java>
-				for(Map.Entry<String,DataSource> entry:dataSourceMap.entrySet()){
-					DataSource dataSource = entry.getValue();
+				for(Map.Entry<String,BaseDataSource> entry:dataSourceMap.entrySet()){
+					String dataSourceName = entry.getKey();
+					BaseDataSource dataSource = entry.getValue();
 				</java>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">"+dataSource.setName()+"</td>
+					<td align="left">"+dataSourceName+"</td>
 					<td align="left">"+dataSource.setJdbcDriver()+"</td>
 					<td align="left">"+dataSource.setJdbcUrl()+"</td>
 					<td align="left">"+dataSource.setJdbcUserName()+"</td>

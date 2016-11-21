@@ -3,7 +3,7 @@ package org.test.service;
 import org.axe.annotation.ioc.Autowired;
 import org.axe.annotation.ioc.Service;
 import org.axe.annotation.persistence.Tns;
-import org.test.bean.just4test;
+import org.test.bean.TestTable;
 import org.test.dao.TestDao;
 
 /**
@@ -14,7 +14,7 @@ public class TestService {
 	@Autowired
 	private TestDao testDao;
 
-	public just4test get(long id){
+	public TestTable get(long id){
 		return testDao.getOne(id);	
 	}
 	

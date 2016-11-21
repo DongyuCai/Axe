@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.axe.annotation.persistence.Table;
 
-@Table("iot_user_account")
+@Table(value="iot_user_account",dataSource="test2")
 public class Account2{
 	private long id;
 	

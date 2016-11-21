@@ -20,7 +20,7 @@ import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.View;
 import org.axe.constant.RequestMethod;
 import org.axe.exception.RestException;
-import org.test.bean.just4test;
+import org.test.bean.TestTable;
 import org.test.dao.TestDao;
 import org.test.filter.TestFilter1;
 import org.test.service.TestService;
@@ -116,7 +116,7 @@ public class TestController {
     	if(id == null){
     		throw new RestException(RestException.SC_BAD_REQUEST, "id不正确");
     	}
-    	just4test one = testService.get(id);
+    	TestTable one = testService.get(id);
     	Data data = new Data(one);
         return data;
     }
@@ -151,7 +151,8 @@ public class TestController {
         Map<String,List<FileParam>> fileMap = param.getFileMap();
         Map<String,Object>  model = new HashMap<>();
         
-        fieldMap.entrySet().forEach(entry->model.put(entry.getKey(),entry.getValue()));
+//jdk1.8
+//        fieldMap.entrySet().forEach(entry->model.put(entry.getKey(),entry.getValue()));
         for(Map.Entry<String, List<FileParam>> file:fileMap.entrySet()){
         	String fieldName = file.getKey();
         	List<FileParam> fileParamList = file.getValue();

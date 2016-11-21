@@ -8,19 +8,19 @@ import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.interface_.persistence.BaseRepository;
 import org.test.bean.Export;
-import org.test.bean.just4test;
+import org.test.bean.TestTable;
 
 @Dao
 public interface TestDao extends BaseRepository{
 
-	@Sql("select * from just4test where id = ?")
-	public just4test getOne(long id);
+	@Sql("select * from TestTable where id = ?")
+	public TestTable getOne(long id);
 
-	@Sql("select * from just4test")
-	public List<just4test> getAll();
+	@Sql("select * from TestTable")
+	public List<TestTable> getAll();
 	
-	@Sql("select * from just4test where name like '%test%'")
-	public Page<just4test> page();
+	@Sql("select * from TestTable where name like '%test%'")
+	public Page<TestTable> page();
 	
 	@Sql("select * from Export")
 	public List<Export> getAllExport();

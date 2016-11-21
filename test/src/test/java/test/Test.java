@@ -1,5 +1,6 @@
 package test;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,12 @@ public class Test{
 	
 
     public static void main(String[] args) {
+    	Method[] dm = Test.class.getDeclaredMethods();
+    	for(Method mt:dm){
+    		System.out.println(mt.toGenericString());
+    	}
+    	
+    	/*
     	List<String> list1 = new ArrayList<>();
     	list1.add("1");
     	list1.add("2");
@@ -19,10 +26,10 @@ public class Test{
     	list1.add("4");
     	List<String> list2 = new ArrayList<>();
     	list2.addAll(list1.subList(1, list1.size()));
-    	for(String str:list2){
+    	for(String str:listt2){
     		System.out.println(str);
     	}
-    	
+    	*/
     	
     	/*Thread t = new Thread(){
     		

@@ -20,18 +20,16 @@ import org.slf4j.LoggerFactory;
 public class TransactionAspect extends AspectProxy {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionAspect.class);
 
-    private static final ThreadLocal<Boolean> FLAG_HOLDER = new ThreadLocal<Boolean>(){
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static final ThreadLocal<String> FLAG_HOLDER = new ThreadLocal<>();
+    
 
     @Override
     public void before(Class<?> cls, Method method, Object[] params) throws Throwable {
-        boolean flag = FLAG_HOLDER.get();
-        if(!flag && method.isAnnotationPresent(Tns.class)){
-            FLAG_HOLDER.set(true);
+    	//TODO:事务的传播机制
+        String flag = FLAG_HOLDER.get();
+        
+        if(flag == null && method.isAnnotationPresent(Tns.class)){
+            FLAG_HOLDER.set(method.toGenericString());
             DataBaseHelper.beginTransaction();
             LOGGER.debug("begin transaction by TNS");
         }
@@ -39,8 +37,8 @@ public class TransactionAspect extends AspectProxy {
     
     @Override
     public void after(Class<?> cls, Method method, Object[] params, Object result) throws Throwable {
-    	boolean flag = FLAG_HOLDER.get();
-    	if(flag && method.isAnnotationPresent(Tns.class)){
+    	String flag = FLAG_HOLDER.get();
+    	if(flag != null && flag.equals(method.toGenericString()) && method.isAnnotationPresent(Tns.class)){
         	DataBaseHelper.commitTransaction();
         	LOGGER.debug("commit transaction by TNS");
         	FLAG_HOLDER.remove();
@@ -49,8 +47,8 @@ public class TransactionAspect extends AspectProxy {
     
     @Override
     public void error(Class<?> cls, Method method, Object[] params, Throwable e) {
-    	boolean flag = FLAG_HOLDER.get();
-    	if(flag && method.isAnnotationPresent(Tns.class)){
+    	String flag = FLAG_HOLDER.get();
+    	if(flag != null && flag.equals(method.toGenericString()) && method.isAnnotationPresent(Tns.class)){
     		 DataBaseHelper.rollbackTransaction();
              LOGGER.debug("rollback transaction",e);
              FLAG_HOLDER.remove();

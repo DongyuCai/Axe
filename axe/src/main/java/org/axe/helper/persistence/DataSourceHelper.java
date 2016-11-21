@@ -2,11 +2,13 @@ package org.axe.helper.persistence;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import org.axe.annotation.persistence.DataSource;
 import org.axe.helper.base.ConfigHelper;
+import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
-import org.axe.interface_.persistence.DataSource;
-import org.axe.util.ClassUtil;
+import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.ReflectionUtil;
 
 /**
@@ -15,43 +17,70 @@ import org.axe.util.ReflectionUtil;
  */
 public final class DataSourceHelper implements Helper{
 	
+	private static String DEFAULT_DATASOURCE_NAME = null;
 	/**
 	 * 做成Map结构只是为了下一步支持多数据源做准备
 	 */
-	private static Map<String,DataSource> DATA_SOURCE;
+	private static Map<String,BaseDataSource> DATA_SOURCE;
 	
 	@Override
 	public void init() {
 		synchronized (this) {
+			Set<Class<?>> dataSourceFactoryClassSet = ClassHelper.getClassSetBySuper(BaseDataSource.class);
+			Map<String,Class<?>> dataSourceFactoryClassMap = new HashMap<>();
+			for(Class<?> dataSourceFactoryClass:dataSourceFactoryClassSet){
+				if(dataSourceFactoryClass.isAnnotationPresent(DataSource.class)){
+					String dataSourceName = dataSourceFactoryClass.getAnnotation(DataSource.class).value();
+					if(dataSourceFactoryClassMap.containsKey(dataSourceName))
+						throw new RuntimeException("find the same name DataSource:"+DATA_SOURCE.get(dataSourceName).getClass()+"==="+dataSourceFactoryClass);
+					dataSourceFactoryClassMap.put(dataSourceName, dataSourceFactoryClass);
+				}
+			}
+			
 			DATA_SOURCE = new HashMap<>();
 			String jdbcDatasource = ConfigHelper.getJdbcDatasource();
 			String[] split = jdbcDatasource.split(",");
-			for(String dataSourceClassPath:split){
-				Class<?> dataSourceClass = ClassUtil.loadClass(dataSourceClassPath, false);
-				DataSource dataSource = ReflectionUtil.newInstance(dataSourceClass);
-				//TODO:目前还不支持多数据源，默认数据源名称只能是""，即便重写了DataSource.setName()方法也不会有效
-				String name = dataSource.setName();
-				if(name != null){
-					if(DATA_SOURCE.containsKey(name))
-						throw new RuntimeException("find the same name DataSource:"+DATA_SOURCE.get(name).getClass()+"==="+dataSource.getClass());
-					DATA_SOURCE.put(name, dataSource);
+			
+			for(String dataSourceNameConfig:split){
+				//默认数据源取得是配置数据源列表中的第一个
+				if(DEFAULT_DATASOURCE_NAME == null){
+					DEFAULT_DATASOURCE_NAME = dataSourceNameConfig;
+				}
+				if(dataSourceFactoryClassMap.containsKey(dataSourceNameConfig)){
+					BaseDataSource dataSource = ReflectionUtil.newInstance(dataSourceFactoryClassMap.get(dataSourceNameConfig));
+					DATA_SOURCE.put(dataSourceNameConfig, dataSource);
 				}
 			}
 		}
 	}
 	
-	public static Map<String, DataSource> getDataSourceAll() {
+	public static Map<String, BaseDataSource> getDataSourceAll() {
 		return DATA_SOURCE;
 	}
 	
-	public static DataSource getDataSource(){
+	/*public static DataSource getDataSource(){
 		return getDataSource("");
-	}
+	}*/
 	
 	//TODO:暂时还不开放此方法，未来准备支持多数据源
 	@Deprecated
-	public static DataSource getDataSource(String name){
+	public static BaseDataSource getDataSource(String name){
 		return DATA_SOURCE.get(name);
+	}
+	
+	public static String getDefaultDataSourceName(){
+		return DEFAULT_DATASOURCE_NAME;
+	}
+	
+	public static BaseDataSource getDefaultDataSource(){
+		if(DATA_SOURCE.size() >= 1){
+			for(String dataSourceName:DATA_SOURCE.keySet()){
+				if(dataSourceName.equals(DEFAULT_DATASOURCE_NAME)){
+					return DATA_SOURCE.get(dataSourceName);
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

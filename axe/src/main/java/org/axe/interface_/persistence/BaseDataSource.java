@@ -9,14 +9,8 @@ import java.sql.SQLException;
  * 然后在axe.properties里配置jdbc.datasource即可
  * Created by CaiDongYu on 2016年5月16日 上午11:03:51.
  */
-public interface DataSource {
+public interface BaseDataSource {
 
-	/**
-	 * 数据源名称
-	 * 需要唯一标注
-	 */
-	public String setName();
-	
 	public Connection getConnection() throws SQLException ;
 	
 	public String setJdbcDriver();

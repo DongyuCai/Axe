@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import org.axe.annotation.aop.Aspect;
 import org.axe.annotation.persistence.Dao;
+import org.axe.annotation.persistence.DataSource;
 import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
@@ -38,6 +40,11 @@ public class DaoAspect implements Proxy{
 		Object[] methodParams = proxyChain.getMethodParams();
 		Class<?>[] parameterTypes = targetMethod.getParameterTypes();
 		Class<?> daoClass = proxyChain.getTargetClass();
+		String daoConfigDataSource = null;
+		if(daoClass.isAnnotationPresent(DataSource.class)){
+			daoConfigDataSource = daoClass.getAnnotation(DataSource.class).value();
+		}
+		
 		
 		if(targetMethod.isAnnotationPresent(Sql.class)){
 			Sql sqlAnnotation = targetMethod.getAnnotation(Sql.class);
@@ -60,18 +67,34 @@ public class DaoAspect implements Proxy{
 						if(listParamType instanceof ParameterizedType){
 							//List<Map<String,Object>>
 							if(ReflectionUtil.compareType(Map.class, (Class<?>)((ParameterizedType) listParamType).getRawType())){
-								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+								if(daoConfigDataSource == null){
+									result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+								}else{
+									result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+								}
 							}
 						}else if(listParamType instanceof WildcardType){
 							//List<?>
-							result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+							if(daoConfigDataSource == null){
+								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+							}else{
+								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+							}
 						}else{
 							if(ReflectionUtil.compareType(Object.class, (Class<?>)listParamType)){
 								//List<Object>
-								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+								if(daoConfigDataSource == null){
+									result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+								}else{
+									result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+								}
 							}else if(ReflectionUtil.compareType(Map.class, (Class<?>)listParamType)){
 								//List<Map>
-								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+								if(daoConfigDataSource == null){
+									result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+								}else{
+									result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+								}
 							}else if(ReflectionUtil.compareType(String.class, (Class<?>)listParamType) || 
 									ReflectionUtil.compareType(Date.class, (Class<?>)listParamType) || 
 									ReflectionUtil.compareType(Byte.class, (Class<?>)listParamType) || 
@@ -83,7 +106,7 @@ public class DaoAspect implements Proxy{
 									ReflectionUtil.compareType(Float.class, (Class<?>)listParamType) || 
 									ReflectionUtil.compareType(Double.class, (Class<?>)listParamType)){
 								//List<String>
-								result = getBasetypeOrDateList(sql, methodParams, parameterTypes);
+								result = getBasetypeOrDateList(sql, methodParams, parameterTypes, daoConfigDataSource);
 							}else{
 								//Entity
 								result = DataBaseHelper.queryEntityList((Class<?>)listParamType, sql, methodParams, parameterTypes);
@@ -92,29 +115,45 @@ public class DaoAspect implements Proxy{
 						
 						if(Page.class.isAssignableFrom(rawType)){
 							//如果是分页，包装返回结果
-							result = pageResult(sql, methodParams, parameterTypes, (List<?>)result);
+							result = pageResult(sql, methodParams, parameterTypes, (List<?>)result, daoConfigDataSource);
 						}
 					}else if(ReflectionUtil.compareType(Map.class, rawType)){
 						//Map无所谓里面的泛型
-						result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+						if(daoConfigDataSource == null){
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+						}else{
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+						}
 					}
 				}else{
 					if(Page.class.isAssignableFrom(rawType) || 
 							ReflectionUtil.compareType(List.class, rawType)){
 						//Page、List
-						result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+						if(daoConfigDataSource == null){
+							result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+						}else{
+							result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+						}
 						
 
 						if(Page.class.isAssignableFrom(rawType)){
 							//如果是分页，包装返回结果
-							result = pageResult(sql, methodParams, parameterTypes, (List<?>)result);
+							result = pageResult(sql, methodParams, parameterTypes, (List<?>)result, daoConfigDataSource);
 						}
 					}else if(ReflectionUtil.compareType(Map.class, rawType)){
 						//Map
-						result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+						if(daoConfigDataSource == null){
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+						}else{
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+						}
 					}else if(ReflectionUtil.compareType(Object.class, rawType)){
 						//Object
-						result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+						if(daoConfigDataSource == null){
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+						}else{
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+						}
 					}else if(ReflectionUtil.compareType(String.class, rawType) || 
 							ReflectionUtil.compareType(Date.class, rawType) || 
 							ReflectionUtil.compareType(Byte.class, rawType) || 
@@ -126,17 +165,25 @@ public class DaoAspect implements Proxy{
 							ReflectionUtil.compareType(Float.class, rawType) || 
 							ReflectionUtil.compareType(Double.class, rawType)){
 						//String
-						result = getBasetypeOrDate(sql, methodParams, parameterTypes);
+						result = getBasetypeOrDate(sql, methodParams, parameterTypes, daoConfigDataSource);
 					}else if((rawType).isPrimitive()){
 						//基本类型
-						result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes);
+						if(daoConfigDataSource == null){
+							result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes);
+						}else{
+							result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes, daoConfigDataSource);
+						}
 					}else{
 						//Entity
 						result = DataBaseHelper.queryEntity(rawType, sql, methodParams, parameterTypes);
 					}
 				}
 			}else{
-				result = DataBaseHelper.executeUpdate(sql, methodParams, parameterTypes);
+				if(daoConfigDataSource == null){
+					result = DataBaseHelper.executeUpdate(sql, methodParams, parameterTypes);
+				}else{
+					result = DataBaseHelper.executeUpdate(sql, methodParams, parameterTypes, daoConfigDataSource);
+				}
 			}
 		}else if(BaseRepository.class.isAssignableFrom(daoClass) && !ReflectionUtil.compareType(BaseRepository.class,daoClass)){
 			String methodName = targetMethod.getName();
@@ -180,16 +227,21 @@ public class DaoAspect implements Proxy{
 		return result;
 	}
 	
-	private Object getBasetypeOrDate(String sql,Object[] methodParams,Class<?>[] parameterTypes){
+	private Object getBasetypeOrDate(String sql,Object[] methodParams,Class<?>[] parameterTypes,String daoConfigDataSource) throws SQLException{
 		//Date
-		Map<String,Object> resultMap = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
+		Map<String,Object> resultMap = DataBaseHelper.queryMap(sql, methodParams, parameterTypes,daoConfigDataSource);
 		Set<String> keySet = resultMap.keySet();
 		return keySet.size() == 1 ? resultMap.get(keySet.iterator().next()) : null;
 	}
 	
-	private Object getBasetypeOrDateList(String sql,Object[] methodParams,Class<?>[] parameterTypes){
-		List<Map<String,Object>> resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
-		if(resultList.size() > 0){
+	private Object getBasetypeOrDateList(String sql,Object[] methodParams,Class<?>[] parameterTypes,String daoConfigDataSource) throws SQLException{
+		List<Map<String,Object>> resultList = null;
+		if(daoConfigDataSource == null){
+			resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+		}else{
+			resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes,daoConfigDataSource);
+		}
+		if(resultList != null && resultList.size() > 0){
 			List<Object> list = new ArrayList<Object>();
 			for(Map<String,Object> row:resultList){
 				if(row.size() == 1){
@@ -204,9 +256,14 @@ public class DaoAspect implements Proxy{
 	/**
 	 * 包装List返回结果成分页
 	 */
-	private <T> Page<T> pageResult(String sql, Object[] params, Class<?>[] paramTypes, List<T> records){
+	private <T> Page<T> pageResult(String sql, Object[] params, Class<?>[] paramTypes, List<T> records, String daoConfigDataSource){
 		PageConfig pageConfig= SqlHelper.getPageConfigFromParams(params, paramTypes);
-		long count = DataBaseHelper.countQuery(sql, params, paramTypes);
+		long count = 0;
+		if(daoConfigDataSource == null){
+			count = DataBaseHelper.countQuery(sql, params, paramTypes);
+		}else{
+			count = DataBaseHelper.countQuery(sql, params, paramTypes, daoConfigDataSource);
+		}
 		pageConfig = pageConfig == null?new PageConfig(1,count):pageConfig;
 		long pages = count/pageConfig.getPageSize();
 		if(pages*pageConfig.getPageSize() < count)

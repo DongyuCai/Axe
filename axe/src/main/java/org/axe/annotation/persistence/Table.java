@@ -28,4 +28,6 @@ public @interface Table {
 	 * 如果改成false，那么就算全局打开了jdbc.auto_create_table参数，也不会自建此表
 	 */
 	boolean autoCreate() default true;
+	
+	String dataSource() default "";
 }

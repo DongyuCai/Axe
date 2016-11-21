@@ -44,7 +44,7 @@ import org.axe.home.interceptor.HomeInterceptor;
 import org.axe.home.interceptor.SignInInterceptor;
 import org.axe.home.service.HomeService;
 import org.axe.interface_.mvc.Filter;
-import org.axe.interface_.persistence.DataSource;
+import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -1067,7 +1067,7 @@ html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/
 }
 html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
 html.append("</td></tr>");
-Map<String,DataSource> dataSourceMap = DataSourceHelper.getDataSourceAll();
+Map<String,BaseDataSource> dataSourceMap = DataSourceHelper.getDataSourceAll();
 html.append("<tr><td align=\"center\"><font size=\"28\">DataSource x"+dataSourceMap.size()+"</font></td></tr>");
 html.append("");
 html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
@@ -1086,11 +1086,12 @@ html.append("<td align=\"left\"><b>Username</b></td>");
 html.append("<td align=\"left\"><b>Password</b></td>");
 html.append("<td align=\"left\"><b>Class</b></td>");
 html.append("</tr>");
-for(Map.Entry<String,DataSource> entry:dataSourceMap.entrySet()){
-DataSource dataSource = entry.getValue();
+for(Map.Entry<String,BaseDataSource> entry:dataSourceMap.entrySet()){
+String dataSourceName = entry.getKey();
+BaseDataSource dataSource = entry.getValue();
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">"+dataSource.setName()+"</td>");
+html.append("<td align=\"left\">"+dataSourceName+"</td>");
 html.append("<td align=\"left\">"+dataSource.setJdbcDriver()+"</td>");
 html.append("<td align=\"left\">"+dataSource.setJdbcUrl()+"</td>");
 html.append("<td align=\"left\">"+dataSource.setJdbcUserName()+"</td>");

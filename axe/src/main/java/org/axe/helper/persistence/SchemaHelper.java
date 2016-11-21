@@ -1,6 +1,7 @@
 package org.axe.helper.persistence;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ public class SchemaHelper implements Helper{
 		}
 	}
 	
-	public static void createTable(Class<?> entityClass){
+	public static void createTable(Class<?> entityClass) throws SQLException{
 		if(TableHelper.isTableAutoCreate(entityClass)){
 			String tableName = TableHelper.getTableName(entityClass);
 			StringBuilder createTableSqlBufer = new StringBuilder(); 
@@ -163,7 +164,9 @@ public class SchemaHelper implements Helper{
 			
 			createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
 			
-			DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{});
+			
+			String tableDataSourceName = TableHelper.getTableDataSourceName(entityClass);
+			DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{}, tableDataSourceName);
 		}
 	}
 	

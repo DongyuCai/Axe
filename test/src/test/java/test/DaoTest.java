@@ -13,21 +13,16 @@ import org.axe.util.JsonUtil;
 import org.axe.util.StringUtil;
 import org.test.bean.Export;
 import org.test.bean.TestTable;
-import org.test.bean.just4test;
 import org.test.dao.TestDao;
 
 public class DaoTest {
 	
 	public static void main(String[] args) {
 		try {
+			HelperLoader.init();
+			
 //			testDaoEntity();
 //			testDaoPaging();
-	//		HelperLoader.init();
-	//		just4test just4test = new just4test();
-	//		just4test.setName("aaa");
-	//		TestDao testDao = BeanHelper.getBean(TestDao.class);
-	//		testDao.insertEntity(just4test);
-				testInsert();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -35,8 +30,6 @@ public class DaoTest {
 	}
 	
 	public static void testInsert() throws Exception{
-		HelperLoader.init();
-		
 		TestTable test = new TestTable();
 		test.setId(3);
 		test.setName("test3");
@@ -55,26 +48,36 @@ public class DaoTest {
 	public static void testDaoPaging() throws Exception{
 		HelperLoader.init();
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
-		List<just4test> all = testDao.getAll();
-		Page<just4test> pageList = testDao.page();
-		for(just4test e:all){
+		List<TestTable> all = testDao.getAll();
+		Page<TestTable> pageList = testDao.page();
+		for(TestTable e:all){
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();
 		System.out.println(pageList.getCount()+"\t"+pageList.getPages());
-		for(just4test e:pageList.getRecords()){
+		for(TestTable e:pageList.getRecords()){
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();
 	}
 	
 	public static void testDaoEntity() throws Exception{
-		HelperLoader.init();
+		
 		
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
 		Export export = new Export();
-		export.setId(1l);
-		int rows = 0;
+		export.setAccountId(1);
+		export.setCode("a");
+		export.setCreateTime(new Date());
+		export.setDownloadTimes(0);
+		export.setLastDownloadTime(null);
+		export.setName("xxx");
+		export.setProcess(100);
+		export.setStatus(1);
+		export.setStillWaitSec(100);
+		testDao.saveEntity(export);
+		
+		
 		export = testDao.getEntity(export);
 		System.out.println("getEntity:"+JsonUtil.toJson(export));
 		
@@ -84,7 +87,7 @@ public class DaoTest {
 		System.out.println("saveEntity:"+export);
 		
 		export.setName("新框架测试_SqlHelper");
-		rows = testDao.updateEntity(export);
+		int rows = testDao.updateEntity(export);
 		System.out.println("updateEntity:"+rows);
 		
 		export = testDao.getEntity(export);

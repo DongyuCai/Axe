@@ -100,6 +100,18 @@ public final class TableHelper implements Helper{
 		}
 	}
 	
+
+    public static <T> String getTableDataSourceName(Class<T> entityClass){
+    	if(entityClass != null && entityClass.isAnnotationPresent(Table.class)){
+    		//1.如果注明了数据源名称，就找到相应数据源返回
+    		String dataSourceName = entityClass.getAnnotation(Table.class).dataSource();
+    		return dataSourceName.equals("")?DataSourceHelper.getDefaultDataSourceName():dataSourceName;
+    	}else{
+    		//2.如果没有注明所属数据源，返回默认数据源
+    		return DataSourceHelper.getDefaultDataSourceName();
+    	}
+    }
+	
 	public static boolean isTableAutoCreate(Class<?> entityClass){
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			return entityClass.getAnnotation(Table.class).autoCreate();

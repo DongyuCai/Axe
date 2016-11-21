@@ -31,6 +31,7 @@
 * dao层支持配置连接池，默认使用apache dbcp2，配置数据源，需要实现[DataSouce]()接口种的getConnection方法，非常简单，然后在axe.properties中设置好[jdbc.datasource]()=className就好了
 * dao支持返回新增主键
 * dao支持自动建表，框架在所有Helper初始化结束后，会有SchemaHelper来负责所有Entity的ORM Schema创建
+* 支持事务的传播，目前不支持级别配置
 
 ----------
 
@@ -50,6 +51,7 @@
 * CreateTableUtil
 * 增加@RequestParam的default值
 * 增加支持插件系统，正在增加hoke插件，解决大数据查询速度缓慢，方法结果缓存策略
+* 修改DataSourceHelper，增加多数据源支持
 
 ##需要验证:
  * 数据库表，存取blob字段是否有问题。
