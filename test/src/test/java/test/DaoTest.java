@@ -24,7 +24,6 @@ public class DaoTest {
 //			testDaoEntity();
 //			testDaoPaging();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

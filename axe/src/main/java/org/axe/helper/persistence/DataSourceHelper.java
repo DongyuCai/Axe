@@ -62,25 +62,26 @@ public final class DataSourceHelper implements Helper{
 		return getDataSource("");
 	}*/
 	
-	//TODO:暂时还不开放此方法，未来准备支持多数据源
-	@Deprecated
-	public static BaseDataSource getDataSource(String name){
+	//TODO(OK):暂时还不开放此方法，未来准备支持多数据源
+	//这个方法暂时框架还没用到，方法比较关键，所以注释掉
+	//@Deprecated
+	/*public static BaseDataSource getDataSource(String name){
 		return DATA_SOURCE.get(name);
-	}
+	}*/
 	
 	public static String getDefaultDataSourceName(){
 		return DEFAULT_DATASOURCE_NAME;
 	}
 	
 	public static BaseDataSource getDefaultDataSource(){
-		if(DATA_SOURCE.size() >= 1){
+		/*if(DATA_SOURCE.size() >= 1){
 			for(String dataSourceName:DATA_SOURCE.keySet()){
 				if(dataSourceName.equals(DEFAULT_DATASOURCE_NAME)){
 					return DATA_SOURCE.get(dataSourceName);
 				}
 			}
-		}
-		return null;
+		}*/
+		return DATA_SOURCE.get(DEFAULT_DATASOURCE_NAME);
 	}
 
 	@Override

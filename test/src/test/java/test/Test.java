@@ -13,11 +13,13 @@ public class Test{
 	
 
     public static void main(String[] args) {
-    	Method[] dm = Test.class.getDeclaredMethods();
+    	System.out.println(null+"1");
+    	
+    	/*Method[] dm = Test.class.getDeclaredMethods();
     	for(Method mt:dm){
     		System.out.println(mt.toGenericString());
     	}
-    	
+    	*/
     	/*
     	List<String> list1 = new ArrayList<>();
     	list1.add("1");
@@ -58,7 +60,7 @@ public class Test{
     		}
 //    		FileUtil.backupAndCreateNewFile("mysql-keyword.txt");
 		} catch (Exception e) {
-			// TODO: handle exception
+
 		}*/
     	
 //    	HelperLoader.init();

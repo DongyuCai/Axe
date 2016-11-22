@@ -124,7 +124,7 @@ public final class ConfigHelper implements Helper{
      * 指定jsp存放路径（建议 /WEB-INF/view/ ）
      */
     public static String getAppJspPath() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_JSP_PATH, null);
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_JSP_PATH, "");
     }
 
     /**

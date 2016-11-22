@@ -59,6 +59,7 @@ public final class AopHelper implements Helper{
             if(proxyClass.isAnnotationPresent(Aspect.class)){
                 Aspect aspect = proxyClass.getAnnotation(Aspect.class);
                 //TODO:目前AOP实现，还只是针对有目标注解的类做切面，不能细化到方法，这样一旦拦截，会拦截所有方法
+                //比如事务切面，实际上是切了整个Server类所有方法，但是在切面加强的时候会判断，判断这个方法开不开事务。
                 Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
                 proxyMap.put(proxyClass,targetClassSet);
             }
