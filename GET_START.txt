@@ -1,5 +1,5 @@
 ##Get Start 快速开始
-首先确保你有maven的使用基础。我们只需要下面这段普通的web工程maven依赖(在pom.xml中)。
+我们只需要参照下面这段普通的pom.xml文件。
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -86,78 +86,271 @@
 
 </project>
 ```
-然后更新工程依赖即可，启动工程后，访问 /axe 直接进入控制台，建议线上环境自主配置参数，并关闭控制台访问。
+然后更新工程依赖即可。启动工程后，访问 /axe 直接进入控制台，建议线上环境自主配置参数，并关闭控制台访问。  
 
-##IOC
+##IOC怎么支持
 axe的ioc(依赖注入)功能由BeanHelper实现，所有的注入实例也可以从BeanHelper中获取(后面讲到)。axe提供了如下的注解来方便ioc的使用。
 
-* @Controller
-* @Component
-* @Service
-* @Dao
-* @Autowired
+- @Controller
+- @Component
+- @Service
+- @Dao
+- @Autowired  
 
-#####@Controller
-| 参数 | 必填 | 描述 |
-| ---- |:----:| ----:|
-| a    | b    | c    |
+具体用法下面会慢慢介绍。
 
-##BeanHelper
+##BeanHelper的使用和注意
+可以对全局的ioc托管实例进行获取和操作，一般很少用到。  
 
-##MVC
+| 方法        | 返回值               | 描述                      |
+| ----------- |:--------------------:| -------------------------:|
+| getBeanMap  | Map<Class<?>,Object> | 获取所有托管中的Bean实例  |
+| getBean     | T                    | 见注释                    |
+| setBean     |                      | 添加实例给BeanHelpler管理 |
+
+>注.返回类型根据方法传入的参数类型来匹配。可以获取的Bean类型包括@Controller、@Component、@Service、@Dao
+注解标注的类，注意@Dao是接口注解并且在框架启动阶段，@Dao注解的实例并不能从BeanHelper中获取到，需要等待框架启动完成才可获取到。
+
+
+##MVC在axe中长什么样
+axe推荐的风格是前后端分离，也就是view是前台的事情，后台服务只提供数据，只负责MVC中的Model和Controller。
+但是axe也支持完整的MVC，View层可以通过在Controller中返回的结果类型(View.class)来跳转，View.class对象的实例包含一个地址字符串，
+如果字符串以"/"开头，则表示sendRedirect浏览器端跳转，否则表示forward服务端跳转，同时支持携带参数给jsp页面。
+```java
+@Controller(basePath = "test")
+public class TestController {
+    
+	@Autowired
+	private TestService testService;
+	
+	@Autowired
+	private TestDao testDao;
+	
+	@Request(value="/bestRequest",method=RequestMethod.GET)
+	public Object bestRest(){
+		//返回类型可以直接Object，也可以写明具体类型
+		return "推荐的风格，可以是Map、List、Json、字符串等等数据格式";
+	}
+	
+	@Request(value="/sendRedirect",method=RequestMethod.GET)
+	public View sendRedirect(){
+		//浏览器端跳转
+		View v = new View("/someOneElse");
+		return v;
+	}
+	
+	@Request(value="/forward",method=RequestMethod.GET)
+	public View forward(){
+		//浏览器端跳转
+		View v = new View("someOneElse");
+		v.addModel("arg1", "val1");
+		return v;
+	}
+}
+```
+
 
 ##Restful
+具体定义这里不做解释了，axe对rest请求url中的参数支持如下的解析方式。
+
+- 如 /get/{id}_{name}  中id和name是参数 
+- 如 /get_{id}/{name}  也是id和name表示参数
+- 参数只能是数字和字母，url只能是数字、字母、下划线和$符
+
+下面是一个比较完整的请求参数事例。
+```java
+@Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
+    public Data postPathParam(
+        	@RequestParam("money")Integer money,//如果money是整数，这里就有值，如果是别的，甚至是字符串，就会是null
+    		
+    		@RequestParam("file")FileParam file1,//单个文件，如果上传的是多文件，只会拿到最后一个
+    		@RequestParam("file")Object file2,
+    		@RequestParam("file")List<FileParam> filesList1,
+    		@RequestParam("file")List<?> filesList2,
+    		@RequestParam("file")List filesList3,
+    		@RequestParam("file")FileParam[] filesAry1,
+    		@RequestParam("file")Object[] filesAry2,
+    		
+    		@RequestParam("ids")Integer ids,//如果传递的参数是多个，只会拿到最后一个
+    		@RequestParam("ids")List<String> idsList1,
+    		@RequestParam("ids")List<?> idsList2,
+    		@RequestParam("ids")List<Integer> idsList3,
+    		@RequestParam("ids")List idsList4,
+    		@RequestParam("ids")String[] idsAry1,//如果传递的参数是多个，会用","拼接
+    		@RequestParam("ids")Integer[] idsAry2,
+    		@RequestParam("ids")Double[] idsAry3,
+    		@RequestParam("ids")Object[] idsAry4,
+    		
+    		@RequestParam("name")String name1,
+    		@RequestParam("name")Object name2,
+    		@RequestParam("name")List<String> nameList1,
+    		@RequestParam("name")List<?> nameList2,
+    		@RequestParam("name")List nameList3,
+    		@RequestParam("name")String[] nameAry1,
+    		@RequestParam("name")Object[] nameAry2,
+    		
+    		HttpServletRequest request,
+    		HttpServletResponse response,
+    		Param param,
+    		Map<String,String> body,
+    		String otherParam){//这里总是null，如果有人这么写，那只能在别的地方手工调用这个方法时候传值了，框架不会映射的。
+    	System.out.println("postPathParam");
+//    	Data data = analysisParam(param);
+        return null;
+    }
+ 
+```
+> 需要注意的是，不允许两条完全一样的url存在。
 
 ##Controller Class
+略
 
 ##Action Method
+目前支持POST、DELETE、PUT、GET四种。在其他场景下需要HEAD、OPTION等类型可以自行扩展。
 
 ##Param
+略
 
 ##FileParam
+略
 
 ##Data
+略
 
 ##View
+略
 
 ##Filter
+过滤器用以过滤请求，在过滤的过程中判断是否需要继续往下跳转直至Controller。
+
+| 方法          | 返回值               | 描述                                    |
+| ------------- |:--------------------:| ---------------------------------------:|
+| setLevel      | int                  | 过滤器层级，按递增排列，数字小的先执行  |
+| setMapping    | Pattern              | 设置url匹配规则                         |
+| setNotMapping | Pattern              | 设置url匹配的集合中，需要排除的url规则  |
+
+> setMapping可以设置 "^.*$" 来匹配所有，再加一个setNotMapping设置 "login"来放开登录，就实现了简单的权限过滤。
+
 ####有顺序的Filter链
+过滤器有顺序，框架启动后每个action上都有一个过滤器列表。
 ####FuckOff
+上面说可以通过setNotMapping来排除不需要过滤的url(从需要过滤的url集合中)，这适合需要排除的url不止一个的情况。
+我们也可以在Controller的方法上直接使用@FilterFuckOff来排除指定的Filter，在有些场景下更方便。
 
 ##Interceptor
+拦截器需要指定在Controller或者Controller方法上，才会工作。
 
 ##Listener
+监听器在系统启动时候会被执行。
 
 ##RedirectorException
-
+在系统的任何地方抛出这个异常给框架，框架会执行跳转命名，地址在异常对象中指定，并且可以携带参数。
 
 ##Service
+Service在大部分情况下都与Component一样，但是@Tns事务控制只在@Service下有效。
 
-##Table
+##Table Eentity
 ####Table自建
+可以配置参数jdbc.auto_create_table来自动创建表结构。如果表结构已经存在则不会创建，即便字段有变化，需先要手动删除表。
+axe只会创建带有@Table注解的Entity表结构，并且可以指定数据库多个。
+
 ####主键、联合主键
+@Id注解标注的字段表示主键，联合主键很简单，多个字段都加上@Id注解即可。
+
 ####如果不需要持久化的方式
+实体类的字段会被持久化，必须有对应的set、get方法，而且命名要符合规范。因此，不希望被持久化的字段，只要去掉set、get方法即可。
+去掉set方法不被保存，去掉get方法不会查询。
+
 ####用@ColumnDefine来自定义表字段
+axe对于字段的定义性注解较少，如果希望自定义字段的类型、长度、必填等等特殊情况，那么可以直接使用@ColumnDefine来写表字段的sql语句。
+```java
+@Table("Test")
+public class TestTable {
+
+    @Id
+	private long id;
+	@ColumnDefine("char(100) NOT NULL UNIQUE")
+	private String name;
+	
+	private int status;
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int _getStatus() {
+		return status;
+	}
+	public void _setStatus(int status) {
+		this.status = status;
+	}
+}
+```
+我们注意到，字段名是不许自定义的，这点需要注意。
 
 ##Dao
+凡是被@Dao注解标注的接口，axe都会识别为dao层入口，框架会自动实现接口中带@SQL注解的方法，以供实例注入到service或component后调用。
+Dao除了需要@Dao注解外，还可以选择性的继承BaseRepository接口，BaseRepository提供了针对Entity对象的增删改查方法，但需要注意，
+使用这个接口内的方法，要求Entity类必须有@Id标注的字段，也就是必须有主键。
 
 ##Sql and Entity
+Entity可以没有@Table注解，这种情况下，必须类名与表名能够符合规范可以转换，如TableA对应table_a表。如果有@Table注解，则不需要这种默认关系。
+Sql语句支持表名、字段名用类名、类字段来代替书写，类似HQL。SQL中的占位符可以使用?，也可以使用?加数字，前者默认使用方法参数顺序，
+后者可以用数字指定占位符对应方法参数中的第几个参数。
+```java
+@Dao
+public interface TestDao extends BaseRepository{
+	
+	//占位符?取值顺序按照方法参数的顺序挨个取
+	@Sql("select * from TestTable where id = ? and name = ?")
+	public TestTable getOne(long id,name);
+
+	@Sql("select * from TestTable")
+	public List<TestTable> getAll();
+	
+	@Sql("select * from TestTable where name like '%test%'")
+	public Page<TestTable> page();
+	
+	@Sql("select * from Export")
+	public List<Export> getAllExport();
+	
+	//占位符指定好了取方法参数的第一个参数。
+	@Sql("select * from Export where name like ?1")
+	public Page<Export> pagingExport(String name,PageConfig pageConfig);
+}
+```
 
 ##Transaction Tns
+axe的事务，如果出现迭代调用开启事务，只会在最外层打开，并且当回到最外层后提交，内层的打开事务与提交事务会被忽略。
+另外，如果多数据源情况下，事务会集体打开，集体提交，但是如果存在异常的情况，如果是业务代码异常，则事务集体回滚，
+如果是第二或者第三个事务在提交时发生异常，则第一个事务已经提交无法回滚，会被记录在日志中。
 
-##事务传播
 
-##DataSourceFactory
+##BaseDataSource 和 @DataSource
+实现自定义的数据源，需要作两件事，第一要实现BaseDataSource接口，第二要加上@DataSource注解，后者是为多数据源作名字的区分，当然如果只有一个，也无所谓了但是注解也是要加的。
 
 ##Proxy
+框架的代理接口，需要自我实现代理切面的，需要实现此接口。
 
 ##/axe
+框架启动成功，可以访问此地址来管理框架系统配置。
 
 ##Sign In
+如果/axe中打开了需要登录和设置了密码，那么就需要账号登录才能继续访问/axe管理面板了。
 
 ##Email
+在/axe的配置页面中，有一向是Email项，如果填写了，则会收到系统的错误和异常的通知邮件。
 
 ##Release Resources
+如果配置选择了此项，那么会丢失一部分框架启动时候初始化到内存中的数据，对系统的正常运行没有影响，反而更节省内存，只是失去了一些框架级的快捷功能。
 
 ##Aspect Proxy
 ####begin

@@ -88,11 +88,11 @@ public final class DataBaseHelper implements Helper{
     			if(con == null) break;
 				if(!con.isClosed()){
 					con.close();
-					LOGGER.debug("release connection:"+con);
+					LOGGER.debug("release connection of dataSource["+dataSourceName+"]:"+con);
 				}
     		}while(false);
 		} catch (SQLException e) {
-			LOGGER.error("release connection failure", e);
+			LOGGER.error("release connection of dataSource["+dataSourceName+"] failure", e);
 			throw new SQLException(e);
 		}  finally {
 			if(connMap != null){
@@ -519,14 +519,17 @@ public final class DataBaseHelper implements Helper{
     public static void commitTransaction() throws SQLException{
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
         if(connMap != null && connMap.size() > 0){
+        	String errorDataSourceName = null;
             try {
-            	for(Connection conn:connMap.values()){
+            	for(String dataSourceName:connMap.keySet()){
+            		errorDataSourceName = dataSourceName;
+            		Connection conn = connMap.get(dataSourceName);
 	            	if(!conn.getAutoCommit()){
 	            		conn.commit();
 	            	}
             	}
             } catch (SQLException e){
-                LOGGER.error("commit transaction failure",e);
+                LOGGER.error("commit transaction of dataSource["+errorDataSourceName+"] failure",e);
                 throw new SQLException(e);
             }finally {
             	for(String dataSourceName:connMap.keySet()){
@@ -544,12 +547,15 @@ public final class DataBaseHelper implements Helper{
     public static void rollbackTransaction(){
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
         if(connMap != null && connMap.size() > 0){
+        	String errorDataSourceName = null;
             try {
-            	for(Connection conn:connMap.values()){
+            	for(String dataSourceName:connMap.keySet()){
+            		errorDataSourceName = dataSourceName;
+            		Connection conn = connMap.get(dataSourceName);
 	            	conn.rollback();
             	}
             } catch (SQLException e){
-                LOGGER.error("rollback transaction failure",e);
+                LOGGER.error("rollback transaction of dataSource["+errorDataSourceName+"] failure",e);
                 throw new RuntimeException(e);
             } finally {
                 try {

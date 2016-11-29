@@ -67,7 +67,7 @@
 	```
 	http://localhost:8080/getOne/[zhangjiagang]()/123_zhangsan/detail?p1=123&p2=张家港
 	```
-	* 这样是不可以的(404，路径请不要含有非字母、数字、下划线、$以外的字符)：
+	* 这样是不可以的(404，路径请不要含有字母、数字、下划线、$以外的字符)：
 	``` 
 	http://localhost:8080/getOne/[张家港]()/123_zhangsan/detail?p1=123&p2=张家港 
 	```

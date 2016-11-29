@@ -37,6 +37,29 @@ public class TestController {
 	@Autowired
 	private TestDao testDao;
 	
+	@Request(value="/bestRequest",method=RequestMethod.GET)
+	public Object bestRest(){
+		//返回类型可以直接Object，也可以写明具体类型
+		return "推荐的风格，可以是Map、List、Json、字符串等等数据格式";
+	}
+	
+	@Request(value="/sendRedirect",method=RequestMethod.GET)
+	public View sendRedirect(){
+		//浏览器端跳转
+		View v = new View("/someOneElse");
+		return v;
+	}
+	
+	@Request(value="/forward",method=RequestMethod.GET)
+	public View forward(){
+		//浏览器端跳转
+		View v = new View("someOneElse");
+		v.addModel("arg1", "val1");
+		return v;
+	}
+	
+	
+	
 	@Request(value="/all",method=RequestMethod.GET)
 	public Data getAll(){
 		return new Data(testService.getAll());
