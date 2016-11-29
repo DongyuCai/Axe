@@ -1,6 +1,106 @@
-##Get Start
+##Get Start 快速开始
+首先确保你有maven的使用基础。我们只需要下面这段普通的web工程maven依赖(在pom.xml中)。
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.axe</groupId>
+    <artifactId>test</artifactId>
+    <version>0.1</version>
+    <packaging>war</packaging>
+    
+    <properties>
+        <jetty.version>9.3.0.M1</jetty.version>
+    </properties>
+
+    <dependencies>
+        <!-- Axe 核心依赖 0.1是版本 .7是jdk7 -->
+        <dependency>
+            <groupId>org.axe</groupId>
+            <artifactId>axe</artifactId>
+            <version>0.1.7</version>
+        </dependency>
+    	<!-- Apache DBCP 数据源(这是默认数据源，可以自我指定数据源)-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+    
+    	<!-- jetty -->
+    	<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jsp</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+
+
+        <!-- ######################### java web ################################# -->
+		<!-- cross domain 可选，如果不跨域可以去掉 -->
+
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>java-property-utils</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>cors-filter</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+		<!-- java web 基础包 -->
+        <!-- Servlet -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JSP -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JSTL -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+然后更新工程依赖即可，启动工程后，访问 /axe 直接进入控制台，建议线上环境自主配置参数，并关闭控制台访问。
 
 ##IOC
+axe的ioc(依赖注入)功能由BeanHelper实现，所有的注入实例也可以从BeanHelper中获取(后面讲到)。axe提供了如下的注解来方便ioc的使用。
+
+* @Controller
+* @Component
+* @Service
+* @Dao
+* @Autowired
+
+#####@Controller
+| 参数 | 必填 | 描述 |
+| ---- |:----:| ----:|
+| a    | b    | c    |
 
 ##BeanHelper
 
