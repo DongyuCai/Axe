@@ -2,10 +2,14 @@ package org.axe.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /*
  * MD5 算法
 */
 public class MD5Util {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MD5Util.class);
     
     // 全局数组
     private final static String[] strDigits = { "0", "1", "2", "3", "4", "5",
@@ -41,6 +45,7 @@ public class MD5Util {
             resultString = byteToString(md.digest(strObj.getBytes()));
         } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
+            LOGGER.error("getMD5Code error",ex);
         }
         return resultString;
     }

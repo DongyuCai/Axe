@@ -3,7 +3,11 @@ package org.axe.util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,4 +46,27 @@ public final class CollectionUtil {
         return !isEmpty(map);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> List<T> intersect(List ls, List ls2) {
+		List<T> list = new ArrayList(Arrays.asList(new Object[ls.size()]));
+		Collections.copy(list, ls);
+		list.retainAll(ls2);
+		return list;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> List<T> union(List ls, List ls2) {
+		List list = new ArrayList(Arrays.asList(new Object[ls.size()]));
+		Collections.copy(list, ls);
+		list.addAll(ls2);
+		return list;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> List<T> diff(List ls, List ls2) {
+		List list = new ArrayList(Arrays.asList(new Object[ls.size()]));
+		Collections.copy(list, ls);
+		list.removeAll(ls2);
+		return list;
+	}
 }

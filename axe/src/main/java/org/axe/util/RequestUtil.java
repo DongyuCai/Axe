@@ -583,7 +583,7 @@ public final class RequestUtil {
 				
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("request analyze error",e);
 		}
 		return parameterValue;
 	}

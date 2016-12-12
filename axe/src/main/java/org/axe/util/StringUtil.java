@@ -2,6 +2,7 @@ package org.axe.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -142,9 +143,27 @@ public final class StringUtil {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * 获取随机的字符串
+	 * @param length
+	 * @return
+	 */
+	public static String getRandomString(int length) { //length表示生成字符串的长度
+	    String base = "abcdefghijklmnopqrstuvwxyz0123456789";   
+	    Random random = new Random();   
+	    StringBuilder sb = new StringBuilder();   
+	    for (int i = 0; i < length; i++) {   
+	        int number = random.nextInt(base.length());   
+	        sb.append(base.charAt(number));   
+	    }   
+	    return sb.toString();   
+	 }   
+
 
 	public static void main(String[] args) {
-		System.out.println(camelToUnderline("SetAbC1d"));
-		System.out.println(underlineToCamel("set_ab_c1d"));
+//		System.out.println(camelToUnderline("SetAbC1d"));
+//		System.out.println(underlineToCamel("set_ab_c1d"));
+		System.out.println(getRandomString(8));
 	}
 }

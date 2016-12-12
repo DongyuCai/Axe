@@ -314,7 +314,7 @@ public final class DataBaseHelper implements Helper{
     	long result = 0;
         try {
         	//包装count(1)语句
-        	sql = "select count(1) from("+sql+") as table_"+System.currentTimeMillis();
+        	sql = SqlHelper.convertSqlCount(sql);
         	
         	//免转换，因为queryPrimitive会做
 //        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);

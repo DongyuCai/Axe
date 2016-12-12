@@ -159,7 +159,9 @@ public class DispatcherServlet extends HttpServlet{
 			View view = new View(e.getPath());
 			try {
 				handleViewResult(view,request,response);
-			} catch (Exception e1) {e1.printStackTrace();}
+			} catch (Exception e1) {
+				LOGGER.error("中断，跳转 error",e);
+			}
 		} catch (RestException e){
 			//需要返回前台信息的异常
 			writeError(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
@@ -172,7 +174,6 @@ public class DispatcherServlet extends HttpServlet{
 	    		//邮件通知
 				MailHelper.errorMail(e);
 			} catch (Exception e1) {
-				e1.printStackTrace();
 				LOGGER.error("mail error",e1);
 			}
 		}
@@ -188,7 +189,6 @@ public class DispatcherServlet extends HttpServlet{
         	writer.flush();
         	writer.close();
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOGGER.error("server error",e);
 		}
     }

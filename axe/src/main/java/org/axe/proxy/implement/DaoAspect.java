@@ -49,6 +49,8 @@ public class DaoAspect implements Proxy{
 		if(targetMethod.isAnnotationPresent(Sql.class)){
 			Sql sqlAnnotation = targetMethod.getAnnotation(Sql.class);
 			String sql = sqlAnnotation.value();
+			//#解析指令代码
+			sql = SqlHelper.convertSqlAppendCommand(sql, methodParams);
 			
 			//#解析Sql中的类名字段名
 			sql = SqlHelper.convertHql2Sql(sql);
@@ -258,11 +260,19 @@ public class DaoAspect implements Proxy{
 	 */
 	private <T> Page<T> pageResult(String sql, Object[] params, Class<?>[] paramTypes, List<T> records, String daoConfigDataSource){
 		PageConfig pageConfig= SqlHelper.getPageConfigFromParams(params, paramTypes);
+		Object[] params_ = new Object[params.length-1];
+		for(int i=0;i<params_.length;i++){
+			params_[i] = params[i];
+		}
+		Class<?>[] paramTypes_ = new Class<?>[paramTypes.length-1];
+		for(int i=0;i<paramTypes_.length;i++){
+			paramTypes_[i] = paramTypes[i];
+		}
 		long count = 0;
 		if(daoConfigDataSource == null){
-			count = DataBaseHelper.countQuery(sql, params, paramTypes);
+			count = DataBaseHelper.countQuery(sql, params_, paramTypes_);
 		}else{
-			count = DataBaseHelper.countQuery(sql, params, paramTypes, daoConfigDataSource);
+			count = DataBaseHelper.countQuery(sql, params_, paramTypes_, daoConfigDataSource);
 		}
 		pageConfig = pageConfig == null?new PageConfig(1,count):pageConfig;
 		long pages = count/pageConfig.getPageSize();

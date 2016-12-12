@@ -18,9 +18,12 @@ import org.axe.util.FileUtil;
 import org.axe.util.IpUtil;
 import org.axe.util.MD5Util;
 import org.axe.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class HomeService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HomeService.class);
 	
 	private String privateToken = null;
 
@@ -81,7 +84,7 @@ public class HomeService {
 			
 			writer.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("home error",e);
 		}
 		return configFile.getAbsolutePath();
 	}

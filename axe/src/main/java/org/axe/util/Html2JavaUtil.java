@@ -6,7 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.axe.home.rest.HomeController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class Html2JavaUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Html2JavaUtil.class);
+	
 	public static void convertHtmlCode(String htmlFileName){
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(htmlFileName)));
@@ -49,9 +55,9 @@ public final class Html2JavaUtil {
 			
 			reader.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.error("html2java error",e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("html2java error",e);
 		}
 	}
 }

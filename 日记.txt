@@ -2,8 +2,6 @@
   ÎÒÏë°ÑFilterµÄsetMapping·½·¨¸Äµô£¬²»ÔÙÊ¹ÓÃPattern×÷Îª¹ýÂËµÄ£¬¸Ä³É¶ÔControllerClass¡¢ActionMethod×÷Îª²ÎÊý´«Èë£¬ÈÃ·½·¨·µ»ØbooleanÀ´ÅÐ¶ÏÊÇ·ñÆ¥ÅäµÄ£¬ÒÔ´ËÀ´½«µÍÊ¹ÓÃÕßµÄÃÅ¼÷£¬ÒòÎª»¹ÊÇÓÐÈË²»Ì«ÊÊÓ¦ÕýÔò±í´ïÊ½µÄ£¬ifÅÐ¶ÏÒªÀ´µÄ¸üÖ±½Ó´Ö±©£¬¿Ï¶¨Ò²¸üºÃÓÃ£¬µ«ÊÇÎÒ»¹ÊÇ·ÅÆúÁË£¬ÒòÎªÎÒ¸Äµ½Ò»°ëÓÖ¾õµÃ£¬Èç¹ûÕâÑù£¬ÄÇÃ´ÏµÍ³ÔÚ¼à¿ØFilterµÄÊ±ºò¾Í²»ÔÙÄÇÃ´Ö±¹Û£¬ËäÈ»Ê¹ÓÃ¼òµ¥ÁË£¬Áé»îÐÔÒ²±ä´óÁË£¬µ«ÊÇ£¬Õâ½«´øÀ´ºÜ¶à²»¿ÉÔ¤²âµÄÏ¸½ÚÀ§ÄÑ£¬±ÈÈç²ã¼¶²»ÔÙÇåÎú£¬ÒòÎªÕâÊÇÕë¶ÔÀàºÍ·½·¨µÄ¹ýÂËÁË£¬ºÍurl²»ÔÙÓÐ±ØÈ»¹ØÏµ£¬ËùÒÔFilter²ã¼¶µÄ¹ÜÀí¾Í±äµÃºÜÀ§ÄÑ£¬ÖîÈç´ËÀàµÈµÈ£¬Òò´Ë£¬ÎÒÏëÒª²»Òª°ÑFilter¸ø²ßÂÔÄ£Ê½Ò»ÏÂ£¬¶à¼¸¸ö²»Í¬ÀàÐÍµÄFilterÀ´£¬µ±È»ÆäÖÐÓÐÊ¹ÓÃPatternµÄFilter£¬ÓÐÖ±½ÓÕë¶ÔClassºÍMethodµÄFilter£¬×îºó£¬ÎÒ»¹ÊÇ·ÅÆúÁË£¬ÎÒ²»Ïëaxe±äµÃÒ»ÍÅÃÔÎí£¬ÎÒÏ£ÍûËû¸É¾»£¬»¹ÊÇÎðÍü³õÖÔ°É¡£
   È·ÊµÐèÒªÒ»¸öInterceptorÁË£¬µ±ÎÒÏë°Ñ/axeÏÂµÄ·ÃÎÊ½Ó¿ÚÆÁ±ÎÆðÀ´µÄÊ±ºò£¬Ê¹ÓÃFilter¿É²»¿ÉÒÔ£¿²»¿ÉÒÔÒòÎª/axeÒÑ¾­FuckOffµôÁËËùÓÐFilter£¬²»¹ÜÄãÊÇË­£¬ÎÒ¶¼²»ÈÃÄã¹ýÂË¡£ÄÇÃ´¸øFilter¼ÓÉÏÒ»¸öÐÂÌØÐÔ£¬ÈÃËû¿ÉÒÔÔÚÅÅ³ýËùÓÐFilterµÄÍ¬Ê±£¬·ÅÄ³Ò»»òÄ³Ð©Ö¸¶¨½Ó¿Ú½øÀ´ÄØ£¿²»ÐÐ£¡ÎÒÒª¹ýÂËÄã£¬Äã¿ÉÒÔÅÅ³ýÎÒ£¨ÅÅ³ýËùÓÐÒ²ÊÇÅÅ³ýÎÒ£©£¬µ«ÊÇ²»ÄÜÄã¾ö¶¨ÎÒÀ´¹ýÂËÄã£¬ÕâÊÇÖ°ÔðÃ÷È·£¬·ñÔò£¬¾Í»á¿´µ½ºÜ×³¹ÛµÄ³¡Ãæ£¬ÓÐµÄÈËÕ¾ÔÚAction½Ç¶ÈÊ¹ÓÃÖ¸¶¨FilterÀ´Ê¹ÓÃ¹ýÂËÆ÷£¬ÓÐµÄÈËÕ¾ÔÚFilter½Ç¶ÈÀ´Æ¥ÅäAction£¬ÄÇÑùÔÚÏëÒªÖªµÀÕâ¸öFilterµ½µ×Æ¥ÅäÁËÄÄÐ©ActionµÄÊ±ºò£¬¾ÍÐèÒª¶àÇþµÀµÄÈ¥²é¿´£¬ÕâÒ»¸öÌ«ÈÃÈË¶ñÐÄÁË£¬ËùÒÔÕâÖÖÁé»î²»ÄÜÒª¡£
 
-
-
 2016/6/2
   Óöµ½Ò»¸öÆæ¹ÖµÄÎÊÌâ£¬ReflectionUtilµÄinvoke·½·¨£¬ÊÇ²ÉÓÃ·´ÉäµÄ·½Ê½£¬µ÷ÓÃ±»µ÷ÓÃÕß£¬ÕâÔÚÖ´ÐÐaction methodºÍ³Ö¾Ã²ã¶ÔbeanÖ´ÐÐset¡¢get·½·¨Ê±ºò£¬¶¼ÓÐÓÃµ½£¬ÕâÀïÓöµ½Ò»¸öÎÊÌâ£¬Èç¹û±»µ÷ÓÃµÄ·½·¨ÖÐ£¬³öÏÖ 1/0 ÕâÑùµÄ²»ÐèÒªcatchµÄÔËÐÐÊ±Òì³££¬ÔòÔÚinvokeÊ±ºòÎÞ·¨²¶×½£¬ËäÈ»¿ØÖÆÌ¨ÓÐ´òÓ¡Òì³££¬µ«ÊÇ²»»áÌø×ªµ½invokeµÄcatch¿é£¬ÓÚÊÇ£¬ÎÒÌ¤ÉÏÁËÑ°ÕÒ½â¾ö°ì·¨µÄÂ·Í¾£¬Ê×ÏÈ£¬ÎÒÈÏÎª£¬Èç¹ûÓÃcglib¼ÓÒ»²ã´úÀí£¬´úÀícontrollerÖÐËùÓÐ·½·¨£¬È»ºóÔÚ´úÀíÖÐ²¶»ñthrowable£¬È»ºóÔÙÏÔÊ½µÄÅ×¸øinvoke£¬»á²»»á½â¾ö£¬½á¹ûÄáÂê£¬²»ÐÐ£¬´úÀíÖÐÒ²²¶»ñ²»µ½£¬È»ºóÎÒ¸ÄÓÃMethodHandleÀ´´úÌæ·´ÉäÖ´ÐÐ£¬ÒÀÈ»²¶»ñ²»µ½£¬²»¹ýÕâÊ±ºòÎÒ·¢ÏÖ£¬Èç¹ûÊÇÊ¹ÓÃjvmÖ±½ÓÖ´ÐÐ·´Éä»òÕßMethodHandle£¬Ò²¾ÍÊÇÔÚEclipseÖÐÖ´ÐÐmainº¯Êý·½·¨£¬ÊÇ¿ÉÒÔ²¶»ñµ½µÄ£¬µ«ÊÇ·ÅÔÚwebÈÝÆ÷ÖÐ£¬Í¨¹ýÇëÇó£¬È»ºó½øµ÷ÓÃaction
 method£¬¾Í²¶»ñ²»µ½£¬Õâ¾ÍËµÃ÷²»ÊÇ·´ÉäµÄÎÊÌâÁË¡£Ò²¿ÉÄÜÊÇwebÈÝÆ÷¶Ô·´ÉäµÄ½âÎö²»Ò»Ñù¡£ÓÚÊÇÎÒ»Ø¼ÒºóÔÙ´ÎÑ°ÕÒ½â¾öÖ®µÀ£¬ÄáÂê£¬½á¹ûÔÙÊÔÒ»´Î£¬ºÃÊ¹ÁË£¬ÎÒ²»ÖªµÀÎªÊ²Ã´¡£
@@ -31,3 +29,13 @@ method£¬¾Í²¶»ñ²»µ½£¬Õâ¾ÍËµÃ÷²»ÊÇ·´ÉäµÄÎÊÌâÁË¡£Ò²¿ÉÄÜÊÇwebÈÝÆ÷¶Ô·´ÉäµÄ½âÎö²»Ò»Ñù¡
  
 2016/9/23
 	×òÌìÓÐÁË´óµÄ·¢Õ¹£¬ÒòÎªÍÏí³ÒÑ¾ÃµÄ×Ô¶¯½¨±í£¬ÔÚ×òÌìËãÊÇ¸æÒ»¶ÎÂä£¬Õâ´ÎÌá½»ÊµÏÖÁËcreate table if not exitµÄÄ£Ê½£¬Õâ¸ö¹ý³Ì·¢ÉúÔÚ¿ò¼ÜÆô¶¯Ö®ºóµÄÁ¢Âí£¬µ±È»Ðè²»ÐèÒªaxe°ïÎÒÃÇ×Ô¶¯½¨±í£¬»¹ÊÇ¿ÉÒÔÍ¨¹ý²ÎÊýÅäÖÃ¹Ø±Õ´ò¿ªµÄ£¬¾ÍÏñÆäËûorm¿ò¼Ü±ÈÈçhibernateÒ»Ñù¡£²»¹ý²»Í¬µÄÊÇ£¬axeÌá¹©µÄ×Ô¶¯½¨±í£¬±È½Ï¼ò£¬Ö»Ìá¹©ÁË½¨±í¹¦ÄÜ£¬Ò²¾ÍÊÇ£¬ÄãÒªaxe°ïÄã½¨±í¿ÉÒÔ£¬ÒªËû°ïÄãÉ¾ÁË£¬²»ÐÐ£¬ÒªËû°ïÄã¸Ä±í£¬²»ÐÐ£¬ÎªÊ²Ã´Ö»Ìá¹©ÕâÒ»´¸×ÓÂòÂô£¬ÒòÎªÎÒÕâ¸öÐ¡³ÌÐòÔ±·¢ÏÖ£¬Ê¹ÓÃhibernateµ±È»Ò²ÓÐ×Ô¶¯½¨±í¹¦ÄÜ£¬Ëû¿ÉÒÔÍ¨¹ýÅäÖÃhibernate.hbm2ddl.autoÕâ¸ö²ÎÊýÀ´Ñ¡Ôñ×Ô¶¯½¨±íµÄÄ£Ê½£¬ÄÇÃ´Ëû³ýÁËcreateÒÔÍâ£¬»¹Ìá¹©ÁËdropºÍupdate£¬ºóÁ½ÕßÊÇÊ²Ã´ÄØ£¬Ïë±Ø´ó¼Ò¶¼ÊÇ²»Ä°ÉúµÄ£¬±ÈÈçupdate£¬ËûÄÜ¼ì²âµ½ÄãµÄpojoÀà·¢Éú½á¹¹±ä»¯£¬ÄÇÃ´ÏàÓ¦µÄÐÞ¸Ä¶ÔÓ¦µÄ ±í½á¹¹£¬µ«ÊÇ£¬ÕâÀïÎÒÃÇ¾­³£·¢ÏÖ£¬±ÈÈçÄã°ÑÄ³¸öPojoÀàAµÄset¡¢get×Ö¶Îfield¸ø¸ÄÃû¶ùÁË£¬ÄÇÃ´Ô­À´µÄÃû×Ö¶ÔÓ¦µÄÊý¾Ý¿â±íµÄ×Ö¶Î£¬²»»áÉ¾µô£¬»¹Áô×Å£¬È»ºóÐÂ¶à³öÀ´¸ö×Ö¶Î£¬°¦~¾ÍÊÇ¸ÄÁËµÄÕâ¸ö×Ö¶ÎÃû¶ù¶ÔÓ¦£¬Õâ£¬»ù±¾ÎÒ¶¼µÃÉ¾µôÄÇ¸ö×Ö¶Î£¬ÕâÊÇupdateµÄÊ±ºò£¬»¹ÓÐdrop£¬ÄÇÓÐÊ±ºò£¬ÎÒÊÇ²»ÏëÎÒµÄ±í±»É¾µôµÄ£¬ËäÈ»ÄÇÑù³¹µ×ÁË£¬µ«ÊÇÊý¾ÝÒ²Ö±½ÓÃ»ÁË£¬ËùÒÔÕâÁ½ÖÖ³¡¾°¶¼²»¹»²»¹»²»¹»Í¨ÓÃ£¬²»ÄÜÍêÈ«ÍêÈ«·ÅÊÖ£¬ËùÒÔ£¬ÎÒ¾Í²»Ïë¸øaxe¼ÓÁË£¬×Ô¶¯½¨±íÒÑ¾­ÔÚ¿ª·¢Ê±ºò¸øÎÒÃÇÊ¡ÏÂºÜ¶àÁ¦Æø£¬µ±ÔÚ¿ª·¢Ê±³öÏÖ×Ö¶Î±ä¸ü£¬Ò²Ö»ÒªÊÖ¶¯dropÏÂ±í£¬ÔÙÆô¶¯¿ò¼Ü¾Í»á¸ø½¨ÉÏ£¬Èç¹û²»ÏëÖØÀ´£¬Ò²¿ÉÒÔ×Ô¼ºalter table£¬¿ò¼Ü·¢ÏÖ±í»¹ÔÚ£¬¾Í²»»á¹ÜÄãµÄ¡£
+	
+2016/11/20
+	¶àÊý¾ÝÔ´µÄÎÊÌâÓÐÁË½×¶ÎÐÔµÄ¸ÄÁ¼£¬ÏÖÔÚÖ§³Ö¶àÊý¾ÝÔ´ÁË£¬@Table×¢½âÓÐÒ»¸ö¿ÉÑ¡ÏîÊÇdataSource£¬Ä¬ÈÏÊÇ¿Õ´®£¬ÒâË¼ÊÇ½»ÓÉ¿ò¼Ü×Ô¼º¾ö²ß£¬Ò»°ã¾ö²ß½á¹û¾ÍÊÇÄ¬ÈÏÊý¾ÝÔ´£¬
+Ä¬ÈÏÊý¾ÝÔ´ÔÚÃ»ÓÐÌØÊâÅäÖÃµÄÊ±ºò¾ÍÊÇÖ¸axe°üÄÚµÄdbcpÊý¾ÝÔ´£¬Èç¹ûÓÐÍâ²¿ÅäÖÃ£¬Èç¹ûÊÇ¶à¸öÊý¾ÝÔ´£¬·´Õý¾ÍÊÇÈ¡ÅäÖÃÊý¾ÝÔ´ÖÐµÄµÚÒ»¸ö¡£
+	ÓÉÓÚaxe¿ÉÒÔÖ§³Ö²»Ê¹ÓÃ@Table×¢½âÀ´±íÊ¾Entity½á¹¹£¬·Ç³£¸É¾»£¬ËùÒÔÊý¾ÝÔ´ÔÚÖ¸¶¨µÄÊ±ºò£¬»áÓÐÁ½¸öµØ·½£¬Ò»¸öÊÇTableÉÏµÄ@Table×¢½â£¬Ò»¸öÊÇDaoÉÏµÄ@DataSource£¬
+ÄÇÃ´ÎÊÌâ¾ÍÀ´ÁË£¬µ½µ×ÒÔË­Îª×¼ÄØ£¬ÎÒÏëÁËÒ»ÍíÉÏ£¬Èç¹û²ÉÓÃÓÅÏÈ¼¶²ßÂÔ£¬ÄÇÃ´¾Í»á³öÏÖ"Äã"¸²¸Ç"ÎÒ"µÄÇé¿ö£¬ÕâÑùÔÚÅÅ²éÊ±ºò¾Í»á·Ç³£¶ñÐÄ£¬ÎÒ²»Ï²»¶£¬ËùÒÔ£¬ÎÒ¾Í²ÉÓÃÁË
+µ¥Ò»Ö°ÔðµÄÑùÊ½£¬Ó¦ÎªDaoÈç¹ûÊÇ¼Ì³ÐÁËBaseDaoRepostoryµÄ»°£¬»áÓµÓÐÒ»Ð©entity²Ù×÷£¬ÕâÐ©²Ù×÷ÄÜ¹»»ñÈ¡µ½TableÉÏµÄ@Table×¢½â£¬ËùÒÔÖ»»áÈÏ×¼@TableÖ¸¶¨µÄÊý¾ÝÔ´£¬
+Èç¹û@Table²»Ö¸¶¨£¬¾Í»á²ÉÓÃÄ¬ÈÏÊý¾ÝÔ´¡£ÄÇÃ´Èç¹ûDaoÓÐ@DataSource×¢½â£¬Ôò@DataSourceÖ¸¶¨µÄÊý¾ÝÔ´£¬Ó°ÏìµÄÊÇ@SQL±ê×¢·½·¨µÄÊý¾ÝÔ´¡£ËùÒÔÈç¹û²»ÊÇÄ¬ÈÏÊý¾ÝÔ´£¬ÎªÁËÇ°ºóÒ»ÖÂ£¬
+¾Í½¨ÒéÒªÔÚEntityÉÏ±ê×¢@TableÖ¸¶¨Êý¾ÝÔ´£¬²¢ÇÒÔÚDaoÉÏÒ²ÒªÊ¹ÓÃ@DataSourceÖ¸¶¨ÏàÍ¬Êý¾ÝÔ´£¬ÒÔÃâ³öÏÖ»ìÂÒ¡£
+	

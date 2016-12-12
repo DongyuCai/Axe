@@ -410,7 +410,7 @@ public final class SqlHelper {
             			StringBuilder getFlagReplaceBuffer = new StringBuilder();
             			List<?> param2List = (List<?>)param;//这就是针对 in 操作的
             			if(CollectionUtil.isEmpty(param2List)){
-            	    		throw new RuntimeException("invalid sql param is null or empty: "+param);
+            	    		throw new RuntimeException("invalid sql param List is null or empty: "+param);
             			}
             			//把元素都取出来，追加到新的元素列表里
             			for(Object eachParam:param2List){
@@ -476,7 +476,7 @@ public final class SqlHelper {
     
     /**
      * 转换 分页查询条件
-     * 转换有条件，如果params里包含约定位置的pageConfig，就转换，如果没有，就不作处理
+     * 转换有条件，如果params里包含约定位置(末尾)的pageConfig，就转换，如果没有，就不作处理
      * 但是，如果有pageConfig但是书写方式不符合约定，会报异常
      */
     public static SqlPackage convertPagConfig(String sql,Object[] params,Class<?>[] paramTypes){
@@ -497,8 +497,8 @@ public final class SqlHelper {
     		if(pageConfig == null) break;
     		
         	if(!getFlagComm && !getFlagSpec){
-        		//默认这里采用getFlagComm模式，减少一点后续sql转换
-        		getFlagComm = true;
+        		//默认这里采用getFlagSpec模式，因为默认情况下，不指定参数位置，会破坏约定，比如分页参数必须是最后一个
+        		getFlagSpec = true;
         	}
         	//替换sql
     		if(sql.toUpperCase().contains(" LIMIT ")){
@@ -541,4 +541,50 @@ public final class SqlHelper {
     	}while(false);
     	return pageConfig;
     }
+    
+    /**
+     * 对拼接指令的转换
+     * TODO：指令解析独立成解析模块
+     * TODO：没有完全验证过，只小范围测试可行，稳定性待确定。
+     * @return
+     */
+    public static String convertSqlAppendCommand(String sql,Object[] params){
+		Pattern p = Pattern.compile("#([1-9][0-9]*)");
+    	Matcher m = p.matcher(sql);
+    	while(m.find()){
+    		String getFlagNumber = m.group(1);
+    		String command = "#"+getFlagNumber;
+    		int paramIndex = CastUtil.castInteger(getFlagNumber)-1;
+    		
+    		Object param = params[paramIndex];
+    		if(String.class.isAssignableFrom(param.getClass())){
+    			//如果参数是字符串
+    			String append = (String)param;
+    			sql = sql.replaceFirst(command, append);
+    		}else{
+    			throw new RuntimeException("invalid sql["+sql+"] ,paramType of command[#"+getFlagNumber+"] must be String.class");
+    		}
+    	}
+    	return sql;
+    }
+    
+    public static String convertSqlCount(String sql){
+		String sqlUpperCase = sql.toUpperCase().trim();
+		if(sqlUpperCase.startsWith("SELECT ") && sqlUpperCase.contains(" FROM ")){
+			String str1 = "SELECT count(1)";
+			String str2 = sql.substring(sqlUpperCase.indexOf(" FROM "));
+			sql = str1+str2;
+		}
+		return sql;
+    }
+    
+    public static void main(String[] args) {
+    	/*String sql = "select * from Test where a=b #1 #3 #12 #11";
+    	Object[]  params = {"***","***","333","***","***","***","***","***","***","***","***","==="};
+    	sql = convertSqlAppendCommand(sql, params);
+    	System.out.println(sql);*/
+    	
+    	String sql = "select a,b,c from table1";
+    	System.out.println(convertSqlCount(sql));
+	}
 }

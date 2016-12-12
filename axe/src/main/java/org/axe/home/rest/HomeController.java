@@ -48,11 +48,14 @@ import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @FilterFuckOff
 @Interceptor({HomeInterceptor.class, SignInInterceptor.class})
 @Controller(basePath = "axe")
 public class HomeController {
+private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
 @Autowired
 private HomeService homeService;
@@ -66,7 +69,7 @@ writer.write(html);
 writer.flush();
 writer.close();
 } catch (Exception e) {
-e.printStackTrace();
+LOGGER.error("home error",e);
 }
 }
 @Request(value = "/sign-in", method = RequestMethod.GET)
