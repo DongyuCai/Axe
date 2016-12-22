@@ -28,6 +28,7 @@ import org.test.service.TestService;
 /**
  * Created by Administrator on 2016/4/8.
  */
+@FilterFuckOff
 @Controller(basePath = "test")
 public class TestController {
 	
@@ -37,9 +38,15 @@ public class TestController {
 	@Autowired
 	private TestDao testDao;
 	
+	@Request(value="",method=RequestMethod.GET)
+	public Object testSign(@RequestParam("sign")String sign){
+		System.out.println(sign);
+		return "ok";
+	}
+	
 	@Request(value="/bestRequest",method=RequestMethod.GET)
 	public Object bestRest(){
-		//返回类型可以直接Object，也可以写明具体类型
+		//返回类型可以直接Object，也可以写明具体型
 		return "推荐的风格，可以是Map、List、Json、字符串等等数据格式";
 	}
 	
