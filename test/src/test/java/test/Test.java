@@ -3,6 +3,7 @@ package test;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.axe.bean.mvc.FileParam;
 
@@ -14,6 +15,8 @@ public class Test{
 
     public static void main(String[] args) {
     	System.out.println(null+"1");
+    	
+    	System.out.println(Map.class);
     	
     	/*Method[] dm = Test.class.getDeclaredMethods();
     	for(Method mt:dm){

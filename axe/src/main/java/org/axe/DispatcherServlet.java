@@ -262,6 +262,15 @@ public class DispatcherServlet extends HttpServlet{
 							//Map
 							parameterValue = param.getBodyMap();
 						}*/
+    						break;
+    					}
+    					
+    					if(parameterValue == null){
+    						//* 如果这种类型，我在request里有，通过类型名称来获取参数
+    						parameterValue = request.getAttribute(parameterClass.toString());
+    						if(parameterValue != null){
+    							break;
+    						}
     					}
     				}
     			}
