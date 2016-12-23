@@ -311,7 +311,7 @@ public interface TestDao extends BaseRepository{
 	
 	//占位符?取值顺序按照方法参数的顺序挨个取
 	@Sql("select * from TestTable where id = ? and name = ?")
-	public TestTable getOne(long id,name);
+	public TestTable getOne(long id,String name);
 
 	@Sql("select * from TestTable")
 	public List<TestTable> getAll();
@@ -325,6 +325,19 @@ public interface TestDao extends BaseRepository{
 	//占位符指定好了取方法参数的第一个参数。
 	@Sql("select * from Export where name like ?1")
 	public Page<Export> pagingExport(String name,PageConfig pageConfig);
+}
+```
+
+##Sql 拼接
+axe的dao层也支持sql语句的条件拼接，使用方法如下：
+```java
+@Dao
+public interface TestDao extends BaseRepository{
+	
+	//第二个参数append 可以通过#([1-9][0-9]*)来动态拼接到sql中，并且同样支持类属性写法如userAage，不用改成表字段写法user_age。
+	@Sql("select * from TestTable where id = ? #2")
+	public TestTable getOne(long id,String append);
+
 }
 ```
 
