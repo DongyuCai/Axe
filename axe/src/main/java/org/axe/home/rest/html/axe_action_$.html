@@ -60,6 +60,11 @@ public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
+					<td align="left">action-title</td>
+					<td align="left">"+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
 					<td align="left">mapping</td>
 					<td align="left">"+handler.getMappingPath()+"</td>
 				</tr>
@@ -82,6 +87,11 @@ public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode
 					<td align="left">&nbsp;</td>
 					<td align="left">action-method</td>
 					<td align="left">"+handler.getActionMethod().toString()+"</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">controller-title</td>
+					<td align="left">"+handler.getControllerClass().getAnnotation(Controller.class).title()+"</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>

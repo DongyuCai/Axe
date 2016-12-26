@@ -10,7 +10,7 @@ public class SqlHelperTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		String sql = "select t.* from Account t where t.id = ?1 #2";
+		String sql = "select * from Account where id = ?1 #2";
 		String append = "and lastLoginIp = 'a'";
 		Object[] params = {1,append};
 		sql = SqlHelper.convertSqlAppendCommand(sql, params);

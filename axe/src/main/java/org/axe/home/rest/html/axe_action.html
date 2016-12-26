@@ -62,6 +62,7 @@ public void action(@RequestParam("token")String token, HttpServletRequest reques
 			<table width="100%">
 				<tr style="background-color: #F0F0F0;">
 					<td align="left">&nbsp;</td>
+					<td align="left"><b>Title</b></td>
 					<td align="left"><b>Mapping</b></td>
 					<td align="left"><b>Request-Method</b></td>
 					<td align="left"><b>Controller-Class</b></td>
@@ -85,7 +86,8 @@ public void action(@RequestParam("token")String token, HttpServletRequest reques
 				for (String mappingPath : mappingPathList) {
 					List<Handler> action = handlerMap.get(mappingPath);
 					for (Handler handler : action) {
-						int code = handler.getControllerClass().getAnnotation(Controller.class).basePath().hashCode();
+						Controller controller = handler.getControllerClass().getAnnotation(Controller.class);
+						int code = controller.basePath().hashCode();
 						String hashCode = null;
 						if (code < 0) {
 							hashCode = "_" + Math.abs(code);
@@ -95,6 +97,7 @@ public void action(@RequestParam("token")String token, HttpServletRequest reques
 				</java>
 				<tr>
 					<td align="left">"+(id++)+"</td>
+					<td align="left">"+controller.title()+"."+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>
 					<td align="left">"+mappingPath+"</td>
 					<td align="left">"+handler.getRequestMethod()+"</td>
 					<td align="left"><a href=""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"">"+handler.getControllerClass().getName()+"</a></td>

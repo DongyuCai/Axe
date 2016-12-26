@@ -11,6 +11,7 @@ import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.util.JsonUtil;
 import org.axe.util.StringUtil;
+import org.test.bean.Account;
 import org.test.bean.Export;
 import org.test.bean.TestTable;
 import org.test.dao.TestDao;
@@ -20,7 +21,7 @@ public class DaoTest {
 	public static void main(String[] args) {
 		try {
 			HelperLoader.init();
-			
+			testDynamicSql("abc", "123", null);
 //			testDaoEntity();
 //			testDaoPaging();
 		} catch (Exception e) {
@@ -58,6 +59,30 @@ public class DaoTest {
 			System.out.print(e.getName()+"\t");
 		}
 		System.out.println();
+	}
+	
+	public static String getSql(String loginName,String mobile,String email){
+		StringBuilder sql = new StringBuilder("select * from Account where 1=1 ");
+		if(StringUtil.isNotEmpty(loginName)){
+			sql.append(" and loginName like '%"+loginName+"%'");
+		}
+
+		if(StringUtil.isNotEmpty(mobile)){
+			sql.append(" and mobile like '%"+mobile+"%'");
+		}
+
+		if(StringUtil.isNotEmpty(email)){
+			sql.append(" and email like '%"+mobile+"%'");
+		}
+		return sql.toString();
+	}
+	
+	public static void testDynamicSql(String loginName,String mobile,String email){
+		TestDao testDao = BeanHelper.getBean(TestDao.class);
+		
+		
+		List<Account> accountList = testDao.getAccountList(getSql(loginName, mobile, email));
+		System.out.println(accountList.size());
 	}
 	
 	public static void testDaoEntity() throws Exception{

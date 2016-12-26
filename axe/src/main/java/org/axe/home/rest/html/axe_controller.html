@@ -36,6 +36,7 @@ public void controller(@RequestParam("token")String token, HttpServletRequest re
 			<table width="100%">
 				<tr style="background-color: #F0F0F0;">
 					<td align="left">&nbsp;</td>
+					<td align="left"><b>Title</b></td>
 					<td align="left"><b>BasePath</b></td>
 					<td align="left"><b>Class</b></td>
 					<td align="left"><b>Action</b></td>
@@ -66,9 +67,12 @@ public void controller(@RequestParam("token")String token, HttpServletRequest re
 								actionCount++;
 							}
 						}
+
+						Controller controller = controllerClass.getAnnotation(Controller.class);
 				</java>
 				<tr>
 					<td align="left">"+(id++)+"</td>
+					<td align="left">"+controller.title()+"</td>
 					<td align="left">"+basePath+"</td>
 					<td align="left">"+controllerClass.getName()+"</td>
 					<java>

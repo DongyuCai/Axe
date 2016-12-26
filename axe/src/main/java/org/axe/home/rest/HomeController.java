@@ -641,6 +641,7 @@ html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr style=\"background-color: #F0F0F0;\">");
 html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\"><b>Title</b></td>");
 html.append("<td align=\"left\"><b>BasePath</b></td>");
 html.append("<td align=\"left\"><b>Class</b></td>");
 html.append("<td align=\"left\"><b>Action</b></td>");
@@ -670,8 +671,11 @@ if (method.isAnnotationPresent(Request.class)) {
 actionCount++;
 }
 }
+
+Controller controller = controllerClass.getAnnotation(Controller.class);
 html.append("<tr>");
 html.append("<td align=\"left\">"+(id++)+"</td>");
+html.append("<td align=\"left\">"+controller.title()+"</td>");
 html.append("<td align=\"left\">"+basePath+"</td>");
 html.append("<td align=\"left\">"+controllerClass.getName()+"</td>");
 String basePathHashCode = null;
@@ -748,6 +752,7 @@ html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr style=\"background-color: #F0F0F0;\">");
 html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\"><b>Title</b></td>");
 html.append("<td align=\"left\"><b>Mapping</b></td>");
 html.append("<td align=\"left\"><b>Request-Method</b></td>");
 html.append("<td align=\"left\"><b>Controller-Class</b></td>");
@@ -770,7 +775,8 @@ int id = 1;
 for (String mappingPath : mappingPathList) {
 List<Handler> action = handlerMap.get(mappingPath);
 for (Handler handler : action) {
-int code = handler.getControllerClass().getAnnotation(Controller.class).basePath().hashCode();
+Controller controller = handler.getControllerClass().getAnnotation(Controller.class);
+int code = controller.basePath().hashCode();
 String hashCode = null;
 if (code < 0) {
 hashCode = "_" + Math.abs(code);
@@ -779,6 +785,7 @@ hashCode = String.valueOf(code);
 }
 html.append("<tr>");
 html.append("<td align=\"left\">"+(id++)+"</td>");
+html.append("<td align=\"left\">"+controller.title()+"."+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>");
 html.append("<td align=\"left\">"+mappingPath+"</td>");
 html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"\">"+handler.getControllerClass().getName()+"</a></td>");
@@ -860,6 +867,11 @@ html.append("<td align=\"left\"><b>值</b></td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">action-title</td>");
+html.append("<td align=\"left\">"+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">mapping</td>");
 html.append("<td align=\"left\">"+handler.getMappingPath()+"</td>");
 html.append("</tr>");
@@ -882,6 +894,11 @@ html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">action-method</td>");
 html.append("<td align=\"left\">"+handler.getActionMethod().toString()+"</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">controller-title</td>");
+html.append("<td align=\"left\">"+handler.getControllerClass().getAnnotation(Controller.class).title()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");

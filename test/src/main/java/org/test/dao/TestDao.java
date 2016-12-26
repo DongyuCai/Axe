@@ -7,6 +7,7 @@ import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.interface_.persistence.BaseRepository;
+import org.test.bean.Account;
 import org.test.bean.Export;
 import org.test.bean.TestTable;
 
@@ -21,6 +22,9 @@ public interface TestDao extends BaseRepository{
 	
 	@Sql("select * from TestTable where name like '%test%'")
 	public Page<TestTable> page();
+	
+	@Sql("#1")
+	public List<Account> getAccountList(String sql);
 	
 	@Sql("select * from Export")
 	public List<Export> getAllExport();
