@@ -36,6 +36,17 @@ public interface Filter {
 	 */
 	public Pattern setNotMapping();
 
+	/**
+	 * 执行过滤
+	 * @param request
+	 * @param response
+	 * @param param 请求参数
+	 * @param handler 请求action Handler
+	 */
 	public boolean doFilter(HttpServletRequest request,HttpServletResponse response,Param param,Handler handler) throws RestException;
 	
+	/**
+	 * 执行收尾
+	 */
+	public void doEnd();
 }

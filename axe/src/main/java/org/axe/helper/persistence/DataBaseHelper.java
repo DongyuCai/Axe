@@ -50,25 +50,24 @@ public final class DataBaseHelper implements Helper{
      */
     public static Connection getConnection(String dataSourceName) throws SQLException {
         HashMap<String,Connection> connMap = CONNECTION_HOLDER.get();
-        if (connMap == null) {
+        if (connMap == null || !connMap.containsKey(dataSourceName)) {
             try {
             	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
-            	if(dsMap.size() > 0){
-            		connMap = new HashMap<>();
-            		for(Map.Entry<String, BaseDataSource> entry:dsMap.entrySet()){
-            			Connection con = entry.getValue().getConnection();
-            			connMap.put(entry.getKey(), con);
-            			LOGGER.debug("get connection:"+con);
-            		}
-            		CONNECTION_HOLDER.set(connMap);
-            	}
+        		if(dsMap.containsKey(dataSourceName)){
+        			Connection connection = dsMap.get(dataSourceName).getConnection();
+        			if(connMap == null){
+        				connMap = new HashMap<>();
+        				CONNECTION_HOLDER.set(connMap);
+        			}
+        			connMap.put(dataSourceName, connection);
+        		}
             } catch (SQLException e) {
                 LOGGER.error("get connection failure", e);
                 throw new SQLException(e);
             }
             
         }
-        if(connMap.containsKey(dataSourceName)){
+        if(connMap != null && connMap.containsKey(dataSourceName)){
         	return connMap.get(dataSourceName);
         }else{
         	throw new RuntimeException("connot find connection of dataSource:"+dataSourceName);
@@ -288,6 +287,7 @@ public final class DataBaseHelper implements Helper{
             	if(rsmd.getColumnCount() > 0);
         			result = (T)table.getObject(1);
 			}
+        	
 			table.close();
 			ps.close();
         } catch (SQLException e) {

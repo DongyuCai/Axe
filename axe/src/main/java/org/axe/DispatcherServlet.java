@@ -89,6 +89,7 @@ public class DispatcherServlet extends HttpServlet{
     	
     	String contentType = ContentType.APPLICATION_JSON.CONTENT_TYPE;
     	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
+    	List<Filter> doEndFilterList = null;
         try {
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
@@ -121,7 +122,13 @@ public class DispatcherServlet extends HttpServlet{
                 boolean doFilterSuccess = true;
                 if(CollectionUtil.isNotEmpty(filterList)){
                 	for(Filter filter:filterList){
+                		//被执行的Filter，都添加到end任务里
+                		if(doEndFilterList == null){
+                			doEndFilterList = new ArrayList<>();
+                		}
+                		doEndFilterList.add(filter);
                 		doFilterSuccess = filter.doFilter(request, response, param, handler);
+                		//执行失败则跳出，不再往下进行
                 		if(!doFilterSuccess) break;
                 	}
                 }
@@ -175,6 +182,17 @@ public class DispatcherServlet extends HttpServlet{
 				MailHelper.errorMail(e);
 			} catch (Exception e1) {
 				LOGGER.error("mail error",e1);
+			}
+		} finally {
+			//##5.执行Filter链各个节点的收尾工作
+			if(CollectionUtil.isNotEmpty(doEndFilterList)){
+				for(Filter filter:doEndFilterList){
+					try {
+						filter.doEnd();
+					} catch (Exception endEx) {
+						LOGGER.error("filter doEnd failed",endEx);
+					}
+				}
 			}
 		}
     }
