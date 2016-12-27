@@ -10,6 +10,7 @@ import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.ReflectionUtil;
+import org.axe.util.StringUtil;
 
 /**
  * 数据源 助手类
@@ -43,12 +44,14 @@ public final class DataSourceHelper implements Helper{
 			
 			for(String dataSourceNameConfig:split){
 				//默认数据源取得是配置数据源列表中的第一个
-				if(DEFAULT_DATASOURCE_NAME == null){
-					DEFAULT_DATASOURCE_NAME = dataSourceNameConfig;
-				}
-				if(dataSourceFactoryClassMap.containsKey(dataSourceNameConfig)){
-					BaseDataSource dataSource = ReflectionUtil.newInstance(dataSourceFactoryClassMap.get(dataSourceNameConfig));
-					DATA_SOURCE.put(dataSourceNameConfig, dataSource);
+				if(StringUtil.isNotEmpty(dataSourceNameConfig)){
+					if(DEFAULT_DATASOURCE_NAME == null){
+						DEFAULT_DATASOURCE_NAME = dataSourceNameConfig;
+					}
+					if(dataSourceFactoryClassMap.containsKey(dataSourceNameConfig)){
+						BaseDataSource dataSource = ReflectionUtil.newInstance(dataSourceFactoryClassMap.get(dataSourceNameConfig));
+						DATA_SOURCE.put(dataSourceNameConfig, dataSource);
+					}
 				}
 			}
 		}

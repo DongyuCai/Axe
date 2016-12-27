@@ -76,6 +76,21 @@ public final class PropsUtil {
         }
         return value;
     }
+    
+    public static long getLong(Properties props, String key) {
+        return getLong(props, key, 0l);
+    }
+
+    /**
+     * 获取属性值（可以指定默认值）
+     */
+    public static long getLong(Properties props, String key, long defaultValue) {
+        long value = defaultValue;
+        if (props.containsKey(key)) {
+            value = CastUtil.castLong(props.getProperty(key));
+        }
+        return value;
+    }
 
 
     /**
