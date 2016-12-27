@@ -498,17 +498,19 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static void beginTransaction() throws SQLException{
-    	getConnection(DataSourceHelper.getDefaultDataSourceName());//先提前把连接加载到ThreadLocal中
-    	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
-        if(connMap != null && connMap.size() > 0){
-            try {
-            	for(Connection conn:connMap.values()){
-            		conn.setAutoCommit(false);
-            	}
-            } catch (SQLException e){
-                LOGGER.error("begin transaction failure",e);
-                throw new SQLException(e);
-            }
+    	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
+    	HashMap<String, Connection> connMap = new HashMap<>();
+        try {
+        	for(String dataSourceName:dsMap.keySet()){
+        		BaseDataSource dataSource = dsMap.get(dataSourceName);
+        		Connection conn = dataSource.getConnection();
+        		conn.setAutoCommit(false);//设置成手动提交
+        		connMap.put(dataSourceName, conn);
+        	}
+        	CONNECTION_HOLDER.set(connMap);
+        } catch (SQLException e){
+            LOGGER.error("begin transaction failure",e);
+            throw new SQLException(e);
         }
     }
 

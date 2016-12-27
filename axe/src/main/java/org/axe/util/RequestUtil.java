@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -137,7 +138,16 @@ public final class RequestUtil {
         String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
         if(StringUtil.isNotEmpty(body)){
             try {
-            	bodyParamMap = JsonUtil.fromJson(body, Map.class);
+            	if(StringUtil.isNotEmpty(body)){
+            		if(body.startsWith("{") && body.endsWith("}")){
+            			bodyParamMap = JsonUtil.fromJson(body, Map.class);
+            		}
+            		if(body.startsWith("[") && body.endsWith("]")){
+            			List<Object> list = JsonUtil.fromJson(body, List.class);
+            			bodyParamMap = new HashMap<String,Object>();
+            			bodyParamMap.put("list", list);
+            		}
+            	}
             } catch (Exception e){
             	LOGGER.error("read body to json failure,body is: "+body);
             }
