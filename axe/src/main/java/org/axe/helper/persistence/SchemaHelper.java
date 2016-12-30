@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.axe.annotation.persistence.ColumnDefine;
+import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Id;
 import org.axe.annotation.persistence.Unique;
 import org.axe.bean.persistence.EntityFieldMethod;
@@ -171,13 +172,17 @@ public class SchemaHelper implements Helper{
 	}
 	
 	public static String javaType2MysqlColumnDefine(Field field,boolean nullAble){
-		String columnDefine = null;
+		StringBuilder columnDefine = new StringBuilder();
 		if(field.isAnnotationPresent(ColumnDefine.class)){
-			columnDefine = field.getAnnotation(ColumnDefine.class).value();
+			columnDefine.append(field.getAnnotation(ColumnDefine.class).value());
 		}else{
 			String javaType = field.getType().getName();
-			columnDefine = nullAble?JAVA2MYSQL_MAP.get(javaType)+" DEFAULT NULL":JAVA2MYSQL_MAP.get(javaType)+" NOT NULL";
+			columnDefine.append(nullAble?JAVA2MYSQL_MAP.get(javaType)+" DEFAULT NULL":JAVA2MYSQL_MAP.get(javaType)+" NOT NULL");
+			
+			if(field.isAnnotationPresent(Comment.class)){
+				columnDefine.append(" COMMENT '").append(field.getAnnotation(Comment.class).value()).append("'");
+			}
 		}
-		return columnDefine;
+		return columnDefine.toString();
 	}
 }
