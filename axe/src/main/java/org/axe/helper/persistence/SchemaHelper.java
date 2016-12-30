@@ -48,7 +48,7 @@ public class SchemaHelper implements Helper{
 		JAVA2MYSQL_MAP.put("java.lang.String", "varchar(255)");
 		JAVA2MYSQL_MAP.put("java.math.BigDecimal", "decimal(19,2)");
 		JAVA2MYSQL_MAP.put("java.sql.Date", "datetime");
-		JAVA2MYSQL_MAP.put("java.util.Date", "date");
+		JAVA2MYSQL_MAP.put("java.util.Date", "datetime");
 		//byte[]
 		JAVA2MYSQL_MAP.put("[B", "tinyblob");
 	}
