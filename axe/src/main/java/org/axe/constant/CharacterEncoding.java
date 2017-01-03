@@ -6,7 +6,7 @@ package org.axe.constant;
  */
 public enum CharacterEncoding {
 	
-	UTF_8("UTF-8");
+	UTF_8("UTF-8"); 
 	
 	public String CHARACTER_ENCODING;
 
