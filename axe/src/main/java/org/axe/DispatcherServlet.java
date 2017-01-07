@@ -175,7 +175,7 @@ public class DispatcherServlet extends HttpServlet{
 		} catch (Exception e) {
 			LOGGER.error("server error",e);
 			//500
-			writeError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
+			writeError(RestException.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
 			
 	    	try {
 	    		//邮件通知

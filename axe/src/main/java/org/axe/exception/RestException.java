@@ -15,12 +15,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestException extends RuntimeException implements HttpServletResponse{
 	private static final long serialVersionUID = 1L;
-
+	
+	/**
+	 * 请求执行失败
+	 */
+	public static final int SC_REQUEST_FAILED = 800;
+	
+	
 	private int status;
 	private String message;
 	
 	public RestException(String message) {
-		this.status = SC_INTERNAL_SERVER_ERROR;
+		this.status = SC_REQUEST_FAILED;
 		this.message = message;
 	}
 	
