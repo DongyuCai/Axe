@@ -22,6 +22,7 @@ public interface ConfigConstant {
     String JDBC_PASSWORD = "jdbc.password";
     String JDBC_DATASOURCE = "jdbc.datasource";
     String JDBC_AUTO_CREATE_TABLE = "jdbc.auto_create_table";
+    String JDBC_SHOW_SQL = "jdbc.show_sql";
     
     //#项目基本配置
     String APP_BASE_PACKAGE = "app.base_package";

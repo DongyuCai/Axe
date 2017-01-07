@@ -123,7 +123,6 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
 	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-		LOGGER.debug(sql);
         List<T> entityList = new ArrayList<>();
         Connection conn = getConnection(TableHelper.getTableDataSourceName(entityClass));
         try {
@@ -137,7 +136,7 @@ public final class DataBaseHelper implements Helper{
 					Method method = entityFieldMethod.getMethod();
 					String fieldName = field.getName();
 					String columnName = StringUtil.camelToUnderline(fieldName);
-					Object setMethodArg = table.getObject(columnName);
+					Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName), field.getType());
 					ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 				}
 				entityList.add(entity);
@@ -160,7 +159,6 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-		LOGGER.debug(sql);
         T entity = null;
         String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
         Connection conn = getConnection(dataSourceName);
@@ -202,7 +200,6 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static List<Map<String, Object>> queryList(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
-		LOGGER.debug(sql);
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection(dataSourceName);
         try {
@@ -239,7 +236,6 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static Map<String, Object> queryMap(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
-		LOGGER.debug(sql);
         Map<String, Object> result = null;
         Connection conn = getConnection(dataSourceName);
         try {
@@ -276,7 +272,6 @@ public final class DataBaseHelper implements Helper{
      */
 	@SuppressWarnings("unchecked")
 	public static <T> T queryPrimitive(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
-		LOGGER.debug(sql);
     	T result = null;
         Connection conn = getConnection(dataSourceName);
         try {
@@ -336,7 +331,6 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
-		LOGGER.debug(sql);
         int rows = 0;
         Connection conn = getConnection(dataSourceName);
         try {
@@ -365,7 +359,6 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     private static InsertResult executeInsert(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
-		LOGGER.debug(sql);
         int rows = 0;
         Object generatedKey = null;
         Connection conn = getConnection(dataSourceName);

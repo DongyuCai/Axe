@@ -15,6 +15,7 @@ import org.axe.annotation.persistence.Table;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.bean.persistence.SqlPackage;
+import org.axe.helper.base.ConfigHelper;
 import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
 import org.axe.util.JsonUtil;
@@ -576,6 +577,12 @@ public final class SqlHelper {
 			sql = str1+str2;
 		}
 		return sql;
+    }
+    
+    public static void debugSql(String sql){
+    	if(ConfigHelper.getJdbcShowSql()){
+    		System.out.println(sql);
+    	}
     }
     
     public static void main(String[] args) {

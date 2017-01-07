@@ -114,6 +114,13 @@ public final class ConfigHelper implements Helper{
     }
     
     /**
+     * 是否打印SQL
+     */
+    public static boolean getJdbcShowSql() {
+    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JDBC_SHOW_SQL, false);
+    }
+    
+    /**
      * 指定框架扫描的包路径，多个路径使用“,”号分割
      */
     public static String getAppBasePackage() {
