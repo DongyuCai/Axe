@@ -109,9 +109,15 @@ public final class DataBaseHelper implements Helper{
         }
     }
     
-    private static PreparedStatement getPrepareStatement(Connection conn, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException{
+    private static PreparedStatement getPrepareStatement(Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
     	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-    	PreparedStatement ps = conn.prepareStatement(sp.getSql());
+    	SqlHelper.debugSql(sp.getSql());
+    	PreparedStatement ps = null;
+    	if(RETURN_GENERATED_KEYS){
+    		ps = conn.prepareStatement(sp.getSql(), Statement.RETURN_GENERATED_KEYS);
+    	}else{
+    		ps = conn.prepareStatement(sp.getSql());
+    	}
     	for(int parameterIndex=1;parameterIndex<=sp.getParams().length;parameterIndex++){
     		ps.setObject(parameterIndex, sp.getParams()[parameterIndex-1]);
     	}
@@ -126,7 +132,7 @@ public final class DataBaseHelper implements Helper{
         List<T> entityList = new ArrayList<>();
         Connection conn = getConnection(TableHelper.getTableDataSourceName(entityClass));
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
 			while(table.next()){
@@ -163,7 +169,7 @@ public final class DataBaseHelper implements Helper{
         String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	if(table.next()){
     			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
@@ -173,7 +179,7 @@ public final class DataBaseHelper implements Helper{
 					Method method = entityFieldMethod.getMethod();
 					String fieldName = field.getName();
 					String columnName = StringUtil.camelToUnderline(fieldName);
-					Object setMethodArg = table.getObject(columnName);
+					Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
 					ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 				}
 			}
@@ -203,7 +209,7 @@ public final class DataBaseHelper implements Helper{
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	ResultSetMetaData rsmd = ps.getMetaData();
 			while(table.next()){
@@ -239,7 +245,7 @@ public final class DataBaseHelper implements Helper{
         Map<String, Object> result = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	ResultSetMetaData rsmd = ps.getMetaData();
         	if(table.next()){
@@ -275,7 +281,7 @@ public final class DataBaseHelper implements Helper{
     	T result = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	if(table.next()){
             	ResultSetMetaData rsmd = ps.getMetaData();
@@ -334,7 +340,7 @@ public final class DataBaseHelper implements Helper{
         int rows = 0;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes);
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	rows = ps.executeUpdate();
 			ps.close();
         } catch (SQLException e) {
@@ -363,11 +369,7 @@ public final class DataBaseHelper implements Helper{
         Object generatedKey = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-        	PreparedStatement ps = conn.prepareStatement(sp.getSql(), Statement.RETURN_GENERATED_KEYS);
-        	for(int parameterIndex=1;parameterIndex<=sp.getParams().length;parameterIndex++){
-        		ps.setObject(parameterIndex, sp.getParams()[parameterIndex-1]);
-        	}
+        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, true);
         	rows = ps.executeUpdate();
         	ResultSet rs = ps.getGeneratedKeys();
         	if(rs.next()){
