@@ -111,7 +111,7 @@ public final class DataBaseHelper implements Helper{
     
     private static PreparedStatement getPrepareStatement(Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
     	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-    	SqlHelper.debugSql(sp.getSql());
+    	SqlHelper.debugSql(sp);
     	PreparedStatement ps = null;
     	if(RETURN_GENERATED_KEYS){
     		ps = conn.prepareStatement(sp.getSql(), Statement.RETURN_GENERATED_KEYS);

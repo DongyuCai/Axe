@@ -579,9 +579,14 @@ public final class SqlHelper {
 		return sql;
     }
     
-    public static void debugSql(String sql){
+    public static void debugSql(SqlPackage sp){
     	if(ConfigHelper.getJdbcShowSql()){
-    		System.out.println(sql);
+    		System.out.println(sp.getSql());
+    		if(sp.getParams() != null){
+    			for(int i=0;i<sp.getParams().length;i++){
+    				System.out.println("arg"+(i+1)+":"+sp.getParams()[i]);
+    			}
+    		}
     	}
     }
     
