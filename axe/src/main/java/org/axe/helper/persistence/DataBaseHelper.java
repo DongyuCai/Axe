@@ -17,6 +17,7 @@ import org.axe.annotation.persistence.Id;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.InsertResult;
 import org.axe.bean.persistence.SqlPackage;
+import org.axe.constant.IdGenerateWay;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.ReflectionUtil;
@@ -401,16 +402,17 @@ public final class DataBaseHelper implements Helper{
     	do{
     		if(executeInsert.getEffectedRows() <= 0) break;
     		//插入成功
-    		if(executeInsert.getGeneratedKey() != null){
+    		Object generatedKey = executeInsert.getGeneratedKey();
+    		if(generatedKey != null){
     			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
     			for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
     				Field field = entityFieldMethod.getField();
-    				if(field.isAnnotationPresent(Id.class)){
+    				if(field.isAnnotationPresent(Id.class) && field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)){
     					Method method = entityFieldMethod.getMethod();
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
-    					if(!executeInsert.getGeneratedKey().equals(idValue)){
+    					if(idValue == null){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						ReflectionUtil.setField(entity, field, executeInsert.getGeneratedKey());
+    						ReflectionUtil.setField(entity, field, generatedKey);
     					}
     					break;
     				}

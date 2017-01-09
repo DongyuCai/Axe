@@ -12,6 +12,7 @@ import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Id;
 import org.axe.annotation.persistence.Unique;
 import org.axe.bean.persistence.EntityFieldMethod;
+import org.axe.constant.IdGenerateWay;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseTypeConvert;
@@ -131,7 +132,9 @@ public class SchemaHelper implements Helper{
 						//#若只有一个@Id主键，那么默认 AUTO_INCREMENT
 						Field field = primaryKeyFieldList.get(0);
 						if(!field.isAnnotationPresent(ColumnDefine.class)){
-							createTableSqlBufer.append(" AUTO_INCREMENT");
+							if(field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)){
+								createTableSqlBufer.append(" AUTO_INCREMENT");
+							}
 						}
 					}
 					createTableSqlBufer.append(",");
