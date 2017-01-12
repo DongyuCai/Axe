@@ -2,6 +2,7 @@ package org.test.bean;
 
 import java.util.Date;
 
+import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Table;
 
 @Table(value = "iot_user_account",autoCreate = false)
@@ -15,6 +16,7 @@ public class Account{
 		this.id = id;
 	}
 
+	@Comment("登录名")
 	private String loginName = ""; //登录名
 	private String password; //密码
 	private String mobile = ""; //手机
