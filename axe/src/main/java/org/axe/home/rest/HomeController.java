@@ -1147,6 +1147,7 @@ html.append("'jdbc.username':'"+ConfigHelper.getJdbcUsername()+"',");
 html.append("'jdbc.password':'"+ConfigHelper.getJdbcPassword()+"',");
 html.append("'jdbc.datasource':'"+ConfigHelper.getJdbcDatasource()+"',");
 html.append("'jdbc.auto_create_table':'"+ConfigHelper.getJdbcAutoCreateTable()+"',");
+html.append("'jdbc.show_sql':'"+ConfigHelper.getJdbcShowSql()+"',");
 html.append("'app.base_package':'"+ConfigHelper.getAppBasePackage()+"',");
 html.append("'app.jsp_path':'"+ConfigHelper.getAppJspPath()+"',");
 html.append("'app.asset_path':'"+ConfigHelper.getAppAssetPath()+"',");
@@ -1364,7 +1365,7 @@ html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">jdbc.datasource</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getJdbcDatasource()+"</td>");
-html.append("<td align=\"left\">指定DataSource数据源实现类</td>");
+html.append("<td align=\"left\">指定DataSource数据源实现类，默认取第一个</td>");
 html.append("<td align=\"left\">,</td>");
 html.append("<td align=\"left\">");
 html.append("<input name=\"jdbc.datasource\" type=\"text\" value=\""+ConfigHelper.getJdbcDatasource()+"\" onchange=\"setProperty('jdbc.datasource',this.value)\" />");
@@ -1378,6 +1379,27 @@ html.append("<td align=\"left\">是否框架启动后自动建表</td>");
 html.append("<td align=\"left\"></td>");
 html.append("<td align=\"left\">");
 html.append("<input name=\"jdbc.auto_create_table\" type=\"text\" value=\""+ConfigHelper.getJdbcAutoCreateTable()+"\" onchange=\"setProperty('jdbc.auto_create_table',this.value)\" />");
+html.append("</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">jdbc.show_sql</td>");
+html.append("<td align=\"left\">"+ConfigHelper.getJdbcShowSql()+"</td>");
+html.append("<td align=\"left\">是否控制台打印sql记录</td>");
+html.append("<td align=\"left\"></td>");
+html.append("<td align=\"left\">");
+html.append("<select name=\"jdbc.show_sql\" onchange=\"setProperty('jdbc.show_sql',this.value)\">");
+html.append("<option value=\"true\"");
+if(ConfigHelper.getJdbcShowSql()){
+html.append("selected=\"true\"");
+}
+html.append(">是</option>");
+html.append("<option value=\"false\"");
+if(!ConfigHelper.getJdbcShowSql()){
+html.append("selected=\"true\"");
+}
+html.append(">否</option>");
+html.append("</select>");
 html.append("</td>");
 html.append("</tr>");
 html.append("<tr>");

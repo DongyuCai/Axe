@@ -21,6 +21,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 			'jdbc.password':'"+ConfigHelper.getJdbcPassword()+"',
 			'jdbc.datasource':'"+ConfigHelper.getJdbcDatasource()+"',
 			'jdbc.auto_create_table':'"+ConfigHelper.getJdbcAutoCreateTable()+"',
+			'jdbc.show_sql':'"+ConfigHelper.getJdbcShowSql()+"',
 			'app.base_package':'"+ConfigHelper.getAppBasePackage()+"',
 			'app.jsp_path':'"+ConfigHelper.getAppJspPath()+"',
 			'app.asset_path':'"+ConfigHelper.getAppAssetPath()+"',
@@ -266,7 +267,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left">&nbsp;</td>
 					<td align="left">jdbc.datasource</td>
 					<td align="left">"+ConfigHelper.getJdbcDatasource()+"</td>
-					<td align="left">指定DataSource数据源实现类</td>
+					<td align="left">指定DataSource数据源实现类，默认取第一个</td>
 					<td align="left">,</td>
 					<td align="left">
 						<input name="jdbc.datasource" type="text" value=""+ConfigHelper.getJdbcDatasource()+"" onchange="setProperty('jdbc.datasource',this.value)" />
@@ -280,6 +281,35 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 					<td align="left"></td>
 					<td align="left">
 						<input name="jdbc.auto_create_table" type="text" value=""+ConfigHelper.getJdbcAutoCreateTable()+"" onchange="setProperty('jdbc.auto_create_table',this.value)" />
+					</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">jdbc.show_sql</td>
+					<td align="left">"+ConfigHelper.getJdbcShowSql()+"</td>
+					<td align="left">是否控制台打印sql记录</td>
+					<td align="left"></td>
+					<td align="left">
+						<select name="jdbc.show_sql" onchange="setProperty('jdbc.show_sql',this.value)">
+							<option value="true" 
+							<java>
+								if(ConfigHelper.getJdbcShowSql()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>是</option>
+							<option value="false" 
+							<java>
+								if(!ConfigHelper.getJdbcShowSql()){
+							</java>
+							selected="true"
+							<java>
+								}
+							</java>
+							>否</option>
+						</select>
 					</td>
 				</tr>
 				<tr>
