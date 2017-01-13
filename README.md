@@ -6,7 +6,7 @@
 ##### 版本号含义: 稳定版本大功能.小版本bug和小功能.jdk版本
 ##### 需要 jdk 版本 1.7
 
-### [@快速上手开始](https://github.com/DongyuCai/Axe/wiki)
+### [快速上手开始](https://github.com/DongyuCai/Axe/wiki)
 
 ----------
 
