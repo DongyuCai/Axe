@@ -1,14 +1,14 @@
 <img src='https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/axe/favicon.png'/>
 
-###Axe 意为快斧，是一款免费开源的web服务端框架，非常精简，称手利器！不为复杂，只为好用！
+### Axe 意为快斧，是一款免费开源的web服务端框架，非常精简，称手利器！不为复杂，只为好用！
 
-#####分支版本 0.1.7
-#####版本号含义: 稳定版本大功能.小版本bug和小功能.jdk版本
-#####需要 jdk 版本 1.7
+##### 分支版本 0.1.7
+##### 版本号含义: 稳定版本大功能.小版本bug和小功能.jdk版本
+##### 需要 jdk 版本 1.7
 
 ----------
 
-##支持特性（基本可以不用看，都是常用的东西）：
+## 支持特性（基本可以不用看，都是常用的东西）：
 * IOC（[@Controller]()、[@Service]()、[@Autowired]()，使用[BeanHelper]()获取BeanMap）
 * AOP/Proxy（[@Aspect]()注解切面类，实现[Proxy]()或者继承[AspectProxy]()加强切点）
 * restful风格的Http请求支持，内建了POST、DELETE、PUT、GET类型，可以查看[RequestMethod]()枚举
@@ -32,31 +32,28 @@
 * dao支持自动建表，框架在所有Helper初始化结束后，会有SchemaHelper来负责所有Entity的ORM Schema创建
 * Tns支持事务的传播，目前不支持级别配置
 * 多数据源支持，可以通过axe.properties配置文件的 jdbc.datasource=dataSource1,dataSource2 这样来配置。
-
+* 支持sql语句条件拼接，使用"#index"来直接拼接参数中的字符串，支持预处理，具体参考wiki描述。
+* 支持hoke插件，解决大数据查询速度缓慢，方法结果缓存策略
+* 支持非rest的请求，也支持rest请求转发非rest请求，比如服务端跳转jsp，浏览器直接请求jsp等。
 
 ----------
 
-##待加入特性列表：
+## 待加入特性列表：
 * 权限验证
 * 文件下载
 * TODO列表
 * dao层支持数据库主从分离
-* 支持可配置的sql打印
-* 支持sql语句条件拼接，参考rose jade
 
 ----------
 
-##正在进行：
+## 正在进行：
 * 框架管理界面、系统监控
-* 增加支持插件系统，正在增加hoke插件，解决大数据查询速度缓慢，方法结果缓存策略
 
-##需要验证:
+## 需要验证:
  * 数据库表，存取blob字段是否有问题。
- * 页面jsp能否正常访问和跳转
-	验证通过
 ----------
 
-##约定（这个要看，约定，是为了更方便）：
+## 约定（这个要看，约定，是为了更方便）：
 * Request.value 也就是url 只支持字母加数字，理论上也够用了，因此，url的 pathParam 变量名只支持 字母数字，这点框架启动会检测。
 * post请求的payload 只支持json格式，不能是数组，key必须用英文双引号包围，value 必须区分数字字符串，如果是字符串纯字母，必须双引号包围。总之按规范来。
     * 这样是可以的：{"key":"value"} 或者 {"key":[{"subkey":"subvalue"}]} 等json格式
