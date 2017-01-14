@@ -101,8 +101,10 @@ public class DispatcherServlet extends HttpServlet{
             //获取 Action 处理器
             Handler handler = ControllerHelper.getHandler(requestMethod,requestPath);
             if(handler != null){
-                //获取 Controller  类和 Bean 实例
-                Class<?> controllerClass = handler.getControllerClass();
+            	//获取 Controller  类和 Bean 实例
+            	Class<?> controllerClass = handler.getControllerClass();
+            	Method actionMethod = handler.getActionMethod();
+            	
                 Object controllerBean = BeanHelper.getBean(controllerClass);
                 contentType = handler.getContentType();
                 characterEncoding = handler.getCharacterEncoding();
@@ -116,6 +118,8 @@ public class DispatcherServlet extends HttpServlet{
                     //如果不是
                     param = AjaxRequestHelper.createParam(request,requestPath,handler.getMappingPath());
                 }
+                List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
+                param.setActionParamList(actionParamList);
                 
                 //##2.先执行Filter链
                 List<Filter> filterList = handler.getFilterList();
@@ -144,8 +148,7 @@ public class DispatcherServlet extends HttpServlet{
                 //##4.执行action
                 if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
-                	Method actionMethod = handler.getActionMethod();
-                	Object result = this.invokeActionMethod(controllerBean, actionMethod, param, request, response);
+                	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
                 	if(result != null){
                 		if(result instanceof View){
                 			handleViewResult((View)result,request,response);
@@ -210,9 +213,8 @@ public class DispatcherServlet extends HttpServlet{
 			LOGGER.error("server error",e);
 		}
     }
-
-    private Object invokeActionMethod(Object controllerBean,Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
-    	Object result;
+    
+    private List<Object> convertRequest2RequestParam(Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
     	Type[] parameterTypes = actionMethod.getGenericParameterTypes();
     	Annotation[][] parameterAnnotations = actionMethod.getParameterAnnotations();
     	parameterTypes = parameterTypes == null?new Class<?>[0]:parameterTypes;
@@ -283,13 +285,14 @@ public class DispatcherServlet extends HttpServlet{
     						break;
     					}
     					
-    					if(parameterValue == null){
-    						//* 如果这种类型，我在request里有，通过类型名称来获取参数
-    						parameterValue = request.getAttribute(parameterClass.toString());
-    						if(parameterValue != null){
-    							break;
-    						}
-    					}
+    					/*
+						if(parameterValue == null){
+							//* 如果这种类型，我在request里有，通过类型名称来获取参数
+							parameterValue = request.getAttribute(parameterClass.toString());
+							if(parameterValue != null){
+								break;
+							}
+    					}*/
     				}
     			}
     			
@@ -297,9 +300,7 @@ public class DispatcherServlet extends HttpServlet{
     		}while(false);
     		parameterValueList.add(parameterValue);
     	}
-    	
-        result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,parameterValueList.toArray());
-        return result;
+    	return parameterValueList;
     }
     
     private void handleViewResult(View view,HttpServletRequest request,HttpServletResponse response) throws IOException,ServletException{

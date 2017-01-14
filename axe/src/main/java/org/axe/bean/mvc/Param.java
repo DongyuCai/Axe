@@ -16,6 +16,7 @@ public class Param {
     private List<FileParam> fileParamList;
     private Map<String,Object> bodyParamMap;
 //    private Map<String,Object> paramMap;
+    private List<Object> actionParamList;
 
 
     public Param(List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
@@ -87,8 +88,40 @@ public class Param {
     public Map<String,Object> getBodyMap(){
         return bodyParamMap;
     }
+    
+    public List<FormParam> getFormParamList() {
+		return formParamList;
+	}
 
-    public boolean isEmpty(){
+	public void setFormParamList(List<FormParam> formParamList) {
+		this.formParamList = formParamList;
+	}
+
+	public List<FileParam> getFileParamList() {
+		return fileParamList;
+	}
+
+	public void setFileParamList(List<FileParam> fileParamList) {
+		this.fileParamList = fileParamList;
+	}
+
+	public Map<String, Object> getBodyParamMap() {
+		return bodyParamMap;
+	}
+
+	public void setBodyParamMap(Map<String, Object> bodyParamMap) {
+		this.bodyParamMap = bodyParamMap;
+	}
+
+	public List<Object> getActionParamList() {
+		return actionParamList;
+	}
+
+	public void setActionParamList(List<Object> actionParamList) {
+		this.actionParamList = actionParamList;
+	}
+
+	public boolean isEmpty(){
         return CollectionUtil.isEmpty(formParamList) && 
         		CollectionUtil.isEmpty(fileParamList) && 
         		CollectionUtil.isEmpty(bodyParamMap);
