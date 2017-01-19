@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.axe.Axe;
 import org.axe.bean.mvc.FileParam;
+import org.axe.util.StringUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -15,14 +16,16 @@ public class Test{
 	
 
     public static void main(String[] args) {
+    	
+    	System.out.println(StringUtil.getRandomString(32));
     	/*System.out.println(null+"1");
     	
     	System.out.println(Map.class);*/
-    	try {
+    	/*try {
 			Axe.init();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
     	
     	/*Method[] dm = Test.class.getDeclaredMethods();
     	for(Method mt:dm){
