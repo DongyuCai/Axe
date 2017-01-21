@@ -96,7 +96,7 @@ public final class FormRequestHelper {
             LOGGER.error("create param failed",e);
             throw new RuntimeException(e);
         }
-        return new Param(formParamList,fileParamList,null);
+        return new Param(null,formParamList,fileParamList,null);
     }
 
     /**

@@ -5,13 +5,14 @@ import java.io.FileReader;
 import java.util.Date;
 import java.util.List;
 
+import org.axe.Axe;
 import org.axe.bean.persistence.Page;
-import org.axe.helper.HelperLoader;
 import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.util.JsonUtil;
 import org.axe.util.StringUtil;
 import org.test.bean.Account;
+import org.test.bean.DnTable;
 import org.test.bean.Export;
 import org.test.bean.TestTable;
 import org.test.dao.TestDao;
@@ -20,13 +21,26 @@ public class DaoTest {
 	
 	public static void main(String[] args) {
 		try {
-			HelperLoader.init();
-			testDynamicSql("abc", "123", null);
+			Axe.init();
+			testDynamicNameTable();
+//			testDynamicSql("abc", "123", null);
 //			testDaoEntity();
 //			testDaoPaging();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	/**
+	 * 测试动态表名
+	 */
+	public static void testDynamicNameTable(){
+		TestDao testDao = BeanHelper.getBean(TestDao.class);
+		DnTable dnTable = new DnTable();
+		dnTable.setId(1l);
+		dnTable.setName("adf");
+		testDao.saveEntity(dnTable);
 	}
 	
 	public static void testInsert() throws Exception{
@@ -46,7 +60,6 @@ public class DaoTest {
 	}
 	
 	public static void testDaoPaging() throws Exception{
-		HelperLoader.init();
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
 		List<TestTable> all = testDao.getAll();
 		Page<TestTable> pageList = testDao.page();

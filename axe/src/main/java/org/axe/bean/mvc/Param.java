@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.axe.util.CollectionUtil;
+import org.axe.util.StringUtil;
 
 /**
  * 请求参数对象
  * Created by CaiDongYu on 2016/4/11.
  */
 public class Param {
+	private String body;
     private List<FormParam> formParamList;
     private List<FileParam> fileParamList;
     private Map<String,Object> bodyParamMap;
@@ -19,8 +21,9 @@ public class Param {
     private List<Object> actionParamList;
 
 
-    public Param(List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
-        this.formParamList = formParamList;
+    public Param(String body, List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
+        this.body = body;
+    	this.formParamList = formParamList;
         this.fileParamList = fileParamList;
         this.bodyParamMap = bodyParamMap;
         
@@ -49,8 +52,16 @@ public class Param {
         	}
         }
     }
+    
+    public void setBody(String body) {
+		this.body = body;
+	}
 
-    /**
+    public String getBody() {
+		return body;
+	}
+    
+	/**
      * 获取请求参数的映射
      */
 	public Map<String,List<FormParam>> getFieldMap(){
@@ -85,10 +96,6 @@ public class Param {
         return fileMap;
     }
 
-    public Map<String,Object> getBodyMap(){
-        return bodyParamMap;
-    }
-    
     public List<FormParam> getFormParamList() {
 		return formParamList;
 	}
@@ -124,6 +131,7 @@ public class Param {
 	public boolean isEmpty(){
         return CollectionUtil.isEmpty(formParamList) && 
         		CollectionUtil.isEmpty(fileParamList) && 
-        		CollectionUtil.isEmpty(bodyParamMap);
+        		CollectionUtil.isEmpty(bodyParamMap) && 
+        		StringUtil.isEmpty(body);
     }
 }

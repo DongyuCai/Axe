@@ -31,4 +31,5 @@ public interface TestDao extends BaseRepository{
 	
 	@Sql("select * from Export where name like ?1")
 	public Page<Export> pagingExport(String name,PageConfig pageConfig);
+	
 }

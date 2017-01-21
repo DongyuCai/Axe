@@ -1,6 +1,5 @@
 package org.axe.util;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -8,7 +7,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -132,29 +130,6 @@ public final class RequestUtil {
         return formParamList;
     }
 
-    @SuppressWarnings("unchecked")
-	public static Map<String,Object> parsePayload(HttpServletRequest request)throws IOException{
-    	Map<String,Object> bodyParamMap = null;
-        String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
-        if(StringUtil.isNotEmpty(body)){
-            try {
-            	if(StringUtil.isNotEmpty(body)){
-            		if(body.startsWith("{") && body.endsWith("}")){
-            			bodyParamMap = JsonUtil.fromJson(body, Map.class);
-            		}
-            		if(body.startsWith("[") && body.endsWith("]")){
-            			List<Object> list = JsonUtil.fromJson(body, List.class);
-            			bodyParamMap = new HashMap<String,Object>();
-            			bodyParamMap.put("list", list);
-            		}
-            	}
-            } catch (Exception e){
-            	LOGGER.error("read body to json failure,body is: "+body);
-            }
-        }
-        return bodyParamMap;
-    }
-    
     public static String getRequestMethod(HttpServletRequest request){
     	return request.getMethod().toUpperCase();
     }

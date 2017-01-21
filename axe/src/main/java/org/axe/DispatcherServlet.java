@@ -266,7 +266,7 @@ public class DispatcherServlet extends HttpServlet{
     					}
     					//* 如果是Map<String,Object> 
     					if(ReflectionUtil.compareType(Map.class, parameterClass)){
-    						parameterValue = param.getBodyMap();
+    						parameterValue = param.getBodyParamMap();
     						/*if(parameterizedType instanceof ParameterizedType){
     						Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
     						if(actualTypes.length > 1){
