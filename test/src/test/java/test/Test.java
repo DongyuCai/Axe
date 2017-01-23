@@ -1,13 +1,10 @@
 package test;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.axe.Axe;
 import org.axe.bean.mvc.FileParam;
-import org.axe.util.StringUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -16,8 +13,22 @@ public class Test{
 	
 
     public static void main(String[] args) {
+    	String sql = "update Tablea t set t.name = ? and `my_age`= ? and t.sex=? where t.id=t2.id";
+    	Pattern colCompile = Pattern.compile(" ([a-zA-Z0-9\\.\\-_`]*) ?= ?\\?");
+		Matcher colMatcher = colCompile.matcher(sql);
+		
+		while(colMatcher.find()){
+			System.out.println(colMatcher.group(1));
+		}
     	
-    	System.out.println(StringUtil.getRandomString(32));
+    	/*String str = " A  b   c d";
+    	while(str.contains("  ")){
+    		str = str.replaceAll("  ", " ");
+    	}
+    	str = str.trim();
+    	System.out.println(str);*/
+    	
+//    	System.out.println(StringUtil.getRandomString(32));
     	/*System.out.println(null+"1");
     	
     	System.out.println(Map.class);*/

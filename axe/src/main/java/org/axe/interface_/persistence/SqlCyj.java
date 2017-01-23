@@ -10,6 +10,8 @@ import org.axe.helper.persistence.DataBaseHelper;
  * {@link DataBaseHelper#getPrepareStatement}
  */
 public interface SqlCyj {
+	
+	
 
 	/**
 	 * 抢劫SqlPackage包

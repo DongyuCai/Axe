@@ -49,14 +49,21 @@ public class DaoAspect implements Proxy{
 		if(targetMethod.isAnnotationPresent(Sql.class)){
 			Sql sqlAnnotation = targetMethod.getAnnotation(Sql.class);
 			String sql = sqlAnnotation.value();
+			
 			//#解析指令代码
 			sql = SqlHelper.convertSqlAppendCommand(sql, methodParams);
-			
 			//#解析Sql中的类名字段名
 			sql = SqlHelper.convertHql2Sql(sql);
+			//#空格格式化，去掉首位空格，规范中间的空格{
+			sql = sql.trim();
+			while(sql.contains("  ")){
+				sql = sql.replaceAll("  ", " ");
+	    	}
+			sql = sql.trim();
+			//}
 			
 			String sqlUpperCase = sql.toUpperCase();
-			if(sqlUpperCase.startsWith("SELECT") || sqlUpperCase.contains(" SELECT ")){
+			if(sqlUpperCase.startsWith("SELECT")){
 				Type returnType = targetMethod.getGenericReturnType();
 				Class<?> rawType = targetMethod.getReturnType();
 				if(returnType instanceof ParameterizedType){

@@ -40,7 +40,7 @@ public class DaoTest {
 		DnTable dnTable = new DnTable();
 		dnTable.setId(1l);
 		dnTable.setName("adf");
-		testDao.saveEntity(dnTable);
+		testDao.updateEntity(dnTable);
 	}
 	
 	public static void testInsert() throws Exception{

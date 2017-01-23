@@ -138,7 +138,7 @@ public final class SqlHelper {
         	//# update
         	if(!field.isAnnotationPresent(Id.class)){
         		//#没有@Id注解的字段作为修改内容
-        		columnsUpdate.append(column).append("=?, ");
+        		columnsUpdate.append("`").append(column).append("`").append("=?, ");
         		params.add(ReflectionUtil.invokeMethod(entity, method));
         	}else{
         		hashIdField = true;
