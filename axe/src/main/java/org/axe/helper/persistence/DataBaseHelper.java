@@ -22,7 +22,6 @@ import org.axe.constant.IdGenerateWay;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseDataSource;
-import org.axe.interface_.persistence.SqlCyj;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -41,15 +40,13 @@ public final class DataBaseHelper implements Helper{
     
     private static ThreadLocal<HashMap<String,Connection>> CONNECTION_HOLDER;
     
-    private static SqlCyj sqlCyj;
-
     @Override
     public void init() {
     	synchronized (this) {
     		//#数据库连接池
             CONNECTION_HOLDER = new ThreadLocal<>();
             //#SQL程咬金
-            Set<Class<?>> sqlCyjClassSet = ClassHelper.getClassSetBySuper(SqlCyj.class);
+            /*Set<Class<?>> sqlCyjClassSet = ClassHelper.getClassSetBySuper(SqlCyj.class);
             if(CollectionUtil.isNotEmpty(sqlCyjClassSet)){
             	if(sqlCyjClassSet.size() > 1){
             		throw new RuntimeException("find "+sqlCyjClassSet.size()+" SqlCyj");
@@ -58,7 +55,7 @@ public final class DataBaseHelper implements Helper{
             		sqlCyj = ReflectionUtil.newInstance(sqlCyjClass);
             		break;
             	}
-            }
+            }*/
 		}
     }
 
@@ -133,9 +130,9 @@ public final class DataBaseHelper implements Helper{
     private static PreparedStatement getPrepareStatement(Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
     	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
     	//半路杀出个“程咬金”
-    	if(sqlCyj != null){
+    	/*if(sqlCyj != null){
     		sp = sqlCyj.robSqlPackage(sp);
-    	}
+    	}*/
     	//打印调试sql
     	SqlHelper.debugSql(sp);
     	PreparedStatement ps = null;

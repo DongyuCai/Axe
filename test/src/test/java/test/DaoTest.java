@@ -22,7 +22,7 @@ public class DaoTest {
 	public static void main(String[] args) {
 		try {
 			Axe.init();
-			testDynamicNameTable();
+			testDynamicTable();
 //			testDynamicSql("abc", "123", null);
 //			testDaoEntity();
 //			testDaoPaging();
@@ -33,14 +33,14 @@ public class DaoTest {
 	
 	
 	/**
-	 * 测试动态表名
+	 * 测试动态表
 	 */
-	public static void testDynamicNameTable(){
+	public static void testDynamicTable(){
 		TestDao testDao = BeanHelper.getBean(TestDao.class);
 		DnTable dnTable = new DnTable();
 		dnTable.setId(1l);
 		dnTable.setName("adf");
-		testDao.updateEntity(dnTable);
+		testDao.deleteEntity(dnTable);
 	}
 	
 	public static void testInsert() throws Exception{
