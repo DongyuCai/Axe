@@ -11,87 +11,88 @@ import org.apache.commons.lang3.StringUtils;
  * Created by CaiDongYu on 2016/4/8.
  */
 public final class StringUtil {
-	private StringUtil() {}
+	private StringUtil() {
+	}
 
 	/**
 	 * 按照字符顺序排序
 	 */
-	public static List<String> sortStringSet(Set<String> stringSet){
+	public static List<String> sortStringSet(Set<String> stringSet) {
 		LinkedList<String> sortList = new LinkedList<>();
-		if(stringSet != null && stringSet.size() > 0){
-			for(String str:stringSet){
-				if(sortList.size() == 0){
+		if (stringSet != null && stringSet.size() > 0) {
+			for (String str : stringSet) {
+				if (sortList.size() == 0) {
 					sortList.add(str);
 					continue;
 				}
-				
-				int j=0;
-				for(;j<sortList.size();j++){
+
+				int j = 0;
+				for (; j < sortList.size(); j++) {
 					String sortStr = sortList.get(j);
-					if(str.compareTo(sortStr) <= 0){
+					if (str.compareTo(sortStr) <= 0) {
 						sortList.add(j, str);
 						break;
 					}
 				}
-				if(j == sortList.size()){
+				if (j == sortList.size()) {
 					sortList.add(str);
 				}
 			}
 		}
 		return sortList;
 	}
-	
+
 	/**
 	 * 按照字符顺序排序
 	 */
-	public static List<String> sortStringList(List<String> stringList){
+	public static List<String> sortStringList(List<String> stringList) {
 		LinkedList<String> sortList = new LinkedList<>();
-		if(CollectionUtil.isNotEmpty(stringList)){
-			for(String str:stringList){
-				if(sortList.size() == 0){
+		if (CollectionUtil.isNotEmpty(stringList)) {
+			for (String str : stringList) {
+				if (sortList.size() == 0) {
 					sortList.add(str);
 					continue;
 				}
-				int j=0;
-				for(;j<sortList.size();j++){
+				int j = 0;
+				for (; j < sortList.size(); j++) {
 					String sortStr = sortList.get(j);
-					if(str.compareTo(sortStr) <= 0){
+					if (str.compareTo(sortStr) <= 0) {
 						sortList.add(j, str);
 						break;
 					}
 				}
-				if(j == sortList.size()){
+				if (j == sortList.size()) {
 					sortList.add(str);
 				}
 			}
 		}
 		return sortList;
 	}
-	
-	public static List<String> sortStringAry(String[] stringAry){
+
+	public static List<String> sortStringAry(String[] stringAry) {
 		LinkedList<String> sortList = new LinkedList<>();
-		if(stringAry != null && stringAry.length > 0){
-			for(String str:stringAry){
-				if(sortList.size() == 0){
+		if (stringAry != null && stringAry.length > 0) {
+			for (String str : stringAry) {
+				if (sortList.size() == 0) {
 					sortList.add(str);
 					continue;
 				}
-				int j=0;
-				for(;j<sortList.size();j++){
+				int j = 0;
+				for (; j < sortList.size(); j++) {
 					String sortStr = sortList.get(j);
-					if(str.compareTo(sortStr) <= 0){
+					if (str.compareTo(sortStr) <= 0) {
 						sortList.add(j, str);
 						break;
 					}
 				}
-				if(j == sortList.size()){
+				if (j == sortList.size()) {
 					sortList.add(str);
 				}
 			}
 		}
 		return sortList;
 	}
-	
+
 	public static boolean isEmpty(String str) {
 		if (str != null) {
 			str = str.trim();
@@ -114,7 +115,7 @@ public final class StringUtil {
 		for (int i = 0; i < len; i++) {
 			char c = param.charAt(i);
 			if (Character.isUpperCase(c)) {
-				if(i > 0){
+				if (i > 0) {
 					sb.append(UNDERLINE);
 				}
 				sb.append(Character.toLowerCase(c));
@@ -143,27 +144,31 @@ public final class StringUtil {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * 获取随机的字符串
+	 * 
 	 * @param length
 	 * @return
 	 */
-	public static String getRandomString(int length) { //length表示生成字符串的长度
-	    String base = "abcdefghijklmnopqrstuvwxyz0123456789";   
-	    Random random = new Random();   
-	    StringBuilder sb = new StringBuilder();   
-	    for (int i = 0; i < length; i++) {   
-	        int number = random.nextInt(base.length());   
-	        sb.append(base.charAt(number));   
-	    }   
-	    return sb.toString();   
-	 }   
+	public static String getRandomString(int length) { // length表示生成字符串的长度
+		String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+		return getRandomString(length, base);
+	}
 
+	public static String getRandomString(int length,String charSource) { // length表示生成字符串的长度
+		Random random = new Random();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			int number = random.nextInt(charSource.length());
+			sb.append(charSource.charAt(number));
+		}
+		return sb.toString();
+	}
 
 	public static void main(String[] args) {
-//		System.out.println(camelToUnderline("SetAbC1d"));
-//		System.out.println(underlineToCamel("set_ab_c1d"));
+		// System.out.println(camelToUnderline("SetAbC1d"));
+		// System.out.println(underlineToCamel("set_ab_c1d"));
 		System.out.println(getRandomString(8));
 	}
 }
