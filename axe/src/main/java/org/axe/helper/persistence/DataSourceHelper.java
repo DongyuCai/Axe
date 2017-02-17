@@ -32,6 +32,8 @@ public final class DataSourceHelper implements Helper{
 			for(Class<?> dataSourceFactoryClass:dataSourceFactoryClassSet){
 				if(dataSourceFactoryClass.isAnnotationPresent(DataSource.class)){
 					String dataSourceName = dataSourceFactoryClass.getAnnotation(DataSource.class).value();
+					if(StringUtil.isEmpty(dataSourceName))
+						throw new RuntimeException("find the empty name DataSource:"+dataSourceFactoryClass);
 					if(dataSourceFactoryClassMap.containsKey(dataSourceName))
 						throw new RuntimeException("find the same name DataSource:"+DATA_SOURCE.get(dataSourceName).getClass()+"==="+dataSourceFactoryClass);
 					dataSourceFactoryClassMap.put(dataSourceName, dataSourceFactoryClass);

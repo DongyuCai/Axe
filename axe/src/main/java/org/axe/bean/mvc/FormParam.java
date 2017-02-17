@@ -20,4 +20,12 @@ public class FormParam {
     public String getFieldValue() {
         return fieldValue;
     }
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	public void setFieldValue(String fieldValue) {
+		this.fieldValue = fieldValue;
+	}
 }

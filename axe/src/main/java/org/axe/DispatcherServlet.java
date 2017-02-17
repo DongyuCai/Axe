@@ -148,7 +148,9 @@ public class DispatcherServlet extends HttpServlet{
                 //##4.执行action
                 if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
-                	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
+                	//TODO:两个地方两次这种转换，需要整合
+                	actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
+                    Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
                 	if(result != null){
                 		if(result instanceof View){
                 			handleViewResult((View)result,request,response);

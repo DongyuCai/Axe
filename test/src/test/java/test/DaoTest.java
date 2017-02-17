@@ -22,7 +22,8 @@ public class DaoTest {
 	public static void main(String[] args) {
 		try {
 			Axe.init();
-			testDynamicTable();
+			testPrimarySql();
+//			testDynamicTable();
 //			testDynamicSql("abc", "123", null);
 //			testDaoEntity();
 //			testDaoPaging();
@@ -31,6 +32,10 @@ public class DaoTest {
 		}
 	}
 	
+	public static void testPrimarySql(){
+		TestDao testDao = BeanHelper.getBean(TestDao.class);
+		System.out.println(testDao.count());
+	}
 	
 	/**
 	 * 测试动态表

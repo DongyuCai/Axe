@@ -271,29 +271,37 @@ public final class SqlHelper {
 	/**
      * 解析sql中的类信息
      */
-    public static String convertHql2Sql(String sql){
+    public static String[] convertHql2Sql(String sql){
     	//末尾多加一个空格，防止select * from table这样的bug，会找不到表名
     	sql = sql+" ";
     	LOGGER.debug("sql : "+sql);
     	//#根据sql匹配出Entity类
     	Map<String,Class<?>> sqlEntityClassMap =  checkHqlConvertIfOk(sql);
     	LOGGER.debug("sqlEntityClassMap : "+JsonUtil.toJson(sqlEntityClassMap));
+    	String dataSourceName = null;
 		if(!CollectionUtil.isEmpty(sqlEntityClassMap)){
+			//#获取数据源名称，以第一个表entity的为准
 			//#解析表名
-			sql = convertTableName(sql,sqlEntityClassMap);
+			String[] sqlAndDataSource = convertTableName(sql,sqlEntityClassMap);
+			sql = sqlAndDataSource[0];
+			dataSourceName = sqlAndDataSource[1];
 			//#解析字段
 			sql = convertColumnName(sql, sqlEntityClassMap);
 		}
-    	return sql;
+    	return new String[]{sql,dataSourceName};
     }
     
     
     
-    private static String convertTableName(String sql, Map<String,Class<?>> sqlEntityClassMap){
+    private static String[] convertTableName(String sql, Map<String,Class<?>> sqlEntityClassMap){
     	//#表名可能被这些东西包围，空格本身就用来分割，所以不算在内
+    	String dataSourceName = null;
     	for(Map.Entry<String, Class<?>> sqlEntityClassEntry:sqlEntityClassMap.entrySet()){
     		String entityClassSimpleName = sqlEntityClassEntry.getKey();
     		Class<?> entityClass = sqlEntityClassEntry.getValue();
+    		if(dataSourceName == null){
+    			dataSourceName = TableHelper.getTableDataSourceName(entityClass);
+    		}
     		Table tableAnnotation = entityClass.getAnnotation(Table.class);
     		//#替换表名
     		//这里的表达式就需要空格了
@@ -315,7 +323,7 @@ public final class SqlHelper {
     		}
     	}
     	
-		return sql;
+		return new String[]{sql,dataSourceName};
     }
     
     private static String convertColumnName(String sql, Map<String,Class<?>> sqlEntityClassMap){

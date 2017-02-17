@@ -29,11 +29,13 @@ public class MD5Util {
 
     // 转换字节数组为16进制字串
     private static String byteToString(byte[] bByte) {
-        StringBuffer sBuffer = new StringBuffer();
+        StringBuilder sBuffer = new StringBuilder();
         for (int i = 0; i < bByte.length; i++) {
             sBuffer.append(byteToArrayString(bByte[i]));
         }
-        return sBuffer.toString();
+        String result = sBuffer.toString();
+        sBuffer.delete(0, sBuffer.length());
+        return result;
     }
 
     public static String getMD5Code(String strObj) {

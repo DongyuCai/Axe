@@ -14,11 +14,10 @@ import org.axe.util.StringUtil;
  */
 public class Param {
 	private String body;
-    private List<FormParam> formParamList;
-    private List<FileParam> fileParamList;
-    private Map<String,Object> bodyParamMap;
-//    private Map<String,Object> paramMap;
-    private List<Object> actionParamList;
+	private List<FormParam> formParamList;
+	private List<FileParam> fileParamList;
+	private Map<String,Object> bodyParamMap;
+	private List<Object> actionParamList;
 
 
     public Param(String body, List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {

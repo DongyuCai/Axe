@@ -36,6 +36,11 @@ method£¬¾Í²¶»ñ²»µ½£¬Õâ¾ÍËµÃ÷²»ÊÇ·´ÉäµÄÎÊÌâÁË¡£Ò²¿ÉÄÜÊÇwebÈÝÆ÷¶Ô·´ÉäµÄ½âÎö²»Ò»Ñù¡
 	ÓÉÓÚaxe¿ÉÒÔÖ§³Ö²»Ê¹ÓÃ@Table×¢½âÀ´±íÊ¾Entity½á¹¹£¬·Ç³£¸É¾»£¬ËùÒÔÊý¾ÝÔ´ÔÚÖ¸¶¨µÄÊ±ºò£¬»áÓÐÁ½¸öµØ·½£¬Ò»¸öÊÇTableÉÏµÄ@Table×¢½â£¬Ò»¸öÊÇDaoÉÏµÄ@DataSource£¬
 ÄÇÃ´ÎÊÌâ¾ÍÀ´ÁË£¬µ½µ×ÒÔË­Îª×¼ÄØ£¬ÎÒÏëÁËÒ»ÍíÉÏ£¬Èç¹û²ÉÓÃÓÅÏÈ¼¶²ßÂÔ£¬ÄÇÃ´¾Í»á³öÏÖ"Äã"¸²¸Ç"ÎÒ"µÄÇé¿ö£¬ÕâÑùÔÚÅÅ²éÊ±ºò¾Í»á·Ç³£¶ñÐÄ£¬ÎÒ²»Ï²»¶£¬ËùÒÔ£¬ÎÒ¾Í²ÉÓÃÁË
 µ¥Ò»Ö°ÔðµÄÑùÊ½£¬Ó¦ÎªDaoÈç¹ûÊÇ¼Ì³ÐÁËBaseDaoRepostoryµÄ»°£¬»áÓµÓÐÒ»Ð©entity²Ù×÷£¬ÕâÐ©²Ù×÷ÄÜ¹»»ñÈ¡µ½TableÉÏµÄ@Table×¢½â£¬ËùÒÔÖ»»áÈÏ×¼@TableÖ¸¶¨µÄÊý¾ÝÔ´£¬
-Èç¹û@Table²»Ö¸¶¨£¬¾Í»á²ÉÓÃÄ¬ÈÏÊý¾ÝÔ´¡£ÄÇÃ´Èç¹ûDaoÓÐ@DataSource×¢½â£¬Ôò@DataSourceÖ¸¶¨µÄÊý¾ÝÔ´£¬Ó°ÏìµÄÊÇ@SQL±ê×¢·½·¨µÄÊý¾ÝÔ´¡£ËùÒÔÈç¹û²»ÊÇÄ¬ÈÏÊý¾ÝÔ´£¬ÎªÁËÇ°ºóÒ»ÖÂ£¬
+Èç¹û@Table²»Ö¸¶¨£¬¾Í»á²ÉÓÃÄ¬ÈÏ
+Êý¾ÝÔ´¡£ÄÇÃ´Èç¹ûDaoÓÐ@DataSource×¢½â£¬Ôò@DataSourceÖ¸¶¨µÄÊý¾ÝÔ´£¬Ó°ÏìµÄÊÇ@SQL±ê×¢·½·¨µÄÊý¾ÝÔ´¡£ËùÒÔÈç¹û²»ÊÇÄ¬ÈÏÊý¾ÝÔ´£¬ÎªÁËÇ°ºóÒ»ÖÂ£¬
 ¾Í½¨ÒéÒªÔÚEntityÉÏ±ê×¢@TableÖ¸¶¨Êý¾ÝÔ´£¬²¢ÇÒÔÚDaoÉÏÒ²ÒªÊ¹ÓÃ@DataSourceÖ¸¶¨ÏàÍ¬Êý¾ÝÔ´£¬ÒÔÃâ³öÏÖ»ìÂÒ¡£
 	
+
+2017/2/11
+dao²ã³öÏÖÁËÎÊÌâ£¬Èç¹ûÒ»Ìõ@Sql£¬·µ»ØÀàÐÍÊÇintµÈ»ù±¾ÀàÐÍ£¬ÄÇÃ´ÅÐ¶ÏÊý¾ÝÔ´¾Í»á³ö´í£¬ÒÑ¾­¸ÄÕý£¬·½·¨ÊÇÔÚ½âÎöHQLµÄÊ±ºò£¬¸ù¾Ý±íÃû¶ÔÓ¦µÄEntity¾ÍÈ·¶¨ºÃ£¬µ±È»Íâ²ã»¹ÓÐ¸ü¸ßÓÅÏÈ¼¶µÄ@Dao£¬Èç¹û@DaoÎ´Ö¸¶¨Êý¾ÝÔ´£¬¾ÍÖ±½ÓÓÃHQL½âÎöµ½µÄ¡£
+µ«ÊÇÓÖ³öÏÖÁËÁíÒ»¸öÎÊÌâ£¬»¹ÓÐ±ðµÄÀàËÆqueryEntityÕâÑùµÄ½Ó¿Ú·½·¨£¬ÒòÎªÓÐ·µ»ØÀàÐÍÊÇEntityÀà£¬Ò²¾ÍÊÇ@Table£¬ÈÅÂÒÁËÊý¾ÝÔ´µÄÓÅÏÈ¼¶£¬ÄÇÃ´ÏÖÔÚ¶¼¸ÄºÃÁË¡£Í³Ò»ÓÅÏÈ¼¶@Dao>@Table>Ä¬ÈÏ

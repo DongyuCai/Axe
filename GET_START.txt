@@ -350,6 +350,7 @@ axeµÄÊÂÎñ£¬Èç¹û³öÏÖµü´úµ÷ÓÃ¿ªÆôÊÂÎñ£¬Ö»»áÔÚ×îÍâ²ã´ò¿ª£¬²¢ÇÒµ±»Øµ½×îÍâ²ãºóÌá½»£¬Ä
 
 ## BaseDataSource ºÍ @DataSource
 ÊµÏÖ×Ô¶¨ÒåµÄÊý¾ÝÔ´£¬ÐèÒª×÷Á½¼þÊÂ£¬µÚÒ»ÒªÊµÏÖBaseDataSource½Ó¿Ú£¬µÚ¶þÒª¼ÓÉÏ@DataSource×¢½â£¬ºóÕßÊÇÎª¶àÊý¾ÝÔ´×÷Ãû×ÖµÄÇø·Ö£¬µ±È»Èç¹ûÖ»ÓÐÒ»¸ö£¬Ò²ÎÞËùÎ½ÁËµ«ÊÇ×¢½âÒ²ÊÇÒª¼ÓµÄ¡£
+Èç¹ûÏµÍ³ÀïÓÐ¶à¸öÊý¾ÝÔ´£¬ÄÇÃ´ÍÆ¼ö×ö·¨ÊÇÕâÑù£º±£Ö¤´Ó@Table µ½@Dao ¶¼ÊÇÏàÍ¬µÄÊý¾ÝÔ´ÅäÖÃ£¬ÕâÑù¿ÉÒÔ±ÜÃâ²»Æ¥ÅäµÄ´íÎó³öÏÖ£¬ÒòÎªAxe¶ÔÖ¸¶¨Êý¾ÝÔ´µÄÑ¡È¡ÓÅÏÈ¼¶ÊÇ@Dao>@Table>Ä¬ÈÏÊý¾ÝÔ´£¬µ«ÊÇµ±ÇÒ½öµ±ÏµÍ³Æô¶¯×Ô¶¯½¨±íÊ±³ýÍâ£¬ÒòÎªÕâÊ±ºòÖ»ÄÜÍ¨¹ý@TableÀ´È·¶¨Êý¾ÝÔ´¡£ 
 
 ## Proxy
 ¿ò¼ÜµÄ´úÀí½Ó¿Ú£¬ÐèÒª×ÔÎÒÊµÏÖ´úÀíÇÐÃæµÄ£¬ÐèÒªÊµÏÖ´Ë½Ó¿Ú¡£

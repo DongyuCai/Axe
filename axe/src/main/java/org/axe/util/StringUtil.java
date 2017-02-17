@@ -13,6 +13,26 @@ import org.apache.commons.lang3.StringUtils;
 public final class StringUtil {
 	private StringUtil() {
 	}
+	
+	public static String appendZero(String base,int returnLength){
+		StringBuilder buf = new StringBuilder(base);
+		while(buf.length() < returnLength){
+			buf.append("0");
+		}
+		String result = buf.toString();
+		buf.delete(0, buf.length());
+		return result;
+	}
+	
+	public static String aheadZero(String base,int returnLength){
+		StringBuilder buf = new StringBuilder(base);
+		while(buf.length() < returnLength){
+			buf.insert(0, "0");
+		}
+		String result = buf.toString();
+		buf.delete(0, buf.length());
+		return result;
+	}
 
 	/**
 	 * 按照字符顺序排序

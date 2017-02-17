@@ -150,7 +150,7 @@ public final class HttpUtil {
 	 */
 	public static String sendPost(String url, Map<String, String> param, String charset) throws Exception {
 
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		if (param != null && !param.isEmpty()) {
 			for (Map.Entry<String, String> entry : param.entrySet()) {
 				try {
@@ -206,6 +206,7 @@ public final class HttpUtil {
 				LOGGER.error("发送POST请求 关闭输出流、输入流出现异常！"+ex.getMessage()+"["+url+"]");
 			}
 		}
+		buffer.delete(0, buffer.length());
 		return result;
 	}
 

@@ -14,6 +14,9 @@ import org.test.bean.TestTable;
 @Dao
 public interface TestDao extends BaseRepository{
 
+	@Sql("select count(1) from TestTable")
+	public int count();
+	
 	@Sql("select * from TestTable where id = ?")
 	public TestTable getOne(long id);
 

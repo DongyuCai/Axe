@@ -12,17 +12,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.axe.annotation.persistence.Id;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.InsertResult;
 import org.axe.bean.persistence.SqlPackage;
 import org.axe.constant.IdGenerateWay;
-import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseDataSource;
-import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 import org.slf4j.Logger;
@@ -119,6 +116,7 @@ public final class DataBaseHelper implements Helper{
 				}
 				if(isAllConClosed){
 					CONNECTION_HOLDER.remove();
+					LOGGER.debug("clean CONNECTION_HOLDER");
 				}
 			}
         }
@@ -147,13 +145,18 @@ public final class DataBaseHelper implements Helper{
     	return ps;
     }
     
+    public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+    	   String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
+    	   return queryEntityList(entityClass, sql, params, paramTypes, dataSourceName);
+    }
+    
     /**
      * 查询实体列表
      * @throws SQLException 
      */
-	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+	public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
         List<T> entityList = new ArrayList<>();
-        Connection conn = getConnection(TableHelper.getTableDataSourceName(entityClass));
+        Connection conn = getConnection(dataSourceName);
         try {
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
@@ -177,19 +180,23 @@ public final class DataBaseHelper implements Helper{
             throw new SQLException(e);
         } finally {
             if(conn.getAutoCommit()){
-                closeConnection(TableHelper.getTableDataSourceName(entityClass));
+            	closeConnection(dataSourceName);
             }
         }
         return entityList;
     }
 
+	public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+        String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
+        return queryEntity(entityClass, sql, params, paramTypes, dataSourceName);
+	}
+	
     /**
      * 查询单个实体
      * @throws SQLException 
      */
-    public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+    public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
         T entity = null;
-        String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
         Connection conn = getConnection(dataSourceName);
         try {
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
@@ -238,7 +245,7 @@ public final class DataBaseHelper implements Helper{
 			while(table.next()){
 				Map<String, Object> row = new HashMap<>();
 				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-					row.put(rsmd.getColumnName(i), table.getObject(i));
+					row.put(rsmd.getColumnLabel(i), table.getObject(i));
 	        	}
 				result.add(row);
 			}
@@ -274,7 +281,7 @@ public final class DataBaseHelper implements Helper{
         	if(table.next()){
         		result = new HashMap<>();
         		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-        			result.put(rsmd.getColumnName(i), table.getObject(i));
+        			result.put(rsmd.getColumnLabel(i), table.getObject(i));
 	        	}
 			}
 			table.close();
