@@ -118,8 +118,8 @@ public class DispatcherServlet extends HttpServlet{
                     //如果不是
                     param = AjaxRequestHelper.createParam(request,requestPath,handler.getMappingPath());
                 }
-                List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
-                param.setActionParamList(actionParamList);
+//                List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
+//                param.setActionParamList(actionParamList);
                 
                 //##2.先执行Filter链
                 List<Filter> filterList = handler.getFilterList();
@@ -148,8 +148,7 @@ public class DispatcherServlet extends HttpServlet{
                 //##4.执行action
                 if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
-                	//TODO:两个地方两次这种转换，需要整合
-                	actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
+                	List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
                     Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
                 	if(result != null){
                 		if(result instanceof View){

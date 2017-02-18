@@ -17,8 +17,6 @@ public class Param {
 	private List<FormParam> formParamList;
 	private List<FileParam> fileParamList;
 	private Map<String,Object> bodyParamMap;
-	private List<Object> actionParamList;
-
 
     public Param(String body, List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
         this.body = body;
@@ -117,14 +115,6 @@ public class Param {
 
 	public void setBodyParamMap(Map<String, Object> bodyParamMap) {
 		this.bodyParamMap = bodyParamMap;
-	}
-
-	public List<Object> getActionParamList() {
-		return actionParamList;
-	}
-
-	public void setActionParamList(List<Object> actionParamList) {
-		this.actionParamList = actionParamList;
 	}
 
 	public boolean isEmpty(){
