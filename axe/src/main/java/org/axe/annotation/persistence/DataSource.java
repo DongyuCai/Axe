@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * DataSource实现类 注解
- * 同时可用于Dao类上
  * 用于标注DataSource名称
  * Created by CaiDongYu on 2016/4/8.
  */

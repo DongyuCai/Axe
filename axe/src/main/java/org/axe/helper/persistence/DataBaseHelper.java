@@ -418,15 +418,20 @@ public final class DataBaseHelper implements Helper{
         return new InsertResult(rows, generatedKey);
     }
 
+
+    public static <T> T insertEntity(T entity) throws SQLException {
+    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	return insertEntity(entity, dataSourceName);
+    }
+    
     /**
      * 插入实体
      * @throws SQLException 
      */
-    public static <T> T insertEntity(T entity) throws SQLException {
+    public static <T> T insertEntity(T entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("insertEntity failure, insertEntity param is null!");
     	SqlPackage sp = SqlHelper.getInsertSqlPackage(entity);
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
     	InsertResult executeInsert = executeInsert(sp.getSql(), sp.getParams(), sp.getParamTypes(),dataSourceName);
     	do{
     		if(executeInsert.getEffectedRows() <= 0) break;
@@ -451,27 +456,37 @@ public final class DataBaseHelper implements Helper{
     	}while(false);
     	return null;
     }
+    
+
+    public static int updateEntity(Object entity) throws SQLException {
+    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	return updateEntity(entity, dataSourceName);
+    }
 
     /**
      * 更新实体
      * @throws SQLException 
      */
-    public static int updateEntity(Object entity) throws SQLException {
+    public static int updateEntity(Object entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("updateEntity failure, updateEntity param is null!");
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
         SqlPackage sp = SqlHelper.getUpdateSqlPackage(entity);
         return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
+    }
+    
+
+    public static <T> T insertOnDuplicateKeyEntity(T entity) throws SQLException {
+    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	return insertOnDuplicateKeyEntity(entity, dataSourceName);
     }
     
     /**
      * 更新实体
      * @throws SQLException 
      */
-    public static <T> T insertOnDuplicateKeyEntity(T entity) throws SQLException {
+    public static <T> T insertOnDuplicateKeyEntity(T entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("insertOnDuplicateKeyEntity failure, insertOnDuplicateKeyEntity param is null!");
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
         SqlPackage sp = SqlHelper.getInsertOnDuplicateKeyUpdateSqlPackage(entity);
         InsertResult executeInsert = executeInsert(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
     	do{
@@ -497,25 +512,34 @@ public final class DataBaseHelper implements Helper{
     	return null;
     }
 
+    public static int deleteEntity(Object entity) throws SQLException {
+    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	return deleteEntity(entity,dataSourceName);
+    }
 
     /**
      * 删除实体
      * @throws SQLException 
      */
-    public static int deleteEntity(Object entity) throws SQLException {
+    public static int deleteEntity(Object entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("deleteEntity failure, deleteEntity param is null!");
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
         SqlPackage sp = SqlHelper.getDeleteSqlPackage(entity);
         return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
     }
     
-    @SuppressWarnings("unchecked")
+
 	public static <T> T getEntity(T entity) throws SQLException{
+    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+		return getEntity(entity, dataSourceName);
+	}
+    
+    @SuppressWarnings("unchecked")
+	public static <T> T getEntity(T entity,String dataSourceName) throws SQLException{
     	if(entity == null)
     		throw new RuntimeException("getEntity failure, getEntity param is null!");
         SqlPackage sp = SqlHelper.getSelectByIdSqlPackage(entity);
-        entity = (T)queryEntity(entity.getClass(), sp.getSql(), sp.getParams(), sp.getParamTypes());
+        entity = (T)queryEntity(entity.getClass(), sp.getSql(), sp.getParams(), sp.getParamTypes(),dataSourceName);
     	return (T)entity;
     }
 

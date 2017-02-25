@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.axe.annotation.aop.Aspect;
 import org.axe.annotation.persistence.Dao;
-import org.axe.annotation.persistence.DataSource;
 import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
@@ -42,8 +41,8 @@ public class DaoAspect implements Proxy{
 		Class<?>[] parameterTypes = targetMethod.getParameterTypes();
 		Class<?> daoClass = proxyChain.getTargetClass();
 		String daoConfigDataSource = null;
-		if(daoClass.isAnnotationPresent(DataSource.class)){
-			daoConfigDataSource = daoClass.getAnnotation(DataSource.class).value();
+		if(daoClass.isAnnotationPresent(Dao.class)){
+			daoConfigDataSource = daoClass.getAnnotation(Dao.class).dataSource();
 		}
 		
 		
@@ -214,31 +213,51 @@ public class DaoAspect implements Proxy{
 				//# Repository.insertEntity(Object entity);
 				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
-					result = DataBaseHelper.insertEntity(entity);
+					if(StringUtil.isEmpty(daoConfigDataSource)){
+						result = DataBaseHelper.insertEntity(entity);
+					}else{
+						result = DataBaseHelper.insertEntity(entity,daoConfigDataSource);
+					}
 				}
 			}else if("deleteEntity".equals(methodName)){
 				//# Repository.deleteEntity(Object entity);
 				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
-					result = DataBaseHelper.deleteEntity(entity);
+					if(StringUtil.isEmpty(daoConfigDataSource)){
+						result = DataBaseHelper.deleteEntity(entity);
+					}else{
+						result = DataBaseHelper.deleteEntity(entity,daoConfigDataSource);
+					}
 				}
 			}else if("updateEntity".equals(methodName)){
 				//# Repository.updateEntity(Object entity);
 				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
-					result = DataBaseHelper.updateEntity(entity);
+					if(StringUtil.isEmpty(daoConfigDataSource)){
+						result = DataBaseHelper.updateEntity(entity);
+					}else{
+						result = DataBaseHelper.updateEntity(entity,daoConfigDataSource);
+					}
 				}
 			}else if("getEntity".equals(methodName)){
 				//# Repository.getEntity(T entity);
 				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
-					result = DataBaseHelper.getEntity(entity);
+					if(StringUtil.isEmpty(daoConfigDataSource)){
+						result = DataBaseHelper.getEntity(entity);
+					}else{
+						result = DataBaseHelper.getEntity(entity,daoConfigDataSource);
+					}
 				}
 			}else if("saveEntity".equals(methodName)){
 				//# Repository.saveEntity(Object entity);
 				if(paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0],Object.class)){
 					Object entity = methodParams[0];
-					result = DataBaseHelper.insertOnDuplicateKeyEntity(entity);
+					if(StringUtil.isEmpty(daoConfigDataSource)){
+						result = DataBaseHelper.insertOnDuplicateKeyEntity(entity);
+					}else{
+						result = DataBaseHelper.insertOnDuplicateKeyEntity(entity,daoConfigDataSource);
+					}
 				}
 			}else{
 				result = proxyChain.doProxyChain();
