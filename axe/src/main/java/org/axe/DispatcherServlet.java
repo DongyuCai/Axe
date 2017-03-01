@@ -86,7 +86,6 @@ public class DispatcherServlet extends HttpServlet{
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) {
-    	
     	String contentType = ContentType.APPLICATION_JSON.CONTENT_TYPE;
     	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
     	List<Filter> doEndFilterList = null;
@@ -149,7 +148,7 @@ public class DispatcherServlet extends HttpServlet{
                 if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
                 	List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
-                    Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
+                	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
                 	if(result != null){
                 		if(result instanceof View){
                 			handleViewResult((View)result,request,response);

@@ -553,9 +553,11 @@ public final class DataBaseHelper implements Helper{
         try {
         	for(String dataSourceName:dsMap.keySet()){
         		BaseDataSource dataSource = dsMap.get(dataSourceName);
-        		Connection conn = dataSource.getConnection();
-        		conn.setAutoCommit(false);//设置成手动提交
-        		connMap.put(dataSourceName, conn);
+        		if(dataSource.tns()){
+        			Connection conn = dataSource.getConnection();
+        			conn.setAutoCommit(false);//设置成手动提交
+        			connMap.put(dataSourceName, conn);
+        		}
         	}
         	CONNECTION_HOLDER.set(connMap);
         } catch (SQLException e){
@@ -570,23 +572,28 @@ public final class DataBaseHelper implements Helper{
      */
     public static void commitTransaction() throws SQLException{
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
+    	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
         if(connMap != null && connMap.size() > 0){
         	String errorDataSourceName = null;
             try {
             	for(String dataSourceName:connMap.keySet()){
-            		errorDataSourceName = dataSourceName;
-            		Connection conn = connMap.get(dataSourceName);
-	            	if(!conn.getAutoCommit()){
-	            		conn.commit();
-	            	}
+            		if(dsMap.get(dataSourceName).tns()){
+            			errorDataSourceName = dataSourceName;
+            			Connection conn = connMap.get(dataSourceName);
+            			if(!conn.getAutoCommit()){
+            				conn.commit();
+            			}
+            		}
             	}
             } catch (SQLException e){
                 LOGGER.error("commit transaction of dataSource["+errorDataSourceName+"] failure",e);
                 throw new SQLException(e);
             }finally {
             	for(String dataSourceName:connMap.keySet()){
-            		if(!connMap.get(dataSourceName).getAutoCommit()){
-            			closeConnection(dataSourceName);
+            		if(dsMap.get(dataSourceName).tns()){
+            			if(!connMap.get(dataSourceName).getAutoCommit()){
+            				closeConnection(dataSourceName);
+            			}
             		}
             	}
             }
@@ -598,13 +605,16 @@ public final class DataBaseHelper implements Helper{
      */
     public static void rollbackTransaction(){
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
+    	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
         if(connMap != null && connMap.size() > 0){
         	String errorDataSourceName = null;
             try {
             	for(String dataSourceName:connMap.keySet()){
-            		errorDataSourceName = dataSourceName;
-            		Connection conn = connMap.get(dataSourceName);
-	            	conn.rollback();
+            		if(dsMap.get(dataSourceName).tns()){
+            			errorDataSourceName = dataSourceName;
+                		Connection conn = connMap.get(dataSourceName);
+    	            	conn.rollback();
+            		}
             	}
             } catch (SQLException e){
                 LOGGER.error("rollback transaction of dataSource["+errorDataSourceName+"] failure",e);
@@ -612,9 +622,11 @@ public final class DataBaseHelper implements Helper{
             } finally {
                 try {
                 	for(String dataSourceName:connMap.keySet()){
-                		if(!connMap.get(dataSourceName).getAutoCommit()){
-	                        closeConnection(dataSourceName);
-	                    }
+                		if(dsMap.get(dataSourceName).tns()){
+                			if(!connMap.get(dataSourceName).getAutoCommit()){
+                				closeConnection(dataSourceName);
+                			}
+                		}
                 	}
                 } catch (SQLException e) {
                     throw new RuntimeException(e);

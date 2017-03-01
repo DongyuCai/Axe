@@ -81,4 +81,9 @@ public class DbcpDataSourceFactory implements BaseDataSource{
 	public String setJdbcPassword() {
 		return ConfigHelper.getJdbcPassword() == null?"":ConfigHelper.getJdbcPassword();
 	}
+
+	@Override
+	public boolean tns() {
+		return true;
+	}
 }

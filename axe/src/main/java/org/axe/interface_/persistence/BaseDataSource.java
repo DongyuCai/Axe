@@ -13,6 +13,7 @@ public interface BaseDataSource {
 
 	public Connection getConnection() throws SQLException ;
 	
+	
 	public String setJdbcDriver();
 	
 	public String setJdbcUrl();
@@ -20,4 +21,6 @@ public interface BaseDataSource {
 	public String setJdbcUserName();
 	
 	public String setJdbcPassword();
+	
+	public boolean tns();
 }
