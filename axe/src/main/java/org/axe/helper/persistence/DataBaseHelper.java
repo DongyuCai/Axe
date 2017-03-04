@@ -548,22 +548,30 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static void beginTransaction() throws SQLException{
+//    	long t = System.currentTimeMillis();
+//		System.out.println("e1:"+t);
     	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
     	HashMap<String, Connection> connMap = new HashMap<>();
         try {
         	for(String dataSourceName:dsMap.keySet()){
         		BaseDataSource dataSource = dsMap.get(dataSourceName);
+//        		t = System.currentTimeMillis();
+//        		System.out.println("e2-"+dataSourceName+":"+t);
         		if(dataSource.tns()){
         			Connection conn = dataSource.getConnection();
         			conn.setAutoCommit(false);//设置成手动提交
         			connMap.put(dataSourceName, conn);
         		}
+//        		t = System.currentTimeMillis();
+//        		System.out.println("e2-"+dataSourceName+":"+t);
         	}
         	CONNECTION_HOLDER.set(connMap);
         } catch (SQLException e){
             LOGGER.error("begin transaction failure",e);
             throw new SQLException(e);
         }
+//        t = System.currentTimeMillis();
+//		System.out.println("e3:"+t);
     }
 
     /**
