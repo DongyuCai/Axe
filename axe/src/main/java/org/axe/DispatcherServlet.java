@@ -267,32 +267,9 @@ public class DispatcherServlet extends HttpServlet{
     					//* 如果是Map<String,Object> 
     					if(ReflectionUtil.compareType(Map.class, parameterClass)){
     						parameterValue = param.getBodyParamMap();
-    						/*if(parameterizedType instanceof ParameterizedType){
-    						Type[] actualTypes = ((ParameterizedType) parameterizedType).getActualTypeArguments();
-    						if(actualTypes.length > 1){
-    							Type mapKeyType = actualTypes[0];
-    							Type mapValueType = actualTypes[1];
-    							if(ReflectionUtil.compareType(String.class, (Class<?>)mapKeyType) && 
-    									ReflectionUtil.compareType(Object.class, (Class<?>)mapValueType)){
-    								//Map<String,Object> 只能接受到 payload就是body里的json对象
-    								parameterValue = param.getBodyMap();
-    							}
-    						}
-    					}else{
-							//Map
-							parameterValue = param.getBodyMap();
-						}*/
     						break;
     					}
     					
-    					/*
-						if(parameterValue == null){
-							//* 如果这种类型，我在request里有，通过类型名称来获取参数
-							parameterValue = request.getAttribute(parameterClass.toString());
-							if(parameterValue != null){
-								break;
-							}
-    					}*/
     				}
     			}
     			
