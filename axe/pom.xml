@@ -98,6 +98,7 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- JSP -->
         <dependency>
@@ -105,6 +106,7 @@
             <artifactId>jsp-api</artifactId>
             <version>2.2</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- JSTL -->
         <dependency>
@@ -112,6 +114,7 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
             <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
         
         <!-- <dependency>
