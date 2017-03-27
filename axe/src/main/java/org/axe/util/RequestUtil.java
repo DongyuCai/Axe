@@ -141,10 +141,19 @@ public final class RequestUtil {
     	String requestPath = request.getServletPath();
     	if(StringUtil.isEmpty(requestPath)){
     		requestPath = request.getRequestURI();
-    		if(requestPath.contains("?"))
+    		if(requestPath.contains("?")){
     			requestPath = requestPath.substring(0,requestPath.indexOf("?"));
+    		}
+    		//新方案
     		String contextPath = request.getContextPath();
-    		requestPath = requestPath.replaceAll(contextPath, "");
+    		//如果contextPath有，就需要处理requestPath
+    		if(contextPath != null && !"".equals(contextPath.trim())){
+    			requestPath = requestPath.replaceFirst(contextPath, "");
+    		}
+    		//如果没有contextPath，就不需要处理requestPath
+    		
+    		//老方案
+//    		requestPath = requestPath.replaceAll(contextPath, "");
     	}
     	return requestPath;
     }

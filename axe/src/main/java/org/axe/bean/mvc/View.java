@@ -12,6 +12,9 @@ public class View {
      * 视图路径
      */
     private String path;
+    
+    //默认redirect
+    private boolean redirect = true;
 
     /**
      * 模型数据
@@ -27,7 +30,7 @@ public class View {
         model.put(key,value);
         return this;
     }
-
+    
     public String getPath() {
         return path;
     }
@@ -35,4 +38,13 @@ public class View {
     public Map<String, Object> getModel() {
         return model;
     }
+    
+    public View dispatcher(){
+    	redirect = false;
+    	return this;
+    }
+
+	public boolean isRedirect() {
+		return redirect;
+	}
 }

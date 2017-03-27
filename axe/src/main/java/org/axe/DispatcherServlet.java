@@ -284,19 +284,17 @@ public class DispatcherServlet extends HttpServlet{
         //返回JSP页面或者请求跳转
         String path = view.getPath();
         if (StringUtil.isNotEmpty(path)){
-            //TODO:什么叫 startWith("/") 这样就认为是浏览器跳转了?
-            if(path.startsWith("/")){
+        	if(!path.startsWith("/")){
+        		path = "/"+path;
+        	}
+            if(view.isRedirect()){
                 response.sendRedirect(request.getContextPath()+path);
             }else{
                 Map<String,Object> model = view.getModel();
                 for(Map.Entry<String,Object> entry:model.entrySet()){
                     request.setAttribute(entry.getKey(),entry.getValue());
                 }
-                String jspPath = ConfigHelper.getAppJspPath();
-                if(!jspPath.endsWith("/")){
-                	jspPath = jspPath+"/";
-                }
-                request.getRequestDispatcher(jspPath+path).forward(request,response);
+                request.getRequestDispatcher(path).forward(request,response);
             }
         }
     }
