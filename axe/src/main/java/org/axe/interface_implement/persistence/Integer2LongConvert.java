@@ -1,4 +1,4 @@
-package org.axe.interface_implement;
+package org.axe.interface_implement.persistence;
 
 import org.axe.interface_.persistence.BaseTypeConvert;
 

@@ -32,9 +32,7 @@ import org.axe.helper.HelperLoader;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.base.MailHelper;
 import org.axe.helper.ioc.BeanHelper;
-import org.axe.helper.mvc.AjaxRequestHelper;
 import org.axe.helper.mvc.ControllerHelper;
-import org.axe.helper.mvc.FormRequestHelper;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
 import org.axe.util.CollectionUtil;
@@ -109,16 +107,7 @@ public class DispatcherServlet extends HttpServlet{
                 characterEncoding = handler.getCharacterEncoding();
                 
                 //##1.创建你请求参数对象
-                Param param;
-                if(FormRequestHelper.isMultipart(request)){
-                    //如果是文件上传
-                    param = FormRequestHelper.createParam(request,requestPath,handler.getMappingPath());
-                }else{
-                    //如果不是
-                    param = AjaxRequestHelper.createParam(request,requestPath,handler.getMappingPath());
-                }
-//                List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
-//                param.setActionParamList(actionParamList);
+                Param param = new Param(requestPath);
                 
                 //##2.先执行Filter链
                 List<Filter> filterList = handler.getFilterList();

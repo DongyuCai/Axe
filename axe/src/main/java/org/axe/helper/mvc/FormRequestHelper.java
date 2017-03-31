@@ -61,7 +61,7 @@ public final class FormRequestHelper {
     /**
      * 创建请求对象
      */
-    public static Param createParam(HttpServletRequest request,String requestPath,String mappingPath){
+    public static void initParam(Param param,HttpServletRequest request,String requestPath,String mappingPath){
         List<FormParam> formParamList = new ArrayList<>();
         List<FileParam> fileParamList = new ArrayList<>();
         try {
@@ -96,7 +96,7 @@ public final class FormRequestHelper {
             LOGGER.error("create param failed",e);
             throw new RuntimeException(e);
         }
-        return new Param(null,formParamList,fileParamList,null);
+        param.init(null,formParamList,fileParamList,null);
     }
 
     /**

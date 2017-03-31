@@ -26,7 +26,7 @@ public final class AjaxRequestHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AjaxRequestHelper.class);
 	
     @SuppressWarnings("unchecked")
-	public static Param createParam(HttpServletRequest request,String requestPath,String mappingPath)throws IOException{
+	public static void initParam(Param param,HttpServletRequest request,String requestPath,String mappingPath)throws IOException{
         List<FormParam> formParamList = new ArrayList<>();
         formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));
         String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
@@ -47,6 +47,6 @@ public final class AjaxRequestHelper {
             	LOGGER.error("read body to json failure,body is: "+body);
             }
         }
-        return new Param(body,formParamList,null,bodyParamMap);
+        param.init(body,formParamList,null,bodyParamMap);
     }
 }

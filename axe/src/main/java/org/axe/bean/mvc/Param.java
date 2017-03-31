@@ -13,13 +13,22 @@ import org.axe.util.StringUtil;
  * Created by CaiDongYu on 2016/4/11.
  */
 public class Param {
+	private String requestPath;
 	private String body;
 	private List<FormParam> formParamList;
 	private List<FileParam> fileParamList;
 	private Map<String,Object> bodyParamMap;
 
-    public Param(String body, List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
-        this.body = body;
+	public Param(String requestPath) {
+		this.requestPath = requestPath;
+		body = "";
+		formParamList = new ArrayList<>();
+		fileParamList = new ArrayList<>();
+		bodyParamMap = new HashMap<>();
+	}
+	
+    public void init(String body, List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
+    	this.body = body;
     	this.formParamList = formParamList;
         this.fileParamList = fileParamList;
         this.bodyParamMap = bodyParamMap;
@@ -50,7 +59,15 @@ public class Param {
         }
     }
     
-    public void setBody(String body) {
+    public String getRequestPath() {
+		return requestPath;
+	}
+
+	public void setRequestPath(String requestPath) {
+		this.requestPath = requestPath;
+	}
+
+	public void setBody(String body) {
 		this.body = body;
 	}
 
