@@ -40,7 +40,6 @@ import org.axe.helper.mvc.FilterHelper;
 import org.axe.helper.mvc.InterceptorHelper;
 import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.TableHelper;
-import org.axe.interface_implement.mvc.AxeRequestParamAnalyzeInterceptor;
 import org.axe.home.interceptor.HomeInterceptor;
 import org.axe.home.interceptor.SignInInterceptor;
 import org.axe.home.service.HomeService;
@@ -53,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FilterFuckOff
-@Interceptor({AxeRequestParamAnalyzeInterceptor.class, HomeInterceptor.class, SignInInterceptor.class})
+@Interceptor({HomeInterceptor.class, SignInInterceptor.class})
 @Controller(basePath = "axe")
 public class HomeController {
 private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);

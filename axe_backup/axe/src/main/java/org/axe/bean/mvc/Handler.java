@@ -1,0 +1,152 @@
+package org.axe.bean.mvc;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.axe.annotation.mvc.Request;
+import org.axe.interface_.mvc.Filter;
+import org.axe.interface_.mvc.Interceptor;
+
+/**
+ * 封装 Action 信息
+ * Created by CaiDongYu on 2016/4/11.
+ */
+public class Handler {
+
+	/**
+	 * 接受请求的类型
+	 */
+	private String requestMethod;
+	/**
+	 * 完整的 Action rest 串
+	 */
+	private String mappingPath;
+	/**
+	 * Mime-Type 类型
+	 */
+	private String contentType;
+	/**
+	 * characterEncoding 编码类型
+	 */
+	private String characterEncoding;
+    /**
+     * Controller 类
+     */
+    private Class<?> controllerClass;
+
+    /**
+     * Action 方法
+     */
+    private Method actionMethod;
+    
+    public class ActionParam{
+    	private Class<?> paramType;
+    	private Annotation[] annotations;
+		public Class<?> getParamType() {
+			return paramType;
+		}
+		public void setParamType(Class<?> paramType) {
+			this.paramType = paramType;
+		}
+		public Annotation[] getAnnotations() {
+			return annotations;
+		}
+		public void setAnnotations(Annotation[] annotations) {
+			this.annotations = annotations;
+		}
+    }
+    /**
+     * Action 参数
+     */
+    private List<ActionParam> actionParamList;
+    
+    /**
+     * Filter 链
+     */
+    private List<Filter> filterList;
+    
+    /**
+     * 拦截器列表
+     */
+    private List<Interceptor> interceptorList;
+
+    
+    
+    public Handler(String requestMethod, String mappingPath, 
+			Class<?> controllerClass, Method actionMethod, List<Filter> filterList, List<Interceptor> interceptorList) {
+		this.requestMethod = requestMethod;
+		this.mappingPath = mappingPath;
+		this.controllerClass = controllerClass;
+		this.actionMethod = actionMethod;
+		this.filterList = filterList;
+		this.interceptorList = interceptorList;
+		init();
+	}
+
+	private void init() {
+    	if(this.actionMethod.isAnnotationPresent(Request.class)){
+    		Request request = this.actionMethod.getAnnotation(Request.class);
+    		this.contentType = request.contentType().CONTENT_TYPE;
+    		this.characterEncoding = request.characterEncoding().CHARACTER_ENCODING;
+    		
+    		Annotation[][] parameterAnnotations = this.actionMethod.getParameterAnnotations();
+    		Class<?>[] parameterTypes = this.actionMethod.getParameterTypes();
+    		if(parameterTypes != null){
+    			if(parameterTypes.length == parameterAnnotations.length){
+    				for(int i=0;i<parameterTypes.length;i++){
+    					Class<?> paramType = parameterTypes[i];
+    					Annotation[] annotations = parameterAnnotations[i];
+    					if(actionParamList == null){
+    						actionParamList = new ArrayList<>();
+    					}
+    					ActionParam actionParam = new ActionParam();
+    					actionParam.setAnnotations(annotations);
+    					actionParam.setParamType(paramType);
+    					actionParamList.add(actionParam);
+    				}
+    			}else{
+    				throw new RuntimeException("create Hanlder failed ,wrong parameterTypes.length["+parameterTypes.length+"] and "
+    						+ "parameterAnnotations.length["+parameterAnnotations.length+"]: "+this.actionMethod.toGenericString());
+    			}
+    		}
+    	}
+	}
+
+	public Class<?> getControllerClass() {
+        return controllerClass;
+    }
+
+    public Method getActionMethod() {
+        return actionMethod;
+    }
+    
+    public String getRequestMethod() {
+		return requestMethod;
+	}
+    
+    public String getMappingPath() {
+		return mappingPath;
+	}
+    
+    public List<ActionParam> getActionParamList() {
+		return actionParamList;
+	}
+
+	public List<Filter> getFilterList() {
+		return filterList;
+	}
+    
+    public List<Interceptor> getInterceptorList() {
+		return interceptorList;
+	}
+    
+    public String getContentType() {
+		return contentType;
+	}
+    
+    public String getCharacterEncoding() {
+		return characterEncoding;
+	}
+}

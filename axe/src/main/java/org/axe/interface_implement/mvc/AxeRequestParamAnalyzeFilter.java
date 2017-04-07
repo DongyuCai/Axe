@@ -44,7 +44,12 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
 	@Override
 	public boolean doFilter(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler)
 			throws RestException {
-        if(FormRequestHelper.isMultipart(request)){
+		analyzeRequestParam(request, param, handler);
+		return true;
+	}
+	
+	public static void analyzeRequestParam(HttpServletRequest request, Param param, Handler handler){
+		if(FormRequestHelper.isMultipart(request)){
             //如果是文件上传
             FormRequestHelper.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
         }else{
@@ -56,7 +61,6 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
 				throw new RestException(RestException.SC_INTERNAL_SERVER_ERROR,e.getMessage());
 			}
         }
-		return true;
 	}
 
 	@Override

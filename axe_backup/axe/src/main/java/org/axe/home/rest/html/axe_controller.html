@@ -1,0 +1,101 @@
+<java>
+@Request(value = "/controller", method = RequestMethod.GET)
+public void controller(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
+	String contextPath = request.getContextPath();
+	StringBuilder html = new StringBuilder();
+</java>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>axe controller</title>
+</head>
+<body>
+	<table width="100%">
+		<tr><td align="right">
+			<java>
+			if(ConfigHelper.getAxeSignIn()){
+			</java>
+			<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe/sign-out?token="+token+""><b>退出</b></a>
+			<java>
+			}
+			</java>
+			&nbsp;<a style="font-size: 15px;color: #AE0000" href=""+contextPath+"/axe?token="+token+""><b>首页</b></a>
+		</td></tr>
+		<java>
+			Set<Class<?>> controllerCLassSet = ClassHelper.getControllerClassSet();
+		</java>
+		<tr><td align="center"><font size="28">Controller set x"+controllerCLassSet.size()+"</font></td></tr>
+
+		<tr><td><table cellspacing="0px"><tr><td style="background-color: #AE0000">
+		&nbsp;<font color="white"><b>Controller</b></font>&nbsp;
+		</td></tr></table></td></tr>
+		
+		<tr><td height="2px" style="background-color: #AE0000"></td></tr>
+		<tr><td>
+			<table width="100%">
+				<tr style="background-color: #F0F0F0;">
+					<td align="left">&nbsp;</td>
+					<td align="left"><b>Title</b></td>
+					<td align="left"><b>BasePath</b></td>
+					<td align="left"><b>Class</b></td>
+					<td align="left"><b>Action</b></td>
+				</tr>
+				<java>
+				Map<String, List<Class<?>>> controllerClassMap = new HashMap<>();
+				for (Class<?> controllerClass : controllerCLassSet) {
+					Controller controller = controllerClass.getAnnotation(Controller.class);
+					String basePath = controller.basePath();
+					List<Class<?>> controllerClassList = new ArrayList<>();
+					if (controllerClassMap.containsKey(basePath)) {
+						controllerClassList = controllerClassMap.get(basePath);
+					} else {
+						controllerClassMap.put(basePath, controllerClassList);
+					}
+					controllerClassList.add(controllerClass);
+				}
+
+				List<String> basePathList = StringUtil.sortStringSet(controllerClassMap.keySet());
+				int id=1;
+				for (String basePath : basePathList) {
+					List<Class<?>> controllerClassList = controllerClassMap.get(basePath);
+					for (Class<?> controllerClass : controllerClassList) {
+						int actionCount = 0;
+						Method[] methodAry = controllerClass.getDeclaredMethods();
+						for (Method method : methodAry) {
+							if (method.isAnnotationPresent(Request.class)) {
+								actionCount++;
+							}
+						}
+
+						Controller controller = controllerClass.getAnnotation(Controller.class);
+				</java>
+				<tr>
+					<td align="left">"+(id++)+"</td>
+					<td align="left">"+controller.title()+"</td>
+					<td align="left">"+basePath+"</td>
+					<td align="left">"+controllerClass.getName()+"</td>
+					<java>
+					String basePathHashCode = null;
+					int code = basePath.hashCode();
+					if(code < 0){
+						basePathHashCode = "_"+Math.abs(code);
+					}else{
+						basePathHashCode = String.valueOf(code);
+					}
+					</java>
+					<td align="left">x<a href=""+contextPath+"/axe/controller-"+basePathHashCode+"/action?token="+token+"">"+actionCount+"</a></td>
+				</tr>
+				<java>
+					}
+				}
+				</java>
+			</table>
+		</td></tr>
+	</table>
+</body>
+</html>
+<java>
+	printHtml(response, html.toString());
+}
+</java>
