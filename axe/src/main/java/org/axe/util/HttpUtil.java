@@ -1,7 +1,9 @@
 package org.axe.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -70,6 +72,45 @@ public final class HttpUtil {
 		return result;
 	}
 
+	public static byte[] downloadGet(String url) throws Exception {
+		InputStream in = null;
+		try {
+			URL realUrl = new URL(url);
+			// 打开和URL之间的连接
+			URLConnection conn = realUrl.openConnection();
+			// 设置通用的请求属性
+//			connection.setRequestProperty("accept", "*/*");
+//			connection.setRequestProperty("connection", "Keep-Alive");
+			conn.setRequestProperty("connection", "close");
+//			connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+			// 建立实际的连接
+			conn.connect();
+			// 读取字节
+			in = conn.getInputStream();
+			byte[] buffer = new byte[1024];    
+	        int len = 0;    
+	        ByteArrayOutputStream bos = new ByteArrayOutputStream();    
+	        while((len = in.read(buffer)) != -1) {    
+	            bos.write(buffer, 0, len);    
+	        }    
+	        bos.close();    
+	        return bos.toByteArray();  
+		} catch (Exception e) {
+			LOGGER.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
+			throw e;
+		}
+		// 使用finally块来关闭输入流
+		finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (Exception e2) {
+				LOGGER.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
+			}
+		}
+	}
+	
 	public static String sendPostUrl(String url, String param) throws Exception {
 		return sendPostUrl(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
