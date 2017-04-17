@@ -3,6 +3,7 @@ package org.axe.helper.mvc;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +166,8 @@ public final class ControllerHelper implements Helper{
     				filterList.add(filter);
     			}
     			//##Interceptor 列表
-    			Map<Class<? extends Interceptor>,Interceptor> interceptorMap = new HashMap<>();
+    			Set<Class<? extends Interceptor>> interceptorSet = new HashSet<>();
+    			List<Interceptor> interceptorList = new ArrayList<>();
     			//#controller上指定的拦截器
     			if(controllerClass.isAnnotationPresent(org.axe.annotation.mvc.Interceptor.class)){
     				org.axe.annotation.mvc.Interceptor interceptorAnnotation = controllerClass.getAnnotation(org.axe.annotation.mvc.Interceptor.class);
@@ -174,7 +176,10 @@ public final class ControllerHelper implements Helper{
     				if(interceptorClassAry != null){
     					for(Class<? extends Interceptor> interceptorClass:interceptorClassAry){
     						if(INTERCEPTOR_MAP.containsKey(interceptorClass)){
-    							interceptorMap.put(interceptorClass,INTERCEPTOR_MAP.get(interceptorClass));
+    							if(!interceptorSet.contains(interceptorClass)){
+    								interceptorSet.add(interceptorClass);
+    								interceptorList.add(INTERCEPTOR_MAP.get(interceptorClass));
+    							}
     						}
     					}
     				}
@@ -186,13 +191,16 @@ public final class ControllerHelper implements Helper{
     				Map<Class<? extends Interceptor>, Interceptor> INTERCEPTOR_MAP = InterceptorHelper.getInterceptorMap();
     				if(interceptorClassAry != null){
     					for(Class<? extends Interceptor> interceptorClass:interceptorClassAry){
-    						if(INTERCEPTOR_MAP.containsKey(interceptorClass) && !interceptorMap.containsKey(interceptorClass)){
-    							interceptorMap.put(interceptorClass,INTERCEPTOR_MAP.get(interceptorClass));
+    						if(INTERCEPTOR_MAP.containsKey(interceptorClass)){
+    							if(!interceptorSet.contains(interceptorClass)){
+    								interceptorSet.add(interceptorClass);
+    								interceptorList.add(INTERCEPTOR_MAP.get(interceptorClass));
+    								
+    							}
     						}
     					}
     				}
     			}
-    			List<Interceptor> interceptorList = new ArrayList<>(interceptorMap.values());
     			Handler handler = new Handler(requestMethod,mappingPath,controllerClass, actionMethod,filterList,interceptorList);
     			//构建树
     			node.put(nodeName, handler);

@@ -67,8 +67,8 @@ public class HomeController {
 			response.setContentType(ContentType.APPLICATION_HTML.CONTENT_TYPE);
 			PrintWriter writer = response.getWriter();
 			writer.write(html);
-			writer.flush();
-			writer.close();
+//			writer.flush();
+//			writer.close();
 		} catch (Exception e) {
 			LOGGER.error("home error", e);
 		}

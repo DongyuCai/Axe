@@ -87,6 +87,7 @@ public class DispatcherServlet extends HttpServlet{
     	String contentType = ContentType.APPLICATION_JSON.CONTENT_TYPE;
     	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
     	List<Filter> doEndFilterList = null;
+    	Integer RESPONSE_IS_USED = 0;
         try {
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
@@ -140,12 +141,12 @@ public class DispatcherServlet extends HttpServlet{
                 	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
                 	if(result != null){
                 		if(result instanceof View){
-                			handleViewResult((View)result,request,response);
+                			handleViewResult((View)result,request,response,RESPONSE_IS_USED);
                 		} else if (result instanceof Data){
-                			handleDataResult((Data)result,response,handler);
+                			handleDataResult((Data)result,response,handler,RESPONSE_IS_USED);
                 		} else {
                 			Data data = new Data(result);
-                			handleDataResult(data,response,handler);
+                			handleDataResult(data,response,handler,RESPONSE_IS_USED);
                 		}
                 	}
                 }
@@ -157,17 +158,17 @@ public class DispatcherServlet extends HttpServlet{
 			//被中断，跳转
 			View view = new View(e.getPath());
 			try {
-				handleViewResult(view,request,response);
+				handleViewResult(view,request,response,RESPONSE_IS_USED);
 			} catch (Exception e1) {
 				LOGGER.error("中断，跳转 error",e);
 			}
 		} catch (RestException e){
 			//需要返回前台信息的异常
-			writeError(e.getStatus(), e.getMessage(), response, contentType, characterEncoding);
+			writeError(e.getStatus(), e.getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
 		} catch (Exception e) {
 			LOGGER.error("server error",e);
 			//500
-			writeError(RestException.SC_INTERNAL_SERVER_ERROR, "500 server error", response, contentType, characterEncoding);
+			writeError(RestException.SC_INTERNAL_SERVER_ERROR, "500 server error", response, RESPONSE_IS_USED, contentType, characterEncoding);
 			
 	    	try {
 	    		//邮件通知
@@ -176,6 +177,7 @@ public class DispatcherServlet extends HttpServlet{
 				LOGGER.error("mail error",e1);
 			}
 		} finally {
+			System.out.println("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
 			//##5.执行Filter链各个节点的收尾工作
 			if(CollectionUtil.isNotEmpty(doEndFilterList)){
 				for(Filter filter:doEndFilterList){
@@ -189,18 +191,21 @@ public class DispatcherServlet extends HttpServlet{
 		}
     }
     
-    public void writeError(int status,String msg,HttpServletResponse response,String contentType,String characterEncoding){
-    	try {
-        	response.setContentType(contentType);
-        	response.setCharacterEncoding(characterEncoding);
-    		response.setStatus(status);
-        	PrintWriter writer = response.getWriter();
-        	writer.write(msg);
-        	writer.flush();
-        	writer.close();
-		} catch (Exception e) {
-			LOGGER.error("server error",e);
-		}
+    public void writeError(int status,String msg,HttpServletResponse response,Integer RESPONSE_IS_USED,String contentType,String characterEncoding){
+    	if(RESPONSE_IS_USED == 0){
+        	RESPONSE_IS_USED++;
+    		try {
+    			response.setContentType(contentType);
+    			response.setCharacterEncoding(characterEncoding);
+    			response.setStatus(status);
+    			PrintWriter writer = response.getWriter();
+    			writer.write(msg);
+//    			writer.flush();
+//    			writer.close();
+    		} catch (Exception e) {
+    			LOGGER.error("server error",e);
+    		}
+    	}
     }
     
     private List<Object> convertRequest2RequestParam(Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
@@ -269,38 +274,44 @@ public class DispatcherServlet extends HttpServlet{
     	return parameterValueList;
     }
     
-    private void handleViewResult(View view,HttpServletRequest request,HttpServletResponse response) throws IOException,ServletException{
-        //返回JSP页面或者请求跳转
-        String path = view.getPath();
-        if (StringUtil.isNotEmpty(path)){
-        	if(!path.startsWith("/")){
-        		path = "/"+path;
-        	}
-            if(view.isRedirect()){
-                response.sendRedirect(request.getContextPath()+path);
-            }else{
-                Map<String,Object> model = view.getModel();
-                for(Map.Entry<String,Object> entry:model.entrySet()){
-                    request.setAttribute(entry.getKey(),entry.getValue());
+    private void handleViewResult(View view,HttpServletRequest request,HttpServletResponse response,Integer RESPONSE_IS_USED) throws IOException,ServletException{
+        if(RESPONSE_IS_USED == 0){
+        	RESPONSE_IS_USED++;
+        	//返回JSP页面或者请求跳转
+            String path = view.getPath();
+            if (StringUtil.isNotEmpty(path)){
+            	if(!path.startsWith("/")){
+            		path = "/"+path;
+            	}
+                if(view.isRedirect()){
+                    response.sendRedirect(request.getContextPath()+path);
+                }else{
+                    Map<String,Object> model = view.getModel();
+                    for(Map.Entry<String,Object> entry:model.entrySet()){
+                        request.setAttribute(entry.getKey(),entry.getValue());
+                    }
+                    request.getRequestDispatcher(path).forward(request,response);
                 }
-                request.getRequestDispatcher(path).forward(request,response);
             }
         }
     }
 
-    private void handleDataResult(Data data,HttpServletResponse response,Handler handler) throws IOException{
-    	response.setContentType(handler.getContentType());
-    	response.setCharacterEncoding(handler.getCharacterEncoding());
-        //返回JSON数据
-        Object model = data.getModel();
-        if(model != null){
-            String json = model instanceof String ? String.valueOf(model):JsonUtil.toJson(model);
-            if(json != null){
-            	PrintWriter writer = response.getWriter();
-            	writer.write(json);
-            	writer.flush();
-            	writer.close();
-            }
-        }
+    private void handleDataResult(Data data,HttpServletResponse response,Handler handler,Integer RESPONSE_IS_USED) throws IOException{
+    	if(RESPONSE_IS_USED == 0){
+        	RESPONSE_IS_USED++;
+    		response.setContentType(handler.getContentType());
+    		response.setCharacterEncoding(handler.getCharacterEncoding());
+    		//返回JSON数据
+    		Object model = data.getModel();
+    		if(model != null){
+    			String json = model instanceof String ? String.valueOf(model):JsonUtil.toJson(model);
+    			if(json != null){
+    				PrintWriter writer = response.getWriter();
+    				writer.write(json);
+//    				writer.flush();
+//    				writer.close();
+    			}
+    		}
+    	}
     }
 }
