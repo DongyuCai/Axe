@@ -195,13 +195,15 @@ public final class HttpUtil {
 		if (param != null && !param.isEmpty()) {
 			for (Map.Entry<String, String> entry : param.entrySet()) {
 				try {
-					buffer.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), charset)).append("&");
+					if(buffer.length() > 0){
+						buffer.append("&");
+					}
+					buffer.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), charset));
 				} catch (UnsupportedEncodingException e) {
 					LOGGER.error("http error",e);
 				}
 			}
 		}
-		buffer.deleteCharAt(buffer.length() - 1);
 
 		PrintWriter out = null;
 		BufferedReader in = null;
