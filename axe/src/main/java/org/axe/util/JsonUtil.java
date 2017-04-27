@@ -33,10 +33,15 @@ public final class JsonUtil {
     /**
      * 将 JSON 转为 POJO
      */
-    public static <T> T fromJson(String json, Class<T> type){
+    @SuppressWarnings("unchecked")
+	public static <T> T fromJson(String json, Class<T> type){
         T pojo;
         try {
-            pojo = OBJECT_MAPPER.readValue(json,type);
+        	if(String.class.equals(type)){
+            	pojo = (T) json;
+            }else{
+            	pojo = OBJECT_MAPPER.readValue(json,type);
+            }
         } catch (Exception e){
             LOGGER.error("convert JSON to POJO failure",e);
             throw new RuntimeException(e);
