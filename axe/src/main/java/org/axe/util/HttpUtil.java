@@ -198,7 +198,10 @@ public final class HttpUtil {
 					if(buffer.length() > 0){
 						buffer.append("&");
 					}
-					buffer.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), charset));
+					buffer.append(entry.getKey()).append("=");
+					if(entry.getValue() != null){
+						buffer.append(URLEncoder.encode(entry.getValue(), charset));
+					}
 				} catch (UnsupportedEncodingException e) {
 					LOGGER.error("http error",e);
 				}
