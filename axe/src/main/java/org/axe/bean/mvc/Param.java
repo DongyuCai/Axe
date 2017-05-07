@@ -53,8 +53,15 @@ public class Param {
         if(tmpMap.size() > 0){
         	for(Map.Entry<String, Object> entry:this.bodyParamMap.entrySet()){
         		String fieldName = entry.getKey();
-        		String fieldValue = String.valueOf(entry.getValue());
-        		formParamList.add(new FormParam(fieldName, fieldValue));
+        		if(entry.getValue() instanceof List){
+        			for(Object obj:(List<?>)entry.getValue()){
+        				String fieldValue = String.valueOf(obj);
+        				formParamList.add(new FormParam(fieldName, fieldValue));
+        			}
+        		}else{
+        			String fieldValue = String.valueOf(entry.getValue());
+    				formParamList.add(new FormParam(fieldName, fieldValue));
+        		}
         	}
         }
     }
