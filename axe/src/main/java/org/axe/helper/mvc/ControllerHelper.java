@@ -102,10 +102,6 @@ public final class ControllerHelper implements Helper{
     	//如果nodeName中有pathParam，全部替换成占位符?
     	nodeName = RequestUtil.castPathParam(nodeName);
     	
-    	if(ReflectionUtil.compareType(controllerClass, HomeController.class)){
-    		System.out.println("1234");
-    	}
-    	
     	if(subNodeNameLineAry.length > 0){
     		Object nodeValue = null;
     		if(node.containsKey(nodeName)){
