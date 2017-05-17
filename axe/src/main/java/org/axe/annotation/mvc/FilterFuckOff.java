@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.axe.interface_.mvc.Filter;
+import org.axe.interface_implement.mvc.AxeRequestParamAnalyzeFilter;
 
 /**
  * 排除过滤器注解
@@ -23,4 +24,11 @@ public @interface FilterFuckOff {
 	 * 默认为空，注意注意，为空不是说不排除，而是排除所有！
 	 */
 	Class<? extends Filter>[] value() default {};
+	
+	/**
+	 * 不包括的过滤器列表
+	 * 如果与排除项冲突，从排除项中扣除
+	 * 默认不包括 AxeRequestParamAnalyzeFilter
+	 */
+	Class<? extends Filter>[] notFuckOff() default {AxeRequestParamAnalyzeFilter.class};
 }

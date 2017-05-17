@@ -18,6 +18,8 @@ public class Param {
 	private List<FormParam> formParamList;
 	private List<FileParam> fileParamList;
 	private Map<String,Object> bodyParamMap;
+	
+	private List<Object> actionParamList;
 
 	public Param(String requestPath) {
 		this.requestPath = requestPath;
@@ -25,6 +27,8 @@ public class Param {
 		formParamList = new ArrayList<>();
 		fileParamList = new ArrayList<>();
 		bodyParamMap = new HashMap<>();
+		
+		actionParamList = new ArrayList<>();
 	}
 	
     public void init(String body, List<FormParam> formParamList, List<FileParam> fileParamList, Map<String,Object> bodyParamMap) {
@@ -147,4 +151,12 @@ public class Param {
         		CollectionUtil.isEmpty(bodyParamMap) && 
         		StringUtil.isEmpty(body);
     }
+
+	public List<Object> getActionParamList() {
+		return actionParamList;
+	}
+
+	public void setActionParamList(List<Object> actionParamList) {
+		this.actionParamList = actionParamList;
+	}
 }

@@ -15,6 +15,7 @@ import org.axe.annotation.mvc.FilterFuckOff;
 import org.axe.annotation.mvc.Request;
 import org.axe.bean.mvc.Handler;
 import org.axe.helper.ioc.ClassHelper;
+import org.axe.home.rest.HomeController;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
@@ -101,6 +102,10 @@ public final class ControllerHelper implements Helper{
     	//如果nodeName中有pathParam，全部替换成占位符?
     	nodeName = RequestUtil.castPathParam(nodeName);
     	
+    	if(ReflectionUtil.compareType(controllerClass, HomeController.class)){
+    		System.out.println("1234");
+    	}
+    	
     	if(subNodeNameLineAry.length > 0){
     		Object nodeValue = null;
     		if(node.containsKey(nodeName)){
@@ -134,31 +139,60 @@ public final class ControllerHelper implements Helper{
     					if(notMappingPathMatcher.find()) continue;
     				}
     				
-    				//#其次，说明匹配上了，判断controller是否排除了这个Filter
+					//#其次，说明匹配上了，判断controller是否排除了这个Filter
     				if(controllerClass.isAnnotationPresent(FilterFuckOff.class)){
     					FilterFuckOff filterFuckOff = controllerClass.getAnnotation(FilterFuckOff.class);
-    					if(filterFuckOff.value().length == 0) continue;
     					boolean findFuckOffFilter = false;
-    					for(Class<?> filterClass:filterFuckOff.value()){
-    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
-    							findFuckOffFilter = true;
-    							break;
-    						}
+    					if(filterFuckOff.value().length == 0){ 
+    						findFuckOffFilter = true;
+    					}else{
+    						for(Class<?> filterClass:filterFuckOff.value()){
+        						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
+        							findFuckOffFilter = true;
+        							break;
+        						}
+        					}
     					}
+    					
+    					//从排除的filter中扣除
+    					if(filterFuckOff.notFuckOff().length > 0){ 
+    						for(Class<?> filterClass:filterFuckOff.notFuckOff()){
+        						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
+        							findFuckOffFilter = false;
+        							break;
+        						}
+        					}
+    					}
+    					
+    					
+    					
     					if(findFuckOffFilter) continue;
     				}
     				
     				//最后，说明Controller上没有排除此Filter，需要判断方法上是否排除
     				if(actionMethod.isAnnotationPresent(FilterFuckOff.class)){
     					FilterFuckOff filterFuckOff = actionMethod.getAnnotation(FilterFuckOff.class);
-    					if(filterFuckOff.value().length == 0) continue;
     					boolean findFuckOffFilter = false;
-    					for(Class<?> filterClass:filterFuckOff.value()){
-    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
-    							findFuckOffFilter = true;
-    							break;
+    					if(filterFuckOff.value().length == 0){ 
+    						findFuckOffFilter = true;
+    					}else{
+    						for(Class<?> filterClass:filterFuckOff.value()){
+	    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
+	    							findFuckOffFilter = true;
+	    							break;
+	    						}
     						}
     					}
+    					
+    					if(filterFuckOff.notFuckOff().length > 0){ 
+        					for(Class<?> filterClass:filterFuckOff.notFuckOff()){
+	    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
+	    							findFuckOffFilter = false;
+	    							break;
+	    						}
+	    					}
+    					}
+    					
     					if(findFuckOffFilter) continue;
     				}
     				

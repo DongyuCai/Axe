@@ -2,10 +2,7 @@ package org.axe;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.axe.annotation.mvc.RequestParam;
 import org.axe.bean.mvc.Data;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
@@ -137,8 +133,7 @@ public class DispatcherServlet extends HttpServlet{
                 //##4.执行action
                 if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
-                	List<Object> actionParamList = this.convertRequest2RequestParam(actionMethod, param, request, response);
-                	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,actionParamList.toArray());
+                	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,param.getActionParamList().toArray());
                 	if(result != null){
                 		if(result instanceof View){
                 			handleViewResult((View)result,request,response,RESPONSE_IS_USED);
@@ -177,7 +172,7 @@ public class DispatcherServlet extends HttpServlet{
 				LOGGER.error("mail error",e1);
 			}
 		} finally {
-			System.out.println("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
+			LOGGER.info("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
 			//##5.执行Filter链各个节点的收尾工作
 			if(CollectionUtil.isNotEmpty(doEndFilterList)){
 				for(Filter filter:doEndFilterList){
@@ -208,71 +203,6 @@ public class DispatcherServlet extends HttpServlet{
     	}
     }
     
-    private List<Object> convertRequest2RequestParam(Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
-    	Type[] parameterTypes = actionMethod.getGenericParameterTypes();
-    	Annotation[][] parameterAnnotations = actionMethod.getParameterAnnotations();
-    	parameterTypes = parameterTypes == null?new Class<?>[0]:parameterTypes;
-    	//按顺序来，塞值
-    	List<Object> parameterValueList = new ArrayList<>();
-    	for(int i=0;i<parameterTypes.length;i++){
-    		Object parameterValue = null;
-    		do{
-    			Type parameterType = parameterTypes[i];
-    			Annotation[] parameterAnnotationAry = parameterAnnotations[i];
-    			
-    			RequestParam requestParam = null;
-    			for(Annotation anno:parameterAnnotationAry){
-    				if(anno instanceof RequestParam){
-    					requestParam = (RequestParam)anno;
-    					break;
-    				}
-    			}
-    			
-    			//## 是否@RequestParam标注的
-    			if(requestParam != null){
-    				String fieldName = requestParam.value();
-					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
-					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
-					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType);
-    				break;
-    			}else{
-    				Class<?> parameterClass = null; 
-    				if(parameterType instanceof Class){
-    					parameterClass = (Class<?>)parameterType;
-    				}else if(parameterType instanceof ParameterizedType){
-    					parameterClass = (Class<?>)((ParameterizedType) parameterType).getRawType();
-    				}
-    				if(parameterClass != null){
-    					//## 不含注解的
-    					//* 如果是HttpServletRequest
-    					if(ReflectionUtil.compareType(HttpServletRequest.class, parameterClass)){
-    						parameterValue = request;
-    						break;
-    					}
-    					if(ReflectionUtil.compareType(HttpServletResponse.class, parameterClass)){
-    						parameterValue = response;
-    						break;
-    					}
-    					//* 如果是Param
-    					if(ReflectionUtil.compareType(Param.class,parameterClass)){
-    						parameterValue = param;
-    						break;
-    					}
-    					//* 如果是Map<String,Object> 
-    					if(ReflectionUtil.compareType(Map.class, parameterClass)){
-    						parameterValue = param.getBodyParamMap();
-    						break;
-    					}
-    					
-    				}
-    			}
-    			
-    			//## 其他杂七杂八类型，只能给null，框架不管
-    		}while(false);
-    		parameterValueList.add(parameterValue);
-    	}
-    	return parameterValueList;
-    }
     
     private void handleViewResult(View view,HttpServletRequest request,HttpServletResponse response,Integer RESPONSE_IS_USED) throws IOException,ServletException{
         if(RESPONSE_IS_USED == 0){
