@@ -40,6 +40,10 @@ public final class JsonUtil {
         	if(String.class.equals(type)){
             	pojo = (T) json;
             }else{
+            	String reg = "[ ]*\"[^\"]+\"[ ]*:[ ]*null[ ]*";
+        		json = json.replaceAll(""+reg+",", "");
+        		json = json.replaceAll(","+reg+"\\}", "}");
+        		json = json.replaceAll("\\{"+reg+"\\}", "{}");
             	pojo = OBJECT_MAPPER.readValue(json,type);
             }
         } catch (Exception e){
