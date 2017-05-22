@@ -168,8 +168,17 @@ public final class DataBaseHelper implements Helper{
 					Method method = entityFieldMethod.getMethod();
 					String fieldName = field.getName();
 					String columnName = StringUtil.camelToUnderline(fieldName);
-					Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName), field.getType());
-					ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+					try {
+						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
+						ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+					} catch (SQLException e) {
+						if(e.getMessage().contains("Column '"+columnName+"' not found")){
+							//字段不存在情况可以不处理
+						}else{
+							//其他异常抛出
+							throw e;
+						}
+					}
 				}
 				entityList.add(entity);
 			}
@@ -209,8 +218,17 @@ public final class DataBaseHelper implements Helper{
 					Method method = entityFieldMethod.getMethod();
 					String fieldName = field.getName();
 					String columnName = StringUtil.camelToUnderline(fieldName);
-					Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
-					ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+					try {
+						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
+						ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+					} catch (SQLException e) {
+						if(e.getMessage().contains("Column '"+columnName+"' not found")){
+							//字段不存在情况可以不处理
+						}else{
+							//其他异常抛出
+							throw e;
+						}
+					}
 				}
 			}
 			table.close();
