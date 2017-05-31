@@ -22,8 +22,9 @@ public final class StreamUtil {
      */
     public static String getString(InputStream is){
         StringBuilder sb = new StringBuilder();
+        BufferedReader reader = null;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
@@ -31,7 +32,13 @@ public final class StreamUtil {
         } catch (Exception e){
             LOGGER.error("get String failure",e);
             throw new RuntimeException(e);
-        }
+        } finally {
+			if(reader != null){
+				try {
+					reader.close();
+				} catch (Exception e2) {}
+			}
+		}
         return sb.toString();
     }
 
