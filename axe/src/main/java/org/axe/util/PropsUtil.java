@@ -104,7 +104,7 @@ public final class PropsUtil {
      * 获取属性值（可以指定默认值）
      */
     public static Boolean getBoolean(Properties props, String key, Boolean defaultValue) {
-        boolean value = defaultValue;
+        Boolean value = defaultValue;
         if (props.containsKey(key)) {
             value = CastUtil.castBoolean(props.getProperty(key));
         }
