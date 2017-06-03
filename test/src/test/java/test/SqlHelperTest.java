@@ -14,7 +14,7 @@ public class SqlHelperTest {
 		String append = "and lastLoginIp = 'a'";
 		Object[] params = {1,append};
 		sql = SqlHelper.convertSqlAppendCommand(sql, params);
-		sql = SqlHelper.convertHql2Sql(sql);
-		System.out.println(sql);
+		String[] convertHql2Sql = SqlHelper.convertHql2Sql(sql);
+		System.out.println(convertHql2Sql);
 	}
 }

@@ -109,8 +109,8 @@ public final class ConfigHelper implements Helper{
     /**
      * 是否自动建表
      */
-    public static boolean getJdbcAutoCreateTable() {
-    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JDBC_AUTO_CREATE_TABLE, false);
+    public static Boolean getJdbcAutoCreateTable() {
+    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JDBC_AUTO_CREATE_TABLE, null);
     }
     
     /**

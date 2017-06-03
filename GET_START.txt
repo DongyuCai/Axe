@@ -251,7 +251,7 @@ Service在大部分情况下都与Component一样，但是@Tns事务控制只在@Service下有效。
 
 ## Table Eentity
 #### Table自建
-可以配置参数jdbc.auto_create_table来自动创建表结构。如果表结构已经存在则不会创建，即便字段有变化，需先要手动删除表。
+可以配置参数jdbc.auto_create_table 来自动创建表结构。如果表结构已经存在则不会创建，即便字段有变化，需先要手动删除表。
 axe只会创建带有@Table注解的Entity表结构，并且可以指定数据库多个。
 
 #### 主键、联合主键

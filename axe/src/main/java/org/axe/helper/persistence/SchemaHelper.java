@@ -67,120 +67,131 @@ public class SchemaHelper implements Helper{
 	public void onStartUp() throws Exception {
 		//在框架的Helper都初始化后，同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
 		Map<String, Class<?>> ENTITY_CLASS_MAP = TableHelper.getEntityClassMap();
-		if(ConfigHelper.getJdbcAutoCreateTable()){
+		if(ConfigHelper.getJdbcAutoCreateTable() == null){
+			//按@Table定义
+			DataBaseHelper.beginTransaction();
+			for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
+				if(TableHelper.isTableAutoCreate(entityClass)){
+					SchemaHelper.createTable(entityClass);
+				}
+			}
+			DataBaseHelper.commitTransaction();
+		} else if(ConfigHelper.getJdbcAutoCreateTable()){
+			//全局开启，优先级最高，不管@Table如何定义，全部创建
 			DataBaseHelper.beginTransaction();
 			for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
 				SchemaHelper.createTable(entityClass);
 			}
 			DataBaseHelper.commitTransaction();
+		} else {
+			//全局关闭了，优先级也最高，直接不创建
 		}
+		
 	}
 	
 	public static void createTable(Class<?> entityClass) throws SQLException{
-		if(TableHelper.isTableAutoCreate(entityClass)){
-			String tableName = TableHelper.getTableName(entityClass);
-			StringBuilder createTableSqlBufer = new StringBuilder(); 
-			createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("` (");
-			//#取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
-			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
-			//#转类非主键字段到数据库表字段定义
-			List<Field> primaryKeyFieldList = new ArrayList<>();
-			List<Field> normalKeyFieldList = new ArrayList<>();;
-			List<Field> uniqueKeyFieldList = new ArrayList<>();
-			for(int i=0;i<entityFieldMethodList.size();i++){
-				EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-				Field field = entityFieldMethod.getField();
-				if(field.isAnnotationPresent(Id.class)){
-					//#等会儿主键处理
-					primaryKeyFieldList.add(field);
-				}else{
-					//#普通建处理
-					normalKeyFieldList.add(field);
-					if(field.isAnnotationPresent(Unique.class)){
-						//#唯一键
-						uniqueKeyFieldList.add(field);
-					}
+		String tableName = TableHelper.getTableName(entityClass);
+		StringBuilder createTableSqlBufer = new StringBuilder(); 
+		createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("` (");
+		//#取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
+		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
+		//#转类非主键字段到数据库表字段定义
+		List<Field> primaryKeyFieldList = new ArrayList<>();
+		List<Field> normalKeyFieldList = new ArrayList<>();;
+		List<Field> uniqueKeyFieldList = new ArrayList<>();
+		for(int i=0;i<entityFieldMethodList.size();i++){
+			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
+			Field field = entityFieldMethod.getField();
+			if(field.isAnnotationPresent(Id.class)){
+				//#等会儿主键处理
+				primaryKeyFieldList.add(field);
+			}else{
+				//#普通建处理
+				normalKeyFieldList.add(field);
+				if(field.isAnnotationPresent(Unique.class)){
+					//#唯一键
+					uniqueKeyFieldList.add(field);
 				}
 			}
-			//#普通建处理
-			for(int i=0;i<normalKeyFieldList.size();i++){
-				Field field = normalKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(field.getName());
+		}
+		//#普通建处理
+		for(int i=0;i<normalKeyFieldList.size();i++){
+			Field field = normalKeyFieldList.get(i);
+			String column = StringUtil.camelToUnderline(field.getName());
+			createTableSqlBufer.append("`").append(column).append("`");
+			String columnDefine = javaType2MysqlColumnDefine(field,true);
+			if(StringUtil.isEmpty(columnDefine)){
+				throw new RuntimeException(entityClass.getName()+"#["+field.getName()+"] connot convert to mysql type from "+field.getType().getName());
+			}
+			createTableSqlBufer.append(" ").append(columnDefine);
+			
+			if(i<normalKeyFieldList.size()-1){
+				createTableSqlBufer.append(",");
+			}
+		}
+		//#主键定义
+		if(CollectionUtil.isNotEmpty(primaryKeyFieldList)){
+			createTableSqlBufer.append(",");
+			
+			for(int i=0;i<primaryKeyFieldList.size();i++){
+				Field primaryKeyField = primaryKeyFieldList.get(i);
+				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
 				createTableSqlBufer.append("`").append(column).append("`");
-				String columnDefine = javaType2MysqlColumnDefine(field,true);
+				String columnDefine = javaType2MysqlColumnDefine(primaryKeyField,false);
 				if(StringUtil.isEmpty(columnDefine)){
-					throw new RuntimeException(entityClass.getName()+"#["+field.getName()+"] connot convert to mysql type from "+field.getType().getName());
+					throw new RuntimeException(entityClass.getName()+"#["+primaryKeyField.getName()+"] connot convert to mysql type from "+primaryKeyField.getType().getName());
 				}
 				createTableSqlBufer.append(" ").append(columnDefine);
-				
-				if(i<normalKeyFieldList.size()-1){
-					createTableSqlBufer.append(",");
-				}
-			}
-			//#主键定义
-			if(CollectionUtil.isNotEmpty(primaryKeyFieldList)){
-				createTableSqlBufer.append(",");
-				
-				for(int i=0;i<primaryKeyFieldList.size();i++){
-					Field primaryKeyField = primaryKeyFieldList.get(i);
-					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-					createTableSqlBufer.append("`").append(column).append("`");
-					String columnDefine = javaType2MysqlColumnDefine(primaryKeyField,false);
-					if(StringUtil.isEmpty(columnDefine)){
-						throw new RuntimeException(entityClass.getName()+"#["+primaryKeyField.getName()+"] connot convert to mysql type from "+primaryKeyField.getType().getName());
-					}
-					createTableSqlBufer.append(" ").append(columnDefine);
-					if(primaryKeyFieldList.size() == 1){
-						//#若只有一个@Id主键，那么默认 AUTO_INCREMENT
-						Field field = primaryKeyFieldList.get(0);
-						if(!field.isAnnotationPresent(ColumnDefine.class)){
-							if(field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)){
-								createTableSqlBufer.append(" AUTO_INCREMENT");
-							}
+				if(primaryKeyFieldList.size() == 1){
+					//#若只有一个@Id主键，那么默认 AUTO_INCREMENT
+					Field field = primaryKeyFieldList.get(0);
+					if(!field.isAnnotationPresent(ColumnDefine.class)){
+						if(field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)){
+							createTableSqlBufer.append(" AUTO_INCREMENT");
 						}
 					}
+				}
+				createTableSqlBufer.append(",");
+			}
+			
+			createTableSqlBufer.append("PRIMARY KEY (");
+			for(int i=0;i<primaryKeyFieldList.size();i++){
+				Field primaryKeyField = primaryKeyFieldList.get(i);
+				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
+				createTableSqlBufer.append("`").append(column).append("`");
+				if(i<primaryKeyFieldList.size()-1){
 					createTableSqlBufer.append(",");
 				}
-				
-				createTableSqlBufer.append("PRIMARY KEY (");
-				for(int i=0;i<primaryKeyFieldList.size();i++){
-					Field primaryKeyField = primaryKeyFieldList.get(i);
-					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-					createTableSqlBufer.append("`").append(column).append("`");
-					if(i<primaryKeyFieldList.size()-1){
-						createTableSqlBufer.append(",");
-					}
-				}
-				createTableSqlBufer.append(")");
-				
-				
-				
 			}
-			
-			//#唯一键约束
-			if(CollectionUtil.isNotEmpty(uniqueKeyFieldList)){
-				createTableSqlBufer.append(",");
-				
-				String keyName = tableName+"_uq";
-				createTableSqlBufer.append("UNIQUE KEY "+keyName+" (");
-				for(int i=0;i<uniqueKeyFieldList.size();i++){
-					Field primaryKeyField = uniqueKeyFieldList.get(i);
-					String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-					createTableSqlBufer.append("`").append(column).append("`");
-					if(i<uniqueKeyFieldList.size()-1){
-						createTableSqlBufer.append(",");
-					}
-				}
-				createTableSqlBufer.append(")");
-			}
+			createTableSqlBufer.append(")");
 			
 			
-			createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
 			
-			
-			String tableDataSourceName = TableHelper.getTableDataSourceName(entityClass);
-			DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{}, tableDataSourceName);
 		}
+		
+		//#唯一键约束
+		if(CollectionUtil.isNotEmpty(uniqueKeyFieldList)){
+			createTableSqlBufer.append(",");
+			
+			String keyName = tableName+"_uq";
+			createTableSqlBufer.append("UNIQUE KEY "+keyName+" (");
+			for(int i=0;i<uniqueKeyFieldList.size();i++){
+				Field primaryKeyField = uniqueKeyFieldList.get(i);
+				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
+				createTableSqlBufer.append("`").append(column).append("`");
+				if(i<uniqueKeyFieldList.size()-1){
+					createTableSqlBufer.append(",");
+				}
+			}
+			createTableSqlBufer.append(")");
+		}
+		
+		
+		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+		
+		
+		String tableDataSourceName = TableHelper.getTableDataSourceName(entityClass);
+		DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{}, tableDataSourceName);
 	}
 	
 	public static String javaType2MysqlColumnDefine(Field field,boolean nullAble){
