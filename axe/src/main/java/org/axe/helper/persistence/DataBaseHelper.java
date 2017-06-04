@@ -290,14 +290,13 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static Map<String, Object> queryMap(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
-        Map<String, Object> result = null;
+        Map<String, Object>	result = new HashMap<>();
         Connection conn = getConnection(dataSourceName);
         try {
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	ResultSetMetaData rsmd = ps.getMetaData();
         	if(table.next()){
-        		result = new HashMap<>();
         		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
         			result.put(rsmd.getColumnLabel(i), table.getObject(i));
 	        	}
