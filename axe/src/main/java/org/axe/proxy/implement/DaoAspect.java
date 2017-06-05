@@ -21,6 +21,7 @@ import org.axe.helper.persistence.SqlHelper;
 import org.axe.interface_.persistence.BaseRepository;
 import org.axe.interface_.proxy.Proxy;
 import org.axe.proxy.base.ProxyChain;
+import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 
@@ -271,8 +272,14 @@ public class DaoAspect implements Proxy{
 	private Object getBasetypeOrDate(String sql,Object[] methodParams,Class<?>[] parameterTypes,String daoConfigDataSource) throws SQLException{
 		//Date
 		Map<String,Object> resultMap = DataBaseHelper.queryMap(sql, methodParams, parameterTypes,daoConfigDataSource);
-		Set<String> keySet = resultMap.keySet();
-		return keySet.size() == 1 ? resultMap.get(keySet.iterator().next()) : null;
+		do{
+			if(resultMap == null) break;
+			if(CollectionUtil.isEmpty(resultMap)) break;
+			
+			Set<String> keySet = resultMap.keySet();
+			return resultMap.get(keySet.iterator().next());
+		}while(false);
+		return null;
 	}
 	
 	private Object getBasetypeOrDateList(String sql,Object[] methodParams,Class<?>[] parameterTypes,String daoConfigDataSource) throws SQLException{
