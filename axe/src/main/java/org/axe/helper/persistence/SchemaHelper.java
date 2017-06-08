@@ -10,6 +10,7 @@ import java.util.Map;
 import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Id;
+import org.axe.annotation.persistence.Transient;
 import org.axe.annotation.persistence.Unique;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.constant.IdGenerateWay;
@@ -102,6 +103,12 @@ public class SchemaHelper implements Helper{
 		for(int i=0;i<entityFieldMethodList.size();i++){
 			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
 			Field field = entityFieldMethod.getField();
+			if(field.isAnnotationPresent(Transient.class)){
+				if(!field.getAnnotation(Transient.class).query()){
+					continue;
+				}
+			}
+			
 			if(field.isAnnotationPresent(Id.class)){
 				//#等会儿主键处理
 				primaryKeyFieldList.add(field);
