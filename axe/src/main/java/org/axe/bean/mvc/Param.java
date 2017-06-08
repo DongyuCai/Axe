@@ -55,7 +55,7 @@ public class Param {
         }
         
         if(tmpMap.size() > 0){
-        	for(Map.Entry<String, Object> entry:this.bodyParamMap.entrySet()){
+        	for(Map.Entry<String, Object> entry:tmpMap.entrySet()){
         		String fieldName = entry.getKey();
         		if(entry.getValue() instanceof List){
         			for(Object obj:(List<?>)entry.getValue()){
