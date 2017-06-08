@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.axe.annotation.persistence.Id;
 import org.axe.annotation.persistence.Table;
+import org.axe.annotation.persistence.Transient;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.bean.persistence.SqlPackage;
@@ -56,6 +57,11 @@ public final class SqlHelper {
         for (int i=0;i<entityFieldMethodList.size();i++) {
         	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
         	Field field = entityFieldMethod.getField();
+			if(field.isAnnotationPresent(Transient.class)){
+				if(!field.getAnnotation(Transient.class).save()){
+					continue;
+				}
+			}
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
             columns.append("`").append(column).append("`, ");
@@ -81,6 +87,11 @@ public final class SqlHelper {
         for (int i=0;i<entityFieldMethodList.size();i++) {
         	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
         	Field field = entityFieldMethod.getField();
+        	if(field.isAnnotationPresent(Transient.class)){
+				if(!field.getAnnotation(Transient.class).save()){
+					continue;
+				}
+			}
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
         	if(!field.isAnnotationPresent(Id.class)){
@@ -119,6 +130,11 @@ public final class SqlHelper {
         	//# insert
         	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
         	Field field = entityFieldMethod.getField();
+        	if(field.isAnnotationPresent(Transient.class)){
+				if(!field.getAnnotation(Transient.class).save()){
+					continue;
+				}
+			}
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
         	
@@ -132,6 +148,11 @@ public final class SqlHelper {
         	//# update
         	EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
         	Field field = entityFieldMethod.getField();
+        	if(field.isAnnotationPresent(Transient.class)){
+				if(!field.getAnnotation(Transient.class).save()){
+					continue;
+				}
+			}
         	Method method = entityFieldMethod.getMethod();
         	String column = StringUtil.camelToUnderline(field.getName());
         	

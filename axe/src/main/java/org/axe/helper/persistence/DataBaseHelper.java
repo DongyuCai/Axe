@@ -10,10 +10,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.axe.annotation.persistence.Id;
+import org.axe.annotation.persistence.Transient;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.InsertResult;
 import org.axe.bean.persistence.SqlPackage;
@@ -161,12 +164,22 @@ public final class DataBaseHelper implements Helper{
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
-			while(table.next()){
+			Set<String> transientField = new HashSet<>();
+        	while(table.next()){
 				T entity = ReflectionUtil.newInstance(entityClass);
 				for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
 					Field field = entityFieldMethod.getField();
-					Method method = entityFieldMethod.getMethod();
 					String fieldName = field.getName();
+					if(transientField.contains(fieldName)){
+						continue;
+					}
+					if(field.isAnnotationPresent(Transient.class)){
+						if(!field.getAnnotation(Transient.class).query()){
+							transientField.add(fieldName);
+							continue;
+						}
+					}
+					Method method = entityFieldMethod.getMethod();
 					String columnName = StringUtil.camelToUnderline(fieldName);
 					try {
 						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
@@ -213,10 +226,15 @@ public final class DataBaseHelper implements Helper{
         	if(table.next()){
     			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
     			entity = ReflectionUtil.newInstance(entityClass);
-				for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
+    			for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
 					Field field = entityFieldMethod.getField();
-					Method method = entityFieldMethod.getMethod();
 					String fieldName = field.getName();
+					if(field.isAnnotationPresent(Transient.class)){
+						if(!field.getAnnotation(Transient.class).query()){
+							continue;
+						}
+					}
+					Method method = entityFieldMethod.getMethod();
 					String columnName = StringUtil.camelToUnderline(fieldName);
 					try {
 						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
