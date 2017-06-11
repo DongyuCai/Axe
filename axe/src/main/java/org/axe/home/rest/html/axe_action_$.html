@@ -30,7 +30,7 @@ public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode
 		Handler handler = null;
 		for(Handler handler_:handlerList){
 			String hashCode = null;
-			int code = handler_.getMappingPath().hashCode();
+			int code = (handler_.getRequestMethod()+":"+handler_.getMappingPath()).hashCode();
 			if(code < 0){
 				hashCode = "_"+Math.abs(code);
 			}else{

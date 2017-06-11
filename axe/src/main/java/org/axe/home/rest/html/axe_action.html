@@ -103,7 +103,7 @@ public void action(@RequestParam("token")String token, HttpServletRequest reques
 					<td align="left"><a href=""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"">"+handler.getControllerClass().getName()+"</a></td>
 					<java>
 						hashCode = null;
-						code = mappingPath.hashCode();
+						code = (handler.getRequestMethod()+mappingPath).hashCode();
 						if(code < 0){
 							hashCode = "_"+Math.abs(code);
 						}else{
