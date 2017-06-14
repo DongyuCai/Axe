@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.axe.bean.mvc.FormParam;
 import org.axe.bean.mvc.Param;
-import org.axe.util.CodeUtil;
 import org.axe.util.JsonUtil;
 import org.axe.util.RequestUtil;
 import org.axe.util.StreamUtil;
@@ -29,7 +28,8 @@ public final class AjaxRequestHelper {
 	public static void initParam(Param param,HttpServletRequest request,String requestPath,String mappingPath)throws IOException{
         List<FormParam> formParamList = new ArrayList<>();
         formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));
-        String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
+//        String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
+        String body = StreamUtil.getString(request.getInputStream());
         Map<String,Object> bodyParamMap = null;
         if(StringUtil.isNotEmpty(body)){
             try {
