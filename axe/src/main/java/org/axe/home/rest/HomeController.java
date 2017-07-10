@@ -832,7 +832,7 @@ public class HomeController {
 				html.append("<td align=\"left\"><a href=\"" + contextPath + "/axe/controller-" + hashCode
 						+ "/action?token=" + token + "\">" + handler.getControllerClass().getName() + "</a></td>");
 				hashCode = null;
-				code = (handler.getRequestMethod()+mappingPath).hashCode();
+				code = (handler.getRequestMethod()+":"+handler.getMappingPath()).hashCode();
 				if (code < 0) {
 					hashCode = "_" + Math.abs(code);
 				} else {

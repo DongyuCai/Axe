@@ -151,9 +151,8 @@ public class DispatcherServlet extends HttpServlet{
             }
 		} catch (RedirectorInterrupt e){
 			//被中断，跳转
-			View view = new View(e.getPath());
 			try {
-				handleViewResult(view,request,response,RESPONSE_IS_USED);
+				handleViewResult(e.getView(),request,response,RESPONSE_IS_USED);
 			} catch (Exception e1) {
 				LOGGER.error("中断，跳转 error",e);
 			}
@@ -210,9 +209,6 @@ public class DispatcherServlet extends HttpServlet{
         	//返回JSP页面或者请求跳转
             String path = view.getPath();
             if (StringUtil.isNotEmpty(path)){
-            	if(!path.startsWith("/")){
-            		path = "/"+path;
-            	}
                 if(view.isRedirect()){
                 	Map<String,Object> model = view.getModel();
                 	if(CollectionUtil.isNotEmpty(model)){
@@ -225,12 +221,22 @@ public class DispatcherServlet extends HttpServlet{
                         }
                 	}
                 	
-                    response.sendRedirect(request.getContextPath()+path);
+                	if(view.isUri()){
+                    	if(!path.startsWith("/")){
+                    		path = "/"+path;
+                    	}
+                		response.sendRedirect(request.getContextPath()+path);
+                	}else{
+                		response.sendRedirect(path);
+                	}
                 }else{
                     Map<String,Object> model = view.getModel();
                     for(Map.Entry<String,Object> entry:model.entrySet()){
                         request.setAttribute(entry.getKey(),entry.getValue());
                     }
+                	if(!path.startsWith("/")){
+                		path = "/"+path;
+                	}
                     request.getRequestDispatcher(path).forward(request,response);
                 }
             }
