@@ -1,8 +1,12 @@
 package test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.axe.bean.mvc.FileParam;
 
@@ -13,13 +17,70 @@ public class Test{
 	
 
     public static void main(String[] args) {
-    	String sql = "update Tablea t set t.name = ? and `my_age`= ? and t.sex=? where t.id=t2.id";
+    	String param_temp="labelIds=,1,,2,,3,,4,,5,,9,,10,,11,&pictures=&labels=夏天衣服,冬天衣服,秋天衣服,春天衣服,铁,手机,电脑,笔记本&detailedList=[{\"L\":\"夏天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"冬天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"秋天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"春天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"铁\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"手机\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"电脑\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"笔记本\",\"U\":\"公斤\",\"A\":\"1\"}]";
+        StringBuffer responseResult = new StringBuffer();
+        HttpURLConnection httpURLConnection = null;
+        PrintWriter printWriter = null;
+        BufferedReader bufferedReader = null;
+        try {
+            URL realUrl = new URL("http://test.sl1288.com/sl1288-api/customer/order/box");
+            // 打开和URL之间的连接
+            httpURLConnection = (HttpURLConnection) realUrl.openConnection();
+            // 设置通用的请求属性
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setRequestProperty("accept", "*/*");
+            //httpURLConnection.setRequestProperty("Content-Length", String.valueOf(params.length()));
+//            httpURLConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            httpURLConnection.setRequestProperty("Customer-API-Token","64AF7E84A3D28ED845C6DF5578959360");
+            // 发送POST请求必须设置如下两行
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+            // 获取URLConnection对象对应的输出流
+            printWriter = new PrintWriter(httpURLConnection.getOutputStream());
+            // 发送请求参数
+            printWriter.write(param_temp);
+            // flush输出流的缓冲
+            printWriter.flush();
+            // 根据ResponseCode判断连接是否成功
+            int responseCode = httpURLConnection.getResponseCode();
+            if (responseCode != 200) {
+               System.out.println(" Error===" + responseCode);
+               System.out.println("网络异常，请检查网络连接");
+            } else {
+                // 定义BufferedReader输入流来读取URL的ResponseData
+                bufferedReader = new BufferedReader(new InputStreamReader(
+                        httpURLConnection.getInputStream()));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    responseResult.append(line).append("\n");
+                }
+
+                System.out.println("json:"+responseResult.toString());
+            }
+        } catch (Exception e) {
+        	System.out.println("send post request error!" + e);
+        } finally {
+            httpURLConnection.disconnect();
+            try {
+                if (printWriter != null) {
+                    printWriter.close();
+                }
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    	
+    	
+    	/*String sql = "update Tablea t set t.name = ? and `my_age`= ? and t.sex=? where t.id=t2.id";
     	Pattern colCompile = Pattern.compile(" ([a-zA-Z0-9\\.\\-_`]*) ?= ?\\?");
 		Matcher colMatcher = colCompile.matcher(sql);
 		
 		while(colMatcher.find()){
 			System.out.println(colMatcher.group(1));
-		}
+		}*/
     	
     	/*String str = " A  b   c d";
     	while(str.contains("  ")){
