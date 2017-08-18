@@ -7,7 +7,7 @@ import org.axe.interface_.persistence.BaseTypeConvert;
 /**
  * java.math.BigDecimal=>java.lang.Double
  */
-public class BigDecimal2Double implements BaseTypeConvert{
+public class BigDecimal2DoubleConvert implements BaseTypeConvert{
 
 	@Override
 	public Object convert(Object object) {

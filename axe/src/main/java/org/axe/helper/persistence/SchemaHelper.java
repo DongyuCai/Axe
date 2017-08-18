@@ -17,7 +17,8 @@ import org.axe.constant.IdGenerateWay;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseTypeConvert;
-import org.axe.interface_implement.persistence.BigDecimal2Double;
+import org.axe.interface_implement.persistence.BigDecimal2DoubleConvert;
+import org.axe.interface_implement.persistence.BigDecimal2IntegerConvert;
 import org.axe.interface_implement.persistence.Boolean2IntegerConvert;
 import org.axe.interface_implement.persistence.Integer2LongConvert;
 import org.axe.util.CollectionUtil;
@@ -61,7 +62,8 @@ public class SchemaHelper implements Helper{
 		
 		MYSQL2JAVA_MAP.put("java.lang.Boolean=>java.lang.Integer", new Boolean2IntegerConvert());
 		MYSQL2JAVA_MAP.put("java.lang.Integer=>java.lang.Long", new Integer2LongConvert());
-		MYSQL2JAVA_MAP.put("java.math.BigDecimal=>java.lang.Double", new BigDecimal2Double());
+		MYSQL2JAVA_MAP.put("java.math.BigDecimal=>java.lang.Double", new BigDecimal2DoubleConvert());
+		MYSQL2JAVA_MAP.put("java.math.BigDecimal=>java.lang.Integer", new BigDecimal2IntegerConvert());
 	}
 
 	@Override
