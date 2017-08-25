@@ -17,7 +17,7 @@ public class View {
     private boolean redirect = true;
     
     //默认是uri，认为是相对地址
-    private boolean uri = false;
+    private boolean uri = true;
 
     /**
      * 模型数据
@@ -57,6 +57,6 @@ public class View {
 	}
 	
 	public boolean isUri(){
-		return !uri;
+		return uri;
 	}
 }
