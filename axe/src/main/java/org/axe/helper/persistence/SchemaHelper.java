@@ -106,7 +106,7 @@ public class SchemaHelper implements Helper{
 			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
 			Field field = entityFieldMethod.getField();
 			if(field.isAnnotationPresent(Transient.class)){
-				if(!field.getAnnotation(Transient.class).query()){
+				if(!field.getAnnotation(Transient.class).save()){
 					continue;
 				}
 			}
