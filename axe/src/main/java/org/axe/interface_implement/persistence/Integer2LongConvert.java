@@ -3,7 +3,7 @@ package org.axe.interface_implement.persistence;
 import org.axe.interface_.persistence.BaseTypeConvert;
 
 /**
- * java.lang.Boolean=>java.lang.Integer
+ * java.lang.Integer=>java.lang.Long
  */
 public class Integer2LongConvert implements BaseTypeConvert{
 
