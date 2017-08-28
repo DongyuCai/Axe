@@ -482,7 +482,8 @@ public final class DataBaseHelper implements Helper{
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
     					if(idValue == null){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						ReflectionUtil.setField(entity, field, generatedKey);
+    						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(executeInsert.getGeneratedKey(),field.getType());
+    						ReflectionUtil.setField(entity, field, setMethodArg);
     					}
     					break;
     				}
@@ -537,7 +538,8 @@ public final class DataBaseHelper implements Helper{
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
     					if(!executeInsert.getGeneratedKey().equals(idValue)){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						ReflectionUtil.setField(entity, field, executeInsert.getGeneratedKey());
+    						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(executeInsert.getGeneratedKey(),field.getType());
+    						ReflectionUtil.setField(entity, field, setMethodArg);
     					}
     					break;
     				}
