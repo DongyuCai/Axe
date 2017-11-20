@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.axe.bean.mvc.FileParam;
+import org.axe.util.StringUtil;
 
 /**
  * Created by CaiDongYu on 2016/4/8.
@@ -20,7 +21,7 @@ public class Test{
 	
 
     public static void main(String[] args) {
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	/*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	try {
     		String time = "2017-08-01 10:15:08";
     		Date smsValidate = sdf.parse(time);
@@ -29,6 +30,10 @@ public class Test{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    	*/
+    	/*for(int i=0;i<100;i++){
+    		System.out.println(StringUtil.getRandomString(32)+"#"+(i+1));
+    	}*/
     	
 //    	String param_temp="labelIds=,1,,2,,3,,4,,5,,9,,10,,11,&pictures=&labels=夏天衣服,冬天衣服,秋天衣服,春天衣服,铁,手机,电脑,笔记本&detailedList=[{\"L\":\"夏天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"冬天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"秋天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"春天衣服\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"铁\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"手机\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"电脑\",\"U\":\"公斤\",\"A\":\"1\"},{\"L\":\"笔记本\",\"U\":\"公斤\",\"A\":\"1\"}]";
 //        StringBuffer responseResult = new StringBuffer();

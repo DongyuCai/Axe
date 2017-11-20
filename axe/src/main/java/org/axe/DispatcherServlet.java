@@ -212,7 +212,11 @@ public class DispatcherServlet extends HttpServlet{
                 if(view.isRedirect()){
                 	Map<String,Object> model = view.getModel();
                 	if(CollectionUtil.isNotEmpty(model)){
-                		path = path+"?";
+                		if(path.contains("?")){
+                			path = path+"&";
+                		}else{
+                			path = path+"?";
+                		}
                         for(Map.Entry<String,Object> entry:model.entrySet()){
                         	path = path+entry.getKey()+"="+String.valueOf(entry.getValue())+"&";
                         }
