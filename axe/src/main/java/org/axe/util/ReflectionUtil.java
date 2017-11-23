@@ -204,7 +204,7 @@ public final class ReflectionUtil {
         	}
         	result = mh.invokeWithArguments(argList);
 		} catch (Throwable cause) {
-			LOGGER.error("invoke method failure,method : "+method+", args : "+args,cause);
+			LOGGER.debug("invoke method failure,method : "+method+", args : "+args,cause);
 			if(cause instanceof RestException){
 				//Rest中断异常，需要返回前台异常信息
 				throw (RestException)cause;
