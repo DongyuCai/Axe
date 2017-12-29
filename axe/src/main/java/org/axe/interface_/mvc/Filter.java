@@ -48,5 +48,5 @@ public interface Filter {
 	/**
 	 * 执行收尾
 	 */
-	public void doEnd();
+	public void doEnd(HttpServletRequest request,HttpServletResponse response,Param param,Handler handler);
 }

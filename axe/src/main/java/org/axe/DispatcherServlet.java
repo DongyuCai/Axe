@@ -84,6 +84,8 @@ public class DispatcherServlet extends HttpServlet{
     	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
     	List<Filter> doEndFilterList = null;
     	Integer RESPONSE_IS_USED = 0;
+    	Param param = null;
+    	Handler handler = null;
         try {
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
@@ -93,7 +95,7 @@ public class DispatcherServlet extends HttpServlet{
                 return;
             }
             //获取 Action 处理器
-            Handler handler = ControllerHelper.getHandler(requestMethod,requestPath);
+            handler = ControllerHelper.getHandler(requestMethod,requestPath);
             if(handler != null){
             	//获取 Controller  类和 Bean 实例
             	Class<?> controllerClass = handler.getControllerClass();
@@ -104,7 +106,7 @@ public class DispatcherServlet extends HttpServlet{
                 characterEncoding = handler.getCharacterEncoding();
                 
                 //##1.创建你请求参数对象
-                Param param = new Param(requestPath);
+                param = new Param(requestPath);
                 
                 //##2.先执行Filter链
                 List<Filter> filterList = handler.getFilterList();
@@ -176,7 +178,7 @@ public class DispatcherServlet extends HttpServlet{
 			if(CollectionUtil.isNotEmpty(doEndFilterList)){
 				for(Filter filter:doEndFilterList){
 					try {
-						filter.doEnd();
+						filter.doEnd(request, response, param, handler);
 					} catch (Exception endEx) {
 						LOGGER.error("filter doEnd failed",endEx);
 					}
