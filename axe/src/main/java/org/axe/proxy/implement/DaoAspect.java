@@ -17,11 +17,11 @@ import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.helper.persistence.DataBaseHelper;
-import org.axe.helper.persistence.SchemaHelper;
 import org.axe.helper.persistence.SqlHelper;
 import org.axe.interface_.persistence.BaseRepository;
 import org.axe.interface_.proxy.Proxy;
 import org.axe.proxy.base.ProxyChain;
+import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -185,7 +185,7 @@ public class DaoAspect implements Proxy{
 							ReflectionUtil.compareType(Double.class, rawType)){
 						//String
 						result = getBasetypeOrDate(sql, methodParams, parameterTypes, daoConfigDataSource);
-						result = SchemaHelper.mysqlColumn2JavaType(result, rawType);
+						result = CastUtil.castType(result, rawType);
 					}else if((rawType).isPrimitive()){
 						//基本类型
 						if(StringUtil.isEmpty(daoConfigDataSource)){

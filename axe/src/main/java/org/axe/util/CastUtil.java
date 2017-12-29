@@ -1,13 +1,50 @@
 package org.axe.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.axe.interface_.persistence.BaseTypeConvert;
+import org.axe.interface_implement.persistence.BigDecimal2DoubleConvert;
+import org.axe.interface_implement.persistence.BigDecimal2IntegerConvert;
+import org.axe.interface_implement.persistence.BigInteger2LongConvert;
+import org.axe.interface_implement.persistence.Boolean2IntegerConvert;
+import org.axe.interface_implement.persistence.Integer2LongConvert;
+
 /**
  * 类型转换工具类
  * Created by CaiDongYu on 2016/4/8.
  */
 public final class  CastUtil {
+	private static Map<String,BaseTypeConvert> TYPE_2_TYPE_MAP = new HashMap<>();
 	
+	static{
+		TYPE_2_TYPE_MAP.put("java.lang.Boolean=>java.lang.Integer", new Boolean2IntegerConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.Integer=>java.lang.Long", new Integer2LongConvert());
+		TYPE_2_TYPE_MAP.put("java.math.BigDecimal=>java.lang.Double", new BigDecimal2DoubleConvert());
+		TYPE_2_TYPE_MAP.put("java.math.BigDecimal=>java.lang.Integer", new BigDecimal2IntegerConvert());
+		TYPE_2_TYPE_MAP.put("java.math.BigInteger=>java.lang.Long", new BigInteger2LongConvert());
+
+		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.util.Date", new BigInteger2LongConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new BigInteger2LongConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new BigInteger2LongConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new BigInteger2LongConvert());
+	}
+
 	private CastUtil() {}
 
+    
+    public static <T> Object castType(Object value,T toType){
+		do{
+			if(value == null) break;
+			String valueTypeName = value.getClass().getName();
+			String javaTypeName = ((Class<?>)toType).getName();
+			BaseTypeConvert typeConvert = TYPE_2_TYPE_MAP.get(valueTypeName+"=>"+javaTypeName);
+			if(typeConvert == null) break;
+			return typeConvert.convert(value);
+		}while(false);
+		return value;
+	}
+    
     /**
      * 转为 String
      */
@@ -177,6 +214,4 @@ public final class  CastUtil {
         }
         return value;
     }
-    
-    
 }

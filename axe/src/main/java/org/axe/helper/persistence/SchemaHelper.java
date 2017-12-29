@@ -16,12 +16,6 @@ import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.constant.IdGenerateWay;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
-import org.axe.interface_.persistence.BaseTypeConvert;
-import org.axe.interface_implement.persistence.BigDecimal2DoubleConvert;
-import org.axe.interface_implement.persistence.BigDecimal2IntegerConvert;
-import org.axe.interface_implement.persistence.BigInteger2LongConvert;
-import org.axe.interface_implement.persistence.Boolean2IntegerConvert;
-import org.axe.interface_implement.persistence.Integer2LongConvert;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -34,7 +28,6 @@ public class SchemaHelper implements Helper{
 
 	//#所有列出的java到mysql的类型转换
 	private static Map<String,String> JAVA2MYSQL_MAP = new HashMap<>();	//#所有列出的java到mysql的类型转换
-	private static Map<String,BaseTypeConvert> MYSQL2JAVA_MAP = new HashMap<>();
 	
 	@Override
 	public void init() throws Exception {
@@ -60,12 +53,6 @@ public class SchemaHelper implements Helper{
 		JAVA2MYSQL_MAP.put("java.util.Date", "datetime");
 		//byte[]
 		JAVA2MYSQL_MAP.put("[B", "tinyblob");
-		
-		MYSQL2JAVA_MAP.put("java.lang.Boolean=>java.lang.Integer", new Boolean2IntegerConvert());
-		MYSQL2JAVA_MAP.put("java.lang.Integer=>java.lang.Long", new Integer2LongConvert());
-		MYSQL2JAVA_MAP.put("java.math.BigDecimal=>java.lang.Double", new BigDecimal2DoubleConvert());
-		MYSQL2JAVA_MAP.put("java.math.BigDecimal=>java.lang.Integer", new BigDecimal2IntegerConvert());
-		MYSQL2JAVA_MAP.put("java.math.BigInteger=>java.lang.Long", new BigInteger2LongConvert());
 	}
 
 	@Override
@@ -220,16 +207,4 @@ public class SchemaHelper implements Helper{
 		return columnDefine.toString();
 	}
 	
-
-	public static <T> Object mysqlColumn2JavaType(Object value,T javaType){
-		do{
-			if(value == null) break;
-			String valueTypeName = value.getClass().getName();
-			String javaTypeName = ((Class<?>)javaType).getName();
-			BaseTypeConvert typeConvert = MYSQL2JAVA_MAP.get(valueTypeName+"=>"+javaTypeName);
-			if(typeConvert == null) break;
-			return typeConvert.convert(value);
-		}while(false);
-		return value;
-	}
 }

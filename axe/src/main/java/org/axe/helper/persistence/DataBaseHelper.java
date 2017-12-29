@@ -23,6 +23,7 @@ import org.axe.bean.persistence.SqlPackage;
 import org.axe.constant.IdGenerateWay;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseDataSource;
+import org.axe.util.CastUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 import org.slf4j.Logger;
@@ -182,7 +183,7 @@ public final class DataBaseHelper implements Helper{
 					Method method = entityFieldMethod.getMethod();
 					String columnName = StringUtil.camelToUnderline(fieldName);
 					try {
-						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
+						Object setMethodArg = CastUtil.castType(table.getObject(columnName),field.getType());
 						ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 					} catch (SQLException e) {
 						if(e.getMessage().contains("Column '"+columnName+"' not found")){
@@ -237,7 +238,7 @@ public final class DataBaseHelper implements Helper{
 					Method method = entityFieldMethod.getMethod();
 					String columnName = StringUtil.camelToUnderline(fieldName);
 					try {
-						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(table.getObject(columnName),field.getType());
+						Object setMethodArg = CastUtil.castType(table.getObject(columnName),field.getType());
 						ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 					} catch (SQLException e) {
 						if(e.getMessage().contains("Column '"+columnName+"' not found")){
@@ -482,7 +483,7 @@ public final class DataBaseHelper implements Helper{
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
     					if(idValue == null){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(executeInsert.getGeneratedKey(),field.getType());
+    						Object setMethodArg = CastUtil.castType(executeInsert.getGeneratedKey(),field.getType());
     						ReflectionUtil.setField(entity, field, setMethodArg);
     					}
     					break;
@@ -538,7 +539,7 @@ public final class DataBaseHelper implements Helper{
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
     					if(!executeInsert.getGeneratedKey().equals(idValue)){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						Object setMethodArg = SchemaHelper.mysqlColumn2JavaType(executeInsert.getGeneratedKey(),field.getType());
+    						Object setMethodArg = CastUtil.castType(executeInsert.getGeneratedKey(),field.getType());
     						ReflectionUtil.setField(entity, field, setMethodArg);
     					}
     					break;
