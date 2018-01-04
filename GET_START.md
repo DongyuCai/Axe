@@ -185,8 +185,7 @@ axeµÄioc(ÒÀÀµ×¢Èë)¹¦ÄÜÓÉBeanHelperÊµÏÖ£¬ËùÓĞµÄ×¢ÈëÊµÀıÒ²¿ÉÒÔ´ÓBeanHelperÖĞ»ñÈ¡(º
 
 ## MVCÔÚaxeÖĞ³¤Ê²Ã´Ñù
 axeÍÆ¼öµÄ·ç¸ñÊÇÇ°ºó¶Ë·ÖÀë£¬Ò²¾ÍÊÇviewÊÇÇ°Ì¨µÄÊÂÇé£¬ºóÌ¨·şÎñÖ»Ìá¹©Êı¾İ£¬Ö»¸ºÔğMVCÖĞµÄModelºÍController¡£
-µ«ÊÇaxeÒ²Ö§³ÖÍêÕûµÄMVC£¬View²ã¿ÉÒÔÍ¨¹ıÔÚControllerÖĞ·µ»ØµÄ½á¹ûÀàĞÍ(View.class)À´Ìø×ª£¬View.class¶ÔÏóµÄÊµÀı°üº¬Ò»¸öµØÖ·×Ö·û´®£¬
-Èç¹û×Ö·û´®ÒÔ"/"¿ªÍ·£¬Ôò±íÊ¾sendRedirectä¯ÀÀÆ÷¶ËÌø×ª£¬·ñÔò±íÊ¾forward·şÎñ¶ËÌø×ª£¬Í¬Ê±Ö§³ÖĞ¯´ø²ÎÊı¸øjspÒ³Ãæ¡£
+µ«ÊÇaxeÒ²Ö§³ÖÍêÕûµÄMVC£¬View²ã¿ÉÒÔÍ¨¹ıÔÚControllerÖĞ·µ»ØµÄ½á¹ûÀàĞÍ(View.class)À´Ìø×ª£¬View.class¶ÔÏóµÄÊµÀı°üº¬Ò»¸öµØÖ·×Ö·û´®£¬Ö§³ÖĞ¯´ø²ÎÊı¸øjspÒ³Ãæ¡£
 ```java
 @Controller(title="Ìø×ªjspµÄcontroller",basePath="/to")
 public class ToJspController extends BaseRest{
