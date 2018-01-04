@@ -33,6 +33,7 @@ jdbc.datasource=axe-datasource-dbcp
 jdbc.username=root
 jdbc.password=1234
 jdbc.url=jdbc:mysql://localhost:3306/sl1288-shop?useUnicode=true&characterEncoding=utf-8
+jdbc.driver=com.mysql.jdbc.Driver
 #}
 
 #是否自动建表
