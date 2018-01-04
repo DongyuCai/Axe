@@ -177,59 +177,638 @@ mvn clean eclipse:eclipse -Dwtpversion=1.0
 axeµÄioc(ÒÀÀµ×¢Èë)¹¦ÄÜÓÉBeanHelperÊµÏÖ£¬ËùÓĞµÄ×¢ÈëÊµÀıÒ²¿ÉÒÔ´ÓBeanHelperÖĞ»ñÈ¡(ºóÃæ½²µ½)¡£axeÌá¹©ÁËÈçÏÂµÄ×¢½âÀ´·½±ãiocµÄÊ¹ÓÃ¡£
 
 - @Controller
-- @Component
 - @Service
 - @Dao
 - @Autowired  
 
 ¾ßÌåÓÃ·¨ÏÂÃæ»áÂıÂı½éÉÜ¡£
 
-## BeanHelperµÄÊ¹ÓÃºÍ×¢Òâ
-¿ÉÒÔ¶ÔÈ«¾ÖµÄiocÍĞ¹ÜÊµÀı½øĞĞ»ñÈ¡ºÍ²Ù×÷£¬Ò»°ãºÜÉÙÓÃµ½¡£  
-
-| ·½·¨        | ·µ»ØÖµ               | ÃèÊö                      |
-| ----------- |:--------------------:| -------------------------:|
-| getBeanMap  | Map<Class<?>,Object> | »ñÈ¡ËùÓĞÍĞ¹ÜÖĞµÄBeanÊµÀı  |
-| getBean     | T                    | ¼û×¢ÊÍ                    |
-| setBean     |                      | Ìí¼ÓÊµÀı¸øBeanHelpler¹ÜÀí |
-
->×¢.·µ»ØÀàĞÍ¸ù¾İ·½·¨´«ÈëµÄ²ÎÊıÀàĞÍÀ´Æ¥Åä¡£¿ÉÒÔ»ñÈ¡µÄBeanÀàĞÍ°üÀ¨@Controller¡¢@Component¡¢@Service¡¢@Dao
-×¢½â±ê×¢µÄÀà£¬×¢Òâ@DaoÊÇ½Ó¿Ú×¢½â²¢ÇÒÔÚ¿ò¼ÜÆô¶¯½×¶Î£¬@Dao×¢½âµÄÊµÀı²¢²»ÄÜ´ÓBeanHelperÖĞ»ñÈ¡µ½£¬ĞèÒªµÈ´ı¿ò¼ÜÆô¶¯Íê³É²Å¿É»ñÈ¡µ½¡£
-
-
 ## MVCÔÚaxeÖĞ³¤Ê²Ã´Ñù
 axeÍÆ¼öµÄ·ç¸ñÊÇÇ°ºó¶Ë·ÖÀë£¬Ò²¾ÍÊÇviewÊÇÇ°Ì¨µÄÊÂÇé£¬ºóÌ¨·şÎñÖ»Ìá¹©Êı¾İ£¬Ö»¸ºÔğMVCÖĞµÄModelºÍController¡£
 µ«ÊÇaxeÒ²Ö§³ÖÍêÕûµÄMVC£¬View²ã¿ÉÒÔÍ¨¹ıÔÚControllerÖĞ·µ»ØµÄ½á¹ûÀàĞÍ(View.class)À´Ìø×ª£¬View.class¶ÔÏóµÄÊµÀı°üº¬Ò»¸öµØÖ·×Ö·û´®£¬
 Èç¹û×Ö·û´®ÒÔ"/"¿ªÍ·£¬Ôò±íÊ¾sendRedirectä¯ÀÀÆ÷¶ËÌø×ª£¬·ñÔò±íÊ¾forward·şÎñ¶ËÌø×ª£¬Í¬Ê±Ö§³ÖĞ¯´ø²ÎÊı¸øjspÒ³Ãæ¡£
 ```java
-@Controller(basePath = "test")
-public class TestController {
-    
-	@Autowired
-	private TestService testService;
+@Controller(title="Ìø×ªjspµÄcontroller",basePath="/to")
+public class ToJspController extends BaseRest{
 	
 	@Autowired
-	private TestDao testDao;
+	private CustomerService customerService;
+	....
+	@Autowired
+	private AreaOpenService areaOpenService;
 	
-	@Request(value="/bestRequest",method=RequestMethod.GET)
-	public Object bestRest(){
-		//·µ»ØÀàĞÍ¿ÉÒÔÖ±½ÓObject£¬Ò²¿ÉÒÔĞ´Ã÷¾ßÌåÀàĞÍ
-		return "ÍÆ¼öµÄ·ç¸ñ£¬¿ÉÒÔÊÇMap¡¢List¡¢Json¡¢×Ö·û´®µÈµÈÊı¾İ¸ñÊ½";
+	/**
+	 * Ó¦ÎªÎ¢ĞÅ½øÀ´£¬ÊÇ´ø×ÅcodeµÄ£¬Õâ¸öµØÖ·±ØĞësendRedirectÀ´¸Äµô£¬
+	 * ·ñÔòË¢ĞÂÒ³Ãæ£¬codeÊÇ²»ÄÜÖØ¸´ÓÃµÄ
+	 */
+	@Request(title="ÑûÇë×¢²á[Î¢ĞÅÈë¿Ú]",value="/invite_wx",method=RequestMethod.GET)
+	public View invite_wx(HttpServletRequest request,HttpServletResponse response){
+		return new View("/to/invite").addModel("token", getToken(request));
 	}
 	
-	@Request(value="/sendRedirect",method=RequestMethod.GET)
-	public View sendRedirect(){
-		//ä¯ÀÀÆ÷¶ËÌø×ª
-		View v = new View("/someOneElse");
-		return v;
+	@Request(title="ÑûÇë×¢²á",value="/invite",method=RequestMethod.GET)
+	public View invite(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/invite.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			//Èç¹ûÒÑ×¢²á£¬Ö±½ÓÌøÊ×Ò³
+			return new View("/to/index").addModel("token", getToken(request));
+		}
+		
+		return view;
 	}
 	
-	@Request(value="/forward",method=RequestMethod.GET)
-	public View forward(){
-		//ä¯ÀÀÆ÷¶ËÌø×ª
-		View v = new View("someOneElse");
-		v.addModel("arg1", "val1");
-		return v;
+	/**
+	 * Ó¦ÎªÎ¢ĞÅ½øÀ´£¬ÊÇ´ø×ÅcodeµÄ£¬Õâ¸öµØÖ·±ØĞësendRedirectÀ´¸Äµô£¬
+	 * ·ñÔòË¢ĞÂÒ³Ãæ£¬codeÊÇ²»ÄÜÖØ¸´ÓÃµÄ
+	 */
+	@Request(title="Ê×Ò³[Î¢ĞÅÈë¿Ú]",value="/index_wx",method=RequestMethod.GET)
+	public View index_wx(HttpServletRequest request,HttpServletResponse response){
+		return new View("/to/index").addModel("token", getToken(request));
+	}
+	
+	@Request(title="Ê×Ò³",value="/index",method=RequestMethod.GET)
+	public View index(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/index.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			CustomerVO customerVO = customerService.getCustomerVO(customertUserId);
+			view.addModel("customerVO", customerVO);
+		}
+		
+		//¿ª·Å³ÇÊĞÁĞ±í
+		view.addModel("openAreaList", areaOpenService.list());
+		
+		//Ê×Ò³µÄÂÖ²¥Í¼£¬»î¶¯¾«Ñ¡
+		List<CustomerBanner> list = customerBannerService.getList();
+		view.addModel("customerBannerList", list);
+		
+		return view;
+	}
+	
+	@Request(title="¸öÈËÖĞĞÄ[Î¢ĞÅÈë¿Ú]",value="/user_wx",method=RequestMethod.GET)
+	public View user_wx(HttpServletRequest request,HttpServletResponse response){
+		return new View("/to/user").addModel("token", getToken(request));
+	}
+	
+	@Request(title="¸öÈËÖĞĞÄ",value="/user",method=RequestMethod.GET)
+	public View user(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/user.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			CustomerVO customerVO = customerService.getCustomerVO(customertUserId);
+			view.addModel("customerVO", customerVO);
+			if(customerVO != null && customerVO.getBaseUserInfo() != null){
+				//Óà¶îÕË»§ĞÅÏ¢
+				RestData<BalanceAccountVO> balanceAccount = UnitedUserRestClient.getBalanceAccountByUid(customerVO.getBaseUserInfo().getUid());
+				if(RestDataCode.SUCCESS.equals(balanceAccount.getCode())){
+					if("000".equals(balanceAccount.getData().get_CODE_())){
+						view.addModel("balanceAccount", balanceAccount.getData());
+					}
+				}
+				//»ı·ÖÕË»§ĞÅÏ¢
+				RestData<PointsAccountVO> pointsAccount = UnitedUserRestClient.getPointsAccountByUid(customerVO.getBaseUserInfo().getUid());
+				if(RestDataCode.SUCCESS.equals(pointsAccount.getCode())){
+					if("000".equals(pointsAccount.getData().get_CODE_())){
+						view.addModel("pointsAccount", pointsAccount.getData());
+					}
+				}
+			}
+		}
+		return view;
+	}
+	
+
+	@Request(title="µØÖ·¹ÜÀí",value="/address_manager",method=RequestMethod.GET)
+	public View address_manager(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/address_manager.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			//ÓÃ»§µÄµØÖ·ÁĞ±í
+			CustomerUser entity = customerService.getEntity(customertUserId);
+			if(entity != null){
+				RestData<AddressListVO> addressList =  UnitedUserRestClient.getAddressList(entity.getUid());
+				if(RestDataCode.SUCCESS.equals(addressList.getCode())){
+					if("000".equals(addressList.getData().get_CODE_())){
+						view.addModel("addressList", addressList.getData().getRecords());
+					}
+				}
+			}
+		}
+		return view;
+	}
+	
+	@Request(title="µØÖ·¹ÜÀí-ĞÂÔöµØÖ·",value="/address_new",method=RequestMethod.GET)
+	public View address_new(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/address_new.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+
+		//¿ª·Å³ÇÊĞÁĞ±í
+		view.addModel("openAreaList", areaOpenService.list());
+		return view;
+	}
+	
+	@Request(title="µØÖ·¹ÜÀí-±à¼­µØÖ·",value="/address_edit/{addressId}",method=RequestMethod.GET)
+	public View address_edit(
+			@Required
+			@RequestParam("addressId")Long addressId,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/address_edit.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		//ÓÃ»§µÄµØÖ·ÁĞ±í
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			CustomerUser entity = customerService.getEntity(customertUserId);
+			if(entity != null){
+				RestData<AddressListVO> addressList = UnitedUserRestClient.getAddressList(entity.getUid());
+				if(RestDataCode.SUCCESS.equals(addressList.getCode())){
+					if("000".equals(addressList.getData().get_CODE_())){
+						if(CollectionUtil.isNotEmpty(addressList.getData().getRecords())){
+							for(AddressVO address:addressList.getData().getRecords()){
+								if(address.getId() == addressId){
+									view.addModel("address", address);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return view;
+	}
+	
+	@Request(title="ÎÒµÄ¶©µ¥",value="/order_list",method=RequestMethod.GET)
+	public View order_list(
+			@RequestParam("toDoorOrderActive")String toDoorOrderActive,
+			@RequestParam("collectionBoxOrderActive")String collectionBoxOrderActive,
+			HttpServletRequest request,HttpServletResponse response){
+		if(StringUtil.isEmpty(toDoorOrderActive) && StringUtil.isEmpty(collectionBoxOrderActive)){
+			toDoorOrderActive = "active";
+		}
+		
+		View view = new View("/view/order_list.jsp").dispatcher();
+		view.addModel("toDoorOrderActive", toDoorOrderActive);
+		view.addModel("collectionBoxOrderActive", collectionBoxOrderActive);
+		
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			//¶©µ¥ÁĞ±í
+			view.addModel("toDoorOrderList", toDoorOrderService.getList(customertUserId));
+			view.addModel("collectionBoxOrderList", collectionBoxOrderService.getList(customertUserId,null));
+		}
+
+		
+		return view;
+	}
+	
+
+	@Request(title="Ô¤Ô¼ÉÏÃÅ¶©µ¥ÆÀ¼Û",value="/to_door_order_comment",method=RequestMethod.GET)
+	public View to_door_order_comment(
+			@Required
+			@RequestParam("id")Long id,
+			@Required
+			@RequestParam("buyerUserId")Long buyerUserId,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/to_door_order_comment.jsp").dispatcher();
+		view.addModel("id", id);
+		
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		
+		//¼ÓÔØ»ØÊÕÔ±ĞÅÏ¢
+		BuyerUser buyerUser = buyerService.getEntity(buyerUserId);
+		view.addModel("buyerUser", buyerUser);
+		
+		return view;
+	}
+	
+
+	@Request(title="Ô¤Ô¼ÉÏÃÅ¶©µ¥ÏêÇé",value="/to_door_order",method=RequestMethod.GET)
+	public View to_door_order(
+			@Required
+			@RequestParam("id")Long id,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/to_door_order.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		//¶©µ¥ĞÅÏ¢
+		ToDoorOrder toDoorOrder = toDoorOrderService.getEntity(id);
+		if(toDoorOrder != null){
+			toDoorOrder = toDoorOrderService.setOtherIfo(toDoorOrder);
+			
+			//¼ÓÔØ»ØÊÕÔ±ĞÅÏ¢
+			view.addModel("id", id);
+			if(toDoorOrder.getBuyerUserId() != null){
+				BuyerUser buyerUser = buyerService.getEntity(toDoorOrder.getBuyerUserId());
+				view.addModel("buyerUser", buyerUser);
+				if(buyerUser != null){
+					RestData<BaseUserInfoVO> baseUserInfo = UnitedUserRestClient.getBaseUserInfoByUid(buyerUser.getUid());
+					if(RestDataCode.SUCCESS.equals(baseUserInfo.getCode())){
+						if("000".equals(baseUserInfo.getData().get_CODE_())){
+							view.addModel("buyerUserBaseUserInfo", baseUserInfo.getData());
+						}
+					}
+				}
+			}
+		}
+		view.addModel("toDoorOrder", toDoorOrder);
+		
+		return view;
+	}
+	
+	@Request(title="»ØÊÕÏä¶©µ¥ÏêÇé",value="/collection_box_order",method=RequestMethod.GET)
+	public View collection_box_order(
+			@Required
+			@RequestParam("id")Long id,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/collection_box_order.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		//¶©µ¥ĞÅÏ¢
+		CollectionBoxOrder collectionBoxOrder = collectionBoxOrderService.getEntity(id);
+		view.addModel("id", id);
+		view.addModel("collectionBoxOrder", collectionBoxOrder);
+		if(collectionBoxOrder != null && collectionBoxOrder.getCollectionBoxId() != null){
+			//²¹³äĞÅÏ¢
+			CollectionBox collectionBox = collectionBoxService.getEntity(collectionBoxOrder.getCollectionBoxId());
+			view.addModel("collectionBox", collectionBox);
+		}
+		
+		return view;
+	}
+	
+	//´ÓÎ¢ĞÅ½øÀ´£¬ÎªÁË±ÜÃâcodeÁôÔÚµØÖ·À¸£¬Ë¢ĞÂºóÎŞĞ§£¬ËùÒÔ×ª·¢Ò»´Î
+	@Request(title="»ØÊÕÏä¶©µ¥Í¶·Å[Î¢ĞÅÈë¿Ú]",value="/collection_box_order_put_wx",method=RequestMethod.GET)
+	public View collection_box_order_put_wx(
+			@Required
+			@RequestParam("state")String collectionBoxNumber,
+			HttpServletRequest request,HttpServletResponse response){
+		
+		return new View("/to/collection_box_order_put")
+				.addModel("token", getToken(request))
+				.addModel("collectionBoxNumber", collectionBoxNumber);
+	}
+
+	//ÔİÊ±À´Ëµ£¬Õâ¸öÒ³ÃæÃ»ÓĞ»ØÊÕÏäµÄĞÅÏ¢£¬Ö»ÓĞ´ıÍ¶·ÅµÄ¶©µ¥ÁĞ±í
+	@Request(title="»ØÊÕÏä¶©µ¥Í¶·Å",value="/collection_box_order_put",method=RequestMethod.GET)
+	public View collection_box_order_put(
+			@Required
+			@RequestParam("collectionBoxNumber")String collectionBoxNumber,
+			@RequestParam("collectionBoxOrderId")Long collectionBoxOrderId,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/collection_box_order_put.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		view.addModel("collectionBoxNumber", collectionBoxNumber);
+		//Ä¬ÈÏ¹´Ñ¡µÄ¶©µ¥id
+		view.addModel("collectionBoxOrderId", collectionBoxOrderId);
+		
+		//´ıÍ¶·Å¶©µ¥ÁĞ±í
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			view.addModel("collectionBoxOrderList", collectionBoxOrderService.getList(customertUserId,0));
+		}
+		
+		return view;
+	}
+	
+	@Request(title="»ØÊÕÏäÏêÇé",value="/collection_box",method=RequestMethod.GET)
+	public View collection_box(
+			@Required
+			@RequestParam("collectionBoxNumber")String collectionBoxNumber,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/collection_box.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		view.addModel("collectionBoxNumber", collectionBoxNumber);
+		if(StringUtil.isNotEmpty(collectionBoxNumber)){
+			CollectionBox entity = collectionBoxService.getByCollectionBoxNumber(collectionBoxNumber);
+			if(entity != null){
+				entity = collectionBoxService.setOtherInfo(entity);
+				view.addModel("collectionBox", entity);
+			}
+		}
+		return view;
+	}
+
+
+	@Request(title="Ô¤Ô¼ÉÏÃÅÏÂµ¥Ò³Ãæ",value="/to_door_order_create",method=RequestMethod.GET)
+	public View to_door_order_create(
+			@RequestParam("area")String area,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/to_door_order_create.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		//Ô¤Ô¼ÉÏÃÅ£¬ÓÃ»§¶ËµÄ·ÖÀàÁĞ±í
+		view.addModel("catalogList",new ArrayList<>());
+		if(StringUtil.isNotEmpty(area)){
+			String[] areaSplit = area.split("-");
+			if(areaSplit.length == 3){
+				view.addModel("catalogList",toDoorOrderCatalog4CustomerService.list(areaSplit[0],areaSplit[1],areaSplit[2]));
+			}
+		}
+		
+		//ÓÃ»§µÄµØÖ·ÁĞ±í
+		view.addModel("addressList", new ArrayList<>());
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			CustomerUser entity = customerService.getEntity(customertUserId);
+			if(entity != null){
+				RestData<AddressListVO> addressList =  UnitedUserRestClient.getAddressList(entity.getUid());
+				if(RestDataCode.SUCCESS.equals(addressList.getCode())){
+					if("000".equals(addressList.getData().get_CODE_())){
+						List<AddressVO> records = addressList.getData().getRecords();
+						//Ä¬ÈÏµØÖ·£¬Ã»ÓĞµÄ»°£¬È¡µÚÒ»¸ö
+						if(CollectionUtil.isNotEmpty(records)){
+							for(AddressVO address:records){
+								String addressArea = address.getProvinceName()+"-"+address.getCityName()+"-"+address.getCountyName();
+								if(addressArea.equals(area)){
+									address.set_CODE_("");
+									if(address.getIsDefault() == 1){
+										view.addModel("defaultAddress", address);
+									}
+								}else{
+									address.set_CODE_("yb-disabled");
+								}
+							}
+							view.addModel("addressList", records);
+						}
+					}
+				}
+			}
+		}
+		
+		return view;
+	}
+	
+	@Request(title="Ô¤Ô¼ÉÏÃÅÏÂµ¥³É¹¦Ò³Ãæ",value="/to_door_order_create_success",method=RequestMethod.GET)
+	public View to_door_order_create_success(
+			@Required
+			@RequestParam("orderId")Long orderId,
+			@Required
+			@RequestParam("orderNumber")String orderNumber,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/to_door_order_create_success.jsp").dispatcher();
+		view.addModel("orderId", orderId);
+		view.addModel("orderNumber", orderNumber);
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		return view;
+	}
+	
+	@Request(title="»ØÊÕÏäÏÂµ¥Ò³Ãæ",value="/collection_box_order_create",method=RequestMethod.GET)
+	public View collection_box_order_create(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/collection_box_order_create.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		
+		//»ØÊÕÏä£¬ÓÃ»§¶ËµÄ·ÖÀàÁĞ±í
+		view.addModel("catalogList",collectionBoxOrderCatalogService.list());
+		
+		return view;
+	}
+	
+	@Request(title="»ØÊÕÏäÏÂµ¥³É¹¦Ò³Ãæ",value="/collection_box_order_create_success",method=RequestMethod.GET)
+	public View collection_box_order_create_success(
+			@Required
+			@RequestParam("orderId")Long orderId,
+			@Required
+			@RequestParam("orderNumber")String orderNumber,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/collection_box_order_create_success.jsp").dispatcher();
+		view.addModel("orderId", orderId);
+		view.addModel("orderNumber", orderNumber);
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		return view;
+	}
+	
+	@Request(title="¸½½üµÄ»ØÊÕÏäÒ³Ãæ",value="/nearby_collection_box",method=RequestMethod.GET)
+	public View nearby_collection_box(
+			@Required
+			@RequestParam("lng")Double lng,
+			@Required
+			@RequestParam("lat")Double lat,
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/nearby_collection_box.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		
+		//¸½½üµÄ»ØÊÕÏä
+		view.addModel("collectionBoxList",collectionBoxService.list(lng,lat));
+		
+		return view;
+	}
+
+
+	@Request(title="³Ç¹Ü¾Ö-À¬»ø·ÖÀà[appÈë¿Ú]",value="/garbage_can_order_create_app",method=RequestMethod.GET)
+	public View garbage_can_order_create_app(HttpServletRequest request,HttpServletResponse response){
+		return new View("/to/garbage_can_order_create")
+				.addModel("token", getToken(request));
+	}
+	
+	@Request(title="³Ç¹Ü¾Ö-À¬»ø·ÖÀà",value="/garbage_can_order_create",method=RequestMethod.GET)
+	public View garbage_can_order_create(HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/garbage_can_order_create.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		
+		return view;
+	}
+	
+	//´ÓÎ¢ĞÅ½øÀ´£¬ÎªÁË±ÜÃâcodeÁôÔÚµØÖ·À¸£¬Ë¢ĞÂºóÎŞĞ§£¬ËùÒÔ×ª·¢Ò»´Î
+	@Request(title="³Ç¹Ü¾ÖÀ¬»øÏä¶©µ¥Í¶·Å[Î¢ĞÅÈë¿Ú]",value="/garbage_can_order_put_wx",method=RequestMethod.GET)
+	public View garbage_can_order_put_wx(
+			HttpServletRequest request,HttpServletResponse response){
+		
+		return new View("/to/garbage_can_order_put")
+				.addModel("token", getToken(request));
+	}
+	
+	@Request(title="³Ç¹Ü¾ÖÀ¬»øÏä¶©µ¥Í¶·Å",value="/garbage_can_order_put",method=RequestMethod.GET)
+	public View garbage_can_order_put(
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/garbage_can_order_put.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		return view;
+	}
+	
+	//´ÓÎ¢ĞÅ½øÀ´£¬ÎªÁË±ÜÃâcodeÁôÔÚµØÖ·À¸£¬Ë¢ĞÂºóÎŞĞ§£¬ËùÒÔ×ª·¢Ò»´Î
+	@Request(title="»ı·ÖÉÌ³Ç[Î¢ĞÅÈë¿Ú]",value="/points_shop_wx",method=RequestMethod.GET)
+	public View points_shop_wx(
+			HttpServletRequest request,HttpServletResponse response){
+		
+		return new View("/to/points_shop")
+				.addModel("token", getToken(request));
+	}
+	
+	@Request(title="»ı·ÖÉÌ³Ç",value="/points_shop",method=RequestMethod.GET)
+	public View points_shop(
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/points_shop.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		return view;
+	}
+
+	@Request(title="Óà¶îÌáÏÖ",value="/balance_withdraw",method=RequestMethod.GET)
+	public View balance_withdraw(
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/balance_withdraw.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+
+		Long customertUserId = getCustomerUserId(request);
+		if(customertUserId != null){
+			CustomerUser customer = customerService.getEntity(customertUserId);
+			if(customer != null){
+				
+				//Óà¶îÕË»§ĞÅÏ¢
+				RestData<BalanceAccountVO> balanceAccount = UnitedUserRestClient.getBalanceAccountByUid(customer.getUid());
+				if(RestDataCode.SUCCESS.equals(balanceAccount.getCode())){
+					if("000".equals(balanceAccount.getData().get_CODE_())){
+						view.addModel("balanceAccount", balanceAccount.getData());
+					}
+				}
+				
+				//ÊÇ·ñ¹Ø×¢ÊÂÁ¬¹«ÖÚºÅ
+				view.addModel("subscribe", 0);//Ä¬ÈÏÎ´¹Ø×¢£¬ÄÇ¾Í²»ÄÜÌáÏÖµ½Î¢ĞÅ
+				String openid = getOpenid(request);
+				if(StringUtil.isNotEmpty(openid)){
+					CustomerUserWechatLogin customerUserWechatLogin = customerService.getCustomerUserWechatLogin(openid);
+					if(customerUserWechatLogin != null){
+						if(customerUserWechatLogin.getSubscribe() != null){
+							view.addModel("subscribe",customerUserWechatLogin.getSubscribe());
+						}
+					}
+				}
+				
+				//×î½üÌáÏÖ
+				RestData<BalanceWithdrawLastRecordsVO> balanceWithdrawLastRecords = UnitedUserRestClient.getBalanceWithdrawLastRecords(customer.getUid());
+				if(RestDataCode.SUCCESS.equals(balanceWithdrawLastRecords.getCode())){
+					if("000".equals(balanceWithdrawLastRecords.getData().get_CODE_())){
+						
+						List<BalanceWithdrawVO> records = balanceWithdrawLastRecords.getData().getRecords();
+						List<Map<String,String>> result = new ArrayList<>();
+						if(CollectionUtil.isNotEmpty(records)){
+							StringBuilder buf = new StringBuilder();
+							for(BalanceWithdrawVO vo:records){
+								buf.setLength(0);
+								Map<String,String> row = new HashMap<>();
+								row.put("id", String.valueOf(vo.getId()));
+								row.put("withdrawAccount", vo.getWithdrawAccount());
+								row.put("withdrawRealName", vo.getWithdrawRealName());
+								
+								String withdrawAccount_ = vo.getWithdrawAccount();
+								if(StringUtil.isNotEmpty(withdrawAccount_) && withdrawAccount_.indexOf(",") > 0){
+									String withdrawAccount_1 = withdrawAccount_.substring(0, withdrawAccount_.indexOf(","));
+									String withdrawAccount_2 = withdrawAccount_.substring(withdrawAccount_.indexOf(","));
+									if(withdrawAccount_2.length() > 4){
+										for(int i=0;i<withdrawAccount_2.length()-4;i++){
+											buf.append("*");
+										}
+										buf.append(withdrawAccount_2.substring(withdrawAccount_2.length()-4));
+										withdrawAccount_2 = buf.toString();
+									}
+									withdrawAccount_ = withdrawAccount_1+withdrawAccount_2;
+								}
+								row.put("withdrawAccount_", withdrawAccount_);
+								
+								String withdrawRealName_ = vo.getWithdrawRealName();
+								if(withdrawRealName_.length() > 1){
+									withdrawRealName_ = "*"+withdrawRealName_.substring(1);
+								}
+								row.put("withdrawRealName_", withdrawRealName_);
+								result.add(row);
+							}
+							buf.setLength(0);
+						}
+						
+						view.addModel("balanceWithdrawLastRecords", result);
+					}
+				}
+			}
+		}
+		
+		return view;
+	}
+	
+	@Request(title="Óà¶îÌáÏÖ¼ÇÂ¼",value="/balance_withdraw_records",method=RequestMethod.GET)
+	public View balance_withdraw_records(
+			HttpServletRequest request,HttpServletResponse response){
+		View view = new View("/view/balance_withdraw_records.jsp").dispatcher();
+		//token ºÍ ÓÃ»§ĞÅÏ¢
+		view.addModel("token", getToken(request));
+		
+		//ÌáÏÖ¼ÇÂ¼
+		Long customerUserId = getCustomerUserId(request);
+		if(customerUserId != null){
+			CustomerUser entity = customerService.getEntity(customerUserId);
+			if(entity != null){
+				RestData<BalanceWithdrawRecordsVO> balanceWithdrawRecords = UnitedUserRestClient.getBalanceWithdrawRecords(entity.getUid());
+				if(RestDataCode.SUCCESS.equals(balanceWithdrawRecords.getCode())){
+					if("000".equals(balanceWithdrawRecords.getData().get_CODE_())){
+						List<BalanceWithdrawVO> records = balanceWithdrawRecords.getData().getRecords();
+						List<Map<String,String>> result = new ArrayList<>();
+						if(CollectionUtil.isNotEmpty(records)){
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							StringBuilder buf = new StringBuilder();
+							for(BalanceWithdrawVO vo:records){
+								buf.setLength(0);
+								Map<String,String> row = new HashMap<>();
+								row.put("id", String.valueOf(vo.getId()));
+								row.put("withdrawCash", String.valueOf(vo.getWithdrawCash()));
+								row.put("createTime", sdf.format(vo.getCreateTime()));
+								row.put("status", String.valueOf(vo.getStatus()));
+								if(StringUtil.isNotEmpty(vo.getRemark())){
+									row.put("remark", vo.getRemark());
+								}
+								
+								String withdrawAccount_ = vo.getWithdrawAccount();
+								if(StringUtil.isNotEmpty(withdrawAccount_) && withdrawAccount_.indexOf(",") > 0){
+									String withdrawAccount_1 = withdrawAccount_.substring(0, withdrawAccount_.indexOf(","));
+									String withdrawAccount_2 = withdrawAccount_.substring(withdrawAccount_.indexOf(","));
+									if(withdrawAccount_2.length() > 4){
+										for(int i=0;i<withdrawAccount_2.length()-4;i++){
+											buf.append("*");
+										}
+										buf.append(withdrawAccount_2.substring(withdrawAccount_2.length()-4));
+										withdrawAccount_2 = buf.toString();
+									}
+									withdrawAccount_ = withdrawAccount_1+withdrawAccount_2;
+								}
+								row.put("withdrawAccount_", withdrawAccount_);
+								
+								String withdrawRealName_ = vo.getWithdrawRealName();
+								if(withdrawRealName_.length() > 1){
+									withdrawRealName_ = "*"+withdrawRealName_.substring(1);
+								}
+								row.put("withdrawRealName_", withdrawRealName_);
+								result.add(row);
+							}
+							buf.setLength(0);
+						}
+						
+						view.addModel("balanceWithdrawRecords", result);
+					}
+				}
+			}
+		}
+		return view;
 	}
 }
 ```
@@ -451,6 +1030,19 @@ axeµÄÊÂÎñ£¬Èç¹û³öÏÖµü´úµ÷ÓÃ¿ªÆôÊÂÎñ£¬Ö»»áÔÚ×îÍâ²ã´ò¿ª£¬²¢ÇÒµ±»Øµ½×îÍâ²ãºóÌá½»£¬Ä
 
 ## Release Resources
 Èç¹ûÅäÖÃÑ¡ÔñÁË´ËÏî£¬ÄÇÃ´»á¶ªÊ§Ò»²¿·Ö¿ò¼ÜÆô¶¯Ê±ºò³õÊ¼»¯µ½ÄÚ´æÖĞµÄÊı¾İ£¬¶ÔÏµÍ³µÄÕı³£ÔËĞĞÃ»ÓĞÓ°Ïì£¬·´¶ø¸ü½ÚÊ¡ÄÚ´æ£¬Ö»ÊÇÊ§È¥ÁËÒ»Ğ©¿ò¼Ü¼¶µÄ¿ì½İ¹¦ÄÜ¡£
+
+
+## BeanHelperµÄÊ¹ÓÃºÍ×¢Òâ
+¿ÉÒÔ¶ÔÈ«¾ÖµÄiocÍĞ¹ÜÊµÀı½øĞĞ»ñÈ¡ºÍ²Ù×÷£¬Ò»°ãºÜÉÙÓÃµ½¡£  
+
+| ·½·¨        | ·µ»ØÖµ               | ÃèÊö                      |
+| ----------- |:--------------------:| -------------------------:|
+| getBeanMap  | Map<Class<?>,Object> | »ñÈ¡ËùÓĞÍĞ¹ÜÖĞµÄBeanÊµÀı  |
+| getBean     | T                    | ¼û×¢ÊÍ                    |
+| setBean     |                      | Ìí¼ÓÊµÀı¸øBeanHelpler¹ÜÀí |
+
+>×¢.·µ»ØÀàĞÍ¸ù¾İ·½·¨´«ÈëµÄ²ÎÊıÀàĞÍÀ´Æ¥Åä¡£¿ÉÒÔ»ñÈ¡µÄBeanÀàĞÍ°üÀ¨@Controller¡¢@Component¡¢@Service¡¢@Dao
+×¢½â±ê×¢µÄÀà£¬×¢Òâ@DaoÊÇ½Ó¿Ú×¢½â²¢ÇÒÔÚ¿ò¼ÜÆô¶¯½×¶Î£¬@Dao×¢½âµÄÊµÀı²¢²»ÄÜ´ÓBeanHelperÖĞ»ñÈ¡µ½£¬ĞèÒªµÈ´ı¿ò¼ÜÆô¶¯Íê³É²Å¿É»ñÈ¡µ½¡£
 
 ## Aspect Proxy
 #### begin
