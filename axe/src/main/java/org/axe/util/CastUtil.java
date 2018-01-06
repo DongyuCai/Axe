@@ -12,6 +12,8 @@ import org.axe.interface_implement.persistence.Integer2LongConvert;
 import org.axe.interface_implement.persistence.Long2DateConvert;
 import org.axe.interface_implement.persistence.Long2SqlDateConvert;
 import org.axe.interface_implement.persistence.String2DateConvert;
+import org.axe.interface_implement.persistence.String2IntegerConvert;
+import org.axe.interface_implement.persistence.String2LongConvert;
 import org.axe.interface_implement.persistence.String2SqlDateConvert;
 
 /**
@@ -32,6 +34,10 @@ public final class  CastUtil {
 		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new Long2SqlDateConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new String2DateConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlDateConvert());
+		
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Long", new String2LongConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Integer", new String2IntegerConvert());
+		
 	}
 
 	private CastUtil() {}
