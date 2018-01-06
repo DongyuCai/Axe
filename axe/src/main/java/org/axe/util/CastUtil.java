@@ -9,6 +9,10 @@ import org.axe.interface_implement.persistence.BigDecimal2IntegerConvert;
 import org.axe.interface_implement.persistence.BigInteger2LongConvert;
 import org.axe.interface_implement.persistence.Boolean2IntegerConvert;
 import org.axe.interface_implement.persistence.Integer2LongConvert;
+import org.axe.interface_implement.persistence.Long2DateConvert;
+import org.axe.interface_implement.persistence.Long2SqlDateConvert;
+import org.axe.interface_implement.persistence.String2DateConvert;
+import org.axe.interface_implement.persistence.String2SqlDateConvert;
 
 /**
  * 类型转换工具类
@@ -24,10 +28,10 @@ public final class  CastUtil {
 		TYPE_2_TYPE_MAP.put("java.math.BigDecimal=>java.lang.Integer", new BigDecimal2IntegerConvert());
 		TYPE_2_TYPE_MAP.put("java.math.BigInteger=>java.lang.Long", new BigInteger2LongConvert());
 
-		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.util.Date", new BigInteger2LongConvert());
-		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new BigInteger2LongConvert());
-		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new BigInteger2LongConvert());
-		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new BigInteger2LongConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.util.Date", new Long2DateConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new Long2SqlDateConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new String2DateConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlDateConvert());
 	}
 
 	private CastUtil() {}
