@@ -1,10 +1,12 @@
 package org.axe.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -298,6 +300,8 @@ public final class RequestUtil {
 				if(ReflectionUtil.compareType(Float.class, (Class<?>)type)) break;
 				//Double
 				if(ReflectionUtil.compareType(Double.class, (Class<?>)type)) break;
+				//BigDecimal
+				if(ReflectionUtil.compareType(BigDecimal.class, (Class<?>)type)) break;
 				
 				//额外的，允许List
 				//其实允许List<list>这样，这样的特殊判断，在这个方法被调用后再额外自行判断
@@ -402,6 +406,15 @@ public final class RequestUtil {
 									list.add(value);
 								}
 								parameterValue = list.size()>0?list:null;
+							}else{
+								//Axe 2018/1/11日起，改善了类型转换，增强了CastUtil工具，一步一步支持其他类型数据转换
+								//如果有没有实现的转换，参考xxx2xxxConvert的实现
+								List<Object> list = new ArrayList<>();
+								for(int i=0;i<formParamList.size();i++){
+									Object value =  CastUtil.castType(formParamList.get(i).getFieldValue(), listParamClass);
+									list.add(value);
+								}
+								parameterValue = list.size()>0?list:null;
 							}
 						}
 					}
@@ -495,6 +508,15 @@ public final class RequestUtil {
 							list[i] = value;
 						}
 						parameterValue = list.length>0?list:null;
+					}else {
+						//Axe 2018/1/11日起，改善了类型转换，增强了CastUtil工具，一步一步支持其他类型数据转换
+						//如果有没有实现的转换，参考xxx2xxxConvert的实现
+						Object array = Array.newInstance(parameterClass.getComponentType(), formParamList.size());
+						for(int i=0;i<formParamList.size();i++){
+							Object value =  CastUtil.castType(formParamList.get(i).getFieldValue(), parameterClass.getComponentType());
+							Array.set(array, i, value);
+						}
+						parameterValue = formParamList.size()>0?array:null;
 					}
 				}else{
 					List<FormParam> formParamList = param.getFieldMap().get(fieldName);
@@ -570,6 +592,13 @@ public final class RequestUtil {
 						//Double
 						for(int i=0;i<formParamList.size();i++){
 							Double value =  CastUtil.castDouble(formParamList.get(i).getFieldValue(),null);
+							parameterValue = value;
+						}
+					}else{
+						//Axe 2018/1/11日起，改善了类型转换，增强了CastUtil工具，一步一步支持其他类型数据转换
+						//如果有没有实现的转换，参考xxx2xxxConvert的实现
+						for(int i=0;i<formParamList.size();i++){
+							Object value =  CastUtil.castType(formParamList.get(i).getFieldValue(),parameterClass);
 							parameterValue = value;
 						}
 					}

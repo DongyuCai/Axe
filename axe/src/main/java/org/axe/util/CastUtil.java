@@ -8,9 +8,13 @@ import org.axe.interface_implement.persistence.BigDecimal2DoubleConvert;
 import org.axe.interface_implement.persistence.BigDecimal2IntegerConvert;
 import org.axe.interface_implement.persistence.BigInteger2LongConvert;
 import org.axe.interface_implement.persistence.Boolean2IntegerConvert;
+import org.axe.interface_implement.persistence.Double2BigDecimalConvert;
+import org.axe.interface_implement.persistence.Integer2BigDecimalConvert;
 import org.axe.interface_implement.persistence.Integer2LongConvert;
+import org.axe.interface_implement.persistence.Long2BigDecimalConvert;
 import org.axe.interface_implement.persistence.Long2DateConvert;
 import org.axe.interface_implement.persistence.Long2SqlDateConvert;
+import org.axe.interface_implement.persistence.String2BigDecimalConvert;
 import org.axe.interface_implement.persistence.String2DateConvert;
 import org.axe.interface_implement.persistence.String2IntegerConvert;
 import org.axe.interface_implement.persistence.String2LongConvert;
@@ -25,18 +29,24 @@ public final class  CastUtil {
 	
 	static{
 		TYPE_2_TYPE_MAP.put("java.lang.Boolean=>java.lang.Integer", new Boolean2IntegerConvert());
-		TYPE_2_TYPE_MAP.put("java.lang.Integer=>java.lang.Long", new Integer2LongConvert());
+		
 		TYPE_2_TYPE_MAP.put("java.math.BigDecimal=>java.lang.Double", new BigDecimal2DoubleConvert());
 		TYPE_2_TYPE_MAP.put("java.math.BigDecimal=>java.lang.Integer", new BigDecimal2IntegerConvert());
 		TYPE_2_TYPE_MAP.put("java.math.BigInteger=>java.lang.Long", new BigInteger2LongConvert());
 
+		TYPE_2_TYPE_MAP.put("java.lang.Integer=>java.lang.Long", new Integer2LongConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.util.Date", new Long2DateConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new Long2SqlDateConvert());
+		
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new String2DateConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlDateConvert());
-		
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Long", new String2LongConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Integer", new String2IntegerConvert());
+		
+		TYPE_2_TYPE_MAP.put("java.lang.Double=>java.math.BigDecimal", new Double2BigDecimalConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.Integer=>java.math.BigDecimal", new Integer2BigDecimalConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.math.BigDecimal", new Long2BigDecimalConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.math.BigDecimal", new String2BigDecimalConvert());
 		
 	}
 
