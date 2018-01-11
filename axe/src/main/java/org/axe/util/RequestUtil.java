@@ -112,6 +112,15 @@ public final class RequestUtil {
                 }
             }
         }
+        //分析跳转参数
+        Enumeration<String> attributeNames = request.getAttributeNames();
+        while(attributeNames.hasMoreElements()){
+            String fieldName = attributeNames.nextElement();
+            Object fieldValue = request.getAttribute(fieldName);
+            if(fieldValue != null){
+            	formParamList.add(new FormParam(fieldName,fieldValue.toString()));
+            }
+        }
         //分析url路径参数
         //requestPath 客户端过来的servletPath
         //action方法上的@Quest.value注解值
