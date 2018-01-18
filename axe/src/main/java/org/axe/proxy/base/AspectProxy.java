@@ -30,7 +30,7 @@ public abstract class AspectProxy implements Proxy{
                 result = proxyChain.doProxyChain();
             }
         }catch (Exception e){
-            LOGGER.debug("proxy failure",e);
+            LOGGER.error("proxy failure",e);
             error(cls,method,params,e);
             throw e;
         } finally {
