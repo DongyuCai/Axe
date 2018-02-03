@@ -6,13 +6,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.axe.annotation.ioc.Controller;
 import org.axe.annotation.mvc.Request;
 import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
+import org.axe.annotation.mvc.Required;
+import org.axe.annotation.persistence.Comment;
 import org.axe.bean.mvc.FileParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
@@ -29,7 +33,7 @@ public class ApiExportUtil {
 	 * 转成Postman文件 格式为 collection format v2
 	 * 例子：asPostmanV2("xxxapi接口","http://
 	 */
-	public static String asPostmanV2(String name,String basePath,Map<String,String> header){
+	public static Map<String,Object> asPostmanV2(String name,String basePath,Map<String,String> header){
 		//获取Controller 到 action的关系表
 		List<Handler> actionList = ControllerHelper.getActionList();
 		Map<Class<?>,List<Handler>> actionMap = new HashMap<>();
@@ -105,28 +109,57 @@ public class ApiExportUtil {
 						for(ActionParam ap:actionParamList){
 							Annotation[] annotations = ap.getAnnotations();
 							if(annotations != null){
-								for(Annotation rqat:annotations){
-									if(rqat instanceof RequestParam){
-										Map<String,String> formdata = new HashMap<>();
-										formdata.put("key", ((RequestParam)rqat).value());
-										if(ReflectionUtil.compareType(ap.getParamType(), FileParam.class)){
-											formdata.put("type", "file");
-										}else{
+								RequestParam rp = null;
+								RequestEntity re = null;
+								Required required = null;
+								for(Annotation annotation:annotations){
+									if(annotation instanceof RequestParam){
+										rp = (RequestParam)annotation;
+									}else if(annotation instanceof RequestEntity){
+										re = (RequestEntity)annotation;
+									}else if(annotation instanceof Required){
+										required = (Required)annotation;
+									}
+								}
+								
+								if(rp != null){
+									Map<String,String> formdata = new HashMap<>();
+									formdata.put("key", rp.value());
+									if(StringUtil.isNotEmpty(rp.desc())){
+										formdata.put("description", rp.desc());
+									}
+									if(required != null){
+										formdata.put("required", "true");
+									}
+									if(ReflectionUtil.compareType(ap.getParamType(), FileParam.class)){
+										formdata.put("type", "file");
+									}else{
+										formdata.put("type", "text");
+									}
+									formdataList.add(formdata);
+								}else if(re != null){
+									Set<String> requiredFieldSet = new HashSet<>();
+									if(required != null){
+										for(String requiredField:required.value()){
+											requiredFieldSet.add(requiredField);
+										}
+									}
+									List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType());
+									if(CollectionUtil.isNotEmpty(setMethodList)){
+										for(EntityFieldMethod fm:setMethodList){
+											Map<String,String> formdata = new HashMap<>();
+											String fieldName = fm.getField().getName();
+											formdata.put("key", fieldName);
 											formdata.put("type", "text");
-										}
-										formdataList.add(formdata);
-										break;
-									}else if(rqat instanceof RequestEntity){
-										List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType());
-										if(CollectionUtil.isNotEmpty(setMethodList)){
-											for(EntityFieldMethod fm:setMethodList){
-												Map<String,String> formdata = new HashMap<>();
-												formdata.put("key", fm.getField().getName());
-												formdata.put("type", "text");
-												formdataList.add(formdata);
+											Comment comment = fm.getField().getAnnotation(Comment.class);
+											if(comment != null){
+												formdata.put("description", comment.value());
 											}
+											if(requiredFieldSet.contains(fieldName)){
+												formdata.put("required", "true");
+											}
+											formdataList.add(formdata);
 										}
-										break;
 									}
 								}
 							}
@@ -167,7 +200,6 @@ public class ApiExportUtil {
 		}
 		//第二级是url
 		
-		String json_v2 = JsonUtil.toJson(config);
-		return json_v2;
+		return config;
 	}
 }

@@ -12,5 +12,13 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestParam {
+	/**
+	 * 参数字段名
+	 */
 	String value();
+	
+	/**
+	 * 描述
+	 */
+	String desc() default "";
 }
