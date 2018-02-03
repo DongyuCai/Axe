@@ -1,5 +1,6 @@
 package org.axe.helper.mvc;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,9 @@ public final class FilterHelper implements Helper {
 			List<Filter> filterSortedList = new LinkedList<>();
 			if (CollectionUtil.isNotEmpty(filterClassSet)) {
 				for (Class<?> filterClass : filterClassSet) {
+					boolean isAbstract = Modifier.isAbstract(filterClass.getModifiers());
+					if(isAbstract) continue;
+					
 					Filter filter = ReflectionUtil.newInstance(filterClass);
 
 					// 排序比较，按顺序插入到Filter链里
