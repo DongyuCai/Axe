@@ -1,0 +1,1 @@
+var API_BASE_DOMAIN = "http://localhost:8080/operation-api";

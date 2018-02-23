@@ -1,0 +1,535 @@
+﻿<!DOCTYPE html >
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="lib/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
+    <link href="lib/bootstrap/3.3.7/doc.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body style="height: 100%;overflow: hidden;">
+    <div class="col-md-12">
+      &nbsp;
+    </div>
+    <!--侧边菜单 -->
+    <div id="sidebar_div" class="col-md-3" style="height: {{sidebarHeight}}px;overflow-y: auto;">
+      <div class="col-md-12">
+        <input class="form-control" placeholder="过滤" nc-value="sidebarMenuSearch"></input>
+      </div>
+      <div class="col-md-12">
+        <nav class="bs-docs-sidebar" style="padding-left: 0px;">
+            <ul class="nav bs-docs-sidenav">
+                <li nc-for="item in sidebarMenuAry" class="{{level_1_index==item.index?'active':''}}">
+                  <a href="#grid" nc-text="{{item.index+1}}、{{item.title}}" onclick="clickLevel_1({{item.index}})"></a>
+                  <ul class="nav">
+                    <li nc-for="request in item.requestList" class="{{level_2_index==item.index+'_'+request.index?'active':''}}" onclick="clickLevel_2({{item.index}},{{request.index}})" nc-text="{{request|sidebarMenuConvert}}"></li>
+                  </ul>
+                </li>
+            </ul>
+          </nav>
+      </div>
+    </div>
+
+    <!--中央内容区 -->
+    <div id="content_div" class="col-md-9" style="height: {{contentHeight}}px;overflow-y: auto;">
+        <!--tab导航区域 -->
+        <div id="tab_div" class="col-md-12" style="height: 60px;overflow: hidden;">
+          <dir nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
+            <ul class="nav nav-tabs" >
+              <li><a style="padding-left: 0px;" href="javascript:void(0)" onclick="tabScrollLeft()"><span class="glyphicon glyphicon-menu-left"></span></a></li>
+            </ul>
+          </dir>
+          <div id="tabUlContainer_div" class="{{showArrow?'col-md-10':'col-md-12'}}" style="padding: 0px;overflow-x: auto;height: 100px;">
+            <ul class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
+              <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">首页</a></li>
+              <li name="tab_li" role="presentation" class="{{refreshTabs|actionTabActiveFilter:tab}}" nc-for="tab in actions">
+                <a href="javascript:void(0)" onclick="clickTab({{tab.$index}})">
+                  <span nc-text="{{tab.requestTitle}} "></span>&nbsp;
+                  <button type="button" onclick="closeTab({{tab.$index}})" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <dir nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
+            <ul class="nav nav-tabs" >
+              <li style="float: right;"><a style="padding-right: 0px;" href="javascript:void(0)" onclick="tabScrollRight()"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+            </ul>
+          </dir>
+        </div>
+        
+        <!--主要的页面切换区域 -->
+        <div id="main_div">
+          <div class="col-md-12" style="display: {{request?'normal':'none'}};">
+            <!--名字 -->
+            <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
+            <!--url区域 -->
+            <div class="input-group" style="margin-top: 15px;">
+              <div class="input-group-addon">{{request.method}}</div>
+              <input type="text" class="form-control" readonly="true" placeholder="http://xxx..." value="{{request.url}}">
+              <span class="input-group-btn">
+                <button class="btn btn-info" type="button" onclick="sendRequest()">Send</button>
+              </span>
+            </div>
+            <div nc-if="request.url.indexOf('{') >= 0">
+              <span class="text-danger">此URL中含有参数，参数必填！</span>
+            </div>
+            
+            <!--Header -->
+            <div class="col-md-5" style="padding-left: 0px;padding-top: 15px;">
+              <div class="panel panel-default">
+                <div class="panel-heading">头信息 Headers</div>
+                <table class="table">
+                  <tr nc-for="header in request.headerList">
+                    <td>
+                      <input nc-if="header.editable" type="text" class="form-control" placeholder="headerName" nc-value="header.headerName"></input>
+                      <input nc-if="!header.editable" type="text" class="form-control" readonly="true" nc-value="header.headerName"></input>
+                    </td>
+                    <td align="center" style="padding-top: 15px;">=</td>
+                    <td><input type="text" class="form-control" nc-value="header.headerValue" placeholder="headerValue"></input></td>
+                    <td width="100px">
+                      <button class="btn btn-default" onclick="delHeader({{header.$index}})">×</button>
+                      <button class="btn btn-default" onclick="addHeader({{header.$index}})">+</button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!--Reuest Param -->
+            <div class="col-md-7" style="padding-right: 0px;padding-top: 15px;">
+              <div class="panel panel-default">
+                <div class="panel-heading">参数 Reuest Parameter</div>
+                <table class="table">
+                  <tbody>
+                    <tr nc-for="param in request.requestParamList">
+                      <th style="padding-top: 15px;">{{param.desc}}</th>
+                      <td>
+                        <input nc-if="param.editable" type="text" class="form-control" placeholder="paramName" nc-value="param.paramName"></input>
+                        <input nc-if="!param.editable" type="text" class="form-control" readonly="true" nc-value="param.paramName"></input>
+                      </td>
+                      <td align="center"><div style="margin-top: 6px;">=</div></td>
+                      <td><input type="text" class="form-control" placeholder="paramValue" nc-value="param.paramValue"></input></td>
+                      <td style="padding-top: 15px;" width="50px">
+                        <p class="text-info" nc-if="param.required">必填</p>
+                      </td>
+                      <td width="100px">
+                        <button nc-if="!param.required" class="btn btn-default" onclick="delRequestParam({{param.$index}})">×</button>
+                        <button class="btn btn-default" onclick="addRequestParam({{param.$index}})">+</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!--Response -->
+            <div nc-if="request.sendUrl" class="col-md-12" style="padding-left:0px;padding-right: 0px;">
+              <hr></hr>
+              <div class="panel panel-default">
+                <div class="panel-heading">响应 Response <span class="text-primary" nc-text="来自：{{request.sendUrl}}"></span></div>
+                <div class="panel-body" nc-if="request.response || request.response+'#' == '0#'">
+                  <pre nc-text="{{request.response}}"></pre>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="lib/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="lib/bootstrap/3.3.7/bootstrap.min.js"></script>
+    <!-- nice mvvm -->
+    <script src="lib/nice-mvvm/nice-mvvm.js"></script>
+    <!-- ajax -->
+    <script src="js/config.js"></script>
+    <script src="js/requestUtil.js"></script>
+
+    <script>
+      'use strict';
+      //========================侧边栏 sidebar===============================//
+      function initSidebar(){
+        var MVVM_SIDEBAR = $NICE_MVVM('sidebar_div');
+        var $scope = MVVM_SIDEBAR.$scope;
+
+        $scope.sidebarHeight = 600;
+        $scope.level_1_index = -1;//选择的第一级菜单
+        $scope.level_2_index = '';//选择的第二级菜单，由第一级加第二级组成比如1_1
+        $scope.sidebarMenuAry = [];
+        $scope.sidebarMenuAryFull = {};
+        $scope.sidebarMenuSearch = '';
+
+        MVVM_SIDEBAR.$onflush(function(){
+            //获取页面可视高度
+            $scope.sidebarHeight = $(window).height()-25;
+        });
+
+        MVVM_SIDEBAR.$watch(['sidebarMenuAryFull','sidebarMenuSearch'],function(sidebarMenuAryFull,sidebarMenuSearch){
+          $scope.sidebarMenuAry = [];
+          for(var i=0;i<sidebarMenuAryFull.length;i++){
+            var items = [];
+            var level_1 = sidebarMenuAryFull[i];
+            var requestList = level_1['requestList'];
+            for(var j=0;j<requestList.length;j++){
+              var level_2 = requestList[j];
+              if((sidebarMenuSearch+'#').length>1){
+                //有搜索
+                if(level_2['controllerTitle'].indexOf(sidebarMenuSearch+'')>=0 || 
+                  level_2['requestTitle'].indexOf(sidebarMenuSearch+'')>=0 || 
+                  level_2['url'].indexOf(sidebarMenuSearch+'')>=0){
+                  items.push(level_2);
+                }
+              }else{
+                //没搜索
+                items.push(level_2);
+              }
+            }
+            if(items.length > 0){
+              $scope.sidebarMenuAry.push({
+                'index':level_1['index'],
+                'title':level_1['title'],
+                'requestList':items
+              });
+            }
+          }
+        });
+
+
+
+        MVVM_SIDEBAR.$init();
+
+        //加载api列表，作为左侧菜单树
+        $.get(API_BASE_DOMAIN+"/api_test",null,null,function(data){
+          $scope.sidebarMenuAryFull = data;
+        });
+        return $scope;
+      }
+      var $scope_sidebar = initSidebar();//初始化
+
+      //单击菜单第一级
+      function clickLevel_1(level_1_index){
+        if($scope_sidebar.level_1_index == level_1_index){
+          $scope_sidebar.level_1_index = -1;
+        }else{
+          $scope_sidebar.level_1_index = level_1_index;
+        }
+      }
+
+      function clickLevel_2(level_1_index,level_2_index){
+        
+        if($scope_sidebar.level_2_index == level_1_index+'_'+level_2_index){
+          return false;
+        }
+
+        $scope_sidebar.level_2_index = level_1_index+'_'+level_2_index;
+
+        var action = null;
+        for(var i=0;i<$scope_tab.actions.length;i++){
+          if($scope_tab.actions[i]['level_2_index'] == $scope_sidebar.level_2_index){
+            action = $scope_tab.actions[i];
+          }
+        }
+        if(action == null){
+          action = $scope_sidebar.sidebarMenuAryFull[level_1_index]['requestList'][level_2_index];
+          action['level_2_index'] = $scope_sidebar.level_2_index;
+          $scope_tab.actions.push(action);
+        }
+
+        $scope_tab.refreshTabs++;//通知tab导航栏刷新
+
+        //给主要区域赋请求对象
+        $scope_main.request = action;
+        if(action.requestParamList.length <= 0){
+          action.requestParamList.push({
+            editable:true
+          });
+        }
+        if(action.headerList.length <= 0){
+          action.headerList.push({
+            editable:true
+          });
+        }
+      }
+
+      //菜单选项的渲染器
+      function sidebarMenuConvert(request){
+        var spanClass = '';
+        var method = '';
+        if(request.method == 'POST'){
+          spanClass = 'text-warning';
+          method = 'POS';
+        }else if(request.method == 'DELETE'){
+          spanClass = 'text-danger';
+          method = 'DEL';
+        }else if(request.method == 'PUT'){
+          spanClass = 'text-info';
+          method = 'PUT';
+        }else if(request.method == 'GET'){
+          spanClass = 'text-success';
+          method = 'GET';
+        }
+
+        return '<a href="javascript:void(0)">'+
+                  '<span class="'+spanClass+'"> &nbsp;'+
+                    '<b>'+method+'</b>'+
+                  '</span> '+request.requestTitle+
+                '</a>';
+      }
+
+
+
+
+      //=====================tab页导航区域==========================//
+      function  initTab(){
+        var MVVM_TAB = $NICE_MVVM('tab_div');
+        var $scope = MVVM_TAB.$scope;
+        $scope.actions = [];//选择的第二级菜单，这个和打开的tab页对应
+        $scope.refreshTabs = 0;//触发导航条渲染的计数器
+        $scope.showArrow = false;//是否显示左右箭头
+
+        MVVM_TAB.$init();
+        return $scope;
+      }
+
+      var $scope_tab = initTab();
+
+      function clickHomeTab(){
+        clickTab(-1);
+      }
+      function clickTab(tabIndex){
+        $scope_tab.refreshTabs++;//通知tab导航栏刷新
+
+        if($scope_tab.actions[tabIndex]){
+          $scope_sidebar.level_2_index = $scope_tab.actions[tabIndex].level_2_index;
+          $scope_sidebar.level_1_index = $scope_sidebar.level_2_index.split("_")[0];
+
+          //给主要区域赋请求对象
+          $scope_main.request = $scope_tab.actions[tabIndex];
+        }else{
+           $scope_sidebar.level_2_index = '';
+           $scope_sidebar.level_1_index = -1;
+
+           //给主要区域赋请求对象
+           $scope_main.request = null;
+        }
+      }
+
+      function closeTab(tabIndex,ev){
+        $scope_tab.refreshTabs++;//通知tab导航栏刷新
+
+        var oEvent = ev || event;
+        oEvent.cancelBubble = true;
+        oEvent.stopPropagation();
+
+              
+        if($scope_tab.actions[tabIndex].level_2_index != $scope_sidebar.level_2_index){
+          $scope_tab.actions.splice(tabIndex,1);//删除这个
+          return false;//如果关闭的tab页不是选中的那个，那么不做换页处理
+        }else{
+          $scope_tab.actions.splice(tabIndex,1);//删除这个
+          if(tabIndex <= 0){
+            //如果tabIndex等于0，那么判断，如果数组已经空了，那么就显示首页，如果不是，就往后显示一页
+            if($scope_tab.actions.length <= 0){
+              $scope_sidebar.level_1_index=-1;
+              $scope_sidebar.level_2_index='';
+              $scope_main.request = null;
+            }else{
+              $scope_sidebar.level_2_index = $scope_tab.actions[tabIndex].level_2_index;
+              $scope_sidebar.level_1_index = $scope_sidebar.level_2_index.split("_")[0];
+            }
+          }else if(tabIndex >= ($scope_tab.actions.length-1)){
+            //如果是最后一个，往前移动
+            $scope_sidebar.level_2_index = $scope_tab.actions[tabIndex-1].level_2_index;
+            $scope_sidebar.level_1_index = $scope_sidebar.level_2_index.split("_")[0];
+          }else{
+            //如果tabIndex大于0，那么往后移动。
+            $scope_sidebar.level_2_index = $scope_tab.actions[tabIndex].level_2_index;
+            $scope_sidebar.level_1_index = $scope_sidebar.level_2_index.split("_")[0];
+          }
+
+          //给主要区域赋请求对象
+          if($scope_sidebar.level_2_index){
+            $scope_main.request = $scope_sidebar.sidebarMenuAryFull[$scope_sidebar.level_1_index]['requestList'][$scope_sidebar.level_2_index.split('_')[1]];
+          }
+        }
+        return false;
+      }
+
+      function tabUlWidthFilter(refreshTabs){
+        var tab_li_ary = $("li[name='tab_li']");
+        var width = 50;
+        for(var i=0;i<tab_li_ary.length;i++){
+          width = width+$(tab_li_ary[i]).width();
+        }
+        if(width > $("#tabUlContainer_div").width()){
+          //ul的宽度超过父div的宽度，那么会出现滚动条，这时候就需要左右箭头了。
+          $scope_tab.showArrow = true;
+        }else{
+          $scope_tab.showArrow = false;
+        }
+        return width;
+      }
+      function homeTabActiveFilter(refreshTabs){
+        return $scope_sidebar.level_2_index?'':'active';
+      }
+      function actionTabActiveFilter(refreshTabs,tab){
+        //return actions[tabIndex]['active']?'active':'';
+        return tab && tab.level_2_index == $scope_sidebar.level_2_index?'active':'';
+      }
+      function tabScrollLeft(){
+        $("#tabUlContainer_div").scrollLeft($("#tabUlContainer_div").scrollLeft()-100);
+      }
+      function tabScrollRight(){
+        $("#tabUlContainer_div").scrollLeft($("#tabUlContainer_div").scrollLeft()+100);
+      }
+
+
+      //=====================内容区域=======================//
+      function initMain(){
+        var MVVM_MAIN = $NICE_MVVM("main_div");
+        var $scope = MVVM_MAIN.$scope;
+
+        $scope.request = null;//请求对象
+
+        MVVM_MAIN.$init();
+
+        MVVM_MAIN.$watch('request.headerList',function(headerList){
+          console.log(headerList);
+        });
+        return $scope;
+      }
+
+      var $scope_main = initMain();
+
+      function delHeader(index){
+        $scope_main.request.headerList.splice(index,1);
+        if($scope_main.request.headerList.length <= 0){
+          $scope_main.request.headerList.push({
+            editable:true
+          });
+        }
+      }
+
+      function addHeader(index){
+        $scope_main.request.headerList.splice(index+1,0,{
+          headerName:'',
+          headerValue:'',
+          editable:true
+        });
+      }
+
+      function delRequestParam(index){
+        $scope_main.request.requestParamList.splice(index,1);
+        if($scope_main.request.headerList.length <= 0){
+          $scope_main.request.requestParamList.push({
+            editable:true
+          });
+        }
+      }
+
+      function addRequestParam(index){
+        $scope_main.request.requestParamList.splice(index+1,0,{
+          paramName:'',
+          paramValue:'',
+          editable:true
+        });
+      }
+
+      function sendRequest(){
+        $scope_main.request['response'] = '';
+
+        var url = $scope_main.request.url;
+        var data = {};
+        for(var i=0;i<$scope_main.request.requestParamList.length;i++){
+          var param = $scope_main.request.requestParamList[i];
+          if(param.paramValue || param.paramValue+"#" == '0#'){
+            //替换url中的参数
+            if(url.indexOf('{'+param.paramName+'}') >= 0){
+              var paramReg =  new RegExp('\\{'+param.paramName+'\\}','g');
+              url = url.replace(paramReg,param.paramValue);
+            }else{
+              data[param.paramName] = param.paramValue;
+            }
+          }else{
+            if(param.required){
+              alert(param.desc+":"+param.paramName+" 必填！");
+              return false;
+            }
+          }
+        }
+
+        $scope_main.request['sendUrl'] = url;
+
+        var headers = {};
+        for(var i=0;i<$scope_main.request.headerList.length;i++){
+          var header = $scope_main.request.headerList[i];
+          if(header.headerValue || header.headerValue+"#" == '0#'){
+            headers[header.headerName] = header.headerValue;
+          }
+        }
+
+        if($scope_main.request.method == 'POST'){
+          $.post(url,data,headers,successCallback,errorCallback);
+        }else if($scope_main.request.method == 'DELETE'){
+          $.delete(url,data,headers,successCallback,errorCallback);
+        }else if($scope_main.request.method == 'PUT'){
+          $.put(url,data,headers,successCallback,errorCallback);
+        }else if($scope_main.request.method == 'GET'){
+          $.get(url,data,headers,successCallback,errorCallback);
+        }
+      }
+
+      function successCallback(result){
+        $scope_main.request['response'] = JSON.stringify(result,null,2);
+      }
+
+      function errorCallback(XMLHttpRequest, textStatus, errorThrown){
+        //有些接口，没有返回值，ajax json会报错
+        var response = XMLHttpRequest.responseText;
+        if(response || response+'#' == '0#'){
+          $scope_main.request['response'] = response;
+        }else{
+          if(textStatus == 'parsererror' && XMLHttpRequest.status == 200){
+            $scope_main.request['response'] = "<span class='text-success'>Http status 200</span>";
+          }else{
+            $scope_main.request['response'] = "<span class='text-danger'>Http status "+XMLHttpRequest.status+" "+errorThrown.message+"</span>";
+            console.log(errorThrown);
+          }
+        }
+        
+      }
+      //====================整个右边部分的高度的MVVM调节======//
+      function initContent(){
+        var MVVM_CONTENT = $NICE_MVVM("content_div",['tab_div','main_div']);//排除导航和请求区域mvvm
+        var $scope = MVVM_CONTENT.$scope;
+
+        $scope.contentHeight = $scope_sidebar.sidebarHeight;
+
+        MVVM_CONTENT.$onflush(function(){
+            //获取页面可视高度
+            $scope.contentHeight = $(window).height()-25;
+        });
+
+        MVVM_CONTENT.$init();
+        return $scope;
+      }
+
+      var $scope_content = initContent();
+    </script>
+  </body>
+</html>

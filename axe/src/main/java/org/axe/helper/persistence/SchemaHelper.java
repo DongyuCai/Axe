@@ -199,10 +199,9 @@ public class SchemaHelper implements Helper{
 		}else{
 			String javaType = field.getType().getName();
 			columnDefine.append(nullAble?JAVA2MYSQL_MAP.get(javaType)+" DEFAULT NULL":JAVA2MYSQL_MAP.get(javaType)+" NOT NULL");
-			
-			if(field.isAnnotationPresent(Comment.class)){
-				columnDefine.append(" COMMENT '").append(field.getAnnotation(Comment.class).value()).append("'");
-			}
+		}
+		if(field.isAnnotationPresent(Comment.class)){
+			columnDefine.append(" COMMENT '").append(field.getAnnotation(Comment.class).value()).append("'");
 		}
 		return columnDefine.toString();
 	}

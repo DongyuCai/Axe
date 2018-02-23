@@ -12,11 +12,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.axe.annotation.ioc.Controller;
+import org.axe.annotation.mvc.Default;
 import org.axe.annotation.mvc.Request;
 import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
 import org.axe.annotation.mvc.Required;
+import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Comment;
+import org.axe.annotation.persistence.Transient;
 import org.axe.bean.mvc.FileParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
@@ -29,6 +32,315 @@ import org.axe.helper.mvc.ControllerHelper;
  */
 public class ApiExportUtil {
 	
+	final static class Level_1{
+		private int index;
+		private String title;
+		private String controllerClassName;
+		private List<Level_2> requestList;
+		
+		public String getTitle() {
+			return title;
+		}
+		public void setTitle(String title) {
+			this.title = title;
+		}
+		public int getIndex() {
+			return index;
+		}
+		public void setIndex(int index) {
+			this.index = index;
+		}
+		public List<Level_2> getRequestList() {
+			return requestList;
+		}
+		public void setRequestList(List<Level_2> requestList) {
+			this.requestList = requestList;
+		}
+		public String getControllerClassName() {
+			return controllerClassName;
+		}
+		public void setControllerClassName(String controllerClassName) {
+			this.controllerClassName = controllerClassName;
+		}
+		
+	}
+	
+	final static class Level_2{
+		private int index;
+		private String controllerTitle;
+		private String controllerClassName;
+		private String requestTitle;
+		private String requestMethodName;
+		private String url;
+		private String method;
+		private List<Header> headerList;
+		private List<Param> requestParamList;
+		
+		public String getControllerClassName() {
+			return controllerClassName;
+		}
+		public void setControllerClassName(String controllerClassName) {
+			this.controllerClassName = controllerClassName;
+		}
+		public String getRequestMethodName() {
+			return requestMethodName;
+		}
+		public void setRequestMethodName(String requestMethodName) {
+			this.requestMethodName = requestMethodName;
+		}
+		public String getControllerTitle() {
+			return controllerTitle;
+		}
+		public void setControllerTitle(String controllerTitle) {
+			this.controllerTitle = controllerTitle;
+		}
+		public String getRequestTitle() {
+			return requestTitle;
+		}
+		public void setRequestTitle(String requestTitle) {
+			this.requestTitle = requestTitle;
+		}
+		public String getUrl() {
+			return url;
+		}
+		public void setUrl(String url) {
+			this.url = url;
+		}
+		public String getMethod() {
+			return method;
+		}
+		public void setMethod(String method) {
+			this.method = method;
+		}
+		public List<Header> getHeaderList() {
+			return headerList;
+		}
+		public void setHeaderList(List<Header> headerList) {
+			this.headerList = headerList;
+		}
+		public int getIndex() {
+			return index;
+		}
+		public void setIndex(int index) {
+			this.index = index;
+		}
+		public List<Param> getRequestParamList() {
+			return requestParamList;
+		}
+		public void setRequestParamList(List<Param> requestParamList) {
+			this.requestParamList = requestParamList;
+		}
+		
+	}
+	
+	final static class Header{
+		private String headerName;
+		private String headerValue;
+		public String getHeaderName() {
+			return headerName;
+		}
+		public void setHeaderName(String headerName) {
+			this.headerName = headerName;
+		}
+		public String getHeaderValue() {
+			return headerValue;
+		}
+		public void setHeaderValue(String headerValue) {
+			this.headerValue = headerValue;
+		}
+	}
+	
+	final static class Param{
+		private String paramName;
+		private String paramValue;
+		private String desc;
+		private String type;
+		private boolean required = false;
+		public String getParamName() {
+			return paramName;
+		}
+		public void setParamName(String paramName) {
+			this.paramName = paramName;
+		}
+		public String getParamValue() {
+			return paramValue;
+		}
+		public void setParamValue(String paramValue) {
+			this.paramValue = paramValue;
+		}
+		public String getDesc() {
+			return desc;
+		}
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+		public String getType() {
+			return type;
+		}
+		public void setType(String type) {
+			this.type = type;
+		}
+		public boolean isRequired() {
+			return required;
+		}
+		public void setRequired(boolean required) {
+			this.required = required;
+		}
+	}
+	
+	public static List<Level_1> asApiTest(String basePath,Map<String,String> headers){
+		List<Level_1> list = new ArrayList<>();
+		Map<String,Integer> map = new HashMap<>();//存下标
+		//获取Controller 到 action的关系表
+		List<Handler> handlerList = ControllerHelper.getActionList();
+		for(Handler handler:handlerList){
+			Class<?> controllerClass = handler.getControllerClass();
+			Controller controllerAnnotation = controllerClass.getAnnotation(Controller.class);
+			//没有title不要
+			String controllerTitle = controllerAnnotation.title();
+			if(StringUtil.isEmpty(controllerTitle)) continue;
+			
+			//存第一级
+			Integer listIndex = map.get(controllerTitle);
+			Level_1 level_1 = null;
+			if(listIndex == null){
+				//新增一个
+				level_1 = new Level_1();
+				list.add(level_1);
+				listIndex = list.size()-1;
+				level_1.setIndex(listIndex);
+				level_1.setTitle(controllerTitle);
+				level_1.setControllerClassName(controllerClass.getName());
+				map.put(controllerTitle, listIndex);
+			}else{
+				level_1 = list.get(listIndex);
+			}
+
+			//存第二级
+			List<Level_2> requestList = level_1.getRequestList();
+			if(requestList == null){
+				requestList = new ArrayList<>();
+				level_1.setRequestList(requestList);
+			}
+			Method actionMethod = handler.getActionMethod();
+			Request requestAnnotation = actionMethod.getAnnotation(Request.class);
+			
+			String requestTitle = requestAnnotation.title();
+			if(StringUtil.isEmpty(requestTitle)) continue;//如果action没有标题，也不要
+			
+			Level_2 level_2 = new Level_2();
+			requestList.add(level_2);
+			//类名称
+			level_2.setIndex(requestList.size()-1);
+			level_2.setControllerTitle(controllerTitle);
+			level_2.setControllerClassName(level_1.getControllerClassName());
+			//方法名称
+			level_2.setRequestTitle(requestTitle);
+			level_2.setRequestMethodName(actionMethod.getName());
+			//url
+			level_2.setUrl(basePath+handler.getMappingPath());
+			//POST DELETE PUT GET
+			level_2.setMethod(handler.getRequestMethod());
+			//header
+			List<Header> headerList = new ArrayList<>();
+			level_2.setHeaderList(headerList);
+			if(CollectionUtil.isNotEmpty(headers)){
+				for(String key:headers.keySet()){
+					Header header = new Header();
+					header.setHeaderName(key);
+					header.setHeaderValue(headers.get(key));
+					headerList.add(header);
+				}
+			}
+			
+			//request param
+			List<Param> requestParamList = new ArrayList<>();
+			level_2.setRequestParamList(requestParamList);
+			List<ActionParam> actionParamList = handler.getActionParamList();
+			if(CollectionUtil.isNotEmpty(actionParamList)){
+				for(ActionParam ap:actionParamList){
+					Annotation[] annotations = ap.getAnnotations();
+					if(annotations != null){
+						RequestParam rp = null;
+						RequestEntity re = null;
+						Required required = null;
+						Default _default = null;
+						for(Annotation annotation:annotations){
+							if(annotation instanceof RequestParam){
+								rp = (RequestParam)annotation;
+							}else if(annotation instanceof RequestEntity){
+								re = (RequestEntity)annotation;
+							}else if(annotation instanceof Required){
+								required = (Required)annotation;
+							}else if(annotation instanceof Default){
+								_default = (Default)annotation;
+							}
+						}
+						
+						if(rp != null){
+							//如果RequestParam存在，但是url里不包含此参数，那么需要加入到Param里
+							//url包含的参数，是不需要放到requestParamList里的
+							Param param = new Param();
+							param.setParamName(rp.value());
+							if(StringUtil.isNotEmpty(rp.desc())){
+								param.setDesc(rp.desc());
+							}
+							if(required != null || handler.getMappingPath().contains("{"+rp.value()+"}")){
+								//有required注解，或者url中包含，都可以算必填
+								param.setRequired(true);;
+							}
+							if(_default != null){
+								param.setParamValue(_default.value());
+							}
+							param.setType(ap.getParamType().getSimpleName());
+							requestParamList.add(param);
+						}else if(re != null){
+							Set<String> requiredFieldSet = new HashSet<>();
+							if(required != null){
+								for(String requiredField:required.value()){
+									requiredFieldSet.add(requiredField);
+								}
+							}
+							List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType());
+							if(CollectionUtil.isNotEmpty(setMethodList)){
+								for(EntityFieldMethod fm:setMethodList){
+									if(fm.getField().getAnnotation(Transient.class) != null){
+										continue;
+									}
+									
+									String fieldName = fm.getField().getName();
+									if(!handler.getMappingPath().contains("{"+fieldName+"}")){
+										Param param = new Param();
+										param.setParamName(fieldName);
+										Comment comment = fm.getField().getAnnotation(Comment.class);
+										if(comment != null){
+											param.setDesc(comment.value());
+										}
+										ColumnDefine columnDefine = fm.getField().getAnnotation(ColumnDefine.class);
+										if(columnDefine != null && columnDefine.value().toUpperCase().indexOf(" COMMENT ")>0){
+											int index = columnDefine.value().toUpperCase().indexOf(" COMMENT ");
+											int indexStart = columnDefine.value().toUpperCase().indexOf("'", index);
+											int indexEnd = columnDefine.value().toUpperCase().indexOf("'", indexStart+1);
+											if(indexStart < indexEnd){
+												param.setDesc(columnDefine.value().substring(indexStart+1, indexEnd));
+											}
+										}
+										if(requiredFieldSet.contains(fieldName)){
+											param.setRequired(true);
+										}
+										param.setType(fm.getField().getType().getSimpleName());
+										requestParamList.add(param);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+		
 	/**
 	 * 转成Postman文件 格式为 collection format v2
 	 * 例子：asPostmanV2("xxxapi接口","http://
@@ -202,4 +514,5 @@ public class ApiExportUtil {
 		
 		return config;
 	}
+	
 }
