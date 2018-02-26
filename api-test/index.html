@@ -53,7 +53,7 @@
           <div id="tabUlContainer_div" class="{{showArrow?'col-md-10':'col-md-12'}}" style="padding: 0px;overflow-x: auto;height: 100px;">
             <ul class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
               <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">首页</a></li>
-              <li name="tab_li" role="presentation" class="{{refreshTabs|actionTabActiveFilter:tab}}" nc-for="tab in actions">
+              <li id="tab_li_{{tab.level_2_index}}" name="tab_li" role="presentation" class="{{refreshTabs|actionTabActiveFilter:tab}}" nc-for="tab in actions">
                 <a href="javascript:void(0)" onclick="clickTab({{tab.$index}})">
                   <span nc-text="{{tab.requestTitle}} "></span>&nbsp;
                   <button type="button" onclick="closeTab({{tab.$index}})" class="close" aria-label="Close">
@@ -164,7 +164,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
     </div>
@@ -322,6 +321,14 @@
         $scope.showArrow = false;//是否显示左右箭头
 
         MVVM_TAB.$init();
+
+        //调整标题导航，让当前标题展示出来
+        MVVM_TAB.$onload(function(){
+          if($scope_sidebar.level_2_index){
+            location.hash="#tab_li_"+$scope_sidebar.level_2_index;
+          }
+        });
+
         return $scope;
       }
 
@@ -391,7 +398,7 @@
 
       function tabUlWidthFilter(refreshTabs){
         var tab_li_ary = $("li[name='tab_li']");
-        var width = 50;
+        var width = 100;
         for(var i=0;i<tab_li_ary.length;i++){
           width = width+$(tab_li_ary[i]).width();
         }
@@ -426,10 +433,10 @@
         $scope.request = null;//请求对象
 
         MVVM_MAIN.$init();
-
+        /*
         MVVM_MAIN.$watch('request.headerList',function(headerList){
           console.log(headerList);
-        });
+        });*/
         return $scope;
       }
 
