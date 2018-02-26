@@ -21,4 +21,9 @@ public @interface RequestParam {
 	 * 描述
 	 */
 	String desc() default "";
+	
+	/**
+	 * 是否必填
+	 */
+	boolean required() default false;
 }

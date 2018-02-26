@@ -135,7 +135,7 @@
                           =
                         </div>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" placeholder="paramValue" nc-value="param.paramValue"></input>
+                          <input type="text" class="form-control" placeholder="{{param.type}}" nc-value="param.paramValue"></input>
                         </div>
                         <div class="col-md-1" style="padding-top: 6px;text-align: center;">
                           <p class="text-info" nc-if="param.required">必</p>
@@ -483,11 +483,6 @@
               url = url.replace(paramReg,param.paramValue);
             }else{
               data[param.paramName] = param.paramValue;
-            }
-          }else{
-            if(param.required){
-              alert(param.desc+":"+param.paramName+" 必填！");
-              return false;
             }
           }
         }

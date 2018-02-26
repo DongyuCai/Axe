@@ -9,13 +9,17 @@ import java.lang.reflect.WildcardType;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.axe.annotation.mvc.Default;
+import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
 import org.axe.bean.mvc.FileParam;
 import org.axe.bean.mvc.FormParam;
@@ -245,15 +249,20 @@ public final class RequestUtil {
 				throw new Exception(actionMethod.toGenericString()+"#"+parameterType+"# is a primitive");
 			}
 			//如果标注了@RequestParam，需要检测是否是自定义Bean类型
-			boolean isRequestParam = false;
+			RequestParam requestParam = null;
+			RequestEntity requestEntity = null;
+			Default def = null;
 			for(Annotation anno:parameterAnnotationAry){
 				if(anno instanceof RequestParam){
-					isRequestParam = true;
-					break;
+					requestParam = (RequestParam)anno;
+				}else if(anno instanceof RequestEntity){
+					requestEntity = (RequestEntity)anno;
+				}else if(anno instanceof Default){
+					def = (Default)anno;
 				}
 			}
 			
-			if(isRequestParam){
+			if(requestParam != null){
 				if(parameterType instanceof ParameterizedType){
 					Type[] actualTypes = ((ParameterizedType) parameterType).getActualTypeArguments();
 					for(Type actualType : actualTypes){
@@ -277,6 +286,42 @@ public final class RequestUtil {
 							throw new Exception(actionMethod.toGenericString()+"#"+parameterClassType+"# is a customer pojo type");
 						}
 					}
+				}
+
+				//判断如果有Default注解，那么只能长度是1
+				if(def != null && (def.value() == null || def.value().length != 1)){
+					throw new Exception(actionMethod.toGenericString()+"'s "+(i+1)+"th parameter has a wrong type @Default value");
+				}
+			}else if(requestEntity != null){
+				//判断如果有Default注解，那么格式是否正确
+				if(def != null && def.value() != null && def.value().length > 0){
+					for(String defVal:def.value()){
+						if(defVal.indexOf(":")<0 || defVal.startsWith(":") || defVal.endsWith(":")){
+							throw new Exception(actionMethod.toGenericString()+"'s "+(i+1)+"th parameter has a wrong type @Default value");
+						}
+					}
+				}
+				
+				//判断必填项和排除项是否有交集
+				//必填字段
+				Set<String> requiredFieldSet = new HashSet<>();
+				if(requestEntity.requiredFields() != null){
+					for(String requiredField:requestEntity.requiredFields()){
+						requiredFieldSet.add(requiredField);
+					}
+				}
+				//排除字段
+				Set<String> excludedFieldSet = new HashSet<>();
+				if(requestEntity.excludedFields() != null){
+					for(String excludedField:requestEntity.excludedFields()){
+						excludedFieldSet.add(excludedField);
+					}
+				}
+				Set<String> intersectionSet = new HashSet<String>();
+				intersectionSet.addAll(requiredFieldSet);
+				intersectionSet.retainAll(excludedFieldSet);
+				if(CollectionUtil.isNotEmpty(intersectionSet)){
+					throw new Exception(actionMethod.toGenericString()+"'s "+(i+1)+"th parameter has a confused requiredFieldSet & excludedFieldSet");
 				}
 			}
     	}

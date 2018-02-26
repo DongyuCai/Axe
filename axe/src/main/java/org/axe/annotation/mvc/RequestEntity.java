@@ -11,5 +11,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestEntity {
-
+	
+	/**
+	 * 必填的字段
+	 */
+	String[] requiredFields() default {};
+	
+	/**
+	 * 排除的，不接受的字段
+	 */
+	String[] excludedFields() default {};
 }

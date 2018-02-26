@@ -16,7 +16,6 @@ import org.axe.annotation.mvc.Default;
 import org.axe.annotation.mvc.Request;
 import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
-import org.axe.annotation.mvc.Required;
 import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Transient;
@@ -263,17 +262,14 @@ public class ApiExportUtil {
 					if(annotations != null){
 						RequestParam rp = null;
 						RequestEntity re = null;
-						Required required = null;
-						Default _default = null;
+						Default def = null;
 						for(Annotation annotation:annotations){
 							if(annotation instanceof RequestParam){
 								rp = (RequestParam)annotation;
 							}else if(annotation instanceof RequestEntity){
 								re = (RequestEntity)annotation;
-							}else if(annotation instanceof Required){
-								required = (Required)annotation;
 							}else if(annotation instanceof Default){
-								_default = (Default)annotation;
+								def = (Default)annotation;
 							}
 						}
 						
@@ -285,24 +281,43 @@ public class ApiExportUtil {
 							if(StringUtil.isNotEmpty(rp.desc())){
 								param.setDesc(rp.desc());
 							}
-							if(required != null || handler.getMappingPath().contains("{"+rp.value()+"}")){
+							if(rp.required() || handler.getMappingPath().contains("{"+rp.value()+"}")){
 								//有required注解，或者url中包含，都可以算必填
 								param.setRequired(true);;
 							}
-							if(_default != null){
-								param.setParamValue(_default.value());
+							if(def != null && def.value() != null && def.value().length > 0){
+								param.setParamValue(def.value()[0]);
 							}
 							param.setType(ap.getParamType().getSimpleName());
 							requestParamList.add(param);
 						}else if(re != null){
-							Set<String> requiredFieldSet = new HashSet<>();
-							if(required != null){
-								for(String requiredField:required.value()){
-									requiredFieldSet.add(requiredField);
+							//排除字段
+							Set<String> excludedFieldSet = new HashSet<>();
+							if(re.excludedFields() != null){
+								for(String excludedField:re.excludedFields()){
+									excludedFieldSet.add(excludedField);
 								}
 							}
-							List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType());
+							
+							List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType(),excludedFieldSet);
 							if(CollectionUtil.isNotEmpty(setMethodList)){
+								//必填字段
+								Set<String> requiredFieldSet = new HashSet<>();
+								if(re.requiredFields() != null){
+									for(String requiredField:re.requiredFields()){
+										requiredFieldSet.add(requiredField);
+									}
+								}
+								
+								Map<String,String> defMap = new HashMap<>();
+								if(def != null && def.value() != null && def.value().length > 0){
+									for(String defVal:def.value()){
+										String key = defVal.substring(0, defVal.indexOf(":"));
+										String value = defVal.substring(defVal.indexOf(":")+1);
+										defMap.put(key, value);
+									}
+								}
+								
 								for(EntityFieldMethod fm:setMethodList){
 									if(fm.getField().getAnnotation(Transient.class) != null){
 										continue;
@@ -316,6 +331,7 @@ public class ApiExportUtil {
 										if(comment != null){
 											param.setDesc(comment.value());
 										}
+										
 										ColumnDefine columnDefine = fm.getField().getAnnotation(ColumnDefine.class);
 										if(columnDefine != null && columnDefine.value().toUpperCase().indexOf(" COMMENT ")>0){
 											int index = columnDefine.value().toUpperCase().indexOf(" COMMENT ");
@@ -328,6 +344,8 @@ public class ApiExportUtil {
 										if(requiredFieldSet.contains(fieldName)){
 											param.setRequired(true);
 										}
+										param.setParamValue(defMap.get(fieldName));
+										
 										param.setType(fm.getField().getType().getSimpleName());
 										requestParamList.add(param);
 									}
@@ -423,14 +441,11 @@ public class ApiExportUtil {
 							if(annotations != null){
 								RequestParam rp = null;
 								RequestEntity re = null;
-								Required required = null;
 								for(Annotation annotation:annotations){
 									if(annotation instanceof RequestParam){
 										rp = (RequestParam)annotation;
 									}else if(annotation instanceof RequestEntity){
 										re = (RequestEntity)annotation;
-									}else if(annotation instanceof Required){
-										required = (Required)annotation;
 									}
 								}
 								
@@ -440,9 +455,6 @@ public class ApiExportUtil {
 									if(StringUtil.isNotEmpty(rp.desc())){
 										formdata.put("description", rp.desc());
 									}
-									if(required != null){
-										formdata.put("required", "true");
-									}
 									if(ReflectionUtil.compareType(ap.getParamType(), FileParam.class)){
 										formdata.put("type", "file");
 									}else{
@@ -450,12 +462,6 @@ public class ApiExportUtil {
 									}
 									formdataList.add(formdata);
 								}else if(re != null){
-									Set<String> requiredFieldSet = new HashSet<>();
-									if(required != null){
-										for(String requiredField:required.value()){
-											requiredFieldSet.add(requiredField);
-										}
-									}
 									List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType());
 									if(CollectionUtil.isNotEmpty(setMethodList)){
 										for(EntityFieldMethod fm:setMethodList){
@@ -466,9 +472,6 @@ public class ApiExportUtil {
 											Comment comment = fm.getField().getAnnotation(Comment.class);
 											if(comment != null){
 												formdata.put("description", comment.value());
-											}
-											if(requiredFieldSet.contains(fieldName)){
-												formdata.put("required", "true");
 											}
 											formdataList.add(formdata);
 										}
