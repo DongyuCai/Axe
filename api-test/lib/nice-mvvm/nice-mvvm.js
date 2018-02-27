@@ -1,21 +1,29 @@
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2017 The Axe Project
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 'use strict';
 console.log('mvvm version:18.2.5');
-//支持指令：
-//1.nc-value  只能写变量，不可以写表达式，双向绑定，凡是有value属性的元素，都可以使用。
-//4.nc-src	  例 nc-src="{{basePictureUrl+item.picture}}"
-//5.nc-text   列 <span nc-text="{{item.name}}"></span>
-//2.nc-for	  只能写命令，row in ary 这样的形式，任何元素都可以使用，有一点注意，只能使用基本属性，不能传递entity，比如onclick="delete({{row}})"，这是不行的，但是可以onclick="delete({{$index}})"。
-//3.nc-if	  支持表达式
-//（已放弃nc-class）4.nc-class  支持指令，express?class1:class2这样的形式，express可以是表达式
-//{{}}		  可以是表达式，可以接|过滤器，{{}}可以用在任何文本或者节点的属性里。
-//$watch(proPathAry,function)，proPathAry参数是需要监控的变量名数组，function是回调函数
-//
-//注意事项：
-//1.变量必须先声明，否则不在托管范围
-//2.变量只能使用a-zA-Z0-9_这些
 
-//暴露给外部的全局对象
-//注意nice-mvvm.js要放在第一个引入
 var $NICE_MVVM = function(mvvmElementId,excludeIds){
 	var mvvmElement = document.getElementById(mvvmElementId);
 
@@ -197,7 +205,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 				num2 = num2+$SCOPE.$V2M_NODE_MAP[key].length;
 			}
 			console.log('['+mvvmElementId+']原:'+num1+'删:'+delNodePackIds.split(',,').length+'剩:'+num2);*/
-		}
+		};
 
 		$SCOPE.$GET_DEL_NODE_ARY = function(nodeParentId){
 			var delNodePackIds = '';
@@ -213,7 +221,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 				}
 			}
 			return delNodePackIds;
-		}
+		};
 
 		$SCOPE.$REPLACE_PROPATH = function(expression,pro,newPro){
 			var stepLen = pro.length;
@@ -257,7 +265,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 				}
 			}
 			return expression;
-		}
+		};
 
 		$SCOPE.$COPY_NODE_PACK = function(nodePack){
 			//把所有的内容都复制出来，除了node
