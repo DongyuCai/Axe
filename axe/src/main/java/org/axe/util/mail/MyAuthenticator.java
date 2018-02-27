@@ -5,6 +5,7 @@ import javax.mail.PasswordAuthentication;
 
 /**
  * 密码验证器
+ * @author 原作者以无法查实
  */
 public class MyAuthenticator extends Authenticator {
 	String userName = null;

@@ -5,9 +5,10 @@ import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/*
+/**
  * MD5 算法
-*/
+ * @author 原作者以无从查实
+ */
 public class MD5Util {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MD5Util.class);
     

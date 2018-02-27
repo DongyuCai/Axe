@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ * 
+ * Copyright (c) 2017 The Axe Project
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package org.axe.annotation.mvc;
 
 import java.lang.annotation.ElementType;
@@ -13,7 +36,7 @@ import org.axe.interface_implement.mvc.AxeRequestParamAnalyzeFilter;
  * 应用在那些不需要某些过滤器的Controller方法上
  * 也可以直接暴力加在Controller上，这样方法上的此注解会失效，
  * Controller中所有方法都依照Controller上的此注解配置
- * Created by CaiDongYu on 2016/4/8.
+ * @author CaiDongyu on 2016/4/8.
  */
 @Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

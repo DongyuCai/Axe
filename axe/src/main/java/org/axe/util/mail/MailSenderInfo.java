@@ -1,8 +1,9 @@
 package org.axe.util.mail;
 
 /**  
-* 发送邮件需要使用的基本信息  
-*/
+ * 发送邮件需要使用的基本信息  
+ * @author 原作者以无法查实
+ */
 import java.util.Properties;
 
 public class MailSenderInfo {

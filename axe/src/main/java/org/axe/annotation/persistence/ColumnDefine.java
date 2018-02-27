@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ * 
+ * Copyright (c) 2017 The Axe Project
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package org.axe.annotation.persistence;
 
 import java.lang.annotation.ElementType;
@@ -21,7 +44,7 @@ import java.lang.annotation.Target;
  *  	`name` varchar(10) NOT NULL;
  *  当然可以写更多的指令，比如long类型可以加上AUTO_INCREMENT，唯一属性可以UNIQUE等等
  *  当与@Id同时存在时，@ColumnDefine优先级更高
- * Created by CaiDongYu on 2016/9/22.
+ * @author CaiDongyu on 2016/9/22.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
