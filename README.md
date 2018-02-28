@@ -10,9 +10,6 @@
 
 ----------
 
-##BUG
-* update table set printCount=printCount1+1 无法对等号后的printCount做HQL转换，因为前面的printCount的原因
-
 ## 支持特性（基本可以不用看，都是常用的东西）：
 * IOC（[@Controller]()、[@Service]()、[@Autowired]()，使用[BeanHelper]()获取BeanMap）
 * AOP/Proxy（[@Aspect]()注解切面类，实现[Proxy]()或者继承[AspectProxy]()加强切点）
