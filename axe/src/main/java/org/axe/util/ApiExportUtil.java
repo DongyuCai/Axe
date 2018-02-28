@@ -54,7 +54,7 @@ import org.axe.helper.mvc.ControllerHelper;
  */
 public class ApiExportUtil {
 	
-	final static class Level_1{
+	public final static class Level_1{
 		private int index;
 		private String title;
 		private String controllerClassName;
@@ -87,7 +87,7 @@ public class ApiExportUtil {
 		
 	}
 	
-	final static class Level_2{
+	public final static class Level_2{
 		private int index;
 		private String controllerTitle;
 		private String controllerClassName;
@@ -155,7 +155,7 @@ public class ApiExportUtil {
 		
 	}
 	
-	final static class Header{
+	public final static class Header{
 		private String headerName;
 		private String headerValue;
 		public String getHeaderName() {
@@ -172,7 +172,7 @@ public class ApiExportUtil {
 		}
 	}
 	
-	final static class Param{
+	public final static class Param{
 		private String paramName;
 		private String paramValue;
 		private String desc;

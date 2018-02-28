@@ -439,6 +439,9 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 									if(lowerNewHtml.indexOf('<tr') == 0){
 										newHtml = '<table><tbody>'+newHtml+'</tbody></table>';
 										level = 2;
+									}else if(lowerNewHtml.indexOf('<td') == 0){
+										newHtml = '<table><tbody><tr>'+newHtml+'</tr></tbody></table>';
+										level = 3;
 									}else if(lowerNewHtml.indexOf('<option') == 0){
 										newHtml = '<select>'+newHtml+'</select>';
 										level=1;
