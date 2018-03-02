@@ -71,33 +71,39 @@ public class DispatcherServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
-
+	private static Boolean AXE_INITED = false;
+	
 	@Override
     public void init(ServletConfig servletConfig) throws ServletException{
-        //获取 ServletContext 对象（用于注册servlet）
-        ServletContext servletContext = servletConfig.getServletContext();
+		synchronized (AXE_INITED) {
+			if(!AXE_INITED){
+				AXE_INITED = true;
+				//获取 ServletContext 对象（用于注册servlet）
+		        ServletContext servletContext = servletConfig.getServletContext();
 
-        //初始化框架相关 helper 类
-        try {
-			HelperLoader.init(servletContext);
-			
-			//注册处理JSP的Servlet
-	        String appJspPath = ConfigHelper.getAppJspPath();
-	        if(StringUtil.isNotEmpty(appJspPath)){
-	        	appJspPath = appJspPath.endsWith("/") ? appJspPath : appJspPath+"/";
-	        	ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
-	        	jspServlet.addMapping(appJspPath+"*");
-	        }
-	        //注册处理静态资源的默认Servlet
-	        String appAssetPath = ConfigHelper.getAppAssetPath();
-	        if(StringUtil.isNotEmpty(appAssetPath)){
-	        	appAssetPath = appAssetPath.endsWith("/") ? appAssetPath : appAssetPath+"/";
-	        	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
-	        	defaultServlet.addMapping(appAssetPath+"*");
-	        }
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+		        //初始化框架相关 helper 类
+		        try {
+					HelperLoader.init(servletContext);
+					
+					//注册处理JSP的Servlet
+			        String appJspPath = ConfigHelper.getAppJspPath();
+			        if(StringUtil.isNotEmpty(appJspPath)){
+			        	appJspPath = appJspPath.endsWith("/") ? appJspPath : appJspPath+"/";
+			        	ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
+			        	jspServlet.addMapping(appJspPath+"*");
+			        }
+			        //注册处理静态资源的默认Servlet
+			        String appAssetPath = ConfigHelper.getAppAssetPath();
+			        if(StringUtil.isNotEmpty(appAssetPath)){
+			        	appAssetPath = appAssetPath.endsWith("/") ? appAssetPath : appAssetPath+"/";
+			        	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
+			        	defaultServlet.addMapping(appAssetPath+"*");
+			        }
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
 		}
     }
 
