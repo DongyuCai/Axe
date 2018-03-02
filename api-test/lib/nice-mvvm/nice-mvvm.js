@@ -173,7 +173,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 			// delete $SCOPE_DATA_['.'+proPath];
 		};
 
-		$SCOPE.$DEL_V2M_NODE_MAP = function(nodePackIds){var num=0;
+		$SCOPE.$DEL_V2M_NODE_MAP = function(nodePackIds){
 			/*var num1=0;
 			for(var key in $SCOPE.$V2M_NODE_MAP){
 				num1 = num1+$SCOPE.$V2M_NODE_MAP[key].length;
@@ -288,8 +288,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 				'initFunc':function(node,proPath,parentNodePackIds){
 					var node_nc_id = $SCOPE.$NODE_ID_POINT++;
 
-					var onchangeFun = node.onchange;
-					node.onchange=function(){
+					var changeVal = function(){
 						//保存值到内存
 						if(node.type.toLowerCase() == 'checkbox'){
 							//checkbox的值会组成数组
@@ -316,7 +315,19 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 							//其他的都是替换
 							$SCOPE.$SET_VAL(proPath,node.value);
 						}
-
+					};
+					var onkeyupFun = node.onkeyup;
+					var onchangeFun = node.onchange;
+					var onclickFun = node.onclick;
+					node.onkeyup = function(){
+						changeVal();
+						//调用用户原生方法
+						if(onkeyupFun){
+							onkeyupFun();
+						}
+					};
+					node.onchange = function(){
+						changeVal();
 						//调用用户原生方法
 						if(onchangeFun){
 							onchangeFun();
@@ -334,6 +345,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 							//排除掉本身
 							$SCOPE.$UNREFRESH_NODE_ID = node_nc_id;
 						}
+						changeVal();
 						//调用用户原生方法
 						if(onfocusFun){
 							onfocusFun();
@@ -345,6 +357,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 						//将自己设为需要dom更新
 						$SCOPE.$UNREFRESH_NODE_ID = -1;
 						//调用用户原生方法
+						changeVal();
 						if(onblurFun){
 							onblurFun();
 						}
@@ -414,7 +427,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 						'expression':proPath,
 						'render':function(proPath,val){
 							//如果新的val的长度，和当前的dom节点列表已经不一致，那么需要重新加载节点，否则不需要加载新的节点
-							
+							val = val === null?[]:val;
 							if(val.length > this.newNodeAry.length){
 
 								//有下一个兄弟节点，就在这个兄弟节点前使劲插入
@@ -830,7 +843,8 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 		};
 
 		//得到单层次展开的参数->值的映射
-		$SCOPE.$GET_PRO_SOLID_MAP = function(pKey,DATA,emptyProSolidMap){
+		$SCOPE.$GET_PRO_SOLID_MAP = function(pKey,DATA){
+			var emptyProSolidMap = {};
 			if(pKey){
 				emptyProSolidMap[pKey]=DATA;
 				pKey = pKey+'.';
@@ -839,9 +853,13 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 			}
 			if(DATA instanceof Object){
 				for(var key in DATA){
-					$SCOPE.$GET_PRO_SOLID_MAP(pKey+key,DATA[key],emptyProSolidMap);
+					var nextMap = $SCOPE.$GET_PRO_SOLID_MAP(pKey+key,DATA[key]);
+					for(var nextKey in nextMap){
+						emptyProSolidMap[nextKey] = nextMap[nextKey];
+					}
 				}
 			}
+			return emptyProSolidMap;
 		};
 
 		//同步值到副本总，并得到与副本中不一致的值，以此基准来更新dom
@@ -873,6 +891,8 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 
 				}while(false);
 			}
+
+			
 
 			//数据到dom节点版本不一致，需要同步的
 			for(var proPath in $SCOPE_DATA_){
@@ -914,12 +934,13 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 			//根据keys，向上追溯，所有这条线的，都需要渲染
 			var needSyncProPath = new Object();
 			for(var proPath in keys){
-				needSyncProPath[proPath] = keys[proPath];
+				var version = keys[proPath];
+				needSyncProPath[proPath] = version;
 
 				var end = proPath.lastIndexOf('.');
 				while(end > 0){
 					proPath = proPath.substring(0,end);
-					needSyncProPath[proPath]=keys[proPath];
+					needSyncProPath[proPath]=version;
 					end = proPath.lastIndexOf('.');
 				}
 			}
@@ -933,12 +954,12 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 
 			//计算的出，需要进行同步的proPath
 			//深度优先遍历
-			var proSolidMap = {};
-			$SCOPE.$GET_PRO_SOLID_MAP(null,$SCOPE.$DATA,proSolidMap);
+			var proSolidMap = $SCOPE.$GET_PRO_SOLID_MAP(null,$SCOPE.$DATA);
 
 			var needSyncProPath =  $SCOPE.$SYNC_SCOPE_DATA_(proSolidMap);
 
 			var needSyncProPathSize = 0;
+			var watchStatement = {};//$watch监听的语句执行，一次Flush中，相同的语句只执行一遍
 			for(var proPath in needSyncProPath){
 				needSyncProPathSize++;
 				for(var i=0;$SCOPE.$V2M_NODE_MAP[proPath] !== undefined && i<$SCOPE.$V2M_NODE_MAP[proPath].length;i++){
@@ -956,7 +977,7 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 				}
 
 				//flush $watch data
-				if($WATCH_QUEE[proPath] && $WATCH_QUEE[proPath].length > 0){
+				if($WATCH_QUEE[proPath]){
 					for(var j=0;j<$WATCH_QUEE[proPath].length;j++){
 						var $watchObj = $WATCH_QUEE[proPath][j];
 						
@@ -968,7 +989,10 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 							}
 						}
 						execStatement = execStatement+')';
-						eval(execStatement);
+						if(!watchStatement[execStatement]){
+							eval(execStatement);
+							watchStatement[execStatement] = true;
+						}
 					}
 				}
 			}
@@ -985,14 +1009,14 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 						$AFTER_RENDER();
 					}
 
-					var num=0;
+					/*var num=0;
 					for(var key in $SCOPE.$V2M_NODE_MAP){
 						num = num+$SCOPE.$V2M_NODE_MAP[key].length;
-						/*for(var ai=0;ai<$SCOPE.$V2M_NODE_MAP[key].length;ai++){
+						for(var ai=0;ai<$SCOPE.$V2M_NODE_MAP[key].length;ai++){
 							console.log('['+mvvmElementId+']'+$SCOPE.$V2M_NODE_MAP[key][ai].parentNodePackIds);
-						}*/
+						}
 					}
-					console.log('['+mvvmElementId+']总计:'+num);
+					console.log('['+mvvmElementId+']总计:'+num);*/
 				}
 				//#flush周期回调，次数是，每次当flush空闲刷新的时候，都会被回调。
 				if($AFTER_FLUSH){
@@ -1059,16 +1083,20 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 		    return nodePackIds_4_return;
 		};
 
-		$SCOPE.$FLUSH();
+		//第一步：需要先建立$SCOPE_DATA_，
+		var proSolidMap = $SCOPE.$GET_PRO_SOLID_MAP(null,$SCOPE.$DATA,proSolidMap);
+		$SCOPE.$SYNC_SCOPE_DATA_(proSolidMap);
+
+		//第二步：进行节点映射
 		$SCOPE.$INIT_MVVM(mvvmElement,'');
 
 		$SCOPE.$INTERVAL = setInterval(function(){
-			var startTime = new Date().getTime();
+			// var startTime = new Date().getTime();
 			$SCOPE.$FLUSH();
-			var endTime = new Date().getTime();
+			/*var endTime = new Date().getTime();
 			if(endTime-startTime > 100){
 				console.log('['+mvvmElementId+']耗时：'+(endTime-startTime)+'ms');
-			}
+			}*/
 		},1);
 		
 	};
