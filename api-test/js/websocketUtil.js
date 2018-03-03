@@ -20,6 +20,31 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
-var API_BASE_DOMAIN = "http://localhost:8080/api";
-var WS_BASE_DOMAIN = "ws://192.168.199.185:8088";
+ */ 
+'use strict';
+function WebSocketConnect(clientName,wsURI,reciveMessage) {
+    if (window.WebSocket) {
+        var websocket = new window.WebSocket(wsURI);
+        websocket.onopen = function() {
+            console.log('已连接');
+            websocket.send("online"+clientName);//汇报自己的编号
+        };
+        websocket.onerror = function() {
+            console.log('连接发生错误');
+        };
+        websocket.onclose = function() {
+            console.log('已经断开连接');
+            setTimeout(function(){
+              WebSocketConnect(clientName,wsURI,reciveMessage);
+            },5000);
+        };
+        // 消息接收
+        websocket.onmessage = function(message) {
+            if(reciveMessage){
+                reciveMessage(message);
+            }
+        };
+    } else {
+        alert("该浏览器不支持WebSocket。<br/>建议使用高版本的浏览器，<br/>如 IE10、火狐 、谷歌  、搜狗等");
+    }
+}
