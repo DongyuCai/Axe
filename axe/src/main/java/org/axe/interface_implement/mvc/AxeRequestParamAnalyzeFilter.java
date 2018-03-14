@@ -140,8 +140,11 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
 					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
 					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
 					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType);
-					if(def != null && def.value() != null && def.value().length > 0){
-						parameterValue = CastUtil.castType(def.value()[0], parameterType);
+					//默认值
+					if(parameterValue == null){
+						if(def != null && def.value() != null && def.value().length > 0){
+							parameterValue = CastUtil.castType(def.value()[0], parameterType);
+						}
 					}
 					
 					//检测是否必填
@@ -186,8 +189,10 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
 							Method method = efm.getMethod();
 							Object fieldValue = RequestUtil.getRequestParam(param,fieldName, fieldType);
 							//默认值
-							if(fieldValue == null && defMap.containsKey(fieldName)){
-								fieldValue = CastUtil.castType(defMap.get(fieldName), fieldType);
+							if(fieldValue == null){
+								if(defMap.containsKey(fieldName)){
+									fieldValue = CastUtil.castType(defMap.get(fieldName), fieldType);
+								}
 							}
 							if(fieldValue != null){
 								//如果请求参数中，有这个字段的值，就可以塞
