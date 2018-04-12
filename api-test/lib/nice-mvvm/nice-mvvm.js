@@ -297,11 +297,20 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 								proPathVal = [];
 							}
 							if(node.checked){
-								proPathVal.push(node.value);
+								var findSameVal = false;
+								for(var i=0;i<proPathVal.length;i++){
+									if(proPathVal[i]===node.value){
+										findSameVal = true;
+										break;
+									}
+								}
+								if(!findSameVal){
+									proPathVal.push(node.value);
+								}
 							}else{
 								var spliceIndex = -1;
 								for(var i=0;i<proPathVal.length;i++){
-									if(proPathVal[i]==node.value){
+									if(proPathVal[i]===node.value){
 										spliceIndex = i;
 										break;
 									}
@@ -316,26 +325,35 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 							$SCOPE.$SET_VAL(proPath,node.value);
 						}
 					};
+					//onkeyup
 					var onkeyupFun = node.onkeyup;
-					var onchangeFun = node.onchange;
-					var onclickFun = node.onclick;
-					node.onkeyup = function(){
+					var aspectOnkeyupFun = function(){
 						changeVal();
+
+						
 						//调用用户原生方法
 						if(onkeyupFun){
-							onkeyupFun();
+							node.onkeyup = onkeyupFun;
+							node.onkeyup();
+							node.onkeyup = aspectOnkeyupFun;
 						}
 					};
-					node.onchange = function(){
+					node.onkeyup = aspectOnkeyupFun;
+					//onchange
+					var onchangeFun = node.onchange;
+					var aspectOnchangeFun = function(){
 						changeVal();
 						//调用用户原生方法
 						if(onchangeFun){
-							onchangeFun();
+							node.onchange = onchangeFun;
+							node.onchange();
+							node.onchange = aspectOnchangeFun;
 						}
 					};
-					
+					node.onchange = aspectOnchangeFun;
+					//onfocus
 					var onfocusFun = node.onfocus;
-					node.onfocus=function(){
+					var aspectOnfocusFun = function(){
 						//将自己设为不需要dom更新
 						if(node.type.toLowerCase() == 'checkbox'){
 							//不要排除掉本身
@@ -343,25 +361,31 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 							//不要排除掉本身
 						}else{
 							//排除掉本身
-							$SCOPE.$UNREFRESH_NODE_ID = node_nc_id;
+							// $SCOPE.$UNREFRESH_NODE_ID = node_nc_id;
 						}
-						changeVal();
+						// changeVal();
 						//调用用户原生方法
 						if(onfocusFun){
-							onfocusFun();
+							node.onfocus = onfocusFun;
+							node.onfocus();
+							node.onfocus = aspectOnfocusFun;
 						}
 					};
-
+					node.onfocus = aspectOnfocusFun;
+					//onblur
 					var onblurFun = node.onblur;
-					node.onblur=function(){
+					var aspectOnblurFun = function(){
 						//将自己设为需要dom更新
 						$SCOPE.$UNREFRESH_NODE_ID = -1;
 						//调用用户原生方法
 						changeVal();
 						if(onblurFun){
-							onblurFun();
+							node.onblur = onblurFun;
+							node.onblur();
+							node.onblur = aspectOnblurFun;
 						}
 					};
+					node.onblur = aspectOnblurFun;
 
 					//加入到V2M_大Map里
 					$SCOPE.$ADD_V2M_NODE_MAP(proPath,{
@@ -920,9 +944,19 @@ var $NICE_MVVM = function(mvvmElementId,excludeIds){
 						//select元素，很有可能在nc-for对option进行渲染后，会自动改变select的值，自动选中最后一个。
 						//这是不行的，所以必须把值调整回来，调整到正确值。
 						if($SCOPE.$V2M_NODE_MAP[proPath][i]['node']['nodeName'].toLowerCase() == 'select'){
-							if($SCOPE_DATA_[proPath]){
-								if($SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value != $SCOPE_DATA_[proPath]['value']){
-									$SCOPE.$V2M_NODE_MAP[proPath][i]['version'] = 0;//降低版本，等待下次同步
+							if($SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]){
+								if($SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value != $SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value']){
+									if($SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] === undefined || $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] === undefined){
+										$SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] = $SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value'];
+										$SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] = $SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value;
+										$SCOPE.$V2M_NODE_MAP[proPath][i]['version'] = 0;//降低版本，等待下次同步
+									}else{
+										if($SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] !== $SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value'] || $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] !== $SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value){
+											delete $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'];
+											delete $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'];
+										}
+									}
+									
 								}
 							}
 						}
