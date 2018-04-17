@@ -42,14 +42,14 @@ $.submitForm = function(formId,url,headers,successCallback,errorCallback){
             }
         }
     });
-}
+};
 
 $.get = function (url,data,headers,successCallback,errorCallback){
     $.ajax({
         url:url,
         type:"GET",
         contentType:"application/json",
-        dataType:"json",
+        dataType:"text",
         timeout:10000,
         data:data,
         beforeSend:function(request) {
@@ -59,6 +59,9 @@ $.get = function (url,data,headers,successCallback,errorCallback){
         },
         success:function(data){
             if(successCallback){
+                try{
+                    data = JSON.parse(data);
+                }catch(e){};
                 successCallback(data);
             }
         },
@@ -75,7 +78,7 @@ $.post = function(url,data,headers,successCallback,errorCallback){
     $.ajax({
         url:url,
         type:"POST",
-        dataType:"json",
+        dataType:"text",
         data:data,
         timeout:60000,
         beforeSend:function(request) {
@@ -85,6 +88,9 @@ $.post = function(url,data,headers,successCallback,errorCallback){
         },
         success:function(data){
             if(successCallback){
+                try{
+                    data = JSON.parse(data);
+                }catch(e){};
                 successCallback(data);
             }
         },
@@ -101,7 +107,7 @@ $.put = function(url,data,headers,successCallback,errorCallback){
         url:url,
         type:"PUT",
         contentType:'application/json;charset=utf-8',
-        dataType:"json",
+        dataType:"text",
         data:JSON.stringify(data),
         timeout:20000,
         beforeSend:function(request) {
@@ -111,6 +117,9 @@ $.put = function(url,data,headers,successCallback,errorCallback){
         },
         success:function(data){
             if(successCallback){
+                try{
+                    data = JSON.parse(data);
+                }catch(e){};
                 successCallback(data);
             }
         },
@@ -127,7 +136,7 @@ $.delete = function(url,data,headers,successCallback,errorCallback){
         url:url,
         type:"DELETE",
         contentType:"application/json",
-        dataType:"json",
+        dataType:"text",
         data:JSON.stringify(data),
         beforeSend:function(request) {
             for(var key in headers){
@@ -136,6 +145,9 @@ $.delete = function(url,data,headers,successCallback,errorCallback){
         },
         success:function(data){
             if(successCallback){
+                try{
+                    data = JSON.parse(data);
+                }catch(e){};
                 successCallback(data);
             }
         },
