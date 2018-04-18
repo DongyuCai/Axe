@@ -79,6 +79,7 @@ $.post = function(url,data,headers,successCallback,errorCallback){
         url:url,
         type:"POST",
         dataType:"text",
+        traditional:true,
         data:data,
         timeout:60000,
         beforeSend:function(request) {
