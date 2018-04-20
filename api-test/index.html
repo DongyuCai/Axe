@@ -95,9 +95,11 @@ SOFTWARE.
         
         <!--主要的页面切换区域 -->
         <div id="main_div">
-          <div class="col-md-12" style="display: {{request?'normal':'none'}};">
+          <div class="col-md-12" style="display: none;display: {{request?'inline':'none'}};">
             <!--名字 -->
             <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
+            <h6 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter链（有序）：<br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h6>
+            <h6 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor链（无序）：<br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h6>
             <!--url区域 -->
             <div class="input-group" style="margin-top: 15px;">
               <div class="input-group-addon">{{request.method}}</div>

@@ -47,6 +47,8 @@ import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.helper.mvc.ControllerHelper;
+import org.axe.interface_.mvc.Filter;
+import org.axe.interface_.mvc.Interceptor;
 
 /**
  * Rest接口导出工具类
@@ -95,6 +97,8 @@ public class ApiExportUtil {
 		private String requestMethodName;
 		private String url;
 		private String method;
+		private List<String> filterList;
+		private List<String> interceptorList;
 		private List<Header> headerList;
 		private List<Param> requestParamList;
 		
@@ -133,6 +137,18 @@ public class ApiExportUtil {
 		}
 		public void setMethod(String method) {
 			this.method = method;
+		}
+		public List<String> getFilterList() {
+			return filterList;
+		}
+		public void setFilterList(List<String> filterList) {
+			this.filterList = filterList;
+		}
+		public List<String> getInterceptorList() {
+			return interceptorList;
+		}
+		public void setInterceptorList(List<String> interceptorList) {
+			this.interceptorList = interceptorList;
 		}
 		public List<Header> getHeaderList() {
 			return headerList;
@@ -263,6 +279,28 @@ public class ApiExportUtil {
 			level_2.setUrl(basePath+handler.getMappingPath());
 			//POST DELETE PUT GET
 			level_2.setMethod(handler.getRequestMethod());
+			//filter 名字列表
+			List<Filter> filterList = handler.getFilterList();
+			if(CollectionUtil.isNotEmpty(filterList)){
+				List<String> filterNameList = new ArrayList<>();
+				String blank = "";
+				for(Filter filter:filterList){
+					filterNameList.add(blank+filter.setLevel()+"&nbsp;&nbsp;"+filter.getClass().getName());
+					blank = blank+"&nbsp;&nbsp;";
+				}
+				level_2.setFilterList(filterNameList);
+			}
+			//interceptor 名字列表
+			List<Interceptor> interceptorList = handler.getInterceptorList();
+			if(CollectionUtil.isNotEmpty(interceptorList)){
+				List<String> interceptorNameList = new ArrayList<>();
+				String blank = "";
+				for(Interceptor interceptor:interceptorList){
+					interceptorNameList.add(blank+"&nbsp;&nbsp;"+interceptor.getClass().getName());
+					blank = blank+"&nbsp;&nbsp;";
+				}
+				level_2.setInterceptorList(interceptorNameList);
+			}
 			//header
 			List<Header> headerList = new ArrayList<>();
 			level_2.setHeaderList(headerList);
