@@ -208,8 +208,11 @@ public class SchemaHelper implements Helper{
 		}
 		
 		
-		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-		
+		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(ConfigHelper.getJdbcCharacter());
+		if(StringUtil.isNotEmpty(ConfigHelper.getJdbcCollate())){
+			//如果有校验编码，那么也要
+			createTableSqlBufer.append(" COLLATE=").append(ConfigHelper.getJdbcCollate());
+		}
 		
 		String tableDataSourceName = TableHelper.getTableDataSourceName(entityClass);
 		DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{}, tableDataSourceName);

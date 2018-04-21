@@ -144,6 +144,20 @@ public final class ConfigHelper implements Helper{
     }
     
     /**
+     * 数据库的编码，默认utf8
+     */
+    public static String getJdbcCharacter() {
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_CHARACTER, "utf8");
+    }
+
+    /**
+     * 数据库的校验编码，默认空
+     */
+    public static String getJdbcCollate() {
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_COLLATE, null);
+    }
+    
+    /**
      * 指定框架扫描的包路径，多个路径使用“,”号分割
      */
     public static String getAppBasePackage() {
