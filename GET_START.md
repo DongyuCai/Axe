@@ -1,7 +1,7 @@
 ## Get Start 快速开始
 新建工程。首先，确认你安装好了maven，然后打开cmd，切换到你自己的目录下，创建一个空的maven项目。
 ```
-mvn archetype:generate -DgroupId=com.ybsl -DartifactId=shop-api
+mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 ```
 配置工程。进入src\main文件夹下，新建一个文件夹叫resources。进入resources后新建一个axe.properties文件，内容如下。
 ```
