@@ -95,7 +95,7 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 	</profiles>
 	
 	<build>
-		<finalName>shop-api</finalName>
+		<finalName>你的war包名，不需要后缀</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
