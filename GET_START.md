@@ -196,7 +196,7 @@ jdbc.driver=com.mysql.jdbc.Driver
 
 ## 需要熟悉哪些注解、接口、类？
 
-###Controller部分
+### Controller部分
 - CharSetFilter
 - Filter
 - Listener
@@ -219,10 +219,10 @@ jdbc.driver=com.mysql.jdbc.Driver
 - Data
 - View
 
-###Service部分
+### Service部分
 - @Service
 
-###Dao部分
+### Dao部分
 - @Tns
 - BaseDataSource
 - @DataSource
