@@ -7,44 +7,7 @@ mvn archetype:generate -DgroupId=com.ybsl -DartifactId=shop-api
 ```
 #==================axe框架配置文件==================
 
-#是否打开axe框架管理界面的登录
-#axe.signin=true 进入axe框架管理界面需要登陆录
-#axe.signin=false 进入axe框架管理界面不需要登陆录，生产环境建议true
-axe.signin=true
-
-#登录密码的md5后的令牌，获取方式如下
-#String username = "axe";
-#String password = "13776255717";
-#String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
-axe.signin.token=804bd02e2548611fca83965b5f18f1d8
-
-#是否释放框架初始化完成后的，ClassHelper内的classSet集合是否保留
-#建议false，不保留，减小内存占用
-axe.classhelper.keep=false
-
-#指定数据源
-#可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
-#axe-datasource-dbcp是axe框架提供的默认数据源
-#可以使用自己的数据源，用法参考README里的数据源一节
-jdbc.datasource=axe-datasource-dbcp
-
-#如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置{
-#如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
-jdbc.username=root
-jdbc.password=1234
-jdbc.url=jdbc:mysql://localhost:3306/sl1288-shop?useUnicode=true&characterEncoding=utf-8
-jdbc.driver=com.mysql.jdbc.Driver
-#}
-
-#是否自动建表
-jdbc.auto_create_table=true
-
-#是否打印sql语句
-jdbc.show_sql=false
-
-#指定好邮箱，框架会将异常信息发送给这些邮箱
-#可以是多个邮箱 axe.email=1234512345@qq.com,1234512345@qq.com,1234512345@qq.com
-axe.email=
+#------------------1.axe基础配置--------------------
 
 #框架扫描的包路径
 #可以是多个路径
@@ -54,8 +17,66 @@ app.base_package=com.ybsl
 #如果工程内有jsp或者其他view层的静态文件，这里需要指定这些文件的路径
 #比如src/main/webapp下，有static文件夹里放的是静态css、图片、js等文件
 #比如src/main/webapp下，有view文件夹里放的是jsp文件
-app.asset_path=/static
-app.jsp_path=/view
+#app.asset_path=/static
+#app.jsp_path=/view
+
+#文件上传大小限制
+#app.upload_limit=0
+
+#指定好邮箱，框架会将异常信息发送给这些邮箱
+#可以是多个邮箱 axe.email=1234512345@qq.com,1234512345@qq.com,1234512345@qq.com
+#axe.email=
+
+#是否可以访问axe后台
+axe.home=true
+
+#是否打开axe框架管理界面的登录
+#true 进入axe框架管理界面需要登陆录
+#false 进入axe框架管理界面不需要登陆录，生产环境建议true
+axe.signin=false
+
+#配合axe.signin，登录密钥，获取方式如下
+#String username = "axe";
+#String password = "13776255717";
+#String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
+#axe.signin.token=804bd02e2548611fca83965b5f18f1d8
+
+#是否释放框架初始化完成后的，ClassHelper内的classSet集合是否保留
+#建议false，不保留，减小内存占用
+axe.classhelper.keep=false
+
+#Captain功能队长地址
+#axe.captain.captain_host=http://localhost:8080x
+#我(组员)的地址
+#axe.captain.my_host=http://localhost:8090
+
+#------------------2.数据源配置--------------------
+#是否自动建表
+jdbc.auto_create_table=true
+
+#是否打印sql语句
+jdbc.show_sql=false
+
+#数据库编码，支持emoji
+jdbc.character=utf8mb4
+#数据库校验编码，支持emoji
+jdbc.collate=utf8mb4_unicode_ci
+
+#指定数据源
+#可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
+#axe-datasource-dbcp是axe框架提供的默认数据源
+#可以使用自己的数据源，用法参考README里的数据源一节
+jdbc.datasource=axe-datasource-dbcp
+
+#如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置
+#如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
+#{
+jdbc.username=root
+jdbc.password=1234
+jdbc.url=jdbc:mysql://localhost:3306/sl1288-shop?useUnicode=true&characterEncoding=utf-8
+jdbc.driver=com.mysql.jdbc.Driver
+#}
+
 ```
 
 
@@ -67,8 +88,8 @@ app.jsp_path=/view
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ybsl</groupId>
-    <artifactId>shop-api</artifactId>
+    <groupId>你的groupId</groupId>
+    <artifactId>你的artifactId</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 	
