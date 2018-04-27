@@ -35,6 +35,17 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
         </dependency>
 
         <!-- ######################### java web ################################# -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>jstl</groupId>
+		  <artifactId>jstl</artifactId>
+		  <version>1.2</version>
+		</dependency>
 		<!-- cross domain 可选，如果不跨域可以去掉 -->
 
 		<dependency>
@@ -49,28 +60,6 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 			<version>2.4</version>
 		</dependency>
 
-		<!-- java web 基础包 -->
-        <!-- Servlet -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- JSP -->
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- JSTL -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 	
 	<profiles>
@@ -123,40 +112,37 @@ mvn clean eclipse:eclipse -Dwtpversion=1.0
 
 #------------------1.axe基础配置--------------------
 
-#框架扫描的包路径
-#可以是多个路径
-#app.base_package=com.ybsl,com.ybsl
-app.base_package=com.ybsl
+#框架扫描的包路径，多个路径用","号隔开
+app.base_package=com.test
 
 #如果工程内有jsp或者其他view层的静态文件，这里需要指定这些文件的路径
-#比如src/main/webapp下，有static文件夹里放的是静态css、图片、js等文件
-#比如src/main/webapp下，有view文件夹里放的是jsp文件
+#	比如src/main/webapp下，有static文件夹里放的是静态css、图片、js等文件
+#	比如src/main/webapp下，有view文件夹里放的是jsp文件
 #app.asset_path=/static
 #app.jsp_path=/view
 
 #文件上传大小限制
 #app.upload_limit=0
 
-#指定好邮箱，框架会将异常信息发送给这些邮箱
-#可以是多个邮箱 axe.email=1234512345@qq.com,1234512345@qq.com,1234512345@qq.com
+#指定好邮箱，框架会将异常信息发送给这些邮箱，多个邮箱用","号分隔
 #axe.email=
 
 #是否可以访问axe后台
 axe.home=true
 
 #是否打开axe框架管理界面的登录
-#true 进入axe框架管理界面需要登陆录
-#false 进入axe框架管理界面不需要登陆录，生产环境建议true
+#	true 进入axe框架管理界面需要登陆录
+#	false 进入axe框架管理界面不需要登陆录，生产环境建议true
 axe.signin=false
 
-#配合axe.signin，登录密钥，获取方式如下
-#String username = "axe";
-#String password = "13776255717";
-#String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
+#配合axe.signin，登录密钥，获取方式如下：
+#	String username = "axe";
+#	String password = "13776255717";
+#	String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
 #axe.signin.token=804bd02e2548611fca83965b5f18f1d8
 
 #是否释放框架初始化完成后的，ClassHelper内的classSet集合是否保留
-#建议false，不保留，减小内存占用
+#	建议false，不保留，减小内存占用
 axe.classhelper.keep=false
 
 #Captain功能队长地址
@@ -177,19 +163,19 @@ jdbc.character=utf8mb4
 jdbc.collate=utf8mb4_unicode_ci
 
 #指定数据源
-#可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
-#axe-datasource-dbcp是axe框架提供的默认数据源
-#可以使用自己的数据源，用法参考README里的数据源一节
-jdbc.datasource=axe-datasource-dbcp
+#	可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
+#	axe-datasource-dbcp是axe框架提供的默认数据源
+#	可以使用自己的数据源，用法参考README里的数据源一节
+jdbc.datasource=
 
 #如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置
-#如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
-#{
-jdbc.username=root
-jdbc.password=1234
-jdbc.url=jdbc:mysql://localhost:3306/sl1288-shop?useUnicode=true&characterEncoding=utf-8
-jdbc.driver=com.mysql.jdbc.Driver
-#}
+#	如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
+#	{
+#jdbc.username=root
+#jdbc.password=Ybsl_1234
+#jdbc.url=jdbc:mysql://192.168.199.45:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE
+#jdbc.driver=com.mysql.jdbc.Driver
+#	}
 
 ```
 6、配置eclipse的tomcat，然后发布项目到tomcat下，启动后，访问http://localhost:8080/项目名/axe，开始用吧（完）

@@ -82,26 +82,27 @@ public class SchemaHelper implements Helper{
 	public void onStartUp() throws Exception {
 		//在框架的Helper都初始化后，同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
 		Map<String, Class<?>> ENTITY_CLASS_MAP = TableHelper.getEntityClassMap();
-		if(ConfigHelper.getJdbcAutoCreateTable() == null){
-			//按@Table定义
-			DataBaseHelper.beginTransaction();
-			for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
-				if(TableHelper.isTableAutoCreate(entityClass)){
-					SchemaHelper.createTable(entityClass);
+		if(StringUtil.isNotEmpty(ConfigHelper.getJdbcDatasource()) && CollectionUtil.isNotEmpty(ENTITY_CLASS_MAP)){
+			if(ConfigHelper.getJdbcAutoCreateTable() == null){
+				//默认按@Table里的来
+				DataBaseHelper.beginTransaction();
+				for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
+					if(TableHelper.isTableAutoCreate(entityClass)){
+						createTable(entityClass);
+					}
 				}
+				DataBaseHelper.commitTransaction();
+			} else if(ConfigHelper.getJdbcAutoCreateTable()){
+				//全局开启，优先级最高，不管@Table如何定义，全部创建
+				DataBaseHelper.beginTransaction();
+				for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
+					createTable(entityClass);
+				}
+				DataBaseHelper.commitTransaction();
+			} else {
+				//全局关闭了，优先级也最高，直接不创建
 			}
-			DataBaseHelper.commitTransaction();
-		} else if(ConfigHelper.getJdbcAutoCreateTable()){
-			//全局开启，优先级最高，不管@Table如何定义，全部创建
-			DataBaseHelper.beginTransaction();
-			for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
-				SchemaHelper.createTable(entityClass);
-			}
-			DataBaseHelper.commitTransaction();
-		} else {
-			//全局关闭了，优先级也最高，直接不创建
 		}
-		
 	}
 	
 	public static void createTable(Class<?> entityClass) throws SQLException{
