@@ -2,15 +2,13 @@
 
 ### Axe 意为快斧，是一款免费开源的web服务端框架，非常精简，称手利器！不为复杂，只为好用！
 
-##### 分支版本 0.1.7
-##### 版本号含义: 稳定版本大功能.小版本bug和小功能.jdk版本
-##### 需要 jdk 版本 1.7
+##### 需要 jdk 1.7及以上
 
 ### [快速上手开始](https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/GET_START.md)
 
 ----------
 
-## 支持特性（基本可以不用看，都是常用的东西）：
+## 支持特性（基本可以不用看，都是常用的东西，可以直接看快速上手）：
 * IOC（[@Controller]()、[@Service]()、[@Autowired]()，使用[BeanHelper]()获取BeanMap）
 * AOP/Proxy（[@Aspect]()注解切面类，实现[Proxy]()或者继承[AspectProxy]()加强切点）
 * restful风格的Http请求支持，内建了POST、DELETE、PUT、GET类型，可以查看[RequestMethod]()枚举
@@ -41,15 +39,12 @@
 ----------
 
 ## 待加入特性列表：
-* 权限验证
-* 文件下载
 * TODO列表
 * dao层支持数据库主从分离
-
+* dao层支持分库分表
 ----------
 
 ## 正在进行：
-* 框架管理界面、系统监控
 
 ## 需要验证:
  * 数据库表，存取blob字段是否有问题。

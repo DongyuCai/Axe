@@ -1,86 +1,9 @@
 ## Get Start 快速开始
-新建工程。首先，确认你安装好了maven，然后打开cmd，切换到你自己的目录下，创建一个空的maven项目。
+1、新建工程。首先，确认你安装好了maven，然后打开cmd，切换到你自己的目录下，创建一个空的maven项目。
 ```
 mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 ```
-配置工程。进入src\main文件夹下，新建一个文件夹叫resources。进入resources后新建一个axe.properties文件，内容如下。
-```
-#==================axe框架配置文件==================
-
-#------------------1.axe基础配置--------------------
-
-#框架扫描的包路径
-#可以是多个路径
-#app.base_package=com.ybsl,com.ybsl
-app.base_package=com.ybsl
-
-#如果工程内有jsp或者其他view层的静态文件，这里需要指定这些文件的路径
-#比如src/main/webapp下，有static文件夹里放的是静态css、图片、js等文件
-#比如src/main/webapp下，有view文件夹里放的是jsp文件
-#app.asset_path=/static
-#app.jsp_path=/view
-
-#文件上传大小限制
-#app.upload_limit=0
-
-#指定好邮箱，框架会将异常信息发送给这些邮箱
-#可以是多个邮箱 axe.email=1234512345@qq.com,1234512345@qq.com,1234512345@qq.com
-#axe.email=
-
-#是否可以访问axe后台
-axe.home=true
-
-#是否打开axe框架管理界面的登录
-#true 进入axe框架管理界面需要登陆录
-#false 进入axe框架管理界面不需要登陆录，生产环境建议true
-axe.signin=false
-
-#配合axe.signin，登录密钥，获取方式如下
-#String username = "axe";
-#String password = "13776255717";
-#String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
-#axe.signin.token=804bd02e2548611fca83965b5f18f1d8
-
-#是否释放框架初始化完成后的，ClassHelper内的classSet集合是否保留
-#建议false，不保留，减小内存占用
-axe.classhelper.keep=false
-
-#Captain功能队长地址
-#axe.captain.captain_host=http://localhost:8080x
-#我(组员)的地址
-#axe.captain.my_host=http://localhost:8090
-
-#------------------2.数据源配置--------------------
-#是否自动建表
-jdbc.auto_create_table=true
-
-#是否打印sql语句
-jdbc.show_sql=false
-
-#数据库编码，支持emoji
-jdbc.character=utf8mb4
-#数据库校验编码，支持emoji
-jdbc.collate=utf8mb4_unicode_ci
-
-#指定数据源
-#可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
-#axe-datasource-dbcp是axe框架提供的默认数据源
-#可以使用自己的数据源，用法参考README里的数据源一节
-jdbc.datasource=axe-datasource-dbcp
-
-#如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置
-#如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
-#{
-jdbc.username=root
-jdbc.password=1234
-jdbc.url=jdbc:mysql://localhost:3306/sl1288-shop?useUnicode=true&characterEncoding=utf-8
-jdbc.driver=com.mysql.jdbc.Driver
-#}
-
-```
-
-
-修改pom.xml。打开工程目录下的pom.xml，替换成下面的内容。
+2、修改pom.xml。打开工程目录下的pom.xml，替换成下面的内容。注意groupId和artifactId换成自己的。
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -98,11 +21,11 @@ jdbc.driver=com.mysql.jdbc.Driver
 	</properties>
 
     <dependencies>
-        <!-- Axe 核心依赖 0.1是版本 .7是jdk7 -->
+        <!-- Axe -->
         <dependency>
             <groupId>org.axe</groupId>
             <artifactId>axe</artifactId>
-            <version>0.1.7</version>
+            <version>18.4.27</version>
         </dependency>
     	<!-- Apache DBCP 数据源(这是默认数据源，可以自我指定数据源)-->
         <dependency>
@@ -188,12 +111,129 @@ jdbc.driver=com.mysql.jdbc.Driver
 	</build>
 </project>
 ```
-转化工程。如果IDE是eclipse，打开cmd，切换到pom.xml所在路径下，执行以下命令。
+3、转化工程。如果IDE是eclipse，打开cmd，切换到pom.xml所在路径下，执行以下命令。
 ```
 mvn clean eclipse:eclipse -Dwtpversion=1.0
 ```
-导入工程，打开eclipse，import工程，当作java普通工程导入，然后删掉两个报错的AppTest.java文件即可。
-（完）
+4、导入工程，打开eclipse，import工程，当作java普通工程导入，然后删掉两个报错的AppTest.java文件即可。
+5、配置工程。进入src\main文件夹下，新建一个文件夹叫resources。进入resources后新建一个axe.properties文件，内容如下。
+```
+#==================axe框架配置文件==================
+
+#------------------1.axe基础配置--------------------
+
+#框架扫描的包路径
+#可以是多个路径
+#app.base_package=com.ybsl,com.ybsl
+app.base_package=com.ybsl
+
+#如果工程内有jsp或者其他view层的静态文件，这里需要指定这些文件的路径
+#比如src/main/webapp下，有static文件夹里放的是静态css、图片、js等文件
+#比如src/main/webapp下，有view文件夹里放的是jsp文件
+#app.asset_path=/static
+#app.jsp_path=/view
+
+#文件上传大小限制
+#app.upload_limit=0
+
+#指定好邮箱，框架会将异常信息发送给这些邮箱
+#可以是多个邮箱 axe.email=1234512345@qq.com,1234512345@qq.com,1234512345@qq.com
+#axe.email=
+
+#是否可以访问axe后台
+axe.home=true
+
+#是否打开axe框架管理界面的登录
+#true 进入axe框架管理界面需要登陆录
+#false 进入axe框架管理界面不需要登陆录，生产环境建议true
+axe.signin=false
+
+#配合axe.signin，登录密钥，获取方式如下
+#String username = "axe";
+#String password = "13776255717";
+#String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
+#axe.signin.token=804bd02e2548611fca83965b5f18f1d8
+
+#是否释放框架初始化完成后的，ClassHelper内的classSet集合是否保留
+#建议false，不保留，减小内存占用
+axe.classhelper.keep=false
+
+#Captain功能队长地址
+#axe.captain.captain_host=http://localhost:8080x
+#我(组员)的地址
+#axe.captain.my_host=http://localhost:8090
+
+#------------------2.数据源配置--------------------
+#是否自动建表
+jdbc.auto_create_table=true
+
+#是否打印sql语句
+jdbc.show_sql=false
+
+#数据库编码，支持emoji
+jdbc.character=utf8mb4
+#数据库校验编码，支持emoji
+jdbc.collate=utf8mb4_unicode_ci
+
+#指定数据源
+#可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
+#axe-datasource-dbcp是axe框架提供的默认数据源
+#可以使用自己的数据源，用法参考README里的数据源一节
+jdbc.datasource=axe-datasource-dbcp
+
+#如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置
+#如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
+#{
+jdbc.username=root
+jdbc.password=1234
+jdbc.url=jdbc:mysql://localhost:3306/sl1288-shop?useUnicode=true&characterEncoding=utf-8
+jdbc.driver=com.mysql.jdbc.Driver
+#}
+
+```
+6、配置eclipse的tomcat，然后发布项目到tomcat下，启动后，访问http://localhost:8080/项目名/axe，开始用吧（完）
+
+## 需要熟悉哪些注解、接口、类？
+###Controller部分
+- CharSetFilter
+- Filter
+- Listener
+- RestException
+- RedirectorInterrupt
+- @Controller
+- @Filter
+- @FilterFuckOff
+- @Interceptor
+- @Autowired
+- BeanHelper
+- @Request
+- @RequestParam
+- @RequestEntity
+- @Default
+- Param
+- FileParam
+- HttpServletResponse
+- HttpServletRequest
+- Data
+- View
+###Service部分
+- @Service
+###Dao部分
+- @Tns
+- BaseDataSource
+- @DataSource
+- @Table
+- @Id
+- @Unique
+- @Comment
+- @ColumnDefine
+- @Transient
+- @Dao
+- BaseRepository
+- @Sql
+- Page
+- PageConfig
+
 
 ## IOC怎么支持
 axe的ioc(依赖注入)功能由BeanHelper实现，所有的注入实例也可以从BeanHelper中获取(后面讲到)。axe提供了如下的注解来方便ioc的使用。
