@@ -116,6 +116,7 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 mvn clean eclipse:eclipse -Dwtpversion=1.0
 ```
 4、导入工程，打开eclipse，import工程，当作java普通工程导入，然后删掉两个报错的AppTest.java文件即可。
+
 5、配置工程。进入src\main文件夹下，新建一个文件夹叫resources。进入resources后新建一个axe.properties文件，内容如下。
 ```
 #==================axe框架配置文件==================
