@@ -195,6 +195,7 @@ jdbc.driver=com.mysql.jdbc.Driver
 6、配置eclipse的tomcat，然后发布项目到tomcat下，启动后，访问http://localhost:8080/项目名/axe，开始用吧（完）
 
 ## 需要熟悉哪些注解、接口、类？
+
 ###Controller部分
 - CharSetFilter
 - Filter
@@ -217,8 +218,10 @@ jdbc.driver=com.mysql.jdbc.Driver
 - HttpServletRequest
 - Data
 - View
+
 ###Service部分
 - @Service
+
 ###Dao部分
 - @Tns
 - BaseDataSource
