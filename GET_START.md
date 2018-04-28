@@ -183,8 +183,9 @@ jdbc.datasource=
 ## 需要熟悉哪些注解、接口、类？
 
 ### Controller部分
-- CharSetFilter
 - Filter
+- CharSetFilter
+- HeaderFilter
 - Listener
 - RestException
 - RedirectorInterrupt

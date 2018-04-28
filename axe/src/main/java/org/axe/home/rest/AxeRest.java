@@ -23,6 +23,9 @@
 */
 package org.axe.home.rest;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -34,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,7 +57,6 @@ import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
 import org.axe.constant.RequestMethod;
 import org.axe.exception.RestException;
-import org.axe.helper.HelperLoader;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.base.FrameworkStatusHelper;
 import org.axe.helper.ioc.ClassHelper;
@@ -68,6 +70,8 @@ import org.axe.home.interceptor.SignInInterceptor;
 import org.axe.home.service.HomeService;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.persistence.BaseDataSource;
+import org.axe.util.ApiExportUtil;
+import org.axe.util.ApiExportUtil.Level_1;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -76,9 +80,9 @@ import org.slf4j.LoggerFactory;
 
 @FilterFuckOff
 @Interceptor({HomeInterceptor.class, SignInInterceptor.class})
-@Controller(basePath = "axe")
-public class HomeController {
-private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
+@Controller(basePath = "/axe")
+public class AxeRest {
+private static final Logger LOGGER = LoggerFactory.getLogger(AxeRest.class);
 
 @Autowired
 private HomeService homeService;
@@ -95,6 +99,37 @@ writer.write(html);
 LOGGER.error("home error",e);
 }
 }
+
+private void printFile(HttpServletResponse response, String path, ContentType contentType, String token) {
+BufferedReader reader = null;
+try {
+InputStream in = this.getClass().getClassLoader().getResourceAsStream(path);
+if (in != null) {
+reader = new BufferedReader(new InputStreamReader(in));
+response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+response.setContentType(contentType.CONTENT_TYPE);
+ServletOutputStream out = response.getOutputStream();
+String line = reader.readLine();
+while (line != null) {
+line = line.replaceAll("\\{\\{token\\}\\}", token);
+out.write((line+System.lineSeparator()).getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING));
+line = reader.readLine();
+}
+// writer.flush();
+// writer.close();
+}
+} catch (Exception e) {
+LOGGER.error("home error", e);
+} finally {
+try {
+if (reader != null) {
+reader.close();
+}
+} catch (Exception e) {
+}
+}
+}
+
 @Request(value = "/sign-in", method = RequestMethod.GET)
 public void signIn(HttpServletRequest request, HttpServletResponse response,Param param) {
 String contextPath = request.getContextPath();
@@ -350,12 +385,12 @@ html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr
 html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr style=\"background-color: #F0F0F0;\">");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\"><b>启动时间</b></td>");
 html.append("<td align=\"left\"><b>运行时长</b></td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 Date startupTime = FrameworkStatusHelper.getStartupTime();
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 html.append("<td align=\"left\">"+sdf.format(startupTime)+"</td>");
@@ -401,85 +436,85 @@ html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr
 html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr style=\"background-color: #F0F0F0;\">");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\"><b>参数-键</b></td>");
 html.append("<td align=\"left\"><b>参数-值</b></td>");
 html.append("<td align=\"left\"><b>参数描述</b></td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.home</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAxeHome()+"</td>");
 html.append("<td align=\"left\">是否开启/axe的访问</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.email</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAxeEmail()+"</td>");
 html.append("<td align=\"left\">系统异常、密码找回邮件通知地址</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.signin</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAxeSignIn()+"</td>");
 html.append("<td align=\"left\">是否开启/axe的登录访问</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">axe.classhelper.keep</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAxeClassHelperKeep()+"</td>");
 html.append("<td align=\"left\">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">jdbc.driver</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getJdbcDriver()+"</td>");
 html.append("<td align=\"left\">jdbc-driver</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">jdbc.url</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getJdbcUrl()+"</td>");
 html.append("<td align=\"left\">jdbc-url</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">jdbc.username</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getJdbcUsername()+"</td>");
 html.append("<td align=\"left\">jdbc-username</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">jdbc.password</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getJdbcPassword()+"</td>");
 html.append("<td align=\"left\">jdbc-password</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">jdbc.datasource</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getJdbcDatasource()+"</td>");
 html.append("<td align=\"left\">指定DataSource数据源实现类</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">app.base_package</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAppBasePackage()+"</td>");
 html.append("<td align=\"left\">指定框架扫描的包路径</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">app.jsp_path</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAppJspPath()+"</td>");
 html.append("<td align=\"left\">指定jsp存放路径</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">app.asset_path</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAppAssetPath()+"</td>");
 html.append("<td align=\"left\">指定静态文件(html、js、css、图片等)存放路径</td>");
 html.append("</tr>");
 html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
 html.append("<td align=\"left\">app.upload_limit</td>");
 html.append("<td align=\"left\">"+ConfigHelper.getAppUploadLimit()+"</td>");
 html.append("<td align=\"left\">文件上传限制单次文件大小，单位M，默认0不限制</td>");
@@ -496,8 +531,9 @@ html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr
 html.append("<tr><td>");
 html.append("<table width=\"100%\">");
 html.append("<tr>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/filter?token="+token+"\">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/interceptor?token="+token+"\">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/filter?token="+token+"\">Filter</a> x"+FilterHelper.getSortedFilterList().size()+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/interceptor?token="+token+"\">Interceptor</a> x"+InterceptorHelper.getInterceptorMap().size()+"</td>");
 String controllerSize = "?";
 String serviceSize = "?";
 String tnsPointCount = "?";
@@ -516,17 +552,31 @@ count = count+methods.size();
 tnsPointCount = count+"";
 daoSize = ClassHelper.getClassSetByAnnotation(Dao.class).size()+"";
 }
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/controller?token="+token+"\">Controller</a> x"+controllerSize+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/action?token="+token+"\">Action</a> x"+ControllerHelper.getActionList().size()+"</td>");
-html.append("<td align=\"center\">Service x"+serviceSize+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/tns?token="+token+"\">Tns point </a> x"+tnsPointCount+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/dao?token="+token+"\">Dao</a> x"+daoSize+"</td>");
-html.append("<td align=\"center\">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>");
-html.append("<td align=\"center\"><a href=\""+contextPath+"/axe/dataSource?token="+token+"\">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller?token="+token+"\">Controller</a> x"+controllerSize+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/action?token="+token+"\">Action</a> x"+ControllerHelper.getActionList().size()+"</td>");
+html.append("<td align=\"left\">Service x"+serviceSize+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/tns?token="+token+"\">Tns point </a> x"+tnsPointCount+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/dao?token="+token+"\">Dao</a> x"+daoSize+"</td>");
+html.append("<td align=\"left\">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/dataSource?token="+token+"\">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>");
 html.append("</tr>");
 html.append("</table>");
 html.append("</td></tr><tr><td>&nbsp;</td></tr>");
 html.append("");
+html.append("<!--工具面板 -->");
+html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
+html.append("&nbsp;<font color=\"white\"><b>工具面板</b></font>&nbsp;");
+html.append("</td></tr></table></td></tr>");
+html.append("");
+html.append("<tr><td height=\"2px\" style=\"background-color:#AE0000\"></td></tr>");
+html.append("<tr><td>");
+html.append("<table width=\"100%\">");
+html.append("<tr>");
+html.append("<td align=\"left\" width=\"20px\">&nbsp;</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/api_test?s=index.html&token="+token+"\" target=\"blank\">Api Test</a></td>");
+html.append("</tr>");
+html.append("</table>");
+html.append("</td></tr><tr><td>&nbsp;</td></tr>");
 html.append("</table>");
 html.append("</body>");
 html.append("</html>");
@@ -813,7 +863,7 @@ html.append("<td align=\"left\">"+mappingPath+"</td>");
 html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"\">"+handler.getControllerClass().getName()+"</a></td>");
 hashCode = null;
-code = (handler.getRequestMethod()+mappingPath).hashCode();
+code = (handler.getRequestMethod()+":"+mappingPath).hashCode();
 if(code < 0){
 hashCode = "_"+Math.abs(code);
 }else{
@@ -1149,414 +1199,35 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/axe.properties", method = RequestMethod.GET)
-public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
-String contextPath = request.getContextPath();
-StringBuilder html = new StringBuilder();
-html.append("<!DOCTYPE html>");
-html.append("<html>");
-html.append("<head>");
-html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
-html.append("<title>axe axe.properties 配置</title>");
-html.append("<script type=\"text/javascript\">");
-html.append("var config = {");
-html.append("'axe.home':'"+ConfigHelper.getAxeClassHelperKeep()+"',");
-html.append("'axe.email':'"+ConfigHelper.getAxeEmail()+"',");
-html.append("'axe.signin':'"+ConfigHelper.getAxeSignIn()+"',");
-html.append("'axe.classhelper.keep':'"+ConfigHelper.getAxeClassHelperKeep()+"',");
-html.append("'jdbc.driver':'"+ConfigHelper.getJdbcDriver()+"',");
-html.append("'jdbc.url':'"+ConfigHelper.getJdbcUrl()+"',");
-html.append("'jdbc.username':'"+ConfigHelper.getJdbcUsername()+"',");
-html.append("'jdbc.password':'"+ConfigHelper.getJdbcPassword()+"',");
-html.append("'jdbc.datasource':'"+ConfigHelper.getJdbcDatasource()+"',");
-html.append("'jdbc.auto_create_table':'"+ConfigHelper.getJdbcAutoCreateTable()+"',");
-html.append("'jdbc.show_sql':'"+ConfigHelper.getJdbcShowSql()+"',");
-html.append("'app.base_package':'"+ConfigHelper.getAppBasePackage()+"',");
-html.append("'app.jsp_path':'"+ConfigHelper.getAppJspPath()+"',");
-html.append("'app.asset_path':'"+ConfigHelper.getAppAssetPath()+"',");
-html.append("'app.upload_limit':'"+ConfigHelper.getAppUploadLimit()+"'");
-html.append("};");
-html.append("");
-html.append("function setProperty(property,value){");
-html.append("console.log(property+'=='+config[property]+'=='+value);");
-html.append("config[property] = value;");
-html.append("}");
-html.append("");
-html.append("function saveProperties(){");
-html.append("if(!config['axe.home'] || config['axe.home'] == 'null' || config['axe.home'] == null || config['axe.home'] == ''){");
-html.append("alert('axe.home 必填');");
-html.append("return false;");
-html.append("}");
-html.append("if(!config['axe.email'] || config['axe.email'] == 'null' || config['axe.email'] == null || config['axe.email'] == ''){");
-html.append("alert('axe.email 必填');");
-html.append("return false;");
-html.append("}");
-html.append("if(!config['axe.classhelper.keep'] || config['axe.classhelper.keep'] == 'null' || config['axe.classhelper.keep'] == null || config['axe.classhelper.keep'] == ''){");
-html.append("alert('axe.classhelper.keep 必填');");
-html.append("return false;");
-html.append("}");
-html.append("if(!config['jdbc.datasource'] || config['jdbc.datasource'] == 'null' || config['jdbc.datasource'] == null || config['jdbc.datasource'] == ''){");
-html.append("if(!config['jdbc.driver'] || config['jdbc.driver'] == 'null' || config['jdbc.driver'] == null || config['jdbc.driver'] == ''){");
-html.append("alert('jdbc.driver 必填');");
-html.append("return false;");
-html.append("}");
-html.append("if(!config['jdbc.url'] || config['jdbc.url'] == 'null' || config['jdbc.url'] == null || config['jdbc.url'] == ''){");
-html.append("alert('jdbc.url 必填');");
-html.append("return false;");
-html.append("}");
-html.append("if(!config['jdbc.username'] || config['jdbc.username'] == 'null' || config['jdbc.username'] == null || config['jdbc.username'] == ''){");
-html.append("alert('jdbc.username 必填');");
-html.append("return false;");
-html.append("}");
-html.append("if(!config['jdbc.password'] || config['jdbc.password'] == 'null' || config['jdbc.password'] == null || config['jdbc.password'] == ''){");
-html.append("alert('jdbc.password 必填');");
-html.append("return false;");
-html.append("}");
-html.append("}");
-html.append("if(!config['app.base_package'] || config['app.base_package'] == 'null' || config['app.base_package'] == null || config['app.base_package'] == ''){");
-html.append("alert('app.base_package 必填');");
-html.append("return false;");
-html.append("}");
-html.append("");
-html.append("var saveForm = document.getElementById(\"saveForm\");");
-html.append("saveForm.submit();");
-html.append("}");
-html.append("</script>");
-html.append("</head>");
-html.append("<body>");
-html.append("<table width=\"100%\">");
-html.append("<tr><td align=\"right\">");
-if(ConfigHelper.getAxeSignIn()){
-html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
+@Request(value = "/api_test", method = RequestMethod.GET)
+public void api_test(
+@RequestParam("token")String token,
+@RequestParam(value = "s", required = true) String statics,
+HttpServletRequest request,HttpServletResponse response) {
+ContentType ct = ContentType.APPLICATION_HTML;
+if (statics.endsWith(".html")) {
+ct = ContentType.APPLICATION_HTML;
+} else if (statics.endsWith(".js")) {
+ct = ContentType.APPLICATION_JS;
+} else if (statics.endsWith(".css")) {
+ct = ContentType.APPLICATION_CSS;
 }
-html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
-html.append("</td></tr>");
-html.append("<tr><td align=\"center\"><font size=\"28\">axe.properties</font></td></tr>");
-html.append("");
-html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
-html.append("&nbsp;<font color=\"white\"><b>修改并生成新的配置</b></font>&nbsp;");
-html.append("</td><td>&nbsp;</td><td style=\"background-color: #007500;cursor: pointer;\" onclick=\"saveProperties()\">");
-html.append("&nbsp;<font color=\"white\"><b>保存</b></font>&nbsp;");
-html.append("</td></tr></table></td></tr>");
-html.append("");
-html.append("<tr><td height=\"2px\" style=\"background-color: #AE0000\"></td></tr>");
-html.append("<tr><td>");
-html.append("<form id=\"saveForm\" method=\"POST\" action=\""+contextPath+"/axe/axe.properties?token="+token+"\">");
-html.append("<table width=\"100%\">");
-html.append("<tr style=\"background-color: #F0F0F0;\">");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\"><b>参数-键</b></td>");
-html.append("<td align=\"left\"><b>参数-值</b></td>");
-html.append("<td align=\"left\"><b>参数描述</b></td>");
-html.append("<td align=\"left\"><b>多个值分割符</b></td>");
-html.append("<td align=\"left\"><b>调整值</b></td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">axe.home</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAxeHome()+"</td>");
-html.append("<td align=\"left\">是否开启/axe的访问</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<select name=\"axe.home\" onchange=\"setProperty('axe.home',this.value)\">");
-html.append("<option value=\"true\"");
-if(ConfigHelper.getAxeHome()){
-html.append("selected=\"true\"");
-}
-html.append(">是</option>");
-html.append("<option value=\"false\"");
-if(!ConfigHelper.getAxeHome()){
-html.append("selected=\"true\"");
-}
-html.append(">否</option>");
-html.append("</select>");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">axe.email</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAxeEmail()+"</td>");
-html.append("<td align=\"left\">系统异常、密码找回邮件通知地址</td>");
-html.append("<td align=\"left\">,</td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"axe.email\" type=\"text\" value=\""+ConfigHelper.getAxeEmail()+"\" onchange=\"setProperty('axe.email',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">axe.signin</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAxeSignIn()+"</td>");
-html.append("<td align=\"left\">是否开启/axe的登录访问</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<select name=\"axe.signin\" onchange=\"setProperty('axe.signin',this.value);openPassword(this.value);\">");
-html.append("<option value=\"true\"");
-if(ConfigHelper.getAxeSignIn()){
-html.append("selected=\"true\"");
-}
-html.append(">是</option>");
-html.append("<option value=\"false\"");
-if(!ConfigHelper.getAxeSignIn()){
-html.append("selected=\"true\"");
-}
-html.append(">否</option>");
-html.append("</select>");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">登录ID</td>");
-html.append("<td align=\"left\">不存储</td>");
-html.append("<td align=\"left\">axe登录ID，不存到配置文件</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"NOSAVE.axe.signin.id\" type=\"text\" value='' onchange=\"setProperty('NOSAVE.axe.signin.id',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">登录密码</td>");
-html.append("<td align=\"left\">不存储</td>");
-html.append("<td align=\"left\">axe登录密码，不存到配置文件</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"NOSAVE.axe.signin.password\" type=\"text\" value='' onchange=\"setProperty('NOSAVE.axe.signin.id',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">axe.classhelper.keep</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAxeClassHelperKeep()+"</td>");
-html.append("<td align=\"left\">启动后是否释放ClassHelper的内存(释放后ClassHelper不可再用)</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<select name=\"axe.classhelper.keep\" onchange=\"setProperty('axe.classhelper.keep',this.value)\">");
-html.append("<option value=\"true\"");
-if(ConfigHelper.getAxeClassHelperKeep()){
-html.append("selected=\"true\"");
-}
-html.append(">是</option>");
-html.append("<option value=\"false\"");
-if(!ConfigHelper.getAxeClassHelperKeep()){
-html.append("selected=\"true\"");
-}
-html.append(">否</option>");
-html.append("</select>");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.driver</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcDriver()+"</td>");
-html.append("<td align=\"left\">jdbc-driver</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"jdbc.driver\" type=\"text\" value=\""+ConfigHelper.getJdbcDriver()+"\" onchange=\"setProperty('jdbc.driver',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.url</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcUrl()+"</td>");
-html.append("<td align=\"left\">jdbc-url</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"jdbc.url\" type=\"text\" value=\""+ConfigHelper.getJdbcUrl()+"\" onchange=\"setProperty('jdbc.url',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.username</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcUsername()+"</td>");
-html.append("<td align=\"left\">jdbc-username</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"jdbc.username\" type=\"text\" value=\""+ConfigHelper.getJdbcUsername()+"\" onchange=\"setProperty('jdbc.username',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.password</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcPassword()+"</td>");
-html.append("<td align=\"left\">jdbc-password</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"jdbc.password\" type=\"text\" value=\""+ConfigHelper.getJdbcPassword()+"\" onchange=\"setProperty('jdbc.password',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.datasource</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcDatasource()+"</td>");
-html.append("<td align=\"left\">指定DataSource数据源实现类，默认取第一个</td>");
-html.append("<td align=\"left\">,</td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"jdbc.datasource\" type=\"text\" value=\""+ConfigHelper.getJdbcDatasource()+"\" onchange=\"setProperty('jdbc.datasource',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.auto_create_table</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcAutoCreateTable()+"</td>");
-html.append("<td align=\"left\">是否框架启动后自动建表</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"jdbc.auto_create_table\" type=\"text\" value=\""+ConfigHelper.getJdbcAutoCreateTable()+"\" onchange=\"setProperty('jdbc.auto_create_table',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">jdbc.show_sql</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getJdbcShowSql()+"</td>");
-html.append("<td align=\"left\">是否控制台打印sql记录</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<select name=\"jdbc.show_sql\" onchange=\"setProperty('jdbc.show_sql',this.value)\">");
-html.append("<option value=\"true\"");
-if(ConfigHelper.getJdbcShowSql()){
-html.append("selected=\"true\"");
-}
-html.append(">是</option>");
-html.append("<option value=\"false\"");
-if(!ConfigHelper.getJdbcShowSql()){
-html.append("selected=\"true\"");
-}
-html.append(">否</option>");
-html.append("</select>");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">app.base_package</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAppBasePackage()+"</td>");
-html.append("<td align=\"left\">指定框架扫描的包路径</td>");
-html.append("<td align=\"left\">,</td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"app.base_package\" type=\"text\" value=\""+ConfigHelper.getAppBasePackage()+"\" onchange=\"setProperty('app.base_package',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">app.jsp_path</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAppJspPath()+"</td>");
-html.append("<td align=\"left\">指定jsp存放路径</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"app.jsp_path\" type=\"text\" value=\""+ConfigHelper.getAppJspPath()+"\" onchange=\"setProperty('app.jsp_path',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">app.asset_path</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAppAssetPath()+"</td>");
-html.append("<td align=\"left\">指定静态文件(html、js、css、图片等)存放路径</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"app.asset_path\" type=\"text\" value=\""+ConfigHelper.getAppAssetPath()+"\" onchange=\"setProperty('app.asset_path',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">app.upload_limit</td>");
-html.append("<td align=\"left\">"+ConfigHelper.getAppUploadLimit()+"</td>");
-html.append("<td align=\"left\">文件上传限制单次文件大小，单位M，默认0不限制</td>");
-html.append("<td align=\"left\"></td>");
-html.append("<td align=\"left\">");
-html.append("<input name=\"app.upload_limit\" type=\"text\" value=\""+ConfigHelper.getAppUploadLimit()+"\" onchange=\"setProperty('app.upload_limit',this.value)\" />");
-html.append("</td>");
-html.append("</tr>");
-html.append("</table>");
-html.append("</form>");
-html.append("</td></tr>");
-html.append("</table>");
-html.append("</body>");
-html.append("</html>");
-printHtml(response, html.toString());
+printFile(response, "org/axe/home/rest/html/api_test/" + statics, ct, token);
 }
 
-@Request(value = "/axe.properties", method = RequestMethod.POST)
-public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response,Param param) {
-String contextPath = request.getContextPath();
-
-String configFile = homeService.saveAxeProperties(param);
-
-StringBuilder html = new StringBuilder();
-html.append("<!DOCTYPE html>");
-html.append("<html>");
-html.append("<head>");
-html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
-html.append("<title>axe save properties</title>");
-html.append("<script type=\"text/javascript\">");
-html.append("var number = 10;");
-html.append("");
-html.append("var int=self.setInterval(\"toHome()\",1000);");
-html.append("");
-html.append("function toHome(){");
-html.append("number = number-1;");
-html.append("document.getElementById(\"number\").innerHTML = number;");
-html.append("if(number <= 0){");
-html.append("window.clearInterval(int);");
-html.append("window.location = \""+contextPath+"/axe?token="+token+"\";");
-html.append("}");
-html.append("}");
-html.append("");
-html.append("</script>");
-html.append("</head>");
-html.append("<body>");
-html.append("<table width=\"100%\">");
-html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe?token="+token+"\">/axe首页</a></td></tr>");
-html.append("<tr><td align=\"center\"><font size=\"28\"><b>保存配置成功，"+configFile+"</b></font></td></tr>");
-html.append("</table>");
-html.append("</body>");
-html.append("</html>");
-printHtml(response, html.toString());
-}
-@Request(value = "/refresh-config", method = RequestMethod.GET)
-public void refreshConfig(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
-String contextPath = request.getContextPath();
-
-ServletContext servletContext = request.getServletContext();
+@Request(value = "/api_test/api_list", method = RequestMethod.GET)
+public List<Level_1> api_test_api_list(
+@RequestParam("token")String token,
+HttpServletRequest request, HttpServletResponse response) {
 try {
-HelperLoader.refresHelpers(servletContext);
+String path = request.getContextPath();
+String baseDomain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+String basePath = baseDomain + path;
+List<Level_1> asApiTest = ApiExportUtil.asApiTest(basePath);
+return asApiTest;
 } catch (Exception e) {
+e.printStackTrace();
 throw new RestException(e.getMessage());
 }
-
-StringBuilder html = new StringBuilder();
-html.append("<!DOCTYPE html>");
-html.append("<html>");
-html.append("<head>");
-html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
-html.append("<title>axe save properties</title>");
-html.append("<script type=\"text/javascript\">");
-html.append("var number = 10;");
-html.append("");
-html.append("var int=self.setInterval(\"toHome()\",1000);");
-html.append("");
-html.append("function toHome(){");
-html.append("number = number-1;");
-html.append("document.getElementById(\"number\").innerHTML = number;");
-html.append("if(number <= 0){");
-html.append("window.clearInterval(int);");
-html.append("window.location = \""+contextPath+"/axe?token="+token+"\";");
-html.append("}");
-html.append("}");
-html.append("");
-html.append("</script>");
-html.append("</head>");
-html.append("<body>");
-html.append("<table width=\"100%\">");
-html.append("<tr><td align=\"right\">");
-if(ConfigHelper.getAxeSignIn()){
-html.append("<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe/sign-out?token="+token+"\"><b>退出</b></a>");
-}
-html.append("&nbsp;<a style=\"font-size: 15px;color: #AE0000\" href=\""+contextPath+"/axe?token="+token+"\"><b>首页</b></a>");
-html.append("</td></tr>");
-html.append("<tr><td align=\"center\"><span id=\"number\">10</span>秒后自动跳转<a href=\""+contextPath+"/axe?token="+token+"\">/axe首页</a></td></tr>");
-html.append("<tr><td align=\"center\"><font size=\"28\"><b>刷新配置成功！</b></font></td></tr>");
-html.append("</table>");
-html.append("</body>");
-html.append("</html>");
-printHtml(response, html.toString());
 }
 }

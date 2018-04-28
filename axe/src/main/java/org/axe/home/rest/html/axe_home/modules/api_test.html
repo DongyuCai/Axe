@@ -1,0 +1,33 @@
+<java>
+@Request(value = "/api_test", method = RequestMethod.GET)
+public void api_test(
+		@RequestParam("token")String token, 
+		@RequestParam(value = "s", required = true) String statics, 
+		HttpServletRequest request,HttpServletResponse response) {
+	ContentType ct = ContentType.APPLICATION_HTML;
+	if (statics.endsWith(".html")) {
+		ct = ContentType.APPLICATION_HTML;
+	} else if (statics.endsWith(".js")) {
+		ct = ContentType.APPLICATION_JS;
+	} else if (statics.endsWith(".css")) {
+		ct = ContentType.APPLICATION_CSS;
+	}
+	printFile(response, "org/axe/home/rest/html/api_test/" + statics, ct, token);
+}
+
+@Request(value = "/api_test/api_list", method = RequestMethod.GET)
+public List<Level_1> api_test_api_list(
+	@RequestParam("token")String token,  
+	HttpServletRequest request, HttpServletResponse response) {
+	try {
+		String path = request.getContextPath();
+		String baseDomain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+		String basePath = baseDomain + path;
+		List<Level_1> asApiTest = ApiExportUtil.asApiTest(basePath);
+		return asApiTest;
+	} catch (Exception e) {
+		e.printStackTrace();
+		throw new RestException(e.getMessage());
+	}
+}
+</java>

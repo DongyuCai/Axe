@@ -21,57 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.axe.interface_implement.mvc;
+package org.axe.bean.mvc;
 
-import java.io.UnsupportedEncodingException;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.axe.bean.mvc.Handler;
-import org.axe.bean.mvc.Param;
-import org.axe.exception.RestException;
-import org.axe.interface_.mvc.Filter;
-
-public abstract class CharSetFilter implements Filter {
-
-	@Override
-	public void init() {
-		
-	}
-
-	@Override
-	public int setLevel() {
-		return -1;
-	}
-
-	@Override
-	public Pattern setMapping() {
-		return Pattern.compile("^.*$");
-	}
-
-	@Override
-	public Pattern setNotMapping() {
-		return null;
-	}
-
-	@Override
-	public boolean doFilter(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler)
-			throws RestException {
-		try {
-			request.setCharacterEncoding("UTF-8");
-			response.setCharacterEncoding("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
-
-
-	@Override
-	public void doEnd(HttpServletRequest arg0, HttpServletResponse arg1, Param arg2, Handler arg3) {
+/**
+ * 描述请求头字段
+ * @author CaiDongyu on 2018/4/28.
+ */
+public class Header {
 	
+	private String name;
+	
+	private String value;
+	
+	public Header(String name) {
+		setName(name);
+	}
+	
+	public Header(String name,String value) {
+		setName(name);
+		setValue(value);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 }

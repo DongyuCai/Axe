@@ -25,6 +25,7 @@ package org.axe.helper;
 
 import javax.servlet.ServletContext;
 
+import org.axe.Axe;
 import org.axe.helper.aop.AopHelper;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.base.FrameworkStatusHelper;
@@ -52,7 +53,7 @@ public final class HelperLoader {
 	
 	private static Helper[] helpers;
 	
-    public static void init() throws Exception{
+	public static void init() throws Exception{
         init(null);
     }
     public static void init(ServletContext servletContext) throws Exception{
@@ -95,12 +96,15 @@ public final class HelperLoader {
             FormRequestHelper.init(servletContext);
         }
         
-        //装载的类日志分析
-        System.out.println(">>>>>>>>>\t Axe started success! \t<<<<<<<<<<");
-        System.out.println(">>>>>>>>>\t Manager is \"/axe\"  \t<<<<<<<<<<");
-        
         //释放ClassHelper占用的内存
         //TODO:(ok)目前来看，框架自身只有加载91个资源，并不很多
         ClassHelper.release();
+        
+		
+		//装载的类日志分析
+		String path = Axe.class.getClassLoader().getResource("").getPath();
+		System.out.println(">>>>>>>>>\t Axe started success! \t<<<<<<<<<<");
+        System.out.println(">>>>>>>>>\t Home is \"/axe\"  \t<<<<<<<<<<");
+        System.out.println(">>>>>>>>>\t Class path is "+path);
     }
 }

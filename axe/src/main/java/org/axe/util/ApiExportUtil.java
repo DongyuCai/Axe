@@ -45,10 +45,12 @@ import org.axe.annotation.persistence.Transient;
 import org.axe.bean.mvc.FileParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
+import org.axe.bean.mvc.Header;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.helper.mvc.ControllerHelper;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
+import org.axe.interface_implement.mvc.HeaderFilter;
 
 /**
  * Rest接口导出工具类
@@ -171,23 +173,6 @@ public class ApiExportUtil {
 		
 	}
 	
-	public final static class Header{
-		private String headerName;
-		private String headerValue;
-		public String getHeaderName() {
-			return headerName;
-		}
-		public void setHeaderName(String headerName) {
-			this.headerName = headerName;
-		}
-		public String getHeaderValue() {
-			return headerValue;
-		}
-		public void setHeaderValue(String headerValue) {
-			this.headerValue = headerValue;
-		}
-	}
-	
 	public final static class Param{
 		private String paramName;
 		private String paramValue;
@@ -226,7 +211,7 @@ public class ApiExportUtil {
 		}
 	}
 	
-	public static List<Level_1> asApiTest(String basePath,Map<String,String> headers){
+	public static List<Level_1> asApiTest(String basePath){
 		List<Level_1> list = new ArrayList<>();
 		Map<String,Integer> map = new HashMap<>();//存下标
 		//获取Controller 到 action的关系表
@@ -283,7 +268,7 @@ public class ApiExportUtil {
 			List<Filter> filterList = handler.getFilterList();
 			if(CollectionUtil.isNotEmpty(filterList)){
 				List<String> filterNameList = new ArrayList<>();
-				String blank = "";
+				String blank = "&nbsp;&nbsp;";
 				for(Filter filter:filterList){
 					filterNameList.add(blank+filter.setLevel()+"&nbsp;&nbsp;"+filter.getClass().getName());
 					blank = blank+"&nbsp;&nbsp;";
@@ -294,7 +279,7 @@ public class ApiExportUtil {
 			List<Interceptor> interceptorList = handler.getInterceptorList();
 			if(CollectionUtil.isNotEmpty(interceptorList)){
 				List<String> interceptorNameList = new ArrayList<>();
-				String blank = "";
+				String blank = "&nbsp;&nbsp;";
 				for(Interceptor interceptor:interceptorList){
 					interceptorNameList.add(blank+"&nbsp;&nbsp;"+interceptor.getClass().getName());
 					blank = blank+"&nbsp;&nbsp;";
@@ -304,12 +289,19 @@ public class ApiExportUtil {
 			//header
 			List<Header> headerList = new ArrayList<>();
 			level_2.setHeaderList(headerList);
-			if(CollectionUtil.isNotEmpty(headers)){
-				for(String key:headers.keySet()){
-					Header header = new Header();
-					header.setHeaderName(key);
-					header.setHeaderValue(headers.get(key));
-					headerList.add(header);
+			if(CollectionUtil.isNotEmpty(filterList)){
+				//找下有没有HeaderFilter
+				for(Filter filter:filterList){
+					if(HeaderFilter.class.isAssignableFrom(filter.getClass())){
+						Header[] headers = ((HeaderFilter)filter).headers();
+						if(headers != null){
+							for(Header header:headers){
+								if(header != null){
+									headerList.add(header);
+								}
+							}
+						}
+					}
 				}
 			}
 			
@@ -424,7 +416,7 @@ public class ApiExportUtil {
 	 * 转成Postman文件 格式为 collection format v2
 	 * 例子：asPostmanV2("xxxapi接口","http://
 	 */
-	public static Map<String,Object> asPostmanV2(String name,String basePath,Map<String,String> header){
+	public static Map<String,Object> asPostmanV2(String name,String basePath){
 		//获取Controller 到 action的关系表
 		List<Handler> actionList = ControllerHelper.getActionList();
 		Map<Class<?>,List<Handler>> actionMap = new HashMap<>();
@@ -480,17 +472,29 @@ public class ApiExportUtil {
 				requestConfig.put("method", handler.getRequestMethod());
 				Map<String,Object> body = new HashMap<>();
 				requestConfig.put("body",body);
-				if(CollectionUtil.isNotEmpty(header)){
+				List<Filter> filterList = handler.getFilterList();
+				if(CollectionUtil.isNotEmpty(filterList)){
 					//拼装header
 					List<Map<String,String>> headerList = new ArrayList<>();
-					for(String headerKey:header.keySet()){
-						Map<String,String> headerMap = new HashMap<>();
-						headerMap.put("key", headerKey);
-						headerMap.put("value", headerMap.get(headerKey));
-						headerList.add(headerMap);
+					//找下有没有HeaderFilter
+					for(Filter filter:filterList){
+						if(HeaderFilter.class.isAssignableFrom(filter.getClass())){
+							Header[] headers = ((HeaderFilter)filter).headers();
+							if(headers != null){
+								for(Header header:headers){
+									if(header != null){
+										Map<String,String> headerMap = new HashMap<>();
+										headerMap.put("key", header.getName());
+										headerMap.put("value", header.getValue());
+										headerList.add(headerMap);
+									}
+								}
+							}
+						}
 					}
 					requestConfig.put("header",headerList);
 				}
+				
 				//body分POST、PUT、DELETE  和    GET 三种
 				List<ActionParam> actionParamList = handler.getActionParamList();
 				if("POST,PUT,DELETE".contains(handler.getRequestMethod())){

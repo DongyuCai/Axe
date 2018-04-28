@@ -23,18 +23,18 @@
  */
 package org.axe.interface_implement.mvc;
 
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.axe.bean.mvc.Handler;
+import org.axe.bean.mvc.Header;
 import org.axe.bean.mvc.Param;
 import org.axe.exception.RestException;
 import org.axe.interface_.mvc.Filter;
 
-public abstract class CharSetFilter implements Filter {
+public abstract class HeaderFilter implements Filter {
 
 	@Override
 	public void init() {
@@ -43,7 +43,7 @@ public abstract class CharSetFilter implements Filter {
 
 	@Override
 	public int setLevel() {
-		return -1;
+		return 1;
 	}
 
 	@Override
@@ -57,15 +57,20 @@ public abstract class CharSetFilter implements Filter {
 	}
 
 	@Override
-	public boolean doFilter(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler)
+	public final boolean doFilter(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler)
 			throws RestException {
-		try {
-			request.setCharacterEncoding("UTF-8");
-			response.setCharacterEncoding("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		Header[] headers = headers();
+		
+		if(headers != null){
+			for(Header header:headers){
+				if(header != null){
+					String value = request.getHeader(header.getName());
+					header.setValue(value);
+				}
+			}
 		}
-		return true;
+		
+		return doFilter(headers, request, response, param, handler);
 	}
 
 
@@ -74,4 +79,8 @@ public abstract class CharSetFilter implements Filter {
 	
 	}
 
+	//Header Filter的实现类必须实现如下
+	public abstract Header[] headers();
+	
+	public abstract boolean doFilter(Header[] headers,HttpServletRequest request, HttpServletResponse response, Param param, Handler handler);
 }

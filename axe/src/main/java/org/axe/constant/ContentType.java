@@ -30,7 +30,9 @@ package org.axe.constant;
 public enum ContentType {
 	
 	APPLICATION_JSON("application/json"),
-	APPLICATION_HTML("text/html; charset=utf-8");
+	APPLICATION_HTML("text/html; charset=utf-8"),
+	APPLICATION_CSS("text/css"),
+	APPLICATION_JS("application/x-javascript");
 	
 	public String CONTENT_TYPE;
 
