@@ -639,16 +639,6 @@ public final class SqlHelper {
 		}
 	}
 	
-	/**
-	 * 给开发人员，业务工程中，本地调试Hql语句用
-	 */
-	public static SqlPackage debugHql(String hql,Object[] params, Class<?>[] paramTypes){
-		hql = SqlHelper.convertSqlAppendCommand(hql, params);
-		String[] result = SqlHelper.convertHql2Sql(hql);
-		SqlPackage pack = SqlHelper.convertGetFlag(result[0], params, paramTypes);
-		return pack;
-	}
-	
 	public static void main(String[] args) {
 		/*
 		 * String sql = "select * from Test where a=b #1 #3 #12 #11"; Object[]
