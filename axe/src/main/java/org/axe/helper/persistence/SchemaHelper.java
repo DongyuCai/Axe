@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Comment;
@@ -36,10 +37,12 @@ import org.axe.annotation.persistence.Id;
 import org.axe.annotation.persistence.Transient;
 import org.axe.annotation.persistence.Unique;
 import org.axe.bean.persistence.EntityFieldMethod;
+import org.axe.constant.ConfigConstant;
 import org.axe.constant.IdGenerateWay;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.util.CollectionUtil;
+import org.axe.util.PropsUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 
@@ -208,14 +211,24 @@ public class SchemaHelper implements Helper{
 			createTableSqlBufer.append(")");
 		}
 		
+		String tableDataSourceName = TableHelper.getTableDataSourceName(entityClass);
 		
-		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(ConfigHelper.getJdbcCharacter());
-		if(StringUtil.isNotEmpty(ConfigHelper.getJdbcCollate())){
+		Properties configProps = ConfigHelper.getCONFIG_PROPS();
+		String jdbcCharacter = PropsUtil.getString(configProps, ConfigConstant.JDBC_DATASOURCE+"."+tableDataSourceName+"."+ConfigConstant.JDBC_CHARACTER);
+		if(StringUtil.isEmpty(jdbcCharacter)){
+			jdbcCharacter = ConfigHelper.getJdbcCharacter();
+		}
+		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(jdbcCharacter);
+		
+		String jdbcCollate = PropsUtil.getString(configProps, ConfigConstant.JDBC_DATASOURCE+"."+tableDataSourceName+"."+ConfigConstant.JDBC_COLLATE);
+		if(StringUtil.isEmpty(jdbcCollate)){
+			jdbcCollate = ConfigHelper.getJdbcCollate();
+		}
+		if(StringUtil.isNotEmpty(jdbcCollate)){
 			//如果有校验编码，那么也要
-			createTableSqlBufer.append(" COLLATE=").append(ConfigHelper.getJdbcCollate());
+			createTableSqlBufer.append(" COLLATE=").append(jdbcCollate);
 		}
 		
-		String tableDataSourceName = TableHelper.getTableDataSourceName(entityClass);
 		DataBaseHelper.executeUpdate(createTableSqlBufer.toString(), new Object[]{}, new Class<?>[]{}, tableDataSourceName);
 	}
 	

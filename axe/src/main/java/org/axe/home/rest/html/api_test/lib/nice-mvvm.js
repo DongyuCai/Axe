@@ -29,7 +29,8 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
     //数据model
     var $SCOPE = {
-        '$DATA': new Object()
+        '$DATA': new Object(),
+        '$DATA_SOLID_COPY': new Object()
     };
 
     //参数监听队列
@@ -96,8 +97,6 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             return false;
         }
 
-        var $SCOPE_DATA_ = new Object();//副本，用于脏值检测和同步
-
         $SCOPE.$NODE_ID_POINT = 1;//节点id指针
         $SCOPE.$UNREFRESH_NODE_ID = -1;//排除在外，不需要同步的节点id
         $SCOPE.$V2M_NODE_MAP = new Object();//存放VM渲染的节点对象
@@ -130,7 +129,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                         expression = expression.replace(/\.length/g,' ');//不能让原生方法影响参数解析
             */
             var find = false;
-            for (var pro in $SCOPE_DATA_) {
+            for (var pro in $SCOPE.$DATA_SOLID_COPY) {
                 var expression_ = $SCOPE.$REPLACE_PROPATH(expression, pro, '');
                 if (expression_ != expression) {
                     //说明pro在expression里存在
@@ -153,7 +152,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             if (!find) {
                 //尝试是否是数组形式的
                 var proReg = new RegExp("^" + expression + '\\.[0-9]+\\..*');
-                for (var pro in $SCOPE_DATA_) {
+                for (var pro in $SCOPE.$DATA_SOLID_COPY) {
                     if (proReg.test(pro)) {
                         if (!$SCOPE.$V2M_NODE_MAP[expression]) {
                             $SCOPE.$V2M_NODE_MAP[expression] = [];
@@ -185,7 +184,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
 
             //每次有新的节点push进来的时候，需要讲对应key的数据副本清空重新渲染
-            // delete $SCOPE_DATA_['.'+proPath];
+            // delete $SCOPE.$DATA_SOLID_COPY['.'+proPath];
         };
 
         $SCOPE.$DEL_V2M_NODE_MAP = function (nodePackIds) {
@@ -820,7 +819,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                     //有可能是 name
                     //有可能是 !name
                     //还有可能是 name.something 或者 age-1这样
-                    for (var pro in $SCOPE_DATA_) {
+                    for (var pro in $SCOPE.$DATA_SOLID_COPY) {
                         if (proPath.indexOf(pro) >= 0) {
                             var words = proPath.split(pro);
                             //比如 ' user.name' 按照'user.name'分解会有一个空格和一个'user.name'
@@ -904,33 +903,33 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             // 数据版本不一致，需要同步的字段
             for (var proPath in proSolidMap) {
                 do {
-                    if ($SCOPE_DATA_[proPath] === undefined && proSolidMap[proPath] === undefined) {
+                    if ($SCOPE.$DATA_SOLID_COPY[proPath] === undefined && proSolidMap[proPath] === undefined) {
                         //如果两端都是undefined，那么没有继续比较的意义，因为js中如果值是undefined，那么会存储不成功
                         break;
                     }
-                    if ($SCOPE_DATA_[proPath] !== undefined && $SCOPE_DATA_[proPath].value === proSolidMap[proPath]) {
+                    if ($SCOPE.$DATA_SOLID_COPY[proPath] !== undefined && $SCOPE.$DATA_SOLID_COPY[proPath].value === proSolidMap[proPath]) {
                         //如果存在并且已经最新，不需要同步
                         break;
                     }
 
                     var version = 1;
-                    if ($SCOPE_DATA_[proPath] !== undefined) {
-                        version = $SCOPE_DATA_[proPath]['version'] + 1;
+                    if ($SCOPE.$DATA_SOLID_COPY[proPath] !== undefined) {
+                        version = $SCOPE.$DATA_SOLID_COPY[proPath]['version'] + 1;
                     }
-                    $SCOPE_DATA_[proPath] = {
+                    $SCOPE.$DATA_SOLID_COPY[proPath] = {
                         'version': version,
                         'value': proSolidMap[proPath]
                     };
 
-                    keys[proPath] = $SCOPE_DATA_[proPath]['version'];
+                    keys[proPath] = $SCOPE.$DATA_SOLID_COPY[proPath]['version'];
 
                 } while (false);
             }
 
 
             //数据到dom节点版本不一致，需要同步的
-            for (var proPath in $SCOPE_DATA_) {
-                var version = $SCOPE_DATA_[proPath]['version'];
+            for (var proPath in $SCOPE.$DATA_SOLID_COPY) {
+                var version = $SCOPE.$DATA_SOLID_COPY[proPath]['version'];
                 do {
                     if (keys[proPath] !== undefined) {
                         //已经存在的要同步字段，就不需要重复添加到等待同步了
@@ -940,7 +939,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                     //如果值已经删除了，同样需要更新dom，但是版本还是要一致的
                     if (proSolidMap[proPath] === undefined) {
                         //清除副本
-                        delete $SCOPE_DATA_[proPath];
+                        delete $SCOPE.$DATA_SOLID_COPY[proPath];
                         delete $SCOPE.$V2M_NODE_MAP[proPath];
                         keys[proPath] = version;
                         break;
@@ -954,7 +953,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                             /*var node = $SCOPE.$V2M_NODE_MAP[proPath][i].node;
                             if(node.type){
                                 if(node.type.toLowerCase() == 'checkbox'){
-                                    var proPathVal = $SCOPE_DATA_[proPath]['value'];
+                                    var proPathVal = $SCOPE.$DATA_SOLID_COPY[proPath]['value'];
                                     if(!proPathVal){
                                         proPathVal = [];
                                     }
@@ -983,14 +982,14 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                                     }
                                     $SCOPE.$SET_VAL(proPath,proPathVal);
                                 }else if(node.type.toLowerCase() == 'radio'){
-                                    if(node.value !== undefined && node.value !== $SCOPE_DATA_[proPath]['value']){
+                                    if(node.value !== undefined && node.value !== $SCOPE.$DATA_SOLID_COPY[proPath]['value']){
                                         if(node.checked){
                                             $SCOPE.$SET_VAL(proPath,node.value);
                                         }
                                     }
                                 }else if(node.nodeName.toLowerCase() != 'select'){
                                     //如果版本相等，但是值不等，那就需要以节点值为准
-                                    if(node.value !== undefined && node.value !== $SCOPE_DATA_[proPath]['value']){
+                                    if(node.value !== undefined && node.value !== $SCOPE.$DATA_SOLID_COPY[proPath]['value']){
                                         $SCOPE.$SET_VAL(proPath,node.value);
                                     }
                                 }
@@ -999,14 +998,14 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                         //select元素，很有可能在nc-for对option进行渲染后，会自动改变select的值，自动选中最后一个。
                         //这是不行的，所以必须把值调整回来，调整到正确值。
                         if ($SCOPE.$V2M_NODE_MAP[proPath][i]['node']['nodeName'].toLowerCase() == 'select') {
-                            if ($SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]) {
-                                if ($SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value != $SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value']) {
+                            if ($SCOPE.$DATA_SOLID_COPY[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]) {
+                                if ($SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value != $SCOPE.$DATA_SOLID_COPY[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value']) {
                                     if ($SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] === undefined || $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] === undefined) {
-                                        $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] = $SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value'];
+                                        $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] = $SCOPE.$DATA_SOLID_COPY[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value'];
                                         $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] = $SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value;
                                         $SCOPE.$V2M_NODE_MAP[proPath][i]['version'] = 0;//降低版本，等待下次同步
                                     } else {
-                                        if ($SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] !== $SCOPE_DATA_[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value'] || $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] !== $SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value) {
+                                        if ($SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'] !== $SCOPE.$DATA_SOLID_COPY[$SCOPE.$V2M_NODE_MAP[proPath][i]['expression']]['value'] || $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'] !== $SCOPE.$V2M_NODE_MAP[proPath][i]['node'].value) {
                                             delete $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_1'];
                                             delete $SCOPE.$V2M_NODE_MAP[proPath][i]['version_pre_val_2'];
                                         }
@@ -1075,7 +1074,13 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
                         var execStatement = '$watchObj.fun(';
                         for (var k = 0; k < $watchObj.proPathAry.length; k++) {
-                            execStatement = execStatement + '$SCOPE.$DATA.' + $watchObj.proPathAry[k] + '';
+                            var watchParam = '$SCOPE.$DATA_SOLID_COPY[\'' + $watchObj.proPathAry[k]+'\']';
+                            if(eval(watchParam)){
+                                watchParam = watchParam+'.value';
+                            }else{
+                                watchParam = 'null';
+                            }
+                            execStatement = execStatement + watchParam;
                             if (k < $watchObj.proPathAry.length - 1) {
                                 execStatement = execStatement + ',';
                             }
@@ -1176,7 +1181,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             return nodePackIds_4_return;
         };
 
-        //第一步：需要先建立$SCOPE_DATA_，
+        //第一步：需要先建立$SCOPE.$DATA_SOLID_COPY，
         var proSolidMap = $SCOPE.$GET_PRO_SOLID_MAP(null, $SCOPE.$DATA, proSolidMap);
         $SCOPE.$SYNC_SCOPE_DATA_(proSolidMap);
 
