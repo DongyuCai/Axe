@@ -301,7 +301,7 @@ public final class DataBaseHelper implements Helper{
         try {
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
-        	ResultSetMetaData rsmd = ps.getMetaData();
+        	ResultSetMetaData rsmd = table.getMetaData();
 			while(table.next()){
 				Map<String, Object> row = new HashMap<>();
 				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
@@ -337,7 +337,7 @@ public final class DataBaseHelper implements Helper{
         try {
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
-        	ResultSetMetaData rsmd = ps.getMetaData();
+        	ResultSetMetaData rsmd = table.getMetaData();
         	if(table.next()){
         		result = new HashMap<>();
         		for (int i = 1; i <= rsmd.getColumnCount(); i++) {
@@ -374,7 +374,7 @@ public final class DataBaseHelper implements Helper{
         	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	if(table.next()){
-            	ResultSetMetaData rsmd = ps.getMetaData();
+            	ResultSetMetaData rsmd = table.getMetaData();
             	if(rsmd.getColumnCount() > 0);
         			result = (T)table.getObject(1);
 			}
