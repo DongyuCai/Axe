@@ -40,4 +40,12 @@ import org.axe.interface_.persistence.SqlResultProxy;
 public @interface ResultProxy {
 	
 	Class<? extends SqlResultProxy> value();
+	
+	/**
+	 * void.class实际上就是List<Map<String,Object>> 是一个效果
+	 * rowType是外层类型
+	 * returnType是泛型类型
+	 */
+	Class<?> rawType() default void.class;
+	Class<?> returnType() default void.class;
 }
