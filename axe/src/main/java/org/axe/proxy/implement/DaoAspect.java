@@ -36,12 +36,14 @@ import java.util.Set;
 
 import org.axe.annotation.aop.Aspect;
 import org.axe.annotation.persistence.Dao;
+import org.axe.annotation.persistence.ResultProxy;
 import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.helper.persistence.SqlHelper;
 import org.axe.interface_.persistence.BaseRepository;
+import org.axe.interface_.persistence.SqlResultProxy;
 import org.axe.interface_.proxy.Proxy;
 import org.axe.proxy.base.ProxyChain;
 import org.axe.util.CastUtil;
@@ -70,6 +72,17 @@ public class DaoAspect implements Proxy{
 			daoConfigDataSource = daoClass.getAnnotation(Dao.class).dataSource();
 		}
 		
+		//如果有sql结果代理器
+		Type returnType = null;
+		Class<?> rawType = null;
+		SqlResultProxy sqlResultProxy = null;
+		if(targetMethod.isAnnotationPresent(ResultProxy.class)){
+			ResultProxy resultProxy = targetMethod.getAnnotation(ResultProxy.class);
+			Class<? extends SqlResultProxy> proxyClass = resultProxy.value();
+			returnType = void.class;//伪造返回结果类型，这样查询就都是List<Map<String,Object>>结果集
+			rawType = void.class;//伪造返回结果类型，这样查询就都是List<Map<String,Object>>结果集
+			sqlResultProxy = ReflectionUtil.newInstance(proxyClass);
+		}
 		
 		if(targetMethod.isAnnotationPresent(Sql.class)){
 			Sql sqlAnnotation = targetMethod.getAnnotation(Sql.class);
@@ -93,8 +106,8 @@ public class DaoAspect implements Proxy{
 			
 			String sqlUpperCase = sql.toUpperCase();
 			if(sqlUpperCase.startsWith("SELECT")){
-				Type returnType = targetMethod.getGenericReturnType();
-				Class<?> rawType = targetMethod.getReturnType();
+				returnType = returnType==null?targetMethod.getGenericReturnType():returnType;
+				rawType = rawType==null?targetMethod.getReturnType():rawType;
 				if(returnType instanceof ParameterizedType){
 					Type[] actualTypes = ((ParameterizedType) returnType).getActualTypeArguments();
 					//带泛型的，只支持Page、List、Map这样
@@ -210,11 +223,20 @@ public class DaoAspect implements Proxy{
 						result = getBasetypeOrDate(sql, methodParams, parameterTypes, daoConfigDataSource);
 						result = CastUtil.castType(result, rawType);
 					}else if((rawType).isPrimitive()){
-						//基本类型
-						if(StringUtil.isEmpty(daoConfigDataSource)){
-							result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes);
+						if(ReflectionUtil.compareType(void.class, rawType)){
+							//void
+							if(StringUtil.isEmpty(daoConfigDataSource)){
+								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
+							}else{
+								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+							}
 						}else{
-							result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes, daoConfigDataSource);
+							//基本类型
+							if(StringUtil.isEmpty(daoConfigDataSource)){
+								result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes);
+							}else{
+								result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes, daoConfigDataSource);
+							}
 						}
 					}else{
 						//Entity
@@ -290,6 +312,11 @@ public class DaoAspect implements Proxy{
 			}
 		}else{
 			result = proxyChain.doProxyChain();
+		}
+		
+		//如果有Sql结果代理器，那么代理一下
+		if(sqlResultProxy != null){
+			result = sqlResultProxy.proxy(result);
 		}
 		return result;
 	}
