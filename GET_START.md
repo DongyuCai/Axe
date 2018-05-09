@@ -222,6 +222,8 @@ jdbc.datasource=
 - @Dao
 - BaseRepository
 - @Sql
+- @ResultProxy
+- SqlResultProxy
 - Page
 - PageConfig
 
