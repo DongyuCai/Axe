@@ -23,11 +23,9 @@
  */
 package org.axe.proxy.base;
 
-import org.axe.interface_.proxy.Proxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.Method;
+
+import org.axe.interface_.proxy.Proxy;
 
 /**
  * 切面代理类
@@ -35,7 +33,7 @@ import java.lang.reflect.Method;
  */
 public abstract class AspectProxy implements Proxy{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AspectProxy.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(AspectProxy.class);
 
     @Override
     public Object doProxy(ProxyChain proxyChain) throws Throwable {
@@ -53,7 +51,7 @@ public abstract class AspectProxy implements Proxy{
                 result = proxyChain.doProxyChain();
             }
         }catch (Exception e){
-            LOGGER.error("proxy failure",e);
+//            LOGGER.error("proxy failure",e);
             error(cls,method,params,e);
             throw e;
         } finally {

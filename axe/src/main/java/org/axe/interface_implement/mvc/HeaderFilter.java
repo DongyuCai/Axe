@@ -28,9 +28,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.axe.bean.mvc.ExceptionHolder;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Header;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.ResultHolder;
 import org.axe.exception.RestException;
 import org.axe.interface_.mvc.Filter;
 
@@ -73,11 +75,9 @@ public abstract class HeaderFilter implements Filter {
 		return doFilter(headers, request, response, param, handler);
 	}
 
-
 	@Override
-	public void doEnd(HttpServletRequest arg0, HttpServletResponse arg1, Param arg2, Handler arg3) {
-	
-	}
+	public void doEnd(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler,
+			ResultHolder resultHolder, ExceptionHolder exceptionHolder) {}
 
 	//Header Filter的实现类必须实现如下
 	public abstract Header[] headers();

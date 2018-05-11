@@ -40,8 +40,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.axe.bean.mvc.Data;
+import org.axe.bean.mvc.ExceptionHolder;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.ResultHolder;
 import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
@@ -115,6 +117,8 @@ public class DispatcherServlet extends HttpServlet{
     	Integer RESPONSE_IS_USED = 0;
     	Param param = null;
     	Handler handler = null;
+    	ResultHolder resultHolder = new ResultHolder();
+    	ExceptionHolder exceptionHolder = new ExceptionHolder();
         try {
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
@@ -165,54 +169,82 @@ public class DispatcherServlet extends HttpServlet{
                 if(doFilterSuccess && doInterceptorSuccess){
                 	//调用 Action方法
                 	Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,param.getActionParamList().toArray());
-                	if(result != null){
-                		if(result instanceof View){
-                			handleViewResult((View)result,request,response,RESPONSE_IS_USED);
-                		} else if (result instanceof Data){
-                			handleDataResult((Data)result,response,handler,RESPONSE_IS_USED);
-                		} else {
-                			Data data = new Data(result);
-                			handleDataResult(data,response,handler,RESPONSE_IS_USED);
-                		}
-                	}
+                	resultHolder.setResult(result);
                 }
             }else{
             	//404
     			throw new RestException(RestException.SC_NOT_FOUND, "404 Not Found");
             }
-		} catch (RedirectorInterrupt e){
-			//被中断，跳转
-			try {
-				handleViewResult(e.getView(),request,response,RESPONSE_IS_USED);
-			} catch (Exception e1) {
-				LOGGER.error("中断，跳转 error",e);
-			}
-		} catch (RestException e){
-			//需要返回前台信息的异常
-			writeError(e.getStatus(), e.getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
 		} catch (Exception e) {
-			LOGGER.error("server error",e);
-			//500
-			writeError(RestException.SC_INTERNAL_SERVER_ERROR, "500 server error", response, RESPONSE_IS_USED, contentType, characterEncoding);
-			
-	    	try {
-	    		//邮件通知
-				MailHelper.errorMail(e);
-			} catch (Exception e1) {
-				LOGGER.error("mail error",e1);
-			}
+			exceptionHolder.setException(e);
 		} finally {
 			LOGGER.info("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
 			//##5.执行Filter链各个节点的收尾工作
 			if(CollectionUtil.isNotEmpty(doEndFilterList)){
 				for(Filter filter:doEndFilterList){
 					try {
-						filter.doEnd(request, response, param, handler);
+						filter.doEnd(request, response, param, handler,resultHolder,exceptionHolder);
 					} catch (Exception endEx) {
 						LOGGER.error("filter doEnd failed",endEx);
 					}
 				}
 			}
+			
+			if(exceptionHolder.getException() != null){
+				//##6.异常处理
+				if(exceptionHolder.getException() instanceof RedirectorInterrupt){
+					//被中断，跳转
+					try {
+						RedirectorInterrupt e = (RedirectorInterrupt)(exceptionHolder.getException()); 
+						handleViewResult(e.getView(),request,response,RESPONSE_IS_USED);
+					} catch (Exception e1) {
+						LOGGER.error("中断，跳转 error",e1);
+					}
+				}if(exceptionHolder.getException() instanceof RestException){
+					try {
+						RestException e = (RestException)(exceptionHolder.getException()); 
+						//需要返回前台信息的异常
+						writeError(e.getStatus(), e.getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
+					} catch (Exception e1) {
+						LOGGER.error("中断，跳转 error",e1);
+					}
+				}else{
+					//其他情况就是Exception 500
+					LOGGER.error("server error",exceptionHolder.getException());
+					//500
+					writeError(RestException.SC_INTERNAL_SERVER_ERROR, "500 server error,"+exceptionHolder.getException().getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
+					
+			    	try {
+			    		//邮件通知
+						MailHelper.errorMail(exceptionHolder.getException());
+					} catch (Exception e1) {
+						LOGGER.error("mail error",e1);
+					}
+				}
+			}else{
+				//##6.返回结果
+				if(resultHolder.getResult() != null){
+            		try {
+            			if(resultHolder.getResult() instanceof View){
+                			handleViewResult((View)(resultHolder.getResult()),request,response,RESPONSE_IS_USED);
+                		} else if (resultHolder.getResult() instanceof Data){
+                			handleDataResult((Data)(resultHolder.getResult()),response,handler,RESPONSE_IS_USED);
+                		} else {
+                			Data data = new Data(resultHolder.getResult());
+                			handleDataResult(data,response,handler,RESPONSE_IS_USED);
+                		}
+					} catch (Exception e2) {
+						LOGGER.error("handle result error",e2);
+						try {
+				    		//邮件通知
+							MailHelper.errorMail(e2);
+						} catch (Exception e1) {
+							LOGGER.error("mail error",e1);
+						}
+					}
+            	}
+			}
+			
 		}
     }
     

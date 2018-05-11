@@ -38,8 +38,6 @@ import java.util.Set;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.exception.RedirectorInterrupt;
 import org.axe.exception.RestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 类实例化工具
@@ -48,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ReflectionUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
 
     
     public static List<Method> getMethodByAnnotation(Class<?> cls,Class<? extends Annotation> annotationClass){
@@ -204,7 +202,7 @@ public final class ReflectionUtil {
         try {
             instance = cls.newInstance();
         } catch (Exception e) {
-            LOGGER.error("new instance failure",e);
+//            LOGGER.error("new instance failure",e);
             throw new RuntimeException(e);
         }
         return (T)instance;
@@ -227,7 +225,8 @@ public final class ReflectionUtil {
         	}
         	result = mh.invokeWithArguments(argList);
 		} catch (Throwable cause) {
-			LOGGER.error("invoke method failure,method : "+method+", args : "+args,cause);
+			//TODO:这里的方法调用异常打印，暂时关闭，体验友好有些，否则crontroller的异常，不管什么，有的是RestException，也都会打印出来，不好看。
+//			LOGGER.error("invoke method failure,method : "+method+", args : "+args,cause);
 			if(cause instanceof RestException){
 				//Rest中断异常，需要返回前台异常信息
 				throw (RestException)cause;
@@ -276,7 +275,7 @@ public final class ReflectionUtil {
         try {
             field.set(obj, value);
         } catch (Exception e) {
-            LOGGER.error("set field failure",e);
+//            LOGGER.error("set field failure",e);
             throw new RuntimeException(e);
         }
     }

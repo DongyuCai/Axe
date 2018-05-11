@@ -42,8 +42,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.axe.annotation.mvc.Default;
 import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
+import org.axe.bean.mvc.ExceptionHolder;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.ResultHolder;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.exception.RestException;
 import org.axe.helper.mvc.AjaxRequestHelper;
@@ -248,6 +250,8 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
     }
 
 	@Override
-	public void doEnd(HttpServletRequest request,HttpServletResponse response,Param param,Handler handler) {}
+	public void doEnd(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler,
+			ResultHolder resultHolder, ExceptionHolder exceptionHolder) {}
+
 	
 }
