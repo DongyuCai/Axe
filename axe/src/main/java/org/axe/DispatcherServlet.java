@@ -26,9 +26,9 @@ package org.axe;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -113,7 +113,7 @@ public class DispatcherServlet extends HttpServlet{
     public void service(HttpServletRequest request, HttpServletResponse response) {
     	String contentType = ContentType.APPLICATION_JSON.CONTENT_TYPE;
     	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
-    	List<Filter> doEndFilterList = null;
+    	Stack<Filter> doEndFilterStack = null;
     	Integer RESPONSE_IS_USED = 0;
     	Param param = null;
     	Handler handler = null;
@@ -147,10 +147,10 @@ public class DispatcherServlet extends HttpServlet{
                 if(CollectionUtil.isNotEmpty(filterList)){
                 	for(Filter filter:filterList){
                 		//被执行的Filter，都添加到end任务里
-                		if(doEndFilterList == null){
-                			doEndFilterList = new ArrayList<>();
+                		if(doEndFilterStack == null){
+                			doEndFilterStack = new Stack<>();
                 		}
-                		doEndFilterList.add(filter);
+                		doEndFilterStack.push(filter);
                 		doFilterSuccess = filter.doFilter(request, response, param, handler);
                 		//执行失败则跳出，不再往下进行
                 		if(!doFilterSuccess) break;
@@ -180,13 +180,11 @@ public class DispatcherServlet extends HttpServlet{
 		} finally {
 			LOGGER.info("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
 			//##5.执行Filter链各个节点的收尾工作
-			if(CollectionUtil.isNotEmpty(doEndFilterList)){
-				for(Filter filter:doEndFilterList){
-					try {
-						filter.doEnd(request, response, param, handler,resultHolder,exceptionHolder);
-					} catch (Exception endEx) {
-						LOGGER.error("filter doEnd failed",endEx);
-					}
+			while(CollectionUtil.isNotEmpty(doEndFilterStack)){
+				try {
+					doEndFilterStack.pop().doEnd(request, response, param, handler,resultHolder,exceptionHolder);
+				} catch (Exception endEx) {
+					LOGGER.error("filter doEnd failed",endEx);
 				}
 			}
 			
