@@ -196,15 +196,15 @@ public class DispatcherServlet extends HttpServlet{
 						RedirectorInterrupt e = (RedirectorInterrupt)(exceptionHolder.getException()); 
 						handleViewResult(e.getView(),request,response,RESPONSE_IS_USED);
 					} catch (Exception e1) {
-						LOGGER.error("中断，跳转 error",e1);
+						LOGGER.error("RedirectorInterrupt handle error",e1);
 					}
-				}if(exceptionHolder.getException() instanceof RestException){
+				}else if(exceptionHolder.getException() instanceof RestException){
 					try {
 						RestException e = (RestException)(exceptionHolder.getException()); 
 						//需要返回前台信息的异常
 						writeError(e.getStatus(), e.getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
 					} catch (Exception e1) {
-						LOGGER.error("中断，跳转 error",e1);
+						LOGGER.error("RestException handle error",e1);
 					}
 				}else{
 					//其他情况就是Exception 500
