@@ -84,11 +84,17 @@ public final class  CastUtil {
     public static <T> Object castType(Object value,T toType){
 		do{
 			if(value == null) break;
+			
+			if(ReflectionUtil.compareType((Class<?>)toType,String.class)){
+				value = value.toString();
+				break;
+			}
+			
 			String valueTypeName = value.getClass().getName();
 			String javaTypeName = ((Class<?>)toType).getName();
 			BaseTypeConvert typeConvert = TYPE_2_TYPE_MAP.get(valueTypeName+"=>"+javaTypeName);
 			if(typeConvert == null) break;
-			return typeConvert.convert(value);
+			value = typeConvert.convert(value);
 		}while(false);
 		return value;
 	}
@@ -106,8 +112,6 @@ public final class  CastUtil {
     public static String castString(Object obj,String defaultValue){
         return obj != null ? String.valueOf(obj) : defaultValue;
     }
-    
-    
     
     public static Byte castByte(Object obj){
     	return castByte(obj, (byte)0);
