@@ -1,5 +1,10 @@
+## 安装Axe，首先取保你已经安装好maven、git环境
+1、git clone或者下载Axe项目到本地文件夹
+2、打开cmd，进入到Axe/axe文件夹下，就是有pom.xml的文件夹下。
+3、执行mvn clean install命令，等待安装完成
+
 ## Get Start 快速开始
-1、新建工程。首先，确认你安装好了maven，然后打开cmd，切换到你自己的目录下，创建一个空的maven项目。
+1、新建工程。打开cmd，切换到你自己的目录下，创建一个空的maven项目。
 ```
 mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 ```
