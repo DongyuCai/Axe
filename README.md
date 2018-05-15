@@ -5,7 +5,7 @@
 ### [快速上手开始](https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/GET_START.md)
 
 ### RESTful 简单展示，更多使用细节请直接上手
-```
+```java
 @Controller(basePath="/op/label/area_open",title="分类标签-区域开放")
 public class AreaOpenRest {
 	
@@ -23,7 +23,7 @@ public class AreaOpenRest {
 ```
 
 ### IOC 简单展示，更多使用细节请直接上手
-```
+```java
 @Service
 public class AreaOpenService {
 	
@@ -36,7 +36,7 @@ public class AreaOpenService {
 	
 }
 ```
-```
+```java
 public class Test {
 	
 	public static void main(String[] args) {
@@ -57,7 +57,7 @@ public class Test {
 ```
 
 ### 持久化 简单展示，更多使用细节请直接上手
-```
+```java
 @Dao(dataSource="api")
 public interface AreaOpenDao extends BaseRepository{
 
