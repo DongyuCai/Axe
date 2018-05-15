@@ -1,16 +1,16 @@
-## °²×°Axe£¬Ê×ÏÈÈ¡±£ÄãÒÑ¾­°²×°ºÃmaven¡¢git»·¾³
-1¡¢git clone»òÕßÏÂÔØAxeÏîÄ¿µ½±¾µØÎÄ¼ş¼Ğ
+## å®‰è£…Axeï¼Œé¦–å…ˆå–ä¿ä½ å·²ç»å®‰è£…å¥½mavenã€gitç¯å¢ƒ
+1ã€git cloneæˆ–è€…ä¸‹è½½Axeé¡¹ç›®åˆ°æœ¬åœ°æ–‡ä»¶å¤¹ã€‚
 
-2¡¢´ò¿ªcmd£¬½øÈëµ½Axe/axeÎÄ¼ş¼ĞÏÂ£¬¾ÍÊÇÓĞpom.xmlµÄÎÄ¼ş¼ĞÏÂ¡£
+2ã€æ‰“å¼€cmdï¼Œè¿›å…¥åˆ°Axe/axeæ–‡ä»¶å¤¹ä¸‹ï¼Œå°±æ˜¯æœ‰pom.xmlçš„æ–‡ä»¶å¤¹ä¸‹ã€‚
 
-3¡¢Ö´ĞĞmvn clean installÃüÁî£¬µÈ´ı°²×°Íê³É
+3ã€æ‰§è¡Œmvn clean installå‘½ä»¤ï¼Œç­‰å¾…å®‰è£…å®Œæˆã€‚
 
-## Get Start ¿ìËÙ¿ªÊ¼
-1¡¢ĞÂ½¨¹¤³Ì¡£´ò¿ªcmd£¬ÇĞ»»µ½Äã×Ô¼ºµÄÄ¿Â¼ÏÂ£¬´´½¨Ò»¸ö¿ÕµÄmavenÏîÄ¿¡£
+## Get Start å¿«é€Ÿå¼€å§‹
+1ã€æ–°å»ºå·¥ç¨‹ã€‚æ‰“å¼€cmdï¼Œåˆ‡æ¢åˆ°ä½ è‡ªå·±çš„ç›®å½•ä¸‹ï¼Œåˆ›å»ºä¸€ä¸ªç©ºçš„mavené¡¹ç›®ã€‚
 ```
-mvn archetype:generate -DgroupId=ÄãµÄgroupId -DartifactId=ÄãµÄartifactId
+mvn archetype:generate -DgroupId=ä½ çš„groupId -DartifactId=ä½ çš„artifactId
 ```
-2¡¢ĞŞ¸Äpom.xml¡£´ò¿ª¹¤³ÌÄ¿Â¼ÏÂµÄpom.xml£¬Ìæ»»³ÉÏÂÃæµÄÄÚÈİ¡£×¢ÒâgroupIdºÍartifactId»»³É×Ô¼ºµÄ¡£
+2ã€ä¿®æ”¹pom.xmlã€‚æ‰“å¼€å·¥ç¨‹ç›®å½•ä¸‹çš„pom.xmlï¼Œæ›¿æ¢æˆä¸‹é¢çš„å†…å®¹ã€‚æ³¨æ„groupIdå’ŒartifactIdæ¢æˆè‡ªå·±çš„ã€‚
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -18,8 +18,8 @@ mvn archetype:generate -DgroupId=ÄãµÄgroupId -DartifactId=ÄãµÄartifactId
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ÄãµÄgroupId</groupId>
-    <artifactId>ÄãµÄartifactId</artifactId>
+    <groupId>ä½ çš„groupId</groupId>
+    <artifactId>ä½ çš„artifactId</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 	
@@ -34,7 +34,7 @@ mvn archetype:generate -DgroupId=ÄãµÄgroupId -DartifactId=ÄãµÄartifactId
             <artifactId>axe</artifactId>
             <version>18.4.27</version>
         </dependency>
-    	<!-- Apache DBCP Êı¾İÔ´(ÕâÊÇÄ¬ÈÏÊı¾İÔ´£¬¿ÉÒÔ×ÔÎÒÖ¸¶¨Êı¾İÔ´)-->
+    	<!-- Apache DBCP æ•°æ®æº(è¿™æ˜¯é»˜è®¤æ•°æ®æºï¼Œå¯ä»¥è‡ªæˆ‘æŒ‡å®šæ•°æ®æº)-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
@@ -53,7 +53,7 @@ mvn archetype:generate -DgroupId=ÄãµÄgroupId -DartifactId=ÄãµÄartifactId
 		  <artifactId>jstl</artifactId>
 		  <version>1.2</version>
 		</dependency>
-		<!-- cross domain ¿ÉÑ¡£¬Èç¹û²»¿çÓò¿ÉÒÔÈ¥µô -->
+		<!-- cross domain å¯é€‰ï¼Œå¦‚æœä¸è·¨åŸŸå¯ä»¥å»æ‰ -->
 
 		<dependency>
 			<groupId>com.thetransactioncompany</groupId>
@@ -91,7 +91,7 @@ mvn archetype:generate -DgroupId=ÄãµÄgroupId -DartifactId=ÄãµÄartifactId
 	</profiles>
 	
 	<build>
-		<finalName>ÄãµÄwar°üÃû£¬²»ĞèÒªºó×º</finalName>
+		<finalName>ä½ çš„waråŒ…åï¼Œä¸éœ€è¦åç¼€</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -107,76 +107,76 @@ mvn archetype:generate -DgroupId=ÄãµÄgroupId -DartifactId=ÄãµÄartifactId
 	</build>
 </project>
 ```
-3¡¢×ª»¯¹¤³Ì¡£Èç¹ûIDEÊÇeclipse£¬´ò¿ªcmd£¬ÇĞ»»µ½pom.xmlËùÔÚÂ·¾¶ÏÂ£¬Ö´ĞĞÒÔÏÂÃüÁî¡£
+3ã€è½¬åŒ–å·¥ç¨‹ã€‚å¦‚æœIDEæ˜¯eclipseï¼Œæ‰“å¼€cmdï¼Œåˆ‡æ¢åˆ°pom.xmlæ‰€åœ¨è·¯å¾„ä¸‹ï¼Œæ‰§è¡Œä»¥ä¸‹å‘½ä»¤ã€‚
 ```
 mvn clean eclipse:eclipse -Dwtpversion=1.0
 ```
-4¡¢µ¼Èë¹¤³Ì£¬´ò¿ªeclipse£¬import¹¤³Ì£¬µ±×÷javaÆÕÍ¨¹¤³Ìµ¼Èë£¬È»ºóÉ¾µôÁ½¸ö±¨´íµÄAppTest.javaÎÄ¼ş¼´¿É¡£
+4ã€å¯¼å…¥å·¥ç¨‹ï¼Œæ‰“å¼€eclipseï¼Œimportå·¥ç¨‹ï¼Œå½“ä½œjavaæ™®é€šå·¥ç¨‹å¯¼å…¥ï¼Œç„¶ååˆ æ‰ä¸¤ä¸ªæŠ¥é”™çš„AppTest.javaæ–‡ä»¶å³å¯ã€‚
 
-5¡¢ÅäÖÃ¹¤³Ì¡£½øÈësrc\mainÎÄ¼ş¼ĞÏÂ£¬ĞÂ½¨Ò»¸öÎÄ¼ş¼Ğ½Ğresources¡£½øÈëresourcesºóĞÂ½¨Ò»¸öaxe.propertiesÎÄ¼ş£¬ÄÚÈİÈçÏÂ¡£
+5ã€é…ç½®å·¥ç¨‹ã€‚è¿›å…¥src\mainæ–‡ä»¶å¤¹ä¸‹ï¼Œæ–°å»ºä¸€ä¸ªæ–‡ä»¶å¤¹å«resourcesã€‚è¿›å…¥resourcesåæ–°å»ºä¸€ä¸ªaxe.propertiesæ–‡ä»¶ï¼Œå†…å®¹å¦‚ä¸‹ã€‚
 ```
-#==================axe¿ò¼ÜÅäÖÃÎÄ¼ş==================
+#==================axeæ¡†æ¶é…ç½®æ–‡ä»¶==================
 
-#------------------1.axe»ù´¡ÅäÖÃ--------------------
+#------------------1.axeåŸºç¡€é…ç½®--------------------
 
-#¿ò¼ÜÉ¨ÃèµÄ°üÂ·¾¶£¬¶à¸öÂ·¾¶ÓÃ","ºÅ¸ô¿ª
+#æ¡†æ¶æ‰«æçš„åŒ…è·¯å¾„ï¼Œå¤šä¸ªè·¯å¾„ç”¨","å·éš”å¼€
 app.base_package=com.test
 
-#Èç¹û¹¤³ÌÄÚÓĞjsp»òÕßÆäËûview²ãµÄ¾²Ì¬ÎÄ¼ş£¬ÕâÀïĞèÒªÖ¸¶¨ÕâĞ©ÎÄ¼şµÄÂ·¾¶
-#	±ÈÈçsrc/main/webappÏÂ£¬ÓĞstaticÎÄ¼ş¼ĞÀï·ÅµÄÊÇ¾²Ì¬css¡¢Í¼Æ¬¡¢jsµÈÎÄ¼ş
-#	±ÈÈçsrc/main/webappÏÂ£¬ÓĞviewÎÄ¼ş¼ĞÀï·ÅµÄÊÇjspÎÄ¼ş
+#å¦‚æœå·¥ç¨‹å†…æœ‰jspæˆ–è€…å…¶ä»–viewå±‚çš„é™æ€æ–‡ä»¶ï¼Œè¿™é‡Œéœ€è¦æŒ‡å®šè¿™äº›æ–‡ä»¶çš„è·¯å¾„
+#	æ¯”å¦‚src/main/webappä¸‹ï¼Œæœ‰staticæ–‡ä»¶å¤¹é‡Œæ”¾çš„æ˜¯é™æ€cssã€å›¾ç‰‡ã€jsç­‰æ–‡ä»¶
+#	æ¯”å¦‚src/main/webappä¸‹ï¼Œæœ‰viewæ–‡ä»¶å¤¹é‡Œæ”¾çš„æ˜¯jspæ–‡ä»¶
 #app.asset_path=/static
 #app.jsp_path=/view
 
-#ÎÄ¼şÉÏ´«´óĞ¡ÏŞÖÆ
+#æ–‡ä»¶ä¸Šä¼ å¤§å°é™åˆ¶
 #app.upload_limit=0
 
-#Ö¸¶¨ºÃÓÊÏä£¬¿ò¼Ü»á½«Òì³£ĞÅÏ¢·¢ËÍ¸øÕâĞ©ÓÊÏä£¬¶à¸öÓÊÏäÓÃ","ºÅ·Ö¸ô
+#æŒ‡å®šå¥½é‚®ç®±ï¼Œæ¡†æ¶ä¼šå°†å¼‚å¸¸ä¿¡æ¯å‘é€ç»™è¿™äº›é‚®ç®±ï¼Œå¤šä¸ªé‚®ç®±ç”¨","å·åˆ†éš”
 #axe.email=
 
-#ÊÇ·ñ¿ÉÒÔ·ÃÎÊaxeºóÌ¨
+#æ˜¯å¦å¯ä»¥è®¿é—®axeåå°
 axe.home=true
 
-#ÊÇ·ñ´ò¿ªaxe¿ò¼Ü¹ÜÀí½çÃæµÄµÇÂ¼
-#	true ½øÈëaxe¿ò¼Ü¹ÜÀí½çÃæĞèÒªµÇÂ½Â¼
-#	false ½øÈëaxe¿ò¼Ü¹ÜÀí½çÃæ²»ĞèÒªµÇÂ½Â¼£¬Éú²ú»·¾³½¨Òétrue
+#æ˜¯å¦æ‰“å¼€axeæ¡†æ¶ç®¡ç†ç•Œé¢çš„ç™»å½•
+#	true è¿›å…¥axeæ¡†æ¶ç®¡ç†ç•Œé¢éœ€è¦ç™»é™†å½•
+#	false è¿›å…¥axeæ¡†æ¶ç®¡ç†ç•Œé¢ä¸éœ€è¦ç™»é™†å½•ï¼Œç”Ÿäº§ç¯å¢ƒå»ºè®®true
 axe.signin=false
 
-#ÅäºÏaxe.signin£¬µÇÂ¼ÃÜÔ¿£¬»ñÈ¡·½Ê½ÈçÏÂ£º
+#é…åˆaxe.signinï¼Œç™»å½•å¯†é’¥ï¼Œè·å–æ–¹å¼å¦‚ä¸‹ï¼š
 #	String username = "axe";
 #	String password = "13776255717";
 #	String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
 #axe.signin.token=804bd02e2548611fca83965b5f18f1d8
 
-#ÊÇ·ñÊÍ·Å¿ò¼Ü³õÊ¼»¯Íê³ÉºóµÄ£¬ClassHelperÄÚµÄclassSet¼¯ºÏÊÇ·ñ±£Áô
-#	½¨Òéfalse£¬²»±£Áô£¬¼õĞ¡ÄÚ´æÕ¼ÓÃ
+#æ˜¯å¦é‡Šæ”¾æ¡†æ¶åˆå§‹åŒ–å®Œæˆåçš„ï¼ŒClassHelperå†…çš„classSeté›†åˆæ˜¯å¦ä¿ç•™
+#	å»ºè®®falseï¼Œä¸ä¿ç•™ï¼Œå‡å°å†…å­˜å ç”¨
 axe.classhelper.keep=false
 
-#Captain¹¦ÄÜ¶Ó³¤µØÖ·
+#CaptainåŠŸèƒ½é˜Ÿé•¿åœ°å€
 #axe.captain.captain_host=http://localhost:8080x
-#ÎÒ(×éÔ±)µÄµØÖ·
+#æˆ‘(ç»„å‘˜)çš„åœ°å€
 #axe.captain.my_host=http://localhost:8090
 
-#------------------2.Êı¾İÔ´ÅäÖÃ--------------------
-#ÊÇ·ñ×Ô¶¯½¨±í
+#------------------2.æ•°æ®æºé…ç½®--------------------
+#æ˜¯å¦è‡ªåŠ¨å»ºè¡¨
 jdbc.auto_create_table=true
 
-#ÊÇ·ñ´òÓ¡sqlÓï¾ä
+#æ˜¯å¦æ‰“å°sqlè¯­å¥
 jdbc.show_sql=false
 
-#Êı¾İ¿â±àÂë£¬Ö§³Öemoji
+#æ•°æ®åº“ç¼–ç ï¼Œæ”¯æŒemoji
 jdbc.character=utf8mb4
-#Êı¾İ¿âĞ£Ñé±àÂë£¬Ö§³Öemoji
+#æ•°æ®åº“æ ¡éªŒç¼–ç ï¼Œæ”¯æŒemoji
 jdbc.collate=utf8mb4_unicode_ci
 
-#Ö¸¶¨Êı¾İÔ´
-#	¿ÉÒÔÖ¸¶¨¶à¸ö£¬±ÈÈç jdbc.datasource=druid,api,united,pointsShop,aio,card
-#	axe-datasource-dbcpÊÇaxe¿ò¼ÜÌá¹©µÄÄ¬ÈÏÊı¾İÔ´
-#	¿ÉÒÔÊ¹ÓÃ×Ô¼ºµÄÊı¾İÔ´£¬ÓÃ·¨²Î¿¼READMEÀïµÄÊı¾İÔ´Ò»½Ú
+#æŒ‡å®šæ•°æ®æº
+#	å¯ä»¥æŒ‡å®šå¤šä¸ªï¼Œæ¯”å¦‚ jdbc.datasource=druid,api,united,pointsShop,aio,card
+#	axe-datasource-dbcpæ˜¯axeæ¡†æ¶æä¾›çš„é»˜è®¤æ•°æ®æº
+#	å¯ä»¥ä½¿ç”¨è‡ªå·±çš„æ•°æ®æºï¼Œç”¨æ³•å‚è€ƒREADMEé‡Œçš„æ•°æ®æºä¸€èŠ‚
 jdbc.datasource=
 
-#Èç¹ûÊ¹ÓÃaxe-datasource-dbcp£¬ĞèÒªÔÚaxe.propertiesÀïÖ¸¶¨ºÃjdbcµÄÅäÖÃ
-#	Èç¹ûÊ¹ÓÃ×Ô¼ºµÄÊı¾İÔ´±ÈÈçdruid£¬Ôò´Ë¶ÎÅäÖÃ£¨´Ó{µ½}£©²»ĞèÒª£¬¿ÉÒÔÁíÍâĞ´ÅäÖÃÎÄ¼ş¡£
+#å¦‚æœä½¿ç”¨axe-datasource-dbcpï¼Œéœ€è¦åœ¨axe.propertiesé‡ŒæŒ‡å®šå¥½jdbcçš„é…ç½®
+#	å¦‚æœä½¿ç”¨è‡ªå·±çš„æ•°æ®æºæ¯”å¦‚druidï¼Œåˆ™æ­¤æ®µé…ç½®ï¼ˆä»{åˆ°}ï¼‰ä¸éœ€è¦ï¼Œå¯ä»¥å¦å¤–å†™é…ç½®æ–‡ä»¶ã€‚
 #	{
 #jdbc.username=root
 #jdbc.password=Ybsl_1234
@@ -185,11 +185,11 @@ jdbc.datasource=
 #	}
 
 ```
-6¡¢ÅäÖÃeclipseµÄtomcat£¬È»ºó·¢²¼ÏîÄ¿µ½tomcatÏÂ£¬Æô¶¯ºó£¬·ÃÎÊhttp://localhost:8080/ÏîÄ¿Ãû/axe£¬¿ªÊ¼ÓÃ°É£¨Íê£©
+6ã€é…ç½®eclipseçš„tomcatï¼Œç„¶åå‘å¸ƒé¡¹ç›®åˆ°tomcatä¸‹ï¼Œå¯åŠ¨åï¼Œè®¿é—®http://localhost:8080/é¡¹ç›®å/axeï¼Œå¼€å§‹ç”¨å§ï¼ˆå®Œï¼‰
 
-## ĞèÒªÊìÏ¤ÄÄĞ©×¢½â¡¢½Ó¿Ú¡¢Àà£¿
+## éœ€è¦ç†Ÿæ‚‰å“ªäº›æ³¨è§£ã€æ¥å£ã€ç±»ï¼Ÿ
 
-### Controller²¿·Ö
+### Controlleréƒ¨åˆ†
 - Filter
 - CharSetFilter
 - HeaderFilter
@@ -213,10 +213,10 @@ jdbc.datasource=
 - Data
 - View
 
-### Service²¿·Ö
+### Serviceéƒ¨åˆ†
 - @Service
 
-### Dao²¿·Ö
+### Daoéƒ¨åˆ†
 - @Tns
 - BaseDataSource
 - @DataSource
@@ -235,21 +235,21 @@ jdbc.datasource=
 - PageConfig
 
 
-## IOCÔõÃ´Ö§³Ö
-axeµÄioc(ÒÀÀµ×¢Èë)¹¦ÄÜÓÉBeanHelperÊµÏÖ£¬ËùÓĞµÄ×¢ÈëÊµÀıÒ²¿ÉÒÔ´ÓBeanHelperÖĞ»ñÈ¡(ºóÃæ½²µ½)¡£axeÌá¹©ÁËÈçÏÂµÄ×¢½âÀ´·½±ãiocµÄÊ¹ÓÃ¡£
+## IOCæ€ä¹ˆæ”¯æŒ
+axeçš„ioc(ä¾èµ–æ³¨å…¥)åŠŸèƒ½ç”±BeanHelperå®ç°ï¼Œæ‰€æœ‰çš„æ³¨å…¥å®ä¾‹ä¹Ÿå¯ä»¥ä»BeanHelperä¸­è·å–(åé¢è®²åˆ°)ã€‚axeæä¾›äº†å¦‚ä¸‹çš„æ³¨è§£æ¥æ–¹ä¾¿iocçš„ä½¿ç”¨ã€‚
 
 - @Controller
 - @Service
 - @Dao
 - @Autowired  
 
-¾ßÌåÓÃ·¨ÏÂÃæ»áÂıÂı½éÉÜ¡£
+å…·ä½“ç”¨æ³•ä¸‹é¢ä¼šæ…¢æ…¢ä»‹ç»ã€‚
 
-## MVCÔÚaxeÖĞ³¤Ê²Ã´Ñù
-axeÍÆ¼öµÄ·ç¸ñÊÇÇ°ºó¶Ë·ÖÀë£¬Ò²¾ÍÊÇviewÊÇÇ°Ì¨µÄÊÂÇé£¬ºóÌ¨·şÎñÖ»Ìá¹©Êı¾İ£¬Ö»¸ºÔğMVCÖĞµÄModelºÍController¡£
-µ«ÊÇaxeÒ²Ö§³ÖÍêÕûµÄMVC£¬View²ã¿ÉÒÔÍ¨¹ıÔÚControllerÖĞ·µ»ØµÄ½á¹ûÀàĞÍ(View.class)À´Ìø×ª£¬View.class¶ÔÏóµÄÊµÀı°üº¬Ò»¸öµØÖ·×Ö·û´®£¬Ö§³ÖĞ¯´ø²ÎÊı¸øjspÒ³Ãæ¡£
+## MVCåœ¨axeä¸­é•¿ä»€ä¹ˆæ ·
+axeæ¨èçš„é£æ ¼æ˜¯å‰åç«¯åˆ†ç¦»ï¼Œä¹Ÿå°±æ˜¯viewæ˜¯å‰å°çš„äº‹æƒ…ï¼Œåå°æœåŠ¡åªæä¾›æ•°æ®ï¼Œåªè´Ÿè´£MVCä¸­çš„Modelå’ŒControllerã€‚
+ä½†æ˜¯axeä¹Ÿæ”¯æŒå®Œæ•´çš„MVCï¼ŒViewå±‚å¯ä»¥é€šè¿‡åœ¨Controllerä¸­è¿”å›çš„ç»“æœç±»å‹(View.class)æ¥è·³è½¬ï¼ŒView.classå¯¹è±¡çš„å®ä¾‹åŒ…å«ä¸€ä¸ªåœ°å€å­—ç¬¦ä¸²ï¼Œæ”¯æŒæºå¸¦å‚æ•°ç»™jspé¡µé¢ã€‚
 ```java
-@Controller(title="Ìø×ªjspµÄcontroller",basePath="/to")
+@Controller(title="è·³è½¬jspçš„controller",basePath="/to")
 public class ToJspController extends BaseRest{
 	
 	@Autowired
@@ -259,22 +259,22 @@ public class ToJspController extends BaseRest{
 	private AreaOpenService areaOpenService;
 	
 	/**
-	 * Ó¦ÎªÎ¢ĞÅ½øÀ´£¬ÊÇ´ø×ÅcodeµÄ£¬Õâ¸öµØÖ·±ØĞësendRedirectÀ´¸Äµô£¬
-	 * ·ñÔòË¢ĞÂÒ³Ãæ£¬codeÊÇ²»ÄÜÖØ¸´ÓÃµÄ
+	 * åº”ä¸ºå¾®ä¿¡è¿›æ¥ï¼Œæ˜¯å¸¦ç€codeçš„ï¼Œè¿™ä¸ªåœ°å€å¿…é¡»sendRedirectæ¥æ”¹æ‰ï¼Œ
+	 * å¦åˆ™åˆ·æ–°é¡µé¢ï¼Œcodeæ˜¯ä¸èƒ½é‡å¤ç”¨çš„
 	 */
-	@Request(title="ÑûÇë×¢²á[Î¢ĞÅÈë¿Ú]",value="/invite_wx",method=RequestMethod.GET)
+	@Request(title="é‚€è¯·æ³¨å†Œ[å¾®ä¿¡å…¥å£]",value="/invite_wx",method=RequestMethod.GET)
 	public View invite_wx(HttpServletRequest request,HttpServletResponse response){
 		return new View("/to/invite").addModel("token", getToken(request));
 	}
 	
-	@Request(title="ÑûÇë×¢²á",value="/invite",method=RequestMethod.GET)
+	@Request(title="é‚€è¯·æ³¨å†Œ",value="/invite",method=RequestMethod.GET)
 	public View invite(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/invite.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
-			//Èç¹ûÒÑ×¢²á£¬Ö±½ÓÌøÊ×Ò³
+			//å¦‚æœå·²æ³¨å†Œï¼Œç›´æ¥è·³é¦–é¡µ
 			return new View("/to/index").addModel("token", getToken(request));
 		}
 		
@@ -282,18 +282,18 @@ public class ToJspController extends BaseRest{
 	}
 	
 	/**
-	 * Ó¦ÎªÎ¢ĞÅ½øÀ´£¬ÊÇ´ø×ÅcodeµÄ£¬Õâ¸öµØÖ·±ØĞësendRedirectÀ´¸Äµô£¬
-	 * ·ñÔòË¢ĞÂÒ³Ãæ£¬codeÊÇ²»ÄÜÖØ¸´ÓÃµÄ
+	 * åº”ä¸ºå¾®ä¿¡è¿›æ¥ï¼Œæ˜¯å¸¦ç€codeçš„ï¼Œè¿™ä¸ªåœ°å€å¿…é¡»sendRedirectæ¥æ”¹æ‰ï¼Œ
+	 * å¦åˆ™åˆ·æ–°é¡µé¢ï¼Œcodeæ˜¯ä¸èƒ½é‡å¤ç”¨çš„
 	 */
-	@Request(title="Ê×Ò³[Î¢ĞÅÈë¿Ú]",value="/index_wx",method=RequestMethod.GET)
+	@Request(title="é¦–é¡µ[å¾®ä¿¡å…¥å£]",value="/index_wx",method=RequestMethod.GET)
 	public View index_wx(HttpServletRequest request,HttpServletResponse response){
 		return new View("/to/index").addModel("token", getToken(request));
 	}
 	
-	@Request(title="Ê×Ò³",value="/index",method=RequestMethod.GET)
+	@Request(title="é¦–é¡µ",value="/index",method=RequestMethod.GET)
 	public View index(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/index.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
@@ -301,39 +301,39 @@ public class ToJspController extends BaseRest{
 			view.addModel("customerVO", customerVO);
 		}
 		
-		//¿ª·Å³ÇÊĞÁĞ±í
+		//å¼€æ”¾åŸå¸‚åˆ—è¡¨
 		view.addModel("openAreaList", areaOpenService.list());
 		
-		//Ê×Ò³µÄÂÖ²¥Í¼£¬»î¶¯¾«Ñ¡
+		//é¦–é¡µçš„è½®æ’­å›¾ï¼Œæ´»åŠ¨ç²¾é€‰
 		List<CustomerBanner> list = customerBannerService.getList();
 		view.addModel("customerBannerList", list);
 		
 		return view;
 	}
 	
-	@Request(title="¸öÈËÖĞĞÄ[Î¢ĞÅÈë¿Ú]",value="/user_wx",method=RequestMethod.GET)
+	@Request(title="ä¸ªäººä¸­å¿ƒ[å¾®ä¿¡å…¥å£]",value="/user_wx",method=RequestMethod.GET)
 	public View user_wx(HttpServletRequest request,HttpServletResponse response){
 		return new View("/to/user").addModel("token", getToken(request));
 	}
 	
-	@Request(title="¸öÈËÖĞĞÄ",value="/user",method=RequestMethod.GET)
+	@Request(title="ä¸ªäººä¸­å¿ƒ",value="/user",method=RequestMethod.GET)
 	public View user(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/user.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
 			CustomerVO customerVO = customerService.getCustomerVO(customertUserId);
 			view.addModel("customerVO", customerVO);
 			if(customerVO != null && customerVO.getBaseUserInfo() != null){
-				//Óà¶îÕË»§ĞÅÏ¢
+				//ä½™é¢è´¦æˆ·ä¿¡æ¯
 				RestData<BalanceAccountVO> balanceAccount = UnitedUserRestClient.getBalanceAccountByUid(customerVO.getBaseUserInfo().getUid());
 				if(RestDataCode.SUCCESS.equals(balanceAccount.getCode())){
 					if("000".equals(balanceAccount.getData().get_CODE_())){
 						view.addModel("balanceAccount", balanceAccount.getData());
 					}
 				}
-				//»ı·ÖÕË»§ĞÅÏ¢
+				//ç§¯åˆ†è´¦æˆ·ä¿¡æ¯
 				RestData<PointsAccountVO> pointsAccount = UnitedUserRestClient.getPointsAccountByUid(customerVO.getBaseUserInfo().getUid());
 				if(RestDataCode.SUCCESS.equals(pointsAccount.getCode())){
 					if("000".equals(pointsAccount.getData().get_CODE_())){
@@ -346,14 +346,14 @@ public class ToJspController extends BaseRest{
 	}
 	
 
-	@Request(title="µØÖ·¹ÜÀí",value="/address_manager",method=RequestMethod.GET)
+	@Request(title="åœ°å€ç®¡ç†",value="/address_manager",method=RequestMethod.GET)
 	public View address_manager(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/address_manager.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
-			//ÓÃ»§µÄµØÖ·ÁĞ±í
+			//ç”¨æˆ·çš„åœ°å€åˆ—è¡¨
 			CustomerUser entity = customerService.getEntity(customertUserId);
 			if(entity != null){
 				RestData<AddressListVO> addressList =  UnitedUserRestClient.getAddressList(entity.getUid());
@@ -367,26 +367,26 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	@Request(title="µØÖ·¹ÜÀí-ĞÂÔöµØÖ·",value="/address_new",method=RequestMethod.GET)
+	@Request(title="åœ°å€ç®¡ç†-æ–°å¢åœ°å€",value="/address_new",method=RequestMethod.GET)
 	public View address_new(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/address_new.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 
-		//¿ª·Å³ÇÊĞÁĞ±í
+		//å¼€æ”¾åŸå¸‚åˆ—è¡¨
 		view.addModel("openAreaList", areaOpenService.list());
 		return view;
 	}
 	
-	@Request(title="µØÖ·¹ÜÀí-±à¼­µØÖ·",value="/address_edit/{addressId}",method=RequestMethod.GET)
+	@Request(title="åœ°å€ç®¡ç†-ç¼–è¾‘åœ°å€",value="/address_edit/{addressId}",method=RequestMethod.GET)
 	public View address_edit(
 			@Required
 			@RequestParam("addressId")Long addressId,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/address_edit.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
-		//ÓÃ»§µÄµØÖ·ÁĞ±í
+		//ç”¨æˆ·çš„åœ°å€åˆ—è¡¨
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
 			CustomerUser entity = customerService.getEntity(customertUserId);
@@ -409,7 +409,7 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	@Request(title="ÎÒµÄ¶©µ¥",value="/order_list",method=RequestMethod.GET)
+	@Request(title="æˆ‘çš„è®¢å•",value="/order_list",method=RequestMethod.GET)
 	public View order_list(
 			@RequestParam("toDoorOrderActive")String toDoorOrderActive,
 			@RequestParam("collectionBoxOrderActive")String collectionBoxOrderActive,
@@ -422,11 +422,11 @@ public class ToJspController extends BaseRest{
 		view.addModel("toDoorOrderActive", toDoorOrderActive);
 		view.addModel("collectionBoxOrderActive", collectionBoxOrderActive);
 		
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
-			//¶©µ¥ÁĞ±í
+			//è®¢å•åˆ—è¡¨
 			view.addModel("toDoorOrderList", toDoorOrderService.getList(customertUserId));
 			view.addModel("collectionBoxOrderList", collectionBoxOrderService.getList(customertUserId,null));
 		}
@@ -436,7 +436,7 @@ public class ToJspController extends BaseRest{
 	}
 	
 
-	@Request(title="Ô¤Ô¼ÉÏÃÅ¶©µ¥ÆÀ¼Û",value="/to_door_order_comment",method=RequestMethod.GET)
+	@Request(title="é¢„çº¦ä¸Šé—¨è®¢å•è¯„ä»·",value="/to_door_order_comment",method=RequestMethod.GET)
 	public View to_door_order_comment(
 			@Required
 			@RequestParam("id")Long id,
@@ -446,10 +446,10 @@ public class ToJspController extends BaseRest{
 		View view = new View("/view/to_door_order_comment.jsp").dispatcher();
 		view.addModel("id", id);
 		
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		
-		//¼ÓÔØ»ØÊÕÔ±ĞÅÏ¢
+		//åŠ è½½å›æ”¶å‘˜ä¿¡æ¯
 		BuyerUser buyerUser = buyerService.getEntity(buyerUserId);
 		view.addModel("buyerUser", buyerUser);
 		
@@ -457,20 +457,20 @@ public class ToJspController extends BaseRest{
 	}
 	
 
-	@Request(title="Ô¤Ô¼ÉÏÃÅ¶©µ¥ÏêÇé",value="/to_door_order",method=RequestMethod.GET)
+	@Request(title="é¢„çº¦ä¸Šé—¨è®¢å•è¯¦æƒ…",value="/to_door_order",method=RequestMethod.GET)
 	public View to_door_order(
 			@Required
 			@RequestParam("id")Long id,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/to_door_order.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
-		//¶©µ¥ĞÅÏ¢
+		//è®¢å•ä¿¡æ¯
 		ToDoorOrder toDoorOrder = toDoorOrderService.getEntity(id);
 		if(toDoorOrder != null){
 			toDoorOrder = toDoorOrderService.setOtherIfo(toDoorOrder);
 			
-			//¼ÓÔØ»ØÊÕÔ±ĞÅÏ¢
+			//åŠ è½½å›æ”¶å‘˜ä¿¡æ¯
 			view.addModel("id", id);
 			if(toDoorOrder.getBuyerUserId() != null){
 				BuyerUser buyerUser = buyerService.getEntity(toDoorOrder.getBuyerUserId());
@@ -490,20 +490,20 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	@Request(title="»ØÊÕÏä¶©µ¥ÏêÇé",value="/collection_box_order",method=RequestMethod.GET)
+	@Request(title="å›æ”¶ç®±è®¢å•è¯¦æƒ…",value="/collection_box_order",method=RequestMethod.GET)
 	public View collection_box_order(
 			@Required
 			@RequestParam("id")Long id,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/collection_box_order.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
-		//¶©µ¥ĞÅÏ¢
+		//è®¢å•ä¿¡æ¯
 		CollectionBoxOrder collectionBoxOrder = collectionBoxOrderService.getEntity(id);
 		view.addModel("id", id);
 		view.addModel("collectionBoxOrder", collectionBoxOrder);
 		if(collectionBoxOrder != null && collectionBoxOrder.getCollectionBoxId() != null){
-			//²¹³äĞÅÏ¢
+			//è¡¥å……ä¿¡æ¯
 			CollectionBox collectionBox = collectionBoxService.getEntity(collectionBoxOrder.getCollectionBoxId());
 			view.addModel("collectionBox", collectionBox);
 		}
@@ -511,8 +511,8 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	//´ÓÎ¢ĞÅ½øÀ´£¬ÎªÁË±ÜÃâcodeÁôÔÚµØÖ·À¸£¬Ë¢ĞÂºóÎŞĞ§£¬ËùÒÔ×ª·¢Ò»´Î
-	@Request(title="»ØÊÕÏä¶©µ¥Í¶·Å[Î¢ĞÅÈë¿Ú]",value="/collection_box_order_put_wx",method=RequestMethod.GET)
+	//ä»å¾®ä¿¡è¿›æ¥ï¼Œä¸ºäº†é¿å…codeç•™åœ¨åœ°å€æ ï¼Œåˆ·æ–°åæ— æ•ˆï¼Œæ‰€ä»¥è½¬å‘ä¸€æ¬¡
+	@Request(title="å›æ”¶ç®±è®¢å•æŠ•æ”¾[å¾®ä¿¡å…¥å£]",value="/collection_box_order_put_wx",method=RequestMethod.GET)
 	public View collection_box_order_put_wx(
 			@Required
 			@RequestParam("state")String collectionBoxNumber,
@@ -523,21 +523,21 @@ public class ToJspController extends BaseRest{
 				.addModel("collectionBoxNumber", collectionBoxNumber);
 	}
 
-	//ÔİÊ±À´Ëµ£¬Õâ¸öÒ³ÃæÃ»ÓĞ»ØÊÕÏäµÄĞÅÏ¢£¬Ö»ÓĞ´ıÍ¶·ÅµÄ¶©µ¥ÁĞ±í
-	@Request(title="»ØÊÕÏä¶©µ¥Í¶·Å",value="/collection_box_order_put",method=RequestMethod.GET)
+	//æš‚æ—¶æ¥è¯´ï¼Œè¿™ä¸ªé¡µé¢æ²¡æœ‰å›æ”¶ç®±çš„ä¿¡æ¯ï¼Œåªæœ‰å¾…æŠ•æ”¾çš„è®¢å•åˆ—è¡¨
+	@Request(title="å›æ”¶ç®±è®¢å•æŠ•æ”¾",value="/collection_box_order_put",method=RequestMethod.GET)
 	public View collection_box_order_put(
 			@Required
 			@RequestParam("collectionBoxNumber")String collectionBoxNumber,
 			@RequestParam("collectionBoxOrderId")Long collectionBoxOrderId,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/collection_box_order_put.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		view.addModel("collectionBoxNumber", collectionBoxNumber);
-		//Ä¬ÈÏ¹´Ñ¡µÄ¶©µ¥id
+		//é»˜è®¤å‹¾é€‰çš„è®¢å•id
 		view.addModel("collectionBoxOrderId", collectionBoxOrderId);
 		
-		//´ıÍ¶·Å¶©µ¥ÁĞ±í
+		//å¾…æŠ•æ”¾è®¢å•åˆ—è¡¨
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
 			view.addModel("collectionBoxOrderList", collectionBoxOrderService.getList(customertUserId,0));
@@ -546,13 +546,13 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	@Request(title="»ØÊÕÏäÏêÇé",value="/collection_box",method=RequestMethod.GET)
+	@Request(title="å›æ”¶ç®±è¯¦æƒ…",value="/collection_box",method=RequestMethod.GET)
 	public View collection_box(
 			@Required
 			@RequestParam("collectionBoxNumber")String collectionBoxNumber,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/collection_box.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		view.addModel("collectionBoxNumber", collectionBoxNumber);
 		if(StringUtil.isNotEmpty(collectionBoxNumber)){
@@ -566,14 +566,14 @@ public class ToJspController extends BaseRest{
 	}
 
 
-	@Request(title="Ô¤Ô¼ÉÏÃÅÏÂµ¥Ò³Ãæ",value="/to_door_order_create",method=RequestMethod.GET)
+	@Request(title="é¢„çº¦ä¸Šé—¨ä¸‹å•é¡µé¢",value="/to_door_order_create",method=RequestMethod.GET)
 	public View to_door_order_create(
 			@RequestParam("area")String area,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/to_door_order_create.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
-		//Ô¤Ô¼ÉÏÃÅ£¬ÓÃ»§¶ËµÄ·ÖÀàÁĞ±í
+		//é¢„çº¦ä¸Šé—¨ï¼Œç”¨æˆ·ç«¯çš„åˆ†ç±»åˆ—è¡¨
 		view.addModel("catalogList",new ArrayList<>());
 		if(StringUtil.isNotEmpty(area)){
 			String[] areaSplit = area.split("-");
@@ -582,7 +582,7 @@ public class ToJspController extends BaseRest{
 			}
 		}
 		
-		//ÓÃ»§µÄµØÖ·ÁĞ±í
+		//ç”¨æˆ·çš„åœ°å€åˆ—è¡¨
 		view.addModel("addressList", new ArrayList<>());
 		Long customertUserId = getCustomerUserId(request);
 		if(customertUserId != null){
@@ -592,7 +592,7 @@ public class ToJspController extends BaseRest{
 				if(RestDataCode.SUCCESS.equals(addressList.getCode())){
 					if("000".equals(addressList.getData().get_CODE_())){
 						List<AddressVO> records = addressList.getData().getRecords();
-						//Ä¬ÈÏµØÖ·£¬Ã»ÓĞµÄ»°£¬È¡µÚÒ»¸ö
+						//é»˜è®¤åœ°å€ï¼Œæ²¡æœ‰çš„è¯ï¼Œå–ç¬¬ä¸€ä¸ª
 						if(CollectionUtil.isNotEmpty(records)){
 							for(AddressVO address:records){
 								String addressArea = address.getProvinceName()+"-"+address.getCityName()+"-"+address.getCountyName();
@@ -615,7 +615,7 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	@Request(title="Ô¤Ô¼ÉÏÃÅÏÂµ¥³É¹¦Ò³Ãæ",value="/to_door_order_create_success",method=RequestMethod.GET)
+	@Request(title="é¢„çº¦ä¸Šé—¨ä¸‹å•æˆåŠŸé¡µé¢",value="/to_door_order_create_success",method=RequestMethod.GET)
 	public View to_door_order_create_success(
 			@Required
 			@RequestParam("orderId")Long orderId,
@@ -625,24 +625,24 @@ public class ToJspController extends BaseRest{
 		View view = new View("/view/to_door_order_create_success.jsp").dispatcher();
 		view.addModel("orderId", orderId);
 		view.addModel("orderNumber", orderNumber);
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		return view;
 	}
 	
-	@Request(title="»ØÊÕÏäÏÂµ¥Ò³Ãæ",value="/collection_box_order_create",method=RequestMethod.GET)
+	@Request(title="å›æ”¶ç®±ä¸‹å•é¡µé¢",value="/collection_box_order_create",method=RequestMethod.GET)
 	public View collection_box_order_create(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/collection_box_order_create.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		
-		//»ØÊÕÏä£¬ÓÃ»§¶ËµÄ·ÖÀàÁĞ±í
+		//å›æ”¶ç®±ï¼Œç”¨æˆ·ç«¯çš„åˆ†ç±»åˆ—è¡¨
 		view.addModel("catalogList",collectionBoxOrderCatalogService.list());
 		
 		return view;
 	}
 	
-	@Request(title="»ØÊÕÏäÏÂµ¥³É¹¦Ò³Ãæ",value="/collection_box_order_create_success",method=RequestMethod.GET)
+	@Request(title="å›æ”¶ç®±ä¸‹å•æˆåŠŸé¡µé¢",value="/collection_box_order_create_success",method=RequestMethod.GET)
 	public View collection_box_order_create_success(
 			@Required
 			@RequestParam("orderId")Long orderId,
@@ -652,12 +652,12 @@ public class ToJspController extends BaseRest{
 		View view = new View("/view/collection_box_order_create_success.jsp").dispatcher();
 		view.addModel("orderId", orderId);
 		view.addModel("orderNumber", orderNumber);
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		return view;
 	}
 	
-	@Request(title="¸½½üµÄ»ØÊÕÏäÒ³Ãæ",value="/nearby_collection_box",method=RequestMethod.GET)
+	@Request(title="é™„è¿‘çš„å›æ”¶ç®±é¡µé¢",value="/nearby_collection_box",method=RequestMethod.GET)
 	public View nearby_collection_box(
 			@Required
 			@RequestParam("lng")Double lng,
@@ -665,33 +665,33 @@ public class ToJspController extends BaseRest{
 			@RequestParam("lat")Double lat,
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/nearby_collection_box.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		
-		//¸½½üµÄ»ØÊÕÏä
+		//é™„è¿‘çš„å›æ”¶ç®±
 		view.addModel("collectionBoxList",collectionBoxService.list(lng,lat));
 		
 		return view;
 	}
 
 
-	@Request(title="³Ç¹Ü¾Ö-À¬»ø·ÖÀà[appÈë¿Ú]",value="/garbage_can_order_create_app",method=RequestMethod.GET)
+	@Request(title="åŸç®¡å±€-åƒåœ¾åˆ†ç±»[appå…¥å£]",value="/garbage_can_order_create_app",method=RequestMethod.GET)
 	public View garbage_can_order_create_app(HttpServletRequest request,HttpServletResponse response){
 		return new View("/to/garbage_can_order_create")
 				.addModel("token", getToken(request));
 	}
 	
-	@Request(title="³Ç¹Ü¾Ö-À¬»ø·ÖÀà",value="/garbage_can_order_create",method=RequestMethod.GET)
+	@Request(title="åŸç®¡å±€-åƒåœ¾åˆ†ç±»",value="/garbage_can_order_create",method=RequestMethod.GET)
 	public View garbage_can_order_create(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/garbage_can_order_create.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		
 		return view;
 	}
 	
-	//´ÓÎ¢ĞÅ½øÀ´£¬ÎªÁË±ÜÃâcodeÁôÔÚµØÖ·À¸£¬Ë¢ĞÂºóÎŞĞ§£¬ËùÒÔ×ª·¢Ò»´Î
-	@Request(title="³Ç¹Ü¾ÖÀ¬»øÏä¶©µ¥Í¶·Å[Î¢ĞÅÈë¿Ú]",value="/garbage_can_order_put_wx",method=RequestMethod.GET)
+	//ä»å¾®ä¿¡è¿›æ¥ï¼Œä¸ºäº†é¿å…codeç•™åœ¨åœ°å€æ ï¼Œåˆ·æ–°åæ— æ•ˆï¼Œæ‰€ä»¥è½¬å‘ä¸€æ¬¡
+	@Request(title="åŸç®¡å±€åƒåœ¾ç®±è®¢å•æŠ•æ”¾[å¾®ä¿¡å…¥å£]",value="/garbage_can_order_put_wx",method=RequestMethod.GET)
 	public View garbage_can_order_put_wx(
 			HttpServletRequest request,HttpServletResponse response){
 		
@@ -699,17 +699,17 @@ public class ToJspController extends BaseRest{
 				.addModel("token", getToken(request));
 	}
 	
-	@Request(title="³Ç¹Ü¾ÖÀ¬»øÏä¶©µ¥Í¶·Å",value="/garbage_can_order_put",method=RequestMethod.GET)
+	@Request(title="åŸç®¡å±€åƒåœ¾ç®±è®¢å•æŠ•æ”¾",value="/garbage_can_order_put",method=RequestMethod.GET)
 	public View garbage_can_order_put(
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/garbage_can_order_put.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		return view;
 	}
 	
-	//´ÓÎ¢ĞÅ½øÀ´£¬ÎªÁË±ÜÃâcodeÁôÔÚµØÖ·À¸£¬Ë¢ĞÂºóÎŞĞ§£¬ËùÒÔ×ª·¢Ò»´Î
-	@Request(title="»ı·ÖÉÌ³Ç[Î¢ĞÅÈë¿Ú]",value="/points_shop_wx",method=RequestMethod.GET)
+	//ä»å¾®ä¿¡è¿›æ¥ï¼Œä¸ºäº†é¿å…codeç•™åœ¨åœ°å€æ ï¼Œåˆ·æ–°åæ— æ•ˆï¼Œæ‰€ä»¥è½¬å‘ä¸€æ¬¡
+	@Request(title="ç§¯åˆ†å•†åŸ[å¾®ä¿¡å…¥å£]",value="/points_shop_wx",method=RequestMethod.GET)
 	public View points_shop_wx(
 			HttpServletRequest request,HttpServletResponse response){
 		
@@ -717,20 +717,20 @@ public class ToJspController extends BaseRest{
 				.addModel("token", getToken(request));
 	}
 	
-	@Request(title="»ı·ÖÉÌ³Ç",value="/points_shop",method=RequestMethod.GET)
+	@Request(title="ç§¯åˆ†å•†åŸ",value="/points_shop",method=RequestMethod.GET)
 	public View points_shop(
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/points_shop.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		return view;
 	}
 
-	@Request(title="Óà¶îÌáÏÖ",value="/balance_withdraw",method=RequestMethod.GET)
+	@Request(title="ä½™é¢æç°",value="/balance_withdraw",method=RequestMethod.GET)
 	public View balance_withdraw(
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/balance_withdraw.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 
 		Long customertUserId = getCustomerUserId(request);
@@ -738,7 +738,7 @@ public class ToJspController extends BaseRest{
 			CustomerUser customer = customerService.getEntity(customertUserId);
 			if(customer != null){
 				
-				//Óà¶îÕË»§ĞÅÏ¢
+				//ä½™é¢è´¦æˆ·ä¿¡æ¯
 				RestData<BalanceAccountVO> balanceAccount = UnitedUserRestClient.getBalanceAccountByUid(customer.getUid());
 				if(RestDataCode.SUCCESS.equals(balanceAccount.getCode())){
 					if("000".equals(balanceAccount.getData().get_CODE_())){
@@ -746,8 +746,8 @@ public class ToJspController extends BaseRest{
 					}
 				}
 				
-				//ÊÇ·ñ¹Ø×¢ÊÂÁ¬¹«ÖÚºÅ
-				view.addModel("subscribe", 0);//Ä¬ÈÏÎ´¹Ø×¢£¬ÄÇ¾Í²»ÄÜÌáÏÖµ½Î¢ĞÅ
+				//æ˜¯å¦å…³æ³¨äº‹è¿å…¬ä¼—å·
+				view.addModel("subscribe", 0);//é»˜è®¤æœªå…³æ³¨ï¼Œé‚£å°±ä¸èƒ½æç°åˆ°å¾®ä¿¡
 				String openid = getOpenid(request);
 				if(StringUtil.isNotEmpty(openid)){
 					CustomerUserWechatLogin customerUserWechatLogin = customerService.getCustomerUserWechatLogin(openid);
@@ -758,7 +758,7 @@ public class ToJspController extends BaseRest{
 					}
 				}
 				
-				//×î½üÌáÏÖ
+				//æœ€è¿‘æç°
 				RestData<BalanceWithdrawLastRecordsVO> balanceWithdrawLastRecords = UnitedUserRestClient.getBalanceWithdrawLastRecords(customer.getUid());
 				if(RestDataCode.SUCCESS.equals(balanceWithdrawLastRecords.getCode())){
 					if("000".equals(balanceWithdrawLastRecords.getData().get_CODE_())){
@@ -808,14 +808,14 @@ public class ToJspController extends BaseRest{
 		return view;
 	}
 	
-	@Request(title="Óà¶îÌáÏÖ¼ÇÂ¼",value="/balance_withdraw_records",method=RequestMethod.GET)
+	@Request(title="ä½™é¢æç°è®°å½•",value="/balance_withdraw_records",method=RequestMethod.GET)
 	public View balance_withdraw_records(
 			HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/balance_withdraw_records.jsp").dispatcher();
-		//token ºÍ ÓÃ»§ĞÅÏ¢
+		//token å’Œ ç”¨æˆ·ä¿¡æ¯
 		view.addModel("token", getToken(request));
 		
-		//ÌáÏÖ¼ÇÂ¼
+		//æç°è®°å½•
 		Long customerUserId = getCustomerUserId(request);
 		if(customerUserId != null){
 			CustomerUser entity = customerService.getEntity(customerUserId);
@@ -876,19 +876,19 @@ public class ToJspController extends BaseRest{
 
 
 ## Restful
-¾ßÌå¶¨ÒåÕâÀï²»×ö½âÊÍÁË£¬axe¶ÔrestÇëÇóurlÖĞµÄ²ÎÊıÖ§³ÖÈçÏÂµÄ½âÎö·½Ê½¡£
+å…·ä½“å®šä¹‰è¿™é‡Œä¸åšè§£é‡Šäº†ï¼Œaxeå¯¹restè¯·æ±‚urlä¸­çš„å‚æ•°æ”¯æŒå¦‚ä¸‹çš„è§£ææ–¹å¼ã€‚
 
-- Èç /get/{id}_{name}  ÖĞidºÍnameÊÇ²ÎÊı 
-- Èç /get_{id}/{name}  Ò²ÊÇidºÍname±íÊ¾²ÎÊı
-- ²ÎÊıÖ»ÄÜÊÇÊı×ÖºÍ×ÖÄ¸£¬urlÖ»ÄÜÊÇÊı×Ö¡¢×ÖÄ¸¡¢ÏÂ»®ÏßºÍ$·û
+- å¦‚ /get/{id}_{name}  ä¸­idå’Œnameæ˜¯å‚æ•° 
+- å¦‚ /get_{id}/{name}  ä¹Ÿæ˜¯idå’Œnameè¡¨ç¤ºå‚æ•°
+- å‚æ•°åªèƒ½æ˜¯æ•°å­—å’Œå­—æ¯ï¼Œurlåªèƒ½æ˜¯æ•°å­—ã€å­—æ¯ã€ä¸‹åˆ’çº¿å’Œ$ç¬¦
 
-ÏÂÃæÊÇÒ»¸ö±È½ÏÍêÕûµÄÇëÇó²ÎÊıÊÂÀı¡£
+ä¸‹é¢æ˜¯ä¸€ä¸ªæ¯”è¾ƒå®Œæ•´çš„è¯·æ±‚å‚æ•°äº‹ä¾‹ã€‚
 ```java
 @Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
     public Data postPathParam(
-        	@RequestParam("money")Integer money,//Èç¹ûmoneyÊÇÕûÊı£¬ÕâÀï¾ÍÓĞÖµ£¬Èç¹ûÊÇ±ğµÄ£¬ÉõÖÁÊÇ×Ö·û´®£¬¾Í»áÊÇnull
+        	@RequestParam("money")Integer money,//å¦‚æœmoneyæ˜¯æ•´æ•°ï¼Œè¿™é‡Œå°±æœ‰å€¼ï¼Œå¦‚æœæ˜¯åˆ«çš„ï¼Œç”šè‡³æ˜¯å­—ç¬¦ä¸²ï¼Œå°±ä¼šæ˜¯null
     		
-    		@RequestParam("file")FileParam file1,//µ¥¸öÎÄ¼ş£¬Èç¹ûÉÏ´«µÄÊÇ¶àÎÄ¼ş£¬Ö»»áÄÃµ½×îºóÒ»¸ö
+    		@RequestParam("file")FileParam file1,//å•ä¸ªæ–‡ä»¶ï¼Œå¦‚æœä¸Šä¼ çš„æ˜¯å¤šæ–‡ä»¶ï¼Œåªä¼šæ‹¿åˆ°æœ€åä¸€ä¸ª
     		@RequestParam("file")Object file2,
     		@RequestParam("file")List<FileParam> filesList1,
     		@RequestParam("file")List<?> filesList2,
@@ -896,12 +896,12 @@ public class ToJspController extends BaseRest{
     		@RequestParam("file")FileParam[] filesAry1,
     		@RequestParam("file")Object[] filesAry2,
     		
-    		@RequestParam("ids")Integer ids,//Èç¹û´«µİµÄ²ÎÊıÊÇ¶à¸ö£¬Ö»»áÄÃµ½×îºóÒ»¸ö
+    		@RequestParam("ids")Integer ids,//å¦‚æœä¼ é€’çš„å‚æ•°æ˜¯å¤šä¸ªï¼Œåªä¼šæ‹¿åˆ°æœ€åä¸€ä¸ª
     		@RequestParam("ids")List<String> idsList1,
     		@RequestParam("ids")List<?> idsList2,
     		@RequestParam("ids")List<Integer> idsList3,
     		@RequestParam("ids")List idsList4,
-    		@RequestParam("ids")String[] idsAry1,//Èç¹û´«µİµÄ²ÎÊıÊÇ¶à¸ö£¬»áÓÃ","Æ´½Ó
+    		@RequestParam("ids")String[] idsAry1,//å¦‚æœä¼ é€’çš„å‚æ•°æ˜¯å¤šä¸ªï¼Œä¼šç”¨","æ‹¼æ¥
     		@RequestParam("ids")Integer[] idsAry2,
     		@RequestParam("ids")Double[] idsAry3,
     		@RequestParam("ids")Object[] idsAry4,
@@ -918,77 +918,77 @@ public class ToJspController extends BaseRest{
     		HttpServletResponse response,
     		Param param,
     		Map<String,String> body,
-    		String otherParam){//ÕâÀï×ÜÊÇnull£¬Èç¹ûÓĞÈËÕâÃ´Ğ´£¬ÄÇÖ»ÄÜÔÚ±ğµÄµØ·½ÊÖ¹¤µ÷ÓÃÕâ¸ö·½·¨Ê±ºò´«ÖµÁË£¬¿ò¼Ü²»»áÓ³ÉäµÄ¡£
+    		String otherParam){//è¿™é‡Œæ€»æ˜¯nullï¼Œå¦‚æœæœ‰äººè¿™ä¹ˆå†™ï¼Œé‚£åªèƒ½åœ¨åˆ«çš„åœ°æ–¹æ‰‹å·¥è°ƒç”¨è¿™ä¸ªæ–¹æ³•æ—¶å€™ä¼ å€¼äº†ï¼Œæ¡†æ¶ä¸ä¼šæ˜ å°„çš„ã€‚
     	System.out.println("postPathParam");
 //    	Data data = analysisParam(param);
         return null;
     }
  
 ```
-> ĞèÒª×¢ÒâµÄÊÇ£¬²»ÔÊĞíÁ½ÌõÍêÈ«Ò»ÑùµÄurl´æÔÚ¡£
+> éœ€è¦æ³¨æ„çš„æ˜¯ï¼Œä¸å…è®¸ä¸¤æ¡å®Œå…¨ä¸€æ ·çš„urlå­˜åœ¨ã€‚
 
 ## Controller Class
-ÂÔ
+ç•¥
 
 ## Action Method
-Ä¿Ç°Ö§³ÖPOST¡¢DELETE¡¢PUT¡¢GETËÄÖÖ¡£ÔÚÆäËû³¡¾°ÏÂĞèÒªHEAD¡¢OPTIONµÈÀàĞÍ¿ÉÒÔ×ÔĞĞÀ©Õ¹¡£
+ç›®å‰æ”¯æŒPOSTã€DELETEã€PUTã€GETå››ç§ã€‚åœ¨å…¶ä»–åœºæ™¯ä¸‹éœ€è¦HEADã€OPTIONç­‰ç±»å‹å¯ä»¥è‡ªè¡Œæ‰©å±•ã€‚
 
 ## Param
-ÂÔ
+ç•¥
 
 ## FileParam
-ÂÔ
+ç•¥
 
 ## Data
-ÂÔ
+ç•¥
 
 ## View
-ÂÔ
+ç•¥
 
 ## Filter
-¹ıÂËÆ÷ÓÃÒÔ¹ıÂËÇëÇó£¬ÔÚ¹ıÂËµÄ¹ı³ÌÖĞÅĞ¶ÏÊÇ·ñĞèÒª¼ÌĞøÍùÏÂÌø×ªÖ±ÖÁController¡£
+è¿‡æ»¤å™¨ç”¨ä»¥è¿‡æ»¤è¯·æ±‚ï¼Œåœ¨è¿‡æ»¤çš„è¿‡ç¨‹ä¸­åˆ¤æ–­æ˜¯å¦éœ€è¦ç»§ç»­å¾€ä¸‹è·³è½¬ç›´è‡³Controllerã€‚
 
-| ·½·¨          | ·µ»ØÖµ               | ÃèÊö                                    |
+| æ–¹æ³•          | è¿”å›å€¼               | æè¿°                                    |
 | ------------- |:--------------------:| ---------------------------------------:|
-| setLevel      | int                  | ¹ıÂËÆ÷²ã¼¶£¬°´µİÔöÅÅÁĞ£¬Êı×ÖĞ¡µÄÏÈÖ´ĞĞ  |
-| setMapping    | Pattern              | ÉèÖÃurlÆ¥Åä¹æÔò                         |
-| setNotMapping | Pattern              | ÉèÖÃurlÆ¥ÅäµÄ¼¯ºÏÖĞ£¬ĞèÒªÅÅ³ıµÄurl¹æÔò  |
+| setLevel      | int                  | è¿‡æ»¤å™¨å±‚çº§ï¼ŒæŒ‰é€’å¢æ’åˆ—ï¼Œæ•°å­—å°çš„å…ˆæ‰§è¡Œ  |
+| setMapping    | Pattern              | è®¾ç½®urlåŒ¹é…è§„åˆ™                         |
+| setNotMapping | Pattern              | è®¾ç½®urlåŒ¹é…çš„é›†åˆä¸­ï¼Œéœ€è¦æ’é™¤çš„urlè§„åˆ™  |
 
-> setMapping¿ÉÒÔÉèÖÃ "^.*$" À´Æ¥ÅäËùÓĞ£¬ÔÙ¼ÓÒ»¸ösetNotMappingÉèÖÃ "login"À´·Å¿ªµÇÂ¼£¬¾ÍÊµÏÖÁË¼òµ¥µÄÈ¨ÏŞ¹ıÂË¡£
+> setMappingå¯ä»¥è®¾ç½® "^.*$" æ¥åŒ¹é…æ‰€æœ‰ï¼Œå†åŠ ä¸€ä¸ªsetNotMappingè®¾ç½® "login"æ¥æ”¾å¼€ç™»å½•ï¼Œå°±å®ç°äº†ç®€å•çš„æƒé™è¿‡æ»¤ã€‚
 
-#### ÓĞË³ĞòµÄFilterÁ´
-¹ıÂËÆ÷ÓĞË³Ğò£¬¿ò¼ÜÆô¶¯ºóÃ¿¸öactionÉÏ¶¼ÓĞÒ»¸ö¹ıÂËÆ÷ÁĞ±í¡£
+#### æœ‰é¡ºåºçš„Filteré“¾
+è¿‡æ»¤å™¨æœ‰é¡ºåºï¼Œæ¡†æ¶å¯åŠ¨åæ¯ä¸ªactionä¸Šéƒ½æœ‰ä¸€ä¸ªè¿‡æ»¤å™¨åˆ—è¡¨ã€‚
 #### FuckOff
-ÉÏÃæËµ¿ÉÒÔÍ¨¹ısetNotMappingÀ´ÅÅ³ı²»ĞèÒª¹ıÂËµÄurl(´ÓĞèÒª¹ıÂËµÄurl¼¯ºÏÖĞ)£¬ÕâÊÊºÏĞèÒªÅÅ³ıµÄurl²»Ö¹Ò»¸öµÄÇé¿ö¡£
-ÎÒÃÇÒ²¿ÉÒÔÔÚControllerµÄ·½·¨ÉÏÖ±½ÓÊ¹ÓÃ@FilterFuckOffÀ´ÅÅ³ıÖ¸¶¨µÄFilter£¬ÔÚÓĞĞ©³¡¾°ÏÂ¸ü·½±ã¡£
+ä¸Šé¢è¯´å¯ä»¥é€šè¿‡setNotMappingæ¥æ’é™¤ä¸éœ€è¦è¿‡æ»¤çš„url(ä»éœ€è¦è¿‡æ»¤çš„urlé›†åˆä¸­)ï¼Œè¿™é€‚åˆéœ€è¦æ’é™¤çš„urlä¸æ­¢ä¸€ä¸ªçš„æƒ…å†µã€‚
+æˆ‘ä»¬ä¹Ÿå¯ä»¥åœ¨Controllerçš„æ–¹æ³•ä¸Šç›´æ¥ä½¿ç”¨@FilterFuckOffæ¥æ’é™¤æŒ‡å®šçš„Filterï¼Œåœ¨æœ‰äº›åœºæ™¯ä¸‹æ›´æ–¹ä¾¿ã€‚
 
 ## Interceptor
-À¹½ØÆ÷ĞèÒªÖ¸¶¨ÔÚController»òÕßController·½·¨ÉÏ£¬²Å»á¹¤×÷¡£
+æ‹¦æˆªå™¨éœ€è¦æŒ‡å®šåœ¨Controlleræˆ–è€…Controlleræ–¹æ³•ä¸Šï¼Œæ‰ä¼šå·¥ä½œã€‚
 
 ## Listener
-¼àÌıÆ÷ÔÚÏµÍ³Æô¶¯Ê±ºò»á±»Ö´ĞĞ¡£
+ç›‘å¬å™¨åœ¨ç³»ç»Ÿå¯åŠ¨æ—¶å€™ä¼šè¢«æ‰§è¡Œã€‚
 
 ## RedirectorException
-ÔÚÏµÍ³µÄÈÎºÎµØ·½Å×³öÕâ¸öÒì³£¸ø¿ò¼Ü£¬¿ò¼Ü»áÖ´ĞĞÌø×ªÃüÃû£¬µØÖ·ÔÚÒì³£¶ÔÏóÖĞÖ¸¶¨£¬²¢ÇÒ¿ÉÒÔĞ¯´ø²ÎÊı¡£
+åœ¨ç³»ç»Ÿçš„ä»»ä½•åœ°æ–¹æŠ›å‡ºè¿™ä¸ªå¼‚å¸¸ç»™æ¡†æ¶ï¼Œæ¡†æ¶ä¼šæ‰§è¡Œè·³è½¬å‘½åï¼Œåœ°å€åœ¨å¼‚å¸¸å¯¹è±¡ä¸­æŒ‡å®šï¼Œå¹¶ä¸”å¯ä»¥æºå¸¦å‚æ•°ã€‚
 
 ## Service
-ServiceÔÚ´ó²¿·ÖÇé¿öÏÂ¶¼ÓëComponentÒ»Ñù£¬µ«ÊÇ@TnsÊÂÎñ¿ØÖÆÖ»ÔÚ@ServiceÏÂÓĞĞ§¡£
+Serviceåœ¨å¤§éƒ¨åˆ†æƒ…å†µä¸‹éƒ½ä¸Componentä¸€æ ·ï¼Œä½†æ˜¯@Tnsäº‹åŠ¡æ§åˆ¶åªåœ¨@Serviceä¸‹æœ‰æ•ˆã€‚
 
 ## Table Eentity
-#### Table×Ô½¨
-¿ÉÒÔÅäÖÃ²ÎÊıjdbc.auto_create_table À´×Ô¶¯´´½¨±í½á¹¹¡£Èç¹û±í½á¹¹ÒÑ¾­´æÔÚÔò²»»á´´½¨£¬¼´±ã×Ö¶ÎÓĞ±ä»¯£¬ĞèÏÈÒªÊÖ¶¯É¾³ı±í¡£
-axeÖ»»á´´½¨´øÓĞ@Table×¢½âµÄEntity±í½á¹¹£¬²¢ÇÒ¿ÉÒÔÖ¸¶¨Êı¾İ¿â¶à¸ö¡£
+#### Tableè‡ªå»º
+å¯ä»¥é…ç½®å‚æ•°jdbc.auto_create_table æ¥è‡ªåŠ¨åˆ›å»ºè¡¨ç»“æ„ã€‚å¦‚æœè¡¨ç»“æ„å·²ç»å­˜åœ¨åˆ™ä¸ä¼šåˆ›å»ºï¼Œå³ä¾¿å­—æ®µæœ‰å˜åŒ–ï¼Œéœ€å…ˆè¦æ‰‹åŠ¨åˆ é™¤è¡¨ã€‚
+axeåªä¼šåˆ›å»ºå¸¦æœ‰@Tableæ³¨è§£çš„Entityè¡¨ç»“æ„ï¼Œå¹¶ä¸”å¯ä»¥æŒ‡å®šæ•°æ®åº“å¤šä¸ªã€‚
 
-#### Ö÷¼ü¡¢ÁªºÏÖ÷¼ü
-@Id×¢½â±ê×¢µÄ×Ö¶Î±íÊ¾Ö÷¼ü£¬ÁªºÏÖ÷¼üºÜ¼òµ¥£¬¶à¸ö×Ö¶Î¶¼¼ÓÉÏ@Id×¢½â¼´¿É¡£
+#### ä¸»é”®ã€è”åˆä¸»é”®
+@Idæ³¨è§£æ ‡æ³¨çš„å­—æ®µè¡¨ç¤ºä¸»é”®ï¼Œè”åˆä¸»é”®å¾ˆç®€å•ï¼Œå¤šä¸ªå­—æ®µéƒ½åŠ ä¸Š@Idæ³¨è§£å³å¯ã€‚
 
-#### Èç¹û²»ĞèÒª³Ö¾Ã»¯µÄ·½Ê½
-ÊµÌåÀàµÄ×Ö¶Î»á±»³Ö¾Ã»¯£¬±ØĞëÓĞ¶ÔÓ¦µÄset¡¢get·½·¨£¬¶øÇÒÃüÃûÒª·ûºÏ¹æ·¶¡£Òò´Ë£¬²»Ï£Íû±»³Ö¾Ã»¯µÄ×Ö¶Î£¬Ö»ÒªÈ¥µôset¡¢get·½·¨¼´¿É¡£
-È¥µôset·½·¨²»±»±£´æ£¬È¥µôget·½·¨²»»á²éÑ¯¡£
-ÔÚÎÒÃÇÒÔÍùµÄÊµ¼ùÖĞ£¬ÍùÍù²»ÊÇÈ¥µôsetºÍget·½·¨£¬¶øÊÇÔÚ²»ĞèÒª³Ö¾Ã»¯µÄ×Ö¶ÎµÄsetºÍget·½·¨Ä©Î²¼Ó"_"£¬±íÊ¾À©Õ¹×Ö¶Î£¬ÕâÑù¼È²»»á±»³Ö¾Ã»¯£¬Ò²·½±ãjson¹¤¾ß¸ñÊ½»¯£¬¿ÉÖ±½ÓÓÃÓÚÇ°Ì¨µÄjsonÊı¾İäÖÈ¾¡£
+#### å¦‚æœä¸éœ€è¦æŒä¹…åŒ–çš„æ–¹å¼
+å®ä½“ç±»çš„å­—æ®µä¼šè¢«æŒä¹…åŒ–ï¼Œå¿…é¡»æœ‰å¯¹åº”çš„setã€getæ–¹æ³•ï¼Œè€Œä¸”å‘½åè¦ç¬¦åˆè§„èŒƒã€‚å› æ­¤ï¼Œä¸å¸Œæœ›è¢«æŒä¹…åŒ–çš„å­—æ®µï¼Œåªè¦å»æ‰setã€getæ–¹æ³•å³å¯ã€‚
+å»æ‰setæ–¹æ³•ä¸è¢«ä¿å­˜ï¼Œå»æ‰getæ–¹æ³•ä¸ä¼šæŸ¥è¯¢ã€‚
+åœ¨æˆ‘ä»¬ä»¥å¾€çš„å®è·µä¸­ï¼Œå¾€å¾€ä¸æ˜¯å»æ‰setå’Œgetæ–¹æ³•ï¼Œè€Œæ˜¯åœ¨ä¸éœ€è¦æŒä¹…åŒ–çš„å­—æ®µçš„setå’Œgetæ–¹æ³•æœ«å°¾åŠ "_"ï¼Œè¡¨ç¤ºæ‰©å±•å­—æ®µï¼Œè¿™æ ·æ—¢ä¸ä¼šè¢«æŒä¹…åŒ–ï¼Œä¹Ÿæ–¹ä¾¿jsonå·¥å…·æ ¼å¼åŒ–ï¼Œå¯ç›´æ¥ç”¨äºå‰å°çš„jsonæ•°æ®æ¸²æŸ“ã€‚
 
-#### ÓÃ@ColumnDefineÀ´×Ô¶¨Òå±í×Ö¶Î
-axe¶ÔÓÚ×Ö¶ÎµÄ¶¨ÒåĞÔ×¢½â½ÏÉÙ£¬Èç¹ûÏ£Íû×Ô¶¨Òå×Ö¶ÎµÄÀàĞÍ¡¢³¤¶È¡¢±ØÌîµÈµÈÌØÊâÇé¿ö£¬ÄÇÃ´¿ÉÒÔÖ±½ÓÊ¹ÓÃ@ColumnDefineÀ´Ğ´±í×Ö¶ÎµÄsqlÓï¾ä¡£
+#### ç”¨@ColumnDefineæ¥è‡ªå®šä¹‰è¡¨å­—æ®µ
+axeå¯¹äºå­—æ®µçš„å®šä¹‰æ€§æ³¨è§£è¾ƒå°‘ï¼Œå¦‚æœå¸Œæœ›è‡ªå®šä¹‰å­—æ®µçš„ç±»å‹ã€é•¿åº¦ã€å¿…å¡«ç­‰ç­‰ç‰¹æ®Šæƒ…å†µï¼Œé‚£ä¹ˆå¯ä»¥ç›´æ¥ä½¿ç”¨@ColumnDefineæ¥å†™è¡¨å­—æ®µçš„sqlè¯­å¥ã€‚
 ```java
 @Table("Test")
 public class TestTable {
@@ -1020,22 +1020,22 @@ public class TestTable {
 	}
 }
 ```
-ÎÒÃÇ×¢Òâµ½£¬×Ö¶ÎÃûÊÇ²»Ğí×Ô¶¨ÒåµÄ£¬ÕâµãĞèÒª×¢Òâ¡£
+æˆ‘ä»¬æ³¨æ„åˆ°ï¼Œå­—æ®µåæ˜¯ä¸è®¸è‡ªå®šä¹‰çš„ï¼Œè¿™ç‚¹éœ€è¦æ³¨æ„ã€‚
 
 ## Dao
-·²ÊÇ±»@Dao×¢½â±ê×¢µÄ½Ó¿Ú£¬axe¶¼»áÊ¶±ğÎªdao²ãÈë¿Ú£¬¿ò¼Ü»á×Ô¶¯ÊµÏÖ½Ó¿ÚÖĞ´ø@SQL×¢½âµÄ·½·¨£¬ÒÔ¹©ÊµÀı×¢Èëµ½service»òcomponentºóµ÷ÓÃ¡£
-Dao³ıÁËĞèÒª@Dao×¢½âÍâ£¬»¹¿ÉÒÔÑ¡ÔñĞÔµÄ¼Ì³ĞBaseRepository½Ó¿Ú£¬BaseRepositoryÌá¹©ÁËÕë¶ÔEntity¶ÔÏóµÄÔöÉ¾¸Ä²é·½·¨£¬µ«ĞèÒª×¢Òâ£¬
-Ê¹ÓÃÕâ¸ö½Ó¿ÚÄÚµÄ·½·¨£¬ÒªÇóEntityÀà±ØĞëÓĞ@Id±ê×¢µÄ×Ö¶Î£¬Ò²¾ÍÊÇ±ØĞëÓĞÖ÷¼ü¡£
+å‡¡æ˜¯è¢«@Daoæ³¨è§£æ ‡æ³¨çš„æ¥å£ï¼Œaxeéƒ½ä¼šè¯†åˆ«ä¸ºdaoå±‚å…¥å£ï¼Œæ¡†æ¶ä¼šè‡ªåŠ¨å®ç°æ¥å£ä¸­å¸¦@SQLæ³¨è§£çš„æ–¹æ³•ï¼Œä»¥ä¾›å®ä¾‹æ³¨å…¥åˆ°serviceæˆ–componentåè°ƒç”¨ã€‚
+Daoé™¤äº†éœ€è¦@Daoæ³¨è§£å¤–ï¼Œè¿˜å¯ä»¥é€‰æ‹©æ€§çš„ç»§æ‰¿BaseRepositoryæ¥å£ï¼ŒBaseRepositoryæä¾›äº†é’ˆå¯¹Entityå¯¹è±¡çš„å¢åˆ æ”¹æŸ¥æ–¹æ³•ï¼Œä½†éœ€è¦æ³¨æ„ï¼Œ
+ä½¿ç”¨è¿™ä¸ªæ¥å£å†…çš„æ–¹æ³•ï¼Œè¦æ±‚Entityç±»å¿…é¡»æœ‰@Idæ ‡æ³¨çš„å­—æ®µï¼Œä¹Ÿå°±æ˜¯å¿…é¡»æœ‰ä¸»é”®ã€‚
 
 ## Sql and Entity
-Entity¿ÉÒÔÃ»ÓĞ@Table×¢½â£¬ÕâÖÖÇé¿öÏÂ£¬±ØĞëÀàÃûÓë±íÃûÄÜ¹»·ûºÏ¹æ·¶¿ÉÒÔ×ª»»£¬ÈçTableA¶ÔÓ¦table_a±í¡£Èç¹ûÓĞ@Table×¢½â£¬Ôò²»ĞèÒªÕâÖÖÄ¬ÈÏ¹ØÏµ¡£
-SqlÓï¾äÖ§³Ö±íÃû¡¢×Ö¶ÎÃûÓÃÀàÃû¡¢Àà×Ö¶ÎÀ´´úÌæÊéĞ´£¬ÀàËÆHQL¡£SQLÖĞµÄÕ¼Î»·û¿ÉÒÔÊ¹ÓÃ?£¬Ò²¿ÉÒÔÊ¹ÓÃ?¼ÓÊı×Ö£¬Ç°ÕßÄ¬ÈÏÊ¹ÓÃ·½·¨²ÎÊıË³Ğò£¬
-ºóÕß¿ÉÒÔÓÃÊı×ÖÖ¸¶¨Õ¼Î»·û¶ÔÓ¦·½·¨²ÎÊıÖĞµÄµÚ¼¸¸ö²ÎÊı¡£
+Entityå¯ä»¥æ²¡æœ‰@Tableæ³¨è§£ï¼Œè¿™ç§æƒ…å†µä¸‹ï¼Œå¿…é¡»ç±»åä¸è¡¨åèƒ½å¤Ÿç¬¦åˆè§„èŒƒå¯ä»¥è½¬æ¢ï¼Œå¦‚TableAå¯¹åº”table_aè¡¨ã€‚å¦‚æœæœ‰@Tableæ³¨è§£ï¼Œåˆ™ä¸éœ€è¦è¿™ç§é»˜è®¤å…³ç³»ã€‚
+Sqlè¯­å¥æ”¯æŒè¡¨åã€å­—æ®µåç”¨ç±»åã€ç±»å­—æ®µæ¥ä»£æ›¿ä¹¦å†™ï¼Œç±»ä¼¼HQLã€‚SQLä¸­çš„å ä½ç¬¦å¯ä»¥ä½¿ç”¨?ï¼Œä¹Ÿå¯ä»¥ä½¿ç”¨?åŠ æ•°å­—ï¼Œå‰è€…é»˜è®¤ä½¿ç”¨æ–¹æ³•å‚æ•°é¡ºåºï¼Œ
+åè€…å¯ä»¥ç”¨æ•°å­—æŒ‡å®šå ä½ç¬¦å¯¹åº”æ–¹æ³•å‚æ•°ä¸­çš„ç¬¬å‡ ä¸ªå‚æ•°ã€‚
 ```java
 @Dao
 public interface TestDao extends BaseRepository{
 	
-	//Õ¼Î»·û?È¡ÖµË³Ğò°´ÕÕ·½·¨²ÎÊıµÄË³Ğò°¤¸öÈ¡
+	//å ä½ç¬¦?å–å€¼é¡ºåºæŒ‰ç…§æ–¹æ³•å‚æ•°çš„é¡ºåºæŒ¨ä¸ªå–
 	@Sql("select * from TestTable where id = ? and name = ?")
 	public TestTable getOne(long id,String name);
 
@@ -1048,19 +1048,19 @@ public interface TestDao extends BaseRepository{
 	@Sql("select * from Export")
 	public List<Export> getAllExport();
 	
-	//Õ¼Î»·ûÖ¸¶¨ºÃÁËÈ¡·½·¨²ÎÊıµÄµÚÒ»¸ö²ÎÊı¡£
+	//å ä½ç¬¦æŒ‡å®šå¥½äº†å–æ–¹æ³•å‚æ•°çš„ç¬¬ä¸€ä¸ªå‚æ•°ã€‚
 	@Sql("select * from Export where name like ?1")
 	public Page<Export> pagingExport(String name,PageConfig pageConfig);
 }
 ```
 
-## Sql Æ´½Ó
-axeµÄdao²ãÒ²Ö§³ÖsqlÓï¾äµÄÌõ¼şÆ´½Ó£¬Ê¹ÓÃ·½·¨ÈçÏÂ£º
+## Sql æ‹¼æ¥
+axeçš„daoå±‚ä¹Ÿæ”¯æŒsqlè¯­å¥çš„æ¡ä»¶æ‹¼æ¥ï¼Œä½¿ç”¨æ–¹æ³•å¦‚ä¸‹ï¼š
 ```java
 @Dao
 public interface TestDao extends BaseRepository{
 	
-	//µÚ¶ş¸ö²ÎÊıappend ¿ÉÒÔÍ¨¹ı#([1-9][0-9]*)À´¶¯Ì¬Æ´½Óµ½sqlÖĞ£¬²¢ÇÒÍ¬ÑùÖ§³ÖÀàÊôĞÔĞ´·¨ÈçuserAage£¬²»ÓÃ¸Ä³É±í×Ö¶ÎĞ´·¨user_age¡£
+	//ç¬¬äºŒä¸ªå‚æ•°append å¯ä»¥é€šè¿‡#([1-9][0-9]*)æ¥åŠ¨æ€æ‹¼æ¥åˆ°sqlä¸­ï¼Œå¹¶ä¸”åŒæ ·æ”¯æŒç±»å±æ€§å†™æ³•å¦‚userAageï¼Œä¸ç”¨æ”¹æˆè¡¨å­—æ®µå†™æ³•user_ageã€‚
 	@Sql("select * from TestTable where id = ? #2")
 	public TestTable getOne(long id,String append);
 
@@ -1068,42 +1068,42 @@ public interface TestDao extends BaseRepository{
 ```
 
 ## Transaction Tns
-axeµÄÊÂÎñ£¬Èç¹û³öÏÖµü´úµ÷ÓÃ¿ªÆôÊÂÎñ£¬Ö»»áÔÚ×îÍâ²ã´ò¿ª£¬²¢ÇÒµ±»Øµ½×îÍâ²ãºóÌá½»£¬ÄÚ²ãµÄ´ò¿ªÊÂÎñÓëÌá½»ÊÂÎñ»á±»ºöÂÔ¡£
-ÁíÍâ£¬Èç¹û¶àÊı¾İÔ´Çé¿öÏÂ£¬ÊÂÎñ»á¼¯Ìå´ò¿ª£¬¼¯ÌåÌá½»£¬µ«ÊÇÈç¹û´æÔÚÒì³£µÄÇé¿ö£¬Èç¹ûÊÇÒµÎñ´úÂëÒì³££¬ÔòÊÂÎñ¼¯Ìå»Ø¹ö£¬
-Èç¹ûÊÇµÚ¶ş»òÕßµÚÈı¸öÊÂÎñÔÚÌá½»Ê±·¢ÉúÒì³££¬ÔòµÚÒ»¸öÊÂÎñÒÑ¾­Ìá½»ÎŞ·¨»Ø¹ö£¬»á±»¼ÇÂ¼ÔÚÈÕÖ¾ÖĞ¡£
+axeçš„äº‹åŠ¡ï¼Œå¦‚æœå‡ºç°è¿­ä»£è°ƒç”¨å¼€å¯äº‹åŠ¡ï¼Œåªä¼šåœ¨æœ€å¤–å±‚æ‰“å¼€ï¼Œå¹¶ä¸”å½“å›åˆ°æœ€å¤–å±‚åæäº¤ï¼Œå†…å±‚çš„æ‰“å¼€äº‹åŠ¡ä¸æäº¤äº‹åŠ¡ä¼šè¢«å¿½ç•¥ã€‚
+å¦å¤–ï¼Œå¦‚æœå¤šæ•°æ®æºæƒ…å†µä¸‹ï¼Œäº‹åŠ¡ä¼šé›†ä½“æ‰“å¼€ï¼Œé›†ä½“æäº¤ï¼Œä½†æ˜¯å¦‚æœå­˜åœ¨å¼‚å¸¸çš„æƒ…å†µï¼Œå¦‚æœæ˜¯ä¸šåŠ¡ä»£ç å¼‚å¸¸ï¼Œåˆ™äº‹åŠ¡é›†ä½“å›æ»šï¼Œ
+å¦‚æœæ˜¯ç¬¬äºŒæˆ–è€…ç¬¬ä¸‰ä¸ªäº‹åŠ¡åœ¨æäº¤æ—¶å‘ç”Ÿå¼‚å¸¸ï¼Œåˆ™ç¬¬ä¸€ä¸ªäº‹åŠ¡å·²ç»æäº¤æ— æ³•å›æ»šï¼Œä¼šè¢«è®°å½•åœ¨æ—¥å¿—ä¸­ã€‚
 
 
-## BaseDataSource ºÍ @DataSource
-ÊµÏÖ×Ô¶¨ÒåµÄÊı¾İÔ´£¬ĞèÒª×÷Á½¼şÊÂ£¬µÚÒ»ÒªÊµÏÖBaseDataSource½Ó¿Ú£¬µÚ¶şÒª¼ÓÉÏ@DataSource×¢½â£¬ºóÕßÊÇÎª¶àÊı¾İÔ´×÷Ãû×ÖµÄÇø·Ö£¬µ±È»Èç¹ûÖ»ÓĞÒ»¸ö£¬Ò²ÎŞËùÎ½ÁËµ«ÊÇ×¢½âÒ²ÊÇÒª¼ÓµÄ¡£
-Èç¹ûÏµÍ³ÀïÓĞ¶à¸öÊı¾İÔ´£¬ÄÇÃ´ÍÆ¼ö×ö·¨ÊÇÕâÑù£º±£Ö¤´Ó@Table µ½@Dao ¶¼ÊÇÏàÍ¬µÄÊı¾İÔ´ÅäÖÃ£¬ÕâÑù¿ÉÒÔ±ÜÃâ²»Æ¥ÅäµÄ´íÎó³öÏÖ£¬ÒòÎªAxe¶ÔÖ¸¶¨Êı¾İÔ´µÄÑ¡È¡ÓÅÏÈ¼¶ÊÇ@Dao>@Table>Ä¬ÈÏÊı¾İÔ´£¬µ«ÊÇµ±ÇÒ½öµ±ÏµÍ³Æô¶¯×Ô¶¯½¨±íÊ±³ıÍâ£¬ÒòÎªÕâÊ±ºòÖ»ÄÜÍ¨¹ı@TableÀ´È·¶¨Êı¾İÔ´¡£ 
+## BaseDataSource å’Œ @DataSource
+å®ç°è‡ªå®šä¹‰çš„æ•°æ®æºï¼Œéœ€è¦ä½œä¸¤ä»¶äº‹ï¼Œç¬¬ä¸€è¦å®ç°BaseDataSourceæ¥å£ï¼Œç¬¬äºŒè¦åŠ ä¸Š@DataSourceæ³¨è§£ï¼Œåè€…æ˜¯ä¸ºå¤šæ•°æ®æºä½œåå­—çš„åŒºåˆ†ï¼Œå½“ç„¶å¦‚æœåªæœ‰ä¸€ä¸ªï¼Œä¹Ÿæ— æ‰€è°“äº†ä½†æ˜¯æ³¨è§£ä¹Ÿæ˜¯è¦åŠ çš„ã€‚
+å¦‚æœç³»ç»Ÿé‡Œæœ‰å¤šä¸ªæ•°æ®æºï¼Œé‚£ä¹ˆæ¨èåšæ³•æ˜¯è¿™æ ·ï¼šä¿è¯ä»@Table åˆ°@Dao éƒ½æ˜¯ç›¸åŒçš„æ•°æ®æºé…ç½®ï¼Œè¿™æ ·å¯ä»¥é¿å…ä¸åŒ¹é…çš„é”™è¯¯å‡ºç°ï¼Œå› ä¸ºAxeå¯¹æŒ‡å®šæ•°æ®æºçš„é€‰å–ä¼˜å…ˆçº§æ˜¯@Dao>@Table>é»˜è®¤æ•°æ®æºï¼Œä½†æ˜¯å½“ä¸”ä»…å½“ç³»ç»Ÿå¯åŠ¨è‡ªåŠ¨å»ºè¡¨æ—¶é™¤å¤–ï¼Œå› ä¸ºè¿™æ—¶å€™åªèƒ½é€šè¿‡@Tableæ¥ç¡®å®šæ•°æ®æºã€‚ 
 
 ## Proxy
-¿ò¼ÜµÄ´úÀí½Ó¿Ú£¬ĞèÒª×ÔÎÒÊµÏÖ´úÀíÇĞÃæµÄ£¬ĞèÒªÊµÏÖ´Ë½Ó¿Ú¡£
+æ¡†æ¶çš„ä»£ç†æ¥å£ï¼Œéœ€è¦è‡ªæˆ‘å®ç°ä»£ç†åˆ‡é¢çš„ï¼Œéœ€è¦å®ç°æ­¤æ¥å£ã€‚
 
 ## /axe
-¿ò¼ÜÆô¶¯³É¹¦£¬¿ÉÒÔ·ÃÎÊ´ËµØÖ·À´¹ÜÀí¿ò¼ÜÏµÍ³ÅäÖÃ¡£
+æ¡†æ¶å¯åŠ¨æˆåŠŸï¼Œå¯ä»¥è®¿é—®æ­¤åœ°å€æ¥ç®¡ç†æ¡†æ¶ç³»ç»Ÿé…ç½®ã€‚
 
 ## Sign In
-Èç¹û/axeÖĞ´ò¿ªÁËĞèÒªµÇÂ¼ºÍÉèÖÃÁËÃÜÂë£¬ÄÇÃ´¾ÍĞèÒªÕËºÅµÇÂ¼²ÅÄÜ¼ÌĞø·ÃÎÊ/axe¹ÜÀíÃæ°åÁË¡£
+å¦‚æœ/axeä¸­æ‰“å¼€äº†éœ€è¦ç™»å½•å’Œè®¾ç½®äº†å¯†ç ï¼Œé‚£ä¹ˆå°±éœ€è¦è´¦å·ç™»å½•æ‰èƒ½ç»§ç»­è®¿é—®/axeç®¡ç†é¢æ¿äº†ã€‚
 
 ## Email
-ÔÚ/axeµÄÅäÖÃÒ³ÃæÖĞ£¬ÓĞÒ»ÏòÊÇEmailÏî£¬Èç¹ûÌîĞ´ÁË£¬Ôò»áÊÕµ½ÏµÍ³µÄ´íÎóºÍÒì³£µÄÍ¨ÖªÓÊ¼ş¡£
+åœ¨/axeçš„é…ç½®é¡µé¢ä¸­ï¼Œæœ‰ä¸€å‘æ˜¯Emailé¡¹ï¼Œå¦‚æœå¡«å†™äº†ï¼Œåˆ™ä¼šæ”¶åˆ°ç³»ç»Ÿçš„é”™è¯¯å’Œå¼‚å¸¸çš„é€šçŸ¥é‚®ä»¶ã€‚
 
 ## Release Resources
-Èç¹ûÅäÖÃÑ¡ÔñÁË´ËÏî£¬ÄÇÃ´»á¶ªÊ§Ò»²¿·Ö¿ò¼ÜÆô¶¯Ê±ºò³õÊ¼»¯µ½ÄÚ´æÖĞµÄÊı¾İ£¬¶ÔÏµÍ³µÄÕı³£ÔËĞĞÃ»ÓĞÓ°Ïì£¬·´¶ø¸ü½ÚÊ¡ÄÚ´æ£¬Ö»ÊÇÊ§È¥ÁËÒ»Ğ©¿ò¼Ü¼¶µÄ¿ì½İ¹¦ÄÜ¡£
+å¦‚æœé…ç½®é€‰æ‹©äº†æ­¤é¡¹ï¼Œé‚£ä¹ˆä¼šä¸¢å¤±ä¸€éƒ¨åˆ†æ¡†æ¶å¯åŠ¨æ—¶å€™åˆå§‹åŒ–åˆ°å†…å­˜ä¸­çš„æ•°æ®ï¼Œå¯¹ç³»ç»Ÿçš„æ­£å¸¸è¿è¡Œæ²¡æœ‰å½±å“ï¼Œåè€Œæ›´èŠ‚çœå†…å­˜ï¼Œåªæ˜¯å¤±å»äº†ä¸€äº›æ¡†æ¶çº§çš„å¿«æ·åŠŸèƒ½ã€‚
 
 
-## BeanHelperµÄÊ¹ÓÃºÍ×¢Òâ
-¿ÉÒÔ¶ÔÈ«¾ÖµÄiocÍĞ¹ÜÊµÀı½øĞĞ»ñÈ¡ºÍ²Ù×÷£¬Ò»°ãºÜÉÙÓÃµ½¡£  
+## BeanHelperçš„ä½¿ç”¨å’Œæ³¨æ„
+å¯ä»¥å¯¹å…¨å±€çš„iocæ‰˜ç®¡å®ä¾‹è¿›è¡Œè·å–å’Œæ“ä½œï¼Œä¸€èˆ¬å¾ˆå°‘ç”¨åˆ°ã€‚  
 
-| ·½·¨        | ·µ»ØÖµ               | ÃèÊö                      |
+| æ–¹æ³•        | è¿”å›å€¼               | æè¿°                      |
 | ----------- |:--------------------:| -------------------------:|
-| getBeanMap  | Map<Class<?>,Object> | »ñÈ¡ËùÓĞÍĞ¹ÜÖĞµÄBeanÊµÀı  |
-| getBean     | T                    | ¼û×¢ÊÍ                    |
-| setBean     |                      | Ìí¼ÓÊµÀı¸øBeanHelpler¹ÜÀí |
+| getBeanMap  | Map<Class<?>,Object> | è·å–æ‰€æœ‰æ‰˜ç®¡ä¸­çš„Beanå®ä¾‹  |
+| getBean     | T                    | è§æ³¨é‡Š                    |
+| setBean     |                      | æ·»åŠ å®ä¾‹ç»™BeanHelplerç®¡ç† |
 
->×¢.·µ»ØÀàĞÍ¸ù¾İ·½·¨´«ÈëµÄ²ÎÊıÀàĞÍÀ´Æ¥Åä¡£¿ÉÒÔ»ñÈ¡µÄBeanÀàĞÍ°üÀ¨@Controller¡¢@Component¡¢@Service¡¢@Dao
-×¢½â±ê×¢µÄÀà£¬×¢Òâ@DaoÊÇ½Ó¿Ú×¢½â²¢ÇÒÔÚ¿ò¼ÜÆô¶¯½×¶Î£¬@Dao×¢½âµÄÊµÀı²¢²»ÄÜ´ÓBeanHelperÖĞ»ñÈ¡µ½£¬ĞèÒªµÈ´ı¿ò¼ÜÆô¶¯Íê³É²Å¿É»ñÈ¡µ½¡£
+>æ³¨.è¿”å›ç±»å‹æ ¹æ®æ–¹æ³•ä¼ å…¥çš„å‚æ•°ç±»å‹æ¥åŒ¹é…ã€‚å¯ä»¥è·å–çš„Beanç±»å‹åŒ…æ‹¬@Controllerã€@Componentã€@Serviceã€@Dao
+æ³¨è§£æ ‡æ³¨çš„ç±»ï¼Œæ³¨æ„@Daoæ˜¯æ¥å£æ³¨è§£å¹¶ä¸”åœ¨æ¡†æ¶å¯åŠ¨é˜¶æ®µï¼Œ@Daoæ³¨è§£çš„å®ä¾‹å¹¶ä¸èƒ½ä»BeanHelperä¸­è·å–åˆ°ï¼Œéœ€è¦ç­‰å¾…æ¡†æ¶å¯åŠ¨å®Œæˆæ‰å¯è·å–åˆ°ã€‚
 
 ## Aspect Proxy
 #### begin
@@ -1113,22 +1113,22 @@ axeµÄÊÂÎñ£¬Èç¹û³öÏÖµü´úµ÷ÓÃ¿ªÆôÊÂÎñ£¬Ö»»áÔÚ×îÍâ²ã´ò¿ª£¬²¢ÇÒµ±»Øµ½×îÍâ²ãºóÌá½»£¬Ä
 #### error
 #### end
 
-## ¿ò¼ÜÆô¶¯Ë³Ğò
+## æ¡†æ¶å¯åŠ¨é¡ºåº
 
-## ÄÚÇ¶Captain
+## å†…åµŒCaptain
 #### axe.captain.captain_host
 #### axe.captain.my_host
-#### Captain ÊµÏÖ
-#### Man ÊµÏÖ
-#### CaptainHelper ×¢Èë
+#### Captain å®ç°
+#### Man å®ç°
+#### CaptainHelper æ³¨å…¥
 #### ManHelper
-#### Captain ËÀµô
-#### ×éÔ±ËÀµô
-#### Ö»Ê£CaptainµÄÊ±ºò
-#### Ö»Ê£Ò»¸ö×éÔ±µÄÊ±ºò
-* ÕâÊ±ºòÈç¹ûÓĞĞÂµÄ×éÔ±¼ÓÈë£¬²¢ÇÒÒÔ×îºóÒ»¸ö×éÔ±ÎªCaptain£¬ÄÇÃ´×îºóÒ»¸ö×éÔ±»á×Ô¶¯±ä³ÉCaptain¡£
-* Èç¹ûÖØÆôCaptain»úÆ÷ÁË£¬ÄÇÃ´×îºóÒ»¸ö×éÔ±»áÓëCaptianÊ§Áª£¬ÒòÎªĞÄÌøÏß³ÌÒÑ¾­Í£Ö¹£¬ËùÒÔ²»»áÖ÷¶¯ÁªÏµÖØÆôºóµÄCaptain£¬¿ÉÒÔÍ¨¹ıÈË¹¤·ÃÎÊ×îºóÒ»¸ö×éÔ±µÄ/captain/monitorÀ´¼¤»îËûµÄĞÄÌø¡£
-#### ĞŞÕıTeam±í
-* Õı³£Çé¿öÏÂ£¬Èç¹ûÎÒÃÇÏ£ÍûĞŞÕı´ó¼ÒµÄTeam±í£¬Ö»ĞèÒªĞŞÕıCaptainµÄ¾Í¿ÉÒÔÁË
-* Ò²ÓĞÇé¿öÊÇ£¬ĞèÒªĞŞ¸Ä×éÔ±Team±íÀ´±ÆÆÈ×éÔ±¹éÊôµ½Ö¸¶¨Captain£¬ÄÇÃ´ĞŞ¸Ä¾ßÌå×éÔ±µÄTeam±í¼´¿É
-* ĞŞ¸Ä·½Ê½¶¼ÊÇÍ¨¹ıPUT·½Ê½·ÃÎÊ /captain/teamTable?host=host1&host=host2ÕâÑù
+#### Captain æ­»æ‰
+#### ç»„å‘˜æ­»æ‰
+#### åªå‰©Captainçš„æ—¶å€™
+#### åªå‰©ä¸€ä¸ªç»„å‘˜çš„æ—¶å€™
+* è¿™æ—¶å€™å¦‚æœæœ‰æ–°çš„ç»„å‘˜åŠ å…¥ï¼Œå¹¶ä¸”ä»¥æœ€åä¸€ä¸ªç»„å‘˜ä¸ºCaptainï¼Œé‚£ä¹ˆæœ€åä¸€ä¸ªç»„å‘˜ä¼šè‡ªåŠ¨å˜æˆCaptainã€‚
+* å¦‚æœé‡å¯Captainæœºå™¨äº†ï¼Œé‚£ä¹ˆæœ€åä¸€ä¸ªç»„å‘˜ä¼šä¸Captianå¤±è”ï¼Œå› ä¸ºå¿ƒè·³çº¿ç¨‹å·²ç»åœæ­¢ï¼Œæ‰€ä»¥ä¸ä¼šä¸»åŠ¨è”ç³»é‡å¯åçš„Captainï¼Œå¯ä»¥é€šè¿‡äººå·¥è®¿é—®æœ€åä¸€ä¸ªç»„å‘˜çš„/captain/monitoræ¥æ¿€æ´»ä»–çš„å¿ƒè·³ã€‚
+#### ä¿®æ­£Teamè¡¨
+* æ­£å¸¸æƒ…å†µä¸‹ï¼Œå¦‚æœæˆ‘ä»¬å¸Œæœ›ä¿®æ­£å¤§å®¶çš„Teamè¡¨ï¼Œåªéœ€è¦ä¿®æ­£Captainçš„å°±å¯ä»¥äº†
+* ä¹Ÿæœ‰æƒ…å†µæ˜¯ï¼Œéœ€è¦ä¿®æ”¹ç»„å‘˜Teamè¡¨æ¥é€¼è¿«ç»„å‘˜å½’å±åˆ°æŒ‡å®šCaptainï¼Œé‚£ä¹ˆä¿®æ”¹å…·ä½“ç»„å‘˜çš„Teamè¡¨å³å¯
+* ä¿®æ”¹æ–¹å¼éƒ½æ˜¯é€šè¿‡PUTæ–¹å¼è®¿é—® /captain/teamTable?host=host1&host=host2è¿™æ ·
