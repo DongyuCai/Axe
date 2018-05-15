@@ -1,6 +1,4 @@
-<img src='https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/axe/favicon.png'/>
-
-### Axe是一个java框架，提供了使用简单的RESTful、IOC、持久化等功能，且都可以单独使用！
+### <img width="25px" height="25px" src='https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/axe/favicon.png'/> Axe是一个java框架，提供了使用简单的RESTful、IOC、持久化等功能，且都可以单独使用！
 
 ##### 需要 jdk 1.7及以上
 
