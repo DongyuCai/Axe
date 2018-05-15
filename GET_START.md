@@ -1,6 +1,8 @@
 ## 安装Axe，首先取保你已经安装好maven、git环境
 1、git clone或者下载Axe项目到本地文件夹
+
 2、打开cmd，进入到Axe/axe文件夹下，就是有pom.xml的文件夹下。
+
 3、执行mvn clean install命令，等待安装完成
 
 ## Get Start 快速开始
