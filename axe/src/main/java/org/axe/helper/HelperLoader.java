@@ -90,7 +90,6 @@ public final class HelperLoader {
     		helper.onStartUp();;
         }
     	
-        
         //特别初始化
         if(servletContext != null){//因为表单请求可能带有文件上传，需要初始化Servlet相关设置
             FormRequestHelper.init(servletContext);
@@ -99,7 +98,6 @@ public final class HelperLoader {
         //释放ClassHelper占用的内存
         //TODO:(ok)目前来看，框架自身只有加载91个资源，并不很多
         ClassHelper.release();
-        
 		
 		//装载的类日志分析
 		String path = Axe.class.getClassLoader().getResource("").getPath();

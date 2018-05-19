@@ -28,7 +28,7 @@ import java.util.Date;
 import org.axe.interface_.base.Helper;
 
 /**
- * 框架自生状态 助手类
+ * 框架自身状态 助手类
  * @author CaiDongyu on 2016年5月20日 上午8:43:39.
  */
 public final class FrameworkStatusHelper implements Helper{
