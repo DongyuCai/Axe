@@ -245,5 +245,13 @@ public class SchemaHelper implements Helper{
 		}
 		return columnDefine.toString();
 	}
+
+	public static Map<String, String> getJAVA2MYSQL_MAP() {
+		return JAVA2MYSQL_MAP;
+	}
+
+	public static void setJAVA2MYSQL_MAP(Map<String, String> jAVA2MYSQL_MAP) {
+		JAVA2MYSQL_MAP = jAVA2MYSQL_MAP;
+	}
 	
 }
