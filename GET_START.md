@@ -13,45 +13,46 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 2、修改pom.xml。打开工程目录下的pom.xml，替换成下面的内容。注意groupId和artifactId换成自己的。
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>你的groupId</groupId>
-    <artifactId>你的artifactId</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
-	
+	<groupId>com.test</groupId>
+	<artifactId>test</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 
-    <dependencies>
-        <!-- Axe -->
-        <dependency>
-            <groupId>org.axe</groupId>
-            <artifactId>axe</artifactId>
-            <version>18.4.27</version>
-        </dependency>
-    	<!-- Apache DBCP 数据源(这是默认数据源，可以自我指定数据源)-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>2.0.1</version>
-        </dependency>
+	<dependencies>
+		<!-- Axe -->
+		<dependency>
+			<groupId>org.axe</groupId>
+			<artifactId>axe</artifactId>
+			<version>18.4.27</version>
+		</dependency>
+		<!-- Apache DBCP 数据源(这是默认数据源，可以自我指定数据源) -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.0.1</version>
+		</dependency>
 
-        <!-- ######################### java web ################################# -->
+		<!-- ######################### java web ################################# -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>jstl</groupId>
-		  <artifactId>jstl</artifactId>
-		  <version>1.2</version>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<!-- cross domain 可选，如果不跨域可以去掉 -->
 
@@ -66,32 +67,10 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 			<artifactId>cors-filter</artifactId>
 			<version>2.4</version>
 		</dependency>
+	</dependencies>
 
-    </dependencies>
-	
-	<profiles>
-		<profile>
-			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<runtime.env>config/dev</runtime.env>
-			</properties>
-		</profile>
-		<profile>
-			<id>prod</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<runtime.env>config/prod</runtime.env>
-			</properties>
-		</profile>
-	</profiles>
-	
 	<build>
-		<finalName>你的war包名，不需要后缀</finalName>
+		<finalName>test</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -100,12 +79,13 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
-        			<encoding>utf8</encoding>
+					<encoding>utf8</encoding>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 </project>
+
 ```
 3、转化工程。如果IDE是eclipse，打开cmd，切换到pom.xml所在路径下，执行以下命令。
 ```
