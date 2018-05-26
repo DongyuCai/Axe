@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.axe.interface_.persistence;
+package org.axe.interface_.type_convert;
 
 /**
  * 字段类型转换器

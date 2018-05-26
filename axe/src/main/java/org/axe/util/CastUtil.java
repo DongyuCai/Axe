@@ -26,23 +26,23 @@ package org.axe.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.axe.interface_.persistence.BaseTypeConvert;
-import org.axe.interface_implement.persistence.BigDecimal2DoubleConvert;
-import org.axe.interface_implement.persistence.BigDecimal2IntegerConvert;
-import org.axe.interface_implement.persistence.BigInteger2LongConvert;
-import org.axe.interface_implement.persistence.Boolean2IntegerConvert;
-import org.axe.interface_implement.persistence.Double2BigDecimalConvert;
-import org.axe.interface_implement.persistence.Integer2BigDecimalConvert;
-import org.axe.interface_implement.persistence.Integer2LongConvert;
-import org.axe.interface_implement.persistence.Long2BigDecimalConvert;
-import org.axe.interface_implement.persistence.Long2DateConvert;
-import org.axe.interface_implement.persistence.Long2SqlDateConvert;
-import org.axe.interface_implement.persistence.String2BigDecimalConvert;
-import org.axe.interface_implement.persistence.String2DateConvert;
-import org.axe.interface_implement.persistence.String2DoubleConvert;
-import org.axe.interface_implement.persistence.String2IntegerConvert;
-import org.axe.interface_implement.persistence.String2LongConvert;
-import org.axe.interface_implement.persistence.String2SqlDateConvert;
+import org.axe.interface_.type_convert.BaseTypeConvert;
+import org.axe.interface_implement.type_convert.BigDecimal2DoubleConvert;
+import org.axe.interface_implement.type_convert.BigDecimal2IntegerConvert;
+import org.axe.interface_implement.type_convert.BigInteger2LongConvert;
+import org.axe.interface_implement.type_convert.Boolean2IntegerConvert;
+import org.axe.interface_implement.type_convert.Double2BigDecimalConvert;
+import org.axe.interface_implement.type_convert.Integer2BigDecimalConvert;
+import org.axe.interface_implement.type_convert.Integer2LongConvert;
+import org.axe.interface_implement.type_convert.Long2BigDecimalConvert;
+import org.axe.interface_implement.type_convert.Long2DateConvert;
+import org.axe.interface_implement.type_convert.Long2SqlDateConvert;
+import org.axe.interface_implement.type_convert.String2BigDecimalConvert;
+import org.axe.interface_implement.type_convert.String2DateConvert;
+import org.axe.interface_implement.type_convert.String2DoubleConvert;
+import org.axe.interface_implement.type_convert.String2IntegerConvert;
+import org.axe.interface_implement.type_convert.String2LongConvert;
+import org.axe.interface_implement.type_convert.String2SqlDateConvert;
 
 /**
  * 类型转换工具类
@@ -266,4 +266,12 @@ public final class  CastUtil {
         }
         return value;
     }
+
+	public static Map<String, BaseTypeConvert> getTYPE_2_TYPE_MAP() {
+		return TYPE_2_TYPE_MAP;
+	}
+
+	public static void setTYPE_2_TYPE_MAP(Map<String, BaseTypeConvert> tYPE_2_TYPE_MAP) {
+		TYPE_2_TYPE_MAP = tYPE_2_TYPE_MAP;
+	}
 }

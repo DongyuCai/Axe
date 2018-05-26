@@ -1,8 +1,8 @@
-package org.axe.interface_implement.persistence;
+package org.axe.interface_implement.type_convert;
 
 import java.math.BigDecimal;
 
-import org.axe.interface_.persistence.BaseTypeConvert;
+import org.axe.interface_.type_convert.BaseTypeConvert;
 
 /**
  * java.math.BigDecimal=>java.lang.Double

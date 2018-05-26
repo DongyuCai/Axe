@@ -54,9 +54,7 @@ public class SchemaHelper implements Helper{
 
 	//#所有列出的java到mysql的类型转换
 	private static Map<String,String> JAVA2MYSQL_MAP = new HashMap<>();	//#所有列出的java到mysql的类型转换
-	
-	@Override
-	public void init() throws Exception {
+	static{
 		JAVA2MYSQL_MAP.put("byte", "tinyint(4)");
 		JAVA2MYSQL_MAP.put("java.lang.Byte", "tinyint(4)");
 		JAVA2MYSQL_MAP.put("short", "smallint(6)");
@@ -80,6 +78,9 @@ public class SchemaHelper implements Helper{
 		//byte[]
 		JAVA2MYSQL_MAP.put("[B", "tinyblob");
 	}
+	
+	@Override
+	public void init() throws Exception {}
 
 	@Override
 	public void onStartUp() throws Exception {
