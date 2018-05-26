@@ -6,19 +6,15 @@
 
 ### RESTful 简单展示，更多使用细节请直接上手
 ```java
-@Controller(basePath="/op/label/area_open",title="分类标签-区域开放")
-public class AreaOpenRest {
-	
-	@Autowired
-	private AreaOpenService areaOpenService;
-	
+@Controller(title="hello word",basePath="")
+public class TestRest {
 
-	@Request(title="列表查询",value = "/list", method = RequestMethod.GET)
-	public List<AreaOpen> list() {
-		return areaOpenService.list();
+	@Request(title="hi",value="/hi",method=RequestMethod.GET)
+	public String hi(
+		@RequestParam(desc="说",value="say")String say	
+			){
+		return "u say:"+say;
 	}
-	
-	
 }
 ```
 
