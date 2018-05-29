@@ -130,34 +130,6 @@ public final class ConfigHelper implements Helper{
     }
 
     /**
-     * 是否自动建表
-     */
-    public static Boolean getJdbcAutoCreateTable() {
-    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JDBC_AUTO_CREATE_TABLE, null);
-    }
-    
-    /**
-     * 是否打印SQL
-     */
-    public static boolean getJdbcShowSql() {
-    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.JDBC_SHOW_SQL, false);
-    }
-    
-    /**
-     * 数据库的编码，默认utf8
-     */
-    public static String getJdbcCharacter() {
-    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_CHARACTER, "utf8");
-    }
-
-    /**
-     * 数据库的校验编码，默认空
-     */
-    public static String getJdbcCollate() {
-    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_COLLATE, null);
-    }
-    
-    /**
      * 指定框架扫描的包路径，多个路径使用“,”号分割
      */
     public static String getAppBasePackage() {

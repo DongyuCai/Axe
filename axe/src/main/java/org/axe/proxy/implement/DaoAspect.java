@@ -41,7 +41,7 @@ import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.helper.persistence.DataBaseHelper;
-import org.axe.helper.persistence.SqlHelper;
+import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.interface_.persistence.BaseRepository;
 import org.axe.interface_.persistence.SqlResultProxy;
 import org.axe.interface_.proxy.Proxy;
@@ -50,6 +50,10 @@ import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
+import org.axe.util.sql.CommonSqlUtil;
+import org.axe.util.sql.MySqlUtil;
+//import org.axe.util.sql.MySqlUtil;
+import org.axe.util.sql.OracleUtil;
 
 /**
  * Dao代理 代理所有 @Dao注解的接口
@@ -66,9 +70,9 @@ public class DaoAspect implements Proxy {
 		Object[] methodParams = proxyChain.getMethodParams();
 		Class<?>[] parameterTypes = targetMethod.getParameterTypes();
 		Class<?> daoClass = proxyChain.getTargetClass();
-		String daoConfigDataSource = null;
-		if (daoClass.isAnnotationPresent(Dao.class)) {
-			daoConfigDataSource = daoClass.getAnnotation(Dao.class).dataSource();
+		String dataSourceName = daoClass.getAnnotation(Dao.class).dataSource();
+		if(StringUtil.isEmpty(dataSourceName)){
+			dataSourceName = DataSourceHelper.getDefaultDataSourceName();
 		}
 
 		// 如果有sql结果代理器
@@ -88,13 +92,17 @@ public class DaoAspect implements Proxy {
 			String sql = sqlAnnotation.value();
 
 			// #解析指令代码
-			sql = SqlHelper.convertSqlAppendCommand(sql, methodParams);
-			// #解析Sql中的类名字段名
-			String[] sqlAndDataSourceName = SqlHelper.convertHql2Sql(sql);
-			sql = sqlAndDataSourceName[0];
-			if (StringUtil.isEmpty(daoConfigDataSource)) {
-				daoConfigDataSource = sqlAndDataSourceName[1];
+			sql = CommonSqlUtil.convertSqlAppendCommand(sql, methodParams);
+			if(DataSourceHelper.isMySql(dataSourceName)){
+				// #解析Sql中的类名字段名
+				String[] sqlAndDataSourceName = CommonSqlUtil.convertHql2Sql(MySqlUtil.MYSQL_KEYWORD,sql);
+				sql = sqlAndDataSourceName[0];
+			}else if(DataSourceHelper.isOracle(dataSourceName)){
+				// #解析Sql中的类名字段名
+				String[] sqlAndDataSourceName = CommonSqlUtil.convertHql2Sql(OracleUtil.ORACLE_KEYWORD,sql);
+				sql = sqlAndDataSourceName[0];
 			}
+			
 			// #空格格式化，去掉首位空格，规范中间的空格{
 			sql = sql.trim();
 			while (sql.contains("  ")) {
@@ -113,49 +121,47 @@ public class DaoAspect implements Proxy {
 					if (Page.class.isAssignableFrom(rawType) || // 如果要求返回类型是Page分页
 							ReflectionUtil.compareType(List.class, rawType)) {
 						
-						result = listResult(actualTypes[0], daoConfigDataSource, sql, methodParams, parameterTypes);
+						result = listResult(actualTypes[0], dataSourceName, sql, methodParams, parameterTypes);
 
 						if (Page.class.isAssignableFrom(rawType)) {
 							// 如果是分页，包装返回结果
-							result = pageResult(sql, methodParams, parameterTypes, (List<?>) result,
-									daoConfigDataSource);
+							result = pageResult(sql, methodParams, parameterTypes, (List<?>) result, dataSourceName);
 						}
 					} else if (ReflectionUtil.compareType(Map.class, rawType)) {
 						// Map无所谓里面的泛型
-						if (StringUtil.isEmpty(daoConfigDataSource)) {
+						if (StringUtil.isEmpty(dataSourceName)) {
 							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
 						} else {
-							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, dataSourceName);
 						}
 					}
 				} else {
 					if (Page.class.isAssignableFrom(rawType) || ReflectionUtil.compareType(List.class, rawType)) {
 						// Page、List
-						/*if (StringUtil.isEmpty(daoConfigDataSource)) {
+						/*if (StringUtil.isEmpty(dataSourceName)) {
 							result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 						} else {
-							result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+							result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, dataSourceName);
 						}*/
-						result = listResult(returnType, daoConfigDataSource, sql, methodParams, parameterTypes);
+						result = listResult(returnType, dataSourceName, sql, methodParams, parameterTypes);
 
 						if (Page.class.isAssignableFrom(rawType)) {
 							// 如果是分页，包装返回结果
-							result = pageResult(sql, methodParams, parameterTypes, (List<?>) result,
-									daoConfigDataSource);
+							result = pageResult(sql, methodParams, parameterTypes, (List<?>) result, dataSourceName);
 						}
 					} else if (ReflectionUtil.compareType(Map.class, rawType)) {
 						// Map
-						if (StringUtil.isEmpty(daoConfigDataSource)) {
+						if (StringUtil.isEmpty(dataSourceName)) {
 							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
 						} else {
-							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, dataSourceName);
 						}
 					} else if (ReflectionUtil.compareType(Object.class, rawType)) {
 						// Object
-						if (StringUtil.isEmpty(daoConfigDataSource)) {
+						if (StringUtil.isEmpty(dataSourceName)) {
 							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes);
 						} else {
-							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, dataSourceName);
 						}
 					} else if (ReflectionUtil.compareType(String.class, rawType)
 							|| ReflectionUtil.compareType(Date.class, rawType)
@@ -168,41 +174,38 @@ public class DaoAspect implements Proxy {
 							|| ReflectionUtil.compareType(Float.class, rawType)
 							|| ReflectionUtil.compareType(Double.class, rawType)) {
 						// String
-						result = getBasetypeOrDate(sql, methodParams, parameterTypes, daoConfigDataSource);
+						result = getBasetypeOrDate(sql, methodParams, parameterTypes, dataSourceName);
 						result = CastUtil.castType(result, rawType);
 					} else if ((rawType).isPrimitive()) {
 						if (ReflectionUtil.compareType(void.class, rawType)) {
 							// void
-							if (StringUtil.isEmpty(daoConfigDataSource)) {
+							if (StringUtil.isEmpty(dataSourceName)) {
 								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 							} else {
-								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes,
-										daoConfigDataSource);
+								result = DataBaseHelper.queryList(sql, methodParams, parameterTypes, dataSourceName);
 							}
 						} else {
 							// 基本类型
-							if (StringUtil.isEmpty(daoConfigDataSource)) {
+							if (StringUtil.isEmpty(dataSourceName)) {
 								result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes);
 							} else {
-								result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes,
-										daoConfigDataSource);
+								result = DataBaseHelper.queryPrimitive(sql, methodParams, parameterTypes, dataSourceName);
 							}
 						}
 					} else {
 						// Entity
-						if (StringUtil.isEmpty(daoConfigDataSource)) {
+						if (StringUtil.isEmpty(dataSourceName)) {
 							result = DataBaseHelper.queryEntity(rawType, sql, methodParams, parameterTypes);
 						} else {
-							result = DataBaseHelper.queryEntity(rawType, sql, methodParams, parameterTypes,
-									daoConfigDataSource);
+							result = DataBaseHelper.queryEntity(rawType, sql, methodParams, parameterTypes, dataSourceName);
 						}
 					}
 				}
 			} else {
-				if (StringUtil.isEmpty(daoConfigDataSource)) {
+				if (StringUtil.isEmpty(dataSourceName)) {
 					result = DataBaseHelper.executeUpdate(sql, methodParams, parameterTypes);
 				} else {
-					result = DataBaseHelper.executeUpdate(sql, methodParams, parameterTypes, daoConfigDataSource);
+					result = DataBaseHelper.executeUpdate(sql, methodParams, parameterTypes, dataSourceName);
 				}
 			}
 		} else if (BaseRepository.class.isAssignableFrom(daoClass)
@@ -213,50 +216,50 @@ public class DaoAspect implements Proxy {
 				// # Repository.insertEntity(Object entity);
 				if (paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0], Object.class)) {
 					Object entity = methodParams[0];
-					if (StringUtil.isEmpty(daoConfigDataSource)) {
+					if (StringUtil.isEmpty(dataSourceName)) {
 						result = DataBaseHelper.insertEntity(entity);
 					} else {
-						result = DataBaseHelper.insertEntity(entity, daoConfigDataSource);
+						result = DataBaseHelper.insertEntity(entity, dataSourceName);
 					}
 				}
 			} else if ("deleteEntity".equals(methodName)) {
 				// # Repository.deleteEntity(Object entity);
 				if (paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0], Object.class)) {
 					Object entity = methodParams[0];
-					if (StringUtil.isEmpty(daoConfigDataSource)) {
+					if (StringUtil.isEmpty(dataSourceName)) {
 						result = DataBaseHelper.deleteEntity(entity);
 					} else {
-						result = DataBaseHelper.deleteEntity(entity, daoConfigDataSource);
+						result = DataBaseHelper.deleteEntity(entity, dataSourceName);
 					}
 				}
 			} else if ("updateEntity".equals(methodName)) {
 				// # Repository.updateEntity(Object entity);
 				if (paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0], Object.class)) {
 					Object entity = methodParams[0];
-					if (StringUtil.isEmpty(daoConfigDataSource)) {
+					if (StringUtil.isEmpty(dataSourceName)) {
 						result = DataBaseHelper.updateEntity(entity);
 					} else {
-						result = DataBaseHelper.updateEntity(entity, daoConfigDataSource);
+						result = DataBaseHelper.updateEntity(entity, dataSourceName);
 					}
 				}
 			} else if ("getEntity".equals(methodName)) {
 				// # Repository.getEntity(T entity);
 				if (paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0], Object.class)) {
 					Object entity = methodParams[0];
-					if (StringUtil.isEmpty(daoConfigDataSource)) {
+					if (StringUtil.isEmpty(dataSourceName)) {
 						result = DataBaseHelper.getEntity(entity);
 					} else {
-						result = DataBaseHelper.getEntity(entity, daoConfigDataSource);
+						result = DataBaseHelper.getEntity(entity, dataSourceName);
 					}
 				}
 			} else if ("saveEntity".equals(methodName)) {
 				// # Repository.saveEntity(Object entity);
 				if (paramAry.length == 1 && ReflectionUtil.compareType(paramAry[0], Object.class)) {
 					Object entity = methodParams[0];
-					if (StringUtil.isEmpty(daoConfigDataSource)) {
+					if (StringUtil.isEmpty(dataSourceName)) {
 						result = DataBaseHelper.insertOnDuplicateKeyEntity(entity);
 					} else {
-						result = DataBaseHelper.insertOnDuplicateKeyEntity(entity, daoConfigDataSource);
+						result = DataBaseHelper.insertOnDuplicateKeyEntity(entity, dataSourceName);
 					}
 				}
 			} else {
@@ -274,9 +277,9 @@ public class DaoAspect implements Proxy {
 	}
 
 	private Object getBasetypeOrDate(String sql, Object[] methodParams, Class<?>[] parameterTypes,
-			String daoConfigDataSource) throws SQLException {
+			String dataSourceName) throws SQLException {
 		// Date
-		Map<String, Object> resultMap = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, daoConfigDataSource);
+		Map<String, Object> resultMap = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, dataSourceName);
 		do {
 			if (resultMap == null)
 				break;
@@ -290,12 +293,12 @@ public class DaoAspect implements Proxy {
 	}
 
 	private Object getBasetypeOrDateList(String sql, Object[] methodParams, Class<?>[] parameterTypes,
-			String daoConfigDataSource) throws SQLException {
+			String dataSourceName) throws SQLException {
 		List<Map<String, Object>> resultList = null;
-		if (StringUtil.isEmpty(daoConfigDataSource)) {
+		if (StringUtil.isEmpty(dataSourceName)) {
 			resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 		} else {
-			resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes, daoConfigDataSource);
+			resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes, dataSourceName);
 		}
 		if (resultList != null && resultList.size() > 0) {
 			List<Object> list = new ArrayList<Object>();
@@ -310,43 +313,43 @@ public class DaoAspect implements Proxy {
 	}
 	
 
-	private Object listResult(Type returnType, String daoConfigDataSource, String sql, Object[] methodParams, Class<?>[] parameterTypes) throws SQLException{
+	private Object listResult(Type returnType, String dataSourceName, String sql, Object[] methodParams, Class<?>[] parameterTypes) throws SQLException{
 		Object result = null;
 		if (returnType instanceof ParameterizedType) {
 			// List<Map<String,Object>>
 			if (ReflectionUtil.compareType(Map.class,
 					(Class<?>) ((ParameterizedType) returnType).getRawType())) {
-				if (StringUtil.isEmpty(daoConfigDataSource)) {
+				if (StringUtil.isEmpty(dataSourceName)) {
 					result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 				} else {
 					result = DataBaseHelper.queryList(sql, methodParams, parameterTypes,
-							daoConfigDataSource);
+							dataSourceName);
 				}
 			}
 		} else if (returnType instanceof WildcardType) {
 			// List<?>
-			if (StringUtil.isEmpty(daoConfigDataSource)) {
+			if (StringUtil.isEmpty(dataSourceName)) {
 				result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 			} else {
 				result = DataBaseHelper.queryList(sql, methodParams, parameterTypes,
-						daoConfigDataSource);
+						dataSourceName);
 			}
 		} else {
 			if (ReflectionUtil.compareType(Object.class, (Class<?>) returnType)) {
 				// List<Object>
-				if (StringUtil.isEmpty(daoConfigDataSource)) {
+				if (StringUtil.isEmpty(dataSourceName)) {
 					result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 				} else {
 					result = DataBaseHelper.queryList(sql, methodParams, parameterTypes,
-							daoConfigDataSource);
+							dataSourceName);
 				}
 			} else if (ReflectionUtil.compareType(Map.class, (Class<?>) returnType)) {
 				// List<Map>
-				if (StringUtil.isEmpty(daoConfigDataSource)) {
+				if (StringUtil.isEmpty(dataSourceName)) {
 					result = DataBaseHelper.queryList(sql, methodParams, parameterTypes);
 				} else {
 					result = DataBaseHelper.queryList(sql, methodParams, parameterTypes,
-							daoConfigDataSource);
+							dataSourceName);
 				}
 			} else if (ReflectionUtil.compareType(String.class, (Class<?>) returnType)
 					|| ReflectionUtil.compareType(Date.class, (Class<?>) returnType)
@@ -359,15 +362,15 @@ public class DaoAspect implements Proxy {
 					|| ReflectionUtil.compareType(Float.class, (Class<?>) returnType)
 					|| ReflectionUtil.compareType(Double.class, (Class<?>) returnType)) {
 				// List<String>
-				result = getBasetypeOrDateList(sql, methodParams, parameterTypes, daoConfigDataSource);
+				result = getBasetypeOrDateList(sql, methodParams, parameterTypes, dataSourceName);
 			} else {
 				// Entity
-				if (StringUtil.isEmpty(daoConfigDataSource)) {
+				if (StringUtil.isEmpty(dataSourceName)) {
 					result = DataBaseHelper.queryEntityList((Class<?>) returnType, sql, methodParams,
 							parameterTypes);
 				} else {
 					result = DataBaseHelper.queryEntityList((Class<?>) returnType, sql, methodParams,
-							parameterTypes, daoConfigDataSource);
+							parameterTypes, dataSourceName);
 				}
 			}
 		}
@@ -379,8 +382,9 @@ public class DaoAspect implements Proxy {
 	 * 包装List返回结果成分页
 	 */
 	private <T> Page<T> pageResult(String sql, Object[] params, Class<?>[] paramTypes, List<T> records,
-			String daoConfigDataSource) {
-		PageConfig pageConfig = SqlHelper.getPageConfigFromParams(params, paramTypes);
+			String dataSourceName) {
+		
+		PageConfig pageConfig = CommonSqlUtil.getPageConfigFromParams(params, paramTypes);
 		Object[] params_ = new Object[params.length - 1];
 		for (int i = 0; i < params_.length; i++) {
 			params_[i] = params[i];
@@ -390,10 +394,10 @@ public class DaoAspect implements Proxy {
 			paramTypes_[i] = paramTypes[i];
 		}
 		long count = 0;
-		if (StringUtil.isEmpty(daoConfigDataSource)) {
+		if (StringUtil.isEmpty(dataSourceName)) {
 			count = DataBaseHelper.countQuery(sql, params_, paramTypes_);
 		} else {
-			count = DataBaseHelper.countQuery(sql, params_, paramTypes_, daoConfigDataSource);
+			count = DataBaseHelper.countQuery(sql, params_, paramTypes_, dataSourceName);
 		}
 		pageConfig = pageConfig == null ? new PageConfig(1, count) : pageConfig;
 		long pages = count / pageConfig.getPageSize();

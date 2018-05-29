@@ -39,11 +39,11 @@ public class PageConfig {
 	 */
 	private long pageSize;
 	/**
-	 * mysql limit 起始行
+	 * 起始行
 	 */
 	private long limitParam1;
 	/**
-	 * mysql limit 查询条数
+	 * 查询条数
 	 */
 	private long limitParam2;
 

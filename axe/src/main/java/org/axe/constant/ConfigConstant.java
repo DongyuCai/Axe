@@ -44,10 +44,12 @@ public interface ConfigConstant {
     String JDBC_USERNAME = "jdbc.username";
     String JDBC_PASSWORD = "jdbc.password";
     String JDBC_DATASOURCE = "jdbc.datasource";
-    String JDBC_AUTO_CREATE_TABLE = "jdbc.auto_create_table";
-    String JDBC_SHOW_SQL = "jdbc.show_sql";
-    String JDBC_CHARACTER = "jdbc.character";
-    String JDBC_COLLATE = "jdbc.collate";
+    //这个部分是jdbc配置的子项，需要JDBC_DATASOURCE+dataSourceName+以下名称配置{
+    String JDBC_AUTO_CREATE_TABLE = "auto_create_table";
+    String JDBC_SHOW_SQL = "show_sql";
+    String JDBC_CHARACTER = "character";
+    String JDBC_COLLATE = "collate";
+    //}
     
     //#项目基本配置
     String APP_BASE_PACKAGE = "app.base_package";

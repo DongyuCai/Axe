@@ -1,8 +1,8 @@
-### <img width="25px" height="25px" src='https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/axe/favicon.png'/> Axe是一个java框架，提供了使用简单的RESTful、IOC、持久化等功能。
+### <img width="25px" height="25px" src='https://github.com/DongyuCai/Axe/blob/18.5.29/axe/favicon.png'/> Axe是一个java框架，提供了使用简单的RESTful、IOC、持久化等功能。
 
 ##### 需要 jdk 1.7及以上
 
-### [快速上手开始](https://github.com/DongyuCai/Axe/blob/branch-jdk1.7/GET_START.md)
+### [快速上手开始](https://github.com/DongyuCai/Axe/blob/18.5.29/GET_START.md)
 
 ### RESTful 简单展示，更多使用细节请直接上手
 ```java

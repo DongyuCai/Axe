@@ -49,6 +49,9 @@ import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.CastUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
+import org.axe.util.sql.CommonSqlUtil;
+import org.axe.util.sql.MySqlUtil;
+import org.axe.util.sql.OracleUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +105,7 @@ public final class DataBaseHelper implements Helper{
         		}
             } catch (SQLException e) {
                 LOGGER.error("get connection failure", e);
-                throw new SQLException(e);
+                throw e;
             }
             
         }
@@ -131,7 +134,7 @@ public final class DataBaseHelper implements Helper{
     		}while(false);
 		} catch (SQLException e) {
 			LOGGER.error("release connection of dataSource["+dataSourceName+"] failure", e);
-			throw new SQLException(e);
+			throw e;
 		}  finally {
 			if(connMap != null){
 				boolean isAllConClosed = true;
@@ -152,14 +155,20 @@ public final class DataBaseHelper implements Helper{
     /**
      * sql前去数据库路上的终点站，出了这个方法，就是奈何桥了。
      */
-    private static PreparedStatement getPrepareStatement(Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
-    	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
+    private static PreparedStatement getPrepareStatement(String dataSourceName,Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
+    	SqlPackage sp = null;
+    	if(DataSourceHelper.isMySql(dataSourceName)){
+    		sp = MySqlUtil.convertGetFlag(sql, params, paramTypes);
+    	}else if(DataSourceHelper.isOracle(dataSourceName)){
+    		sp = OracleUtil.convertGetFlag(sql, params, paramTypes);
+    	}
+    	
     	//半路杀出个“程咬金”
     	/*if(sqlCyj != null){
     		sp = sqlCyj.robSqlPackage(sp);
     	}*/
     	//打印调试sql
-    	SqlHelper.debugSql(sp);
+    	CommonSqlUtil.debugSql(dataSourceName,sp);
     	PreparedStatement ps = null;
     	if(RETURN_GENERATED_KEYS){
     		ps = conn.prepareStatement(sp.getSql(), Statement.RETURN_GENERATED_KEYS);
@@ -185,7 +194,7 @@ public final class DataBaseHelper implements Helper{
         List<T> entityList = new ArrayList<>();
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName, conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
 			Set<String> transientField = new HashSet<>();
@@ -223,7 +232,7 @@ public final class DataBaseHelper implements Helper{
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
             	closeConnection(dataSourceName);
@@ -245,7 +254,7 @@ public final class DataBaseHelper implements Helper{
         T entity = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	if(table.next()){
     			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
@@ -277,7 +286,7 @@ public final class DataBaseHelper implements Helper{
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
                 closeConnection(dataSourceName);
@@ -299,7 +308,7 @@ public final class DataBaseHelper implements Helper{
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	ResultSetMetaData rsmd = table.getMetaData();
 			while(table.next()){
@@ -313,7 +322,7 @@ public final class DataBaseHelper implements Helper{
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("execute queryList failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
                 closeConnection(dataSourceName);
@@ -335,7 +344,7 @@ public final class DataBaseHelper implements Helper{
         Map<String, Object> result = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	ResultSetMetaData rsmd = table.getMetaData();
         	if(table.next()){
@@ -348,7 +357,7 @@ public final class DataBaseHelper implements Helper{
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("execute queryMap failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
                 closeConnection(dataSourceName);
@@ -371,7 +380,7 @@ public final class DataBaseHelper implements Helper{
     	T result = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
         	ResultSet table = ps.executeQuery();
         	if(table.next()){
             	ResultSetMetaData rsmd = table.getMetaData();
@@ -383,7 +392,7 @@ public final class DataBaseHelper implements Helper{
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("execute queryPrimitive failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
                 closeConnection(dataSourceName);
@@ -405,11 +414,11 @@ public final class DataBaseHelper implements Helper{
     	long result = 0;
         try {
         	//包装count(1)语句
-        	sql = SqlHelper.convertSqlCount(sql);
+        	sql = CommonSqlUtil.convertSqlCount(sql);
         	
         	//免转换，因为queryPrimitive会做
 //        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
-            result = queryPrimitive(sql, params, paramTypes, dataSourceName);
+            result = CastUtil.castLong(queryPrimitive(sql, params, paramTypes, dataSourceName));
         } catch (Exception e) {
             LOGGER.error("execute countQuery failure", e);
             throw new RuntimeException(e);
@@ -430,12 +439,12 @@ public final class DataBaseHelper implements Helper{
         int rows = 0;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, false);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
         	rows = ps.executeUpdate();
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("execute update failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
                 closeConnection(dataSourceName);
@@ -459,7 +468,7 @@ public final class DataBaseHelper implements Helper{
         Object generatedKey = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(conn, sql, params, paramTypes, true);
+        	PreparedStatement ps = getPrepareStatement(dataSourceName, conn, sql, params, paramTypes, true);
         	rows = ps.executeUpdate();
         	ResultSet rs = ps.getGeneratedKeys();
         	if(rs.next()){
@@ -469,7 +478,7 @@ public final class DataBaseHelper implements Helper{
 			ps.close();
         } catch (SQLException e) {
             LOGGER.error("execute insert failure", e);
-            throw new SQLException(e);
+            throw e;
         } finally {
             if(conn.getAutoCommit()){
                 closeConnection(dataSourceName);
@@ -491,12 +500,22 @@ public final class DataBaseHelper implements Helper{
     public static <T> T insertEntity(T entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("insertEntity failure, insertEntity param is null!");
-    	SqlPackage sp = SqlHelper.getInsertSqlPackage(entity);
+    	SqlPackage sp = null;
+    	if(DataSourceHelper.isMySql(dataSourceName)){
+    		sp = MySqlUtil.getInsertSqlPackage(entity);
+    	}else if(DataSourceHelper.isOracle(dataSourceName)){
+    		sp = OracleUtil.getInsertSqlPackage(entity);
+    	}
     	InsertResult executeInsert = executeInsert(sp.getSql(), sp.getParams(), sp.getParamTypes(),dataSourceName);
     	do{
     		if(executeInsert.getEffectedRows() <= 0) break;
     		//插入成功
-    		Object generatedKey = executeInsert.getGeneratedKey();
+    		Object generatedKey = null;
+    		if(DataSourceHelper.isMySql(dataSourceName)){
+    			generatedKey = executeInsert.getGeneratedKey();
+    		}else if(DataSourceHelper.isOracle(dataSourceName)){
+    			generatedKey = queryPrimitive(OracleUtil.getGenerateIdSql(entity), new Object[0], new Class<?>[0],dataSourceName);
+    		}
     		if(generatedKey != null){
     			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
     			for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
@@ -506,7 +525,7 @@ public final class DataBaseHelper implements Helper{
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
     					if(idValue == null){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						Object setMethodArg = CastUtil.castType(executeInsert.getGeneratedKey(),field.getType());
+    						Object setMethodArg = CastUtil.castType(generatedKey,field.getType());
     						ReflectionUtil.setField(entity, field, setMethodArg);
     					}
     					break;
@@ -531,7 +550,7 @@ public final class DataBaseHelper implements Helper{
     public static int updateEntity(Object entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("updateEntity failure, updateEntity param is null!");
-        SqlPackage sp = SqlHelper.getUpdateSqlPackage(entity);
+        SqlPackage sp = CommonSqlUtil.getUpdateSqlPackage(entity);
         return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
     }
     
@@ -548,30 +567,38 @@ public final class DataBaseHelper implements Helper{
     public static <T> T insertOnDuplicateKeyEntity(T entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("insertOnDuplicateKeyEntity failure, insertOnDuplicateKeyEntity param is null!");
-        SqlPackage sp = SqlHelper.getInsertOnDuplicateKeyUpdateSqlPackage(entity);
-        InsertResult executeInsert = executeInsert(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
-    	do{
-    		if(executeInsert.getEffectedRows() <= 0) break;
-    		//插入成功
-    		if(executeInsert.getGeneratedKey() != null){
-    			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-    			for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
-    				Field field = entityFieldMethod.getField();
-    				if(field.isAnnotationPresent(Id.class)){
-    					Method method = entityFieldMethod.getMethod();
-    					Object idValue = ReflectionUtil.invokeMethod(entity, method);
-    					if(!executeInsert.getGeneratedKey().equals(idValue)){
-    						//如果id字段没有值，就用返回的自增主键赋值
-    						Object setMethodArg = CastUtil.castType(executeInsert.getGeneratedKey(),field.getType());
-    						ReflectionUtil.setField(entity, field, setMethodArg);
-    					}
-    					break;
-    				}
-    			}
-    		}
-            return entity;
-    	}while(false);
-    	return null;
+        
+    	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+    	boolean findId = false;
+    	boolean idValueIsOk = true;
+		for (int i = 0; i < entityFieldMethodList.size(); i++) {
+			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
+			Field field = entityFieldMethod.getField();
+			if (field.isAnnotationPresent(Transient.class)) {
+				if (!field.getAnnotation(Transient.class).save()) {
+					continue;
+				}
+			}
+			Method method = entityFieldMethod.getMethod();
+			if (field.isAnnotationPresent(Id.class)) {
+				findId = true;//是否有@Id
+				Object value = ReflectionUtil.invokeMethod(entity, method);
+				if(value == null){
+					idValueIsOk = false;
+				}
+			}
+		}
+		
+		//如果有@Id，并且都有值，那么就update，否则就插入
+		if(findId && idValueIsOk){
+			int affectRows = updateEntity(entity, dataSourceName);
+			if(affectRows == 0){
+				entity = null;//如果没有记录被影响，那么返回null
+			}
+		}else{
+			entity = insertEntity(entity, dataSourceName);
+		}
+		return entity;
     }
 
     public static int deleteEntity(Object entity) throws SQLException {
@@ -586,7 +613,7 @@ public final class DataBaseHelper implements Helper{
     public static int deleteEntity(Object entity,String dataSourceName) throws SQLException {
     	if(entity == null)
     		throw new RuntimeException("deleteEntity failure, deleteEntity param is null!");
-        SqlPackage sp = SqlHelper.getDeleteSqlPackage(entity);
+        SqlPackage sp = CommonSqlUtil.getDeleteSqlPackage(entity);
         return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
     }
     
@@ -600,7 +627,7 @@ public final class DataBaseHelper implements Helper{
 	public static <T> T getEntity(T entity,String dataSourceName) throws SQLException{
     	if(entity == null)
     		throw new RuntimeException("getEntity failure, getEntity param is null!");
-        SqlPackage sp = SqlHelper.getSelectByIdSqlPackage(entity);
+        SqlPackage sp = CommonSqlUtil.getSelectByIdSqlPackage(entity);
         entity = (T)queryEntity(entity.getClass(), sp.getSql(), sp.getParams(), sp.getParamTypes(),dataSourceName);
     	return (T)entity;
     }
@@ -630,7 +657,7 @@ public final class DataBaseHelper implements Helper{
         	CONNECTION_HOLDER.set(connMap);
         } catch (SQLException e){
             LOGGER.error("begin transaction failure",e);
-            throw new SQLException(e);
+            throw e;
         }
 //        t = System.currentTimeMillis();
 //		System.out.println("e3:"+t);
@@ -657,7 +684,7 @@ public final class DataBaseHelper implements Helper{
             	}
             } catch (SQLException e){
                 LOGGER.error("commit transaction of dataSource["+errorDataSourceName+"] failure",e);
-                throw new SQLException(e);
+                throw e;
             }finally {
             	for(String dataSourceName:connMap.keySet()){
             		if(dsMap.get(dataSourceName).tns()){

@@ -93,8 +93,15 @@ public final class  CastUtil {
 			String valueTypeName = value.getClass().getName();
 			String javaTypeName = ((Class<?>)toType).getName();
 			BaseTypeConvert typeConvert = TYPE_2_TYPE_MAP.get(valueTypeName+"=>"+javaTypeName);
-			if(typeConvert == null) break;
-			value = typeConvert.convert(value);
+			if(typeConvert == null){
+				//就用加一级String中间转换
+				typeConvert = TYPE_2_TYPE_MAP.get(String.class.getName()+"=>"+javaTypeName);
+				if(typeConvert != null){
+					value = typeConvert.convert(value.toString());
+				}
+			}else{
+				value = typeConvert.convert(value);
+			}
 		}while(false);
 		return value;
 	}

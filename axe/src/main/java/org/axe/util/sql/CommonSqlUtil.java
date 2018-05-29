@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.axe.helper.persistence;
+package org.axe.util.sql;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,61 +40,24 @@ import org.axe.annotation.persistence.Transient;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.bean.persistence.SqlPackage;
+import org.axe.constant.ConfigConstant;
 import org.axe.helper.base.ConfigHelper;
+import org.axe.helper.persistence.TableHelper;
 import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
 import org.axe.util.JsonUtil;
+import org.axe.util.PropsUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Sql 解析 助手类 剥离自DataBaseHelper @author CaiDongyu on 2016/5/6.
+ * 统一的Sql解析处理工具，从SqlHelper中迁移过来
+ * @author CaiDongyu 2018/5/29
  */
-public final class SqlHelper {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SqlHelper.class);
-
-	public static Map<String, Class<?>> matcherEntityClassMap(String sql) {
-		Map<String, Class<?>> entityClassMap = TableHelper.getEntityClassMap();
-		String sqlClean = sql.replaceAll("[,><=!\\+\\-\\*/\\(\\)]", " ");
-		String[] sqlWords = sqlClean.split(" ");
-		LOGGER.debug("sqlWords : " + Arrays.toString(sqlWords));
-
-		Map<String, Class<?>> sqlEntityClassMap = new HashMap<>();
-		for (String word : sqlWords) {
-			if (entityClassMap.containsKey(word) && !sqlEntityClassMap.containsKey(word)) {
-				sqlEntityClassMap.put(word, entityClassMap.get(word));
-			}
-		}
-		return sqlEntityClassMap;
-	}
-
-	public static SqlPackage getInsertSqlPackage(Object entity) {
-		String sql = "INSERT INTO " + TableHelper.getTableName(entity.getClass());
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-		StringBuilder columns = new StringBuilder("(");
-		StringBuilder values = new StringBuilder("(");
-		Object[] params = new Object[entityFieldMethodList.size()];
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-			columns.append("`").append(column).append("`, ");
-			values.append("?, ");
-			params[i] = ReflectionUtil.invokeMethod(entity, method);
-		}
-		columns.replace(columns.lastIndexOf(", "), columns.length(), ")");
-		values.replace(values.lastIndexOf(", "), values.length(), ")");
-		sql += columns + " VALUES " + values;
-		return new SqlPackage(sql, params, null);
-	}
+public class CommonSqlUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonSqlUtil.class);
 
 	public static SqlPackage getUpdateSqlPackage(Object entity) {
 		String sql = "UPDATE " + TableHelper.getTableName(entity.getClass()) + " SET ";
@@ -117,10 +81,10 @@ public final class SqlHelper {
 			String column = StringUtil.camelToUnderline(field.getName());
 			if (!field.isAnnotationPresent(Id.class)) {
 				// #没有@Id注解的字段作为修改内容
-				columns.append("`").append(column).append("`=?, ");
+				columns.append(column).append("=?, ");
 			} else {
 				// #有@Id的字段作为主键，用来当修改条件
-				where.append(" and `").append(column).append("`=?");
+				where.append(" and ").append(column).append("=?");
 				hashIdField = true;
 			}
 			params[i] = ReflectionUtil.invokeMethod(entity, method);
@@ -129,71 +93,10 @@ public final class SqlHelper {
 		sql = sql + columns.toString() + where.toString();
 
 		if (!hashIdField) {
-			// 注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
+			//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
 			throw new RuntimeException("update entity failure!cannot find any field with @Id in " + entity.getClass());
 		}
 		return new SqlPackage(sql, params, null);
-	}
-
-	public static SqlPackage getInsertOnDuplicateKeyUpdateSqlPackage(Object entity) {
-		String sql = "INSERT INTO " + TableHelper.getTableName(entity.getClass());
-		// #只取拥有get方法的字段作为数据库映射字段，没有get方法的字段，认为是不需要持久化的字段
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-		// #字段
-		StringBuilder columnsInsert = new StringBuilder("(");
-		StringBuilder valuesInsert = new StringBuilder(" VALUES (");
-		StringBuilder columnsUpdate = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
-		// #占位符的值
-		List<Object> params = new ArrayList<>();
-		boolean hashIdField = false;
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			// # insert
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-
-			columnsInsert.append("`").append(column).append("`, ");
-			valuesInsert.append("?, ");
-			params.add(ReflectionUtil.invokeMethod(entity, method));
-		}
-		columnsInsert.replace(columnsInsert.lastIndexOf(", "), columnsInsert.length(), ")");
-		valuesInsert.replace(valuesInsert.lastIndexOf(", "), valuesInsert.length(), ")");
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			// # update
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-
-			// # update
-			if (!field.isAnnotationPresent(Id.class)) {
-				// #没有@Id注解的字段作为修改内容
-				columnsUpdate.append("`").append(column).append("`").append("=?, ");
-				params.add(ReflectionUtil.invokeMethod(entity, method));
-			} else {
-				hashIdField = true;
-			}
-		}
-		columnsUpdate.replace(columnsUpdate.lastIndexOf(", "), columnsUpdate.length(), " ");
-
-		sql = sql + columnsInsert.toString() + valuesInsert.toString() + columnsUpdate.toString();
-
-		if (!hashIdField) {
-			// 注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
-			throw new RuntimeException("update entity failure!cannot find any field with @Id in " + entity.getClass());
-		}
-		return new SqlPackage(sql, params.toArray(), null);
 	}
 
 	public static SqlPackage getDeleteSqlPackage(Object entity) {
@@ -217,7 +120,7 @@ public final class SqlHelper {
 			Method method = entityFieldMethod.getMethod();
 			String column = StringUtil.camelToUnderline(field.getName());
 			// #有@Id的字段作为主键，用来当修改条件
-			where.append(" and `").append(column).append("`=?");
+			where.append(" and ").append(column).append("=?");
 			params[i] = ReflectionUtil.invokeMethod(entity, method);
 		}
 		sql = sql + where.toString();
@@ -254,21 +157,40 @@ public final class SqlHelper {
 			Method method = entityFieldMethod.getMethod();
 			String column = StringUtil.camelToUnderline(field.getName());
 			// #有@Id的字段作为主键，用来当修改条件
-			where.append(" and `").append(column).append("`=?");
+			where.append(" and ").append(column).append("=?");
 			params[i] = ReflectionUtil.invokeMethod(entity, method);
 		}
 		sql = sql + where.toString();
 
 		return new SqlPackage(sql, params, null);
 	}
+	
+	public static Map<String, Class<?>> matcherEntityClassMap(String sql) {
+		Map<String, Class<?>> entityClassMap = TableHelper.getEntityClassMap();
+		String sqlClean = sql.replaceAll("[,><=!\\+\\-\\*/\\(\\)]", " ");
+		String[] sqlWords = sqlClean.split(" ");
+		LOGGER.debug("sqlWords : " + Arrays.toString(sqlWords));
 
+		Map<String, Class<?>> sqlEntityClassMap = new HashMap<>();
+		for (String word : sqlWords) {
+			if (entityClassMap.containsKey(word) && !sqlEntityClassMap.containsKey(word)) {
+				sqlEntityClassMap.put(word, entityClassMap.get(word));
+			}
+		}
+		return sqlEntityClassMap;
+	}
+
+	public static boolean checkIsSqlKeyword(String SQL_KEYWORD,String word){
+		return SQL_KEYWORD.contains(","+word+",");
+	}
+	
 	/**
 	 * 检测sql是否可做hql转换 目前只做类到表的表名、字段是否会影响sql语句中的mysql关键字。
 	 * 比如表名叫cOunt，这就会影响，因为经过驼峰转换下划线后会替换成c_ount，
 	 * 会导致后续的hql解析时，如果sql中正好有count关键字，也会被替换掉，
 	 * 因为在sql中cOunt不区分大小写情况下，是可以执行的，这就破坏了sql。 如果检测通过，会额外返回检测时已经匹配好的get方法和字段的map
 	 */
-	private static Map<String, Class<?>> checkHqlConvertIfOk(String sql) {
+	private static Map<String, Class<?>> checkHqlConvertIfOk(String SQL_KEYWORD,String sql) {
 		// 匹配出Entity-Class
 		Map<String, Class<?>> sqlEntityClassMap = matcherEntityClassMap(sql);
 		do {
@@ -278,12 +200,12 @@ public final class SqlHelper {
 			for (Map.Entry<String, Class<?>> entity : sqlEntityClassMap.entrySet()) {
 				String entityClassName = entity.getKey();
 				// #检测表名是否影响
-				// * 如果MYSQL_KEYWORDS中包含此表名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
-				if (TableHelper.checkIsMysqlKeyword(entityClassName)) {
+				// * 如果KEYWORDS中包含此表名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
+				if (checkIsSqlKeyword(SQL_KEYWORD,entityClassName)) {
 					String afterTryCast2TableName = StringUtil.camelToUnderline(entityClassName);
 					if (!entityClassName.equalsIgnoreCase(afterTryCast2TableName))
 						throw new RuntimeException("invalid class name[" + entityClassName + "] for sql#[" + sql
-								+ "], because mysql keyword will be affected!");
+								+ "], because sql keyword will be affected!");
 				}
 
 				Class<?> entityClass = entity.getValue();
@@ -293,13 +215,13 @@ public final class SqlHelper {
 					for (EntityFieldMethod efm : entityFieldMethodList) {
 						String fieldName = efm.getField().getName();
 						// *
-						// 如果MYSQL_KEYWORDS中包含此字段名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
-						if (TableHelper.checkIsMysqlKeyword(fieldName)) {
+						// 如果KEYWORDS中包含此字段名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
+						if (checkIsSqlKeyword(SQL_KEYWORD,fieldName)) {
 							String afterTryCast2ColumnName = StringUtil.camelToUnderline(fieldName);
 							if (!fieldName.equalsIgnoreCase(afterTryCast2ColumnName))
 								throw new RuntimeException(
 										"invalid field name#[" + fieldName + "] in class#[" + entityClassName
-												+ "] for sql#[" + sql + "], because mysql keyword will be affected!");
+												+ "] for sql#[" + sql + "], because sql keyword will be affected!");
 						}
 					}
 				}
@@ -311,12 +233,12 @@ public final class SqlHelper {
 	/**
 	 * 解析sql中的类信息
 	 */
-	public static String[] convertHql2Sql(String sql) {
+	public static String[] convertHql2Sql(String SQL_KEYWORD,String sql) {
 		// 末尾多加一个空格，防止select * from table这样的bug，会找不到表名
 		sql = sql + " ";
 		LOGGER.debug("sql : " + sql);
 		// #根据sql匹配出Entity类
-		Map<String, Class<?>> sqlEntityClassMap = checkHqlConvertIfOk(sql);
+		Map<String, Class<?>> sqlEntityClassMap = checkHqlConvertIfOk(SQL_KEYWORD,sql);
 		LOGGER.debug("sqlEntityClassMap : " + JsonUtil.toJson(sqlEntityClassMap));
 		String dataSourceName = null;
 		if (!CollectionUtil.isEmpty(sqlEntityClassMap)) {
@@ -330,7 +252,7 @@ public final class SqlHelper {
 		}
 		return new String[] { sql, dataSourceName };
 	}
-
+	
 	private static String[] convertTableName(String sql, Map<String, Class<?>> sqlEntityClassMap) {
 		// #表名可能被这些东西包围，空格本身就用来分割，所以不算在内
 		String dataSourceName = null;
@@ -373,9 +295,9 @@ public final class SqlHelper {
 			for (EntityFieldMethod entityFieldMethod : entityFieldMethodList) {
 				String field = entityFieldMethod.getField().getName();
 				String column = StringUtil.camelToUnderline(field);
-				//TODO:暂时先解决=前后一样字段名的问题，这个问题是因为两个相同的字段名，中间只隔了一个字符，导致下面的正则匹配，只能匹配到一侧
-				sql = sql.replaceAll(field+"="+field, field+" = "+field);
-				
+				// TODO:暂时先解决=前后一样字段名的问题，这个问题是因为两个相同的字段名，中间只隔了一个字符，导致下面的正则匹配，只能匹配到一侧
+				sql = sql.replaceAll(field + "=" + field, field + " = " + field);
+
 				// 前后表达式不同
 				// 前面有!
 				// 前面有(
@@ -406,7 +328,7 @@ public final class SqlHelper {
 	/**
 	 * 分析占位符的模式 1.纯prepareStatement的顺序占位符，?后面不带数字 2.可以?后面带数字的制定参数位置的占位符
 	 */
-	private static boolean[] analysisGetFlagMode(String sql) {
+	public static boolean[] analysisGetFlagMode(String sql) {
 		boolean getFlagComm = false;// 普通模式 就是?不带数字
 		boolean getFlagSpec = false;// ?带数字模式
 		int getFlagIndex = sql.indexOf("?");
@@ -428,12 +350,11 @@ public final class SqlHelper {
 	/**
 	 * 转换占位符 ?1 转换pageConfig占位符
 	 */
-	public static SqlPackage convertGetFlag(String sql, Object[] params, Class<?>[] paramTypes) {
+	public static SqlPackage convertGetFlag(SqlPackage sqlPackage) {
 		// #转换pageConfig
-		SqlPackage sqlPackage = convertPagConfig(sql, params, paramTypes);
-		sql = sqlPackage.getSql();
-		params = sqlPackage.getParams();
-		paramTypes = sqlPackage.getParamTypes();
+		String sql = sqlPackage.getSql();
+		Object[] params = sqlPackage.getParams();
+		Class<?>[] paramTypes = sqlPackage.getParamTypes();
 		boolean[] getFlagModeAry = sqlPackage.getGetFlagModeAry();
 
 		// #开始排布
@@ -523,57 +444,6 @@ public final class SqlHelper {
 		return new SqlPackage(sql, paramList.toArray(), paramTypes);
 	}
 
-	/**
-	 * 转换 分页查询条件 转换有条件，如果params里包含约定位置(末尾)的pageConfig，就转换，如果没有，就不作处理
-	 * 但是，如果有pageConfig但是书写方式不符合约定，会报异常
-	 */
-	public static SqlPackage convertPagConfig(String sql, Object[] params, Class<?>[] paramTypes) {
-		// #检测占位符是否都符合格式
-		// ?后面跟1~9,如果两位数或者更多位,则十位开始可以0~9
-		// 但是只用检测个位就好
-		boolean[] getFlagModeAry = analysisGetFlagMode(sql);
-		boolean getFlagComm = getFlagModeAry[0];// 普通模式 就是?不带数字
-		boolean getFlagSpec = getFlagModeAry[1];// ?带数字模式
-
-		// 不可以两种模式都并存，只能选一种，要么?都带数字，要么?都不带数字
-		if (getFlagComm && getFlagSpec)
-			throw new RuntimeException("invalid sql statement with ?+number and only ?: " + sql);
-
-		// #params检测是否包含pageConfig，包含的位置
-		do {
-			PageConfig pageConfig = getPageConfigFromParams(params, paramTypes);
-			if (pageConfig == null)
-				break;
-
-			if (!getFlagComm && !getFlagSpec) {
-				// 默认这里采用getFlagSpec模式，因为默认情况下，不指定参数位置，会破坏约定，比如分页参数必须是最后一个
-				getFlagSpec = true;
-			}
-			// 替换sql
-			if (sql.toUpperCase().contains(" LIMIT ")) {
-				if (getFlagComm) {// ?
-					sql = "select * from(" + sql + ") limit ?,?";
-				} else if (getFlagSpec) {// ?1
-					sql = "select * from(" + sql + ") limit ?" + (paramTypes.length) + ",?" + (paramTypes.length + 1);
-				}
-			} else {
-				if (getFlagComm) {// ?
-					sql = sql + " limit ?,?";
-				} else if (getFlagSpec) {// ?1
-					sql = sql + " limit ?" + (paramTypes.length) + ",?" + (paramTypes.length + 1);
-				}
-			}
-			// 替换params
-			Object[] newParams = new Object[params.length + 1];
-			for (int i = 0; i < newParams.length - 2; i++) {
-				newParams[i] = params[i];
-			}
-			newParams[newParams.length - 2] = pageConfig.getLimitParam1();
-			newParams[newParams.length - 1] = pageConfig.getLimitParam2();
-			params = newParams;
-		} while (false);
-		return new SqlPackage(sql, params, paramTypes, new boolean[] { getFlagComm, getFlagSpec });
-	}
 
 	public static PageConfig getPageConfigFromParams(Object[] params, Class<?>[] paramTypes) {
 		PageConfig pageConfig = null;
@@ -627,9 +497,11 @@ public final class SqlHelper {
 		}
 		return sql;
 	}
-
-	public static void debugSql(SqlPackage sp) {
-		if (ConfigHelper.getJdbcShowSql()) {
+	
+	public static void debugSql(String dataSourceName,SqlPackage sp) {
+		Properties configProps = ConfigHelper.getCONFIG_PROPS();
+		boolean showSql = PropsUtil.getBoolean(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_SHOW_SQL);
+		if (showSql) {
 			System.out.println(sp.getSql());
 			if (sp.getParams() != null) {
 				for (int i = 0; i < sp.getParams().length; i++) {
@@ -638,7 +510,7 @@ public final class SqlHelper {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		/*
 		 * String sql = "select * from Test where a=b #1 #3 #12 #11"; Object[]

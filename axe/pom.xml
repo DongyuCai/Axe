@@ -6,7 +6,7 @@
 
     <groupId>org.axe</groupId>
     <artifactId>axe</artifactId>
-    <version>18.4.27</version>
+    <version>18.5.29</version>
     <packaging>jar</packaging>
 
 	<name>axe</name>

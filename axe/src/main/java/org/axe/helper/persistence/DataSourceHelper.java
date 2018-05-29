@@ -86,6 +86,19 @@ public final class DataSourceHelper implements Helper{
 		return DATA_SOURCE;
 	}
 	
+	public static boolean isMySql(String dataSourceName){
+		if(DATA_SOURCE.containsKey(dataSourceName)){
+			return DATA_SOURCE.get(dataSourceName).setJdbcDriver().toUpperCase().indexOf("MYSQL") >= 0;
+		}
+		return false;
+	}
+	public static boolean isOracle(String dataSourceName){
+		if(DATA_SOURCE.containsKey(dataSourceName)){
+			return DATA_SOURCE.get(dataSourceName).setJdbcDriver().toUpperCase().indexOf("ORACLE") >= 0;
+		}
+		return false;
+	}
+	
 	/*public static DataSource getDataSource(){
 		return getDataSource("");
 	}*/
