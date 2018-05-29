@@ -144,13 +144,13 @@ axe.classhelper.keep=false
 #	可以使用自己的数据源，用法参考README里的数据源一节
 jdbc.datasource=
 #是否自动建表
-jdbc.数据源名称.auto_create_table=true
+jdbc.datasource.数据源名称.auto_create_table=true
 #是否打印sql语句
-jdbc.数据源名称.show_sql=false
+jdbc.datasource.数据源名称.show_sql=false
 #数据库编码，支持emoji！MySql使用
-#jdbc.数据源名称.character=utf8mb4
+#jdbc.datasource.数据源名称.character=utf8mb4
 #数据库校验编码，支持emoji！MySql使用
-#jdbc.数据源名称.collate=utf8mb4_unicode_ci
+#jdbc.datasource.数据源名称.collate=utf8mb4_unicode_ci
 
 #如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置
 #	如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
