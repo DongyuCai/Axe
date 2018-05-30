@@ -7,7 +7,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class String2DoubleConvert implements BaseTypeConvert{
 
-	public Double convert(Object arg){
+	public Double convert(Object arg,Object ...args){
 		return Double.parseDouble((String)arg);
 	}
 }

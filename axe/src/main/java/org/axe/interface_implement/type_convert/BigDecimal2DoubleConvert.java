@@ -10,7 +10,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
 public class BigDecimal2DoubleConvert implements BaseTypeConvert{
 
 	@Override
-	public Object convert(Object object) {
+	public Object convert(Object object,Object ...args) {
 		return ((BigDecimal)object).doubleValue();
 	}
 

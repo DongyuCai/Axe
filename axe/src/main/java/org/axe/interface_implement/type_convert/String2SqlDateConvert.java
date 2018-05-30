@@ -9,7 +9,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class String2SqlDateConvert implements BaseTypeConvert{
 
-	public Date convert(Object arg){
+	public Date convert(Object arg,Object ...args){
 		return new Date(Long.parseLong((String)arg));
 	}
 }

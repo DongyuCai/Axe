@@ -7,7 +7,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class String2IntegerConvert implements BaseTypeConvert{
 
-	public Integer convert(Object arg){
+	public Integer convert(Object arg,Object ...args){
 		return Integer.parseInt((String)arg);
 	}
 }

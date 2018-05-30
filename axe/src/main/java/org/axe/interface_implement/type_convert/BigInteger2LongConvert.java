@@ -9,7 +9,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class BigInteger2LongConvert implements BaseTypeConvert{
 
-	public Long convert(Object arg){
+	public Long convert(Object arg,Object ...args){
 		return ((BigInteger)arg).longValue();
 	}
 }

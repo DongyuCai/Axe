@@ -81,7 +81,7 @@ public final class  CastUtil {
 	private CastUtil() {}
 
     
-    public static <T> Object castType(Object value,T toType){
+    public static <T> Object castType(Object value,T toType,Object ...args){
 		do{
 			if(value == null) break;
 			
@@ -97,10 +97,10 @@ public final class  CastUtil {
 				//就用加一级String中间转换
 				typeConvert = TYPE_2_TYPE_MAP.get(String.class.getName()+"=>"+javaTypeName);
 				if(typeConvert != null){
-					value = typeConvert.convert(value.toString());
+					value = typeConvert.convert(value.toString(),args);
 				}
 			}else{
-				value = typeConvert.convert(value);
+				value = typeConvert.convert(value,args);
 			}
 		}while(false);
 		return value;

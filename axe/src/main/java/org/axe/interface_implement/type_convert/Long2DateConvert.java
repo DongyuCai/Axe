@@ -9,7 +9,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class Long2DateConvert implements BaseTypeConvert{
 
-	public Date convert(Object arg){
+	public Date convert(Object arg,Object ...args){
 		return new Date((Long)arg);
 	}
 }

@@ -334,8 +334,10 @@ public final class OracleUtil {
 			for (int i = 0; i < newParams.length - 2; i++) {
 				newParams[i] = params[i];
 			}
-			newParams[newParams.length - 1] = pageConfig.getLimitParam1();
-			newParams[newParams.length - 2] = pageConfig.getLimitParam1()+pageConfig.getPageSize()-1;
+			//>=，因为rownum从1开始，所以这里要+1
+			newParams[newParams.length - 1] = pageConfig.getLimitParam1()+1;
+			//<=，这里本来-1，因为rownum从1开始，所以这里不用加了
+			newParams[newParams.length - 2] = pageConfig.getLimitParam1()+pageConfig.getPageSize();
 			params = newParams;
 		} while (false);
 		return new SqlPackage(sql, params, paramTypes, new boolean[] { getFlagComm, getFlagSpec });

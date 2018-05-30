@@ -9,7 +9,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class Integer2BigDecimalConvert implements BaseTypeConvert{
 
-	public BigDecimal convert(Object arg){
+	public BigDecimal convert(Object arg,Object ...args){
 		return new BigDecimal((Integer)arg);
 	}
 }

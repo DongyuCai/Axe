@@ -28,5 +28,9 @@ package org.axe.interface_.type_convert;
  */
 public  interface BaseTypeConvert  {
 
-	public Object convert(Object object);
+	/**
+	 * @param object 需要转换的对象值
+	 * @param args	携带的其他参数
+	 */
+	public Object convert(Object object,Object ...args);
 }

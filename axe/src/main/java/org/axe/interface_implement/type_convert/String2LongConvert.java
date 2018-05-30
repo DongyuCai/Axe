@@ -7,7 +7,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
  */
 public class String2LongConvert implements BaseTypeConvert{
 
-	public Long convert(Object arg){
+	public Long convert(Object arg,Object ...args){
 		return Long.parseLong((String)arg);
 	}
 }
