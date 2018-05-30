@@ -91,6 +91,7 @@ public final class OracleUtil {
 		JAVA2ORACLE_MAP.put("java.lang.String", "varchar(255)");
 		JAVA2ORACLE_MAP.put("java.math.BigDecimal", "number");
 		JAVA2ORACLE_MAP.put("java.sql.Date", "date");
+		JAVA2ORACLE_MAP.put("java.sql.Timestamp", "date");
 		JAVA2ORACLE_MAP.put("java.util.Date", "date");
 		// byte[]
 		JAVA2ORACLE_MAP.put("[B", "blob");

@@ -42,7 +42,7 @@ import org.axe.interface_implement.type_convert.String2DateConvert;
 import org.axe.interface_implement.type_convert.String2DoubleConvert;
 import org.axe.interface_implement.type_convert.String2IntegerConvert;
 import org.axe.interface_implement.type_convert.String2LongConvert;
-import org.axe.interface_implement.type_convert.String2SqlDateConvert;
+import org.axe.interface_implement.type_convert.String2SqlTimestampConvert;
 
 /**
  * 类型转换工具类
@@ -63,7 +63,8 @@ public final class  CastUtil {
 		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new Long2SqlDateConvert());
 		
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new String2DateConvert());
-		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlDateConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlTimestampConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Timestamp", new String2SqlTimestampConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Double", new String2DoubleConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>double", new String2DoubleConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Long", new String2LongConvert());
