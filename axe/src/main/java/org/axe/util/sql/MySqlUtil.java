@@ -232,10 +232,9 @@ public final class MySqlUtil {
 		}
 
 		Properties configProps = ConfigHelper.getCONFIG_PROPS();
-		String jdbcCharacter = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_CHARACTER);
+		String jdbcCharacter = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_CHARACTER,"utf8");
 		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(jdbcCharacter);
 		String jdbcCollate = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_COLLATE);
-		
 		if (StringUtil.isNotEmpty(jdbcCollate)) {
 			// 如果有校验编码，那么也要
 			createTableSqlBufer.append(" COLLATE=").append(jdbcCollate);

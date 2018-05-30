@@ -67,8 +67,8 @@ public class CommonSqlUtil {
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 		// #占位符的值
-		Object[] params = new Object[entityFieldMethodList.size()];
-		boolean hashIdField = false;
+		List<Object> paramsColumns = new ArrayList<>();
+		List<Object> paramsWhere = new ArrayList<>();
 		for (int i = 0; i < entityFieldMethodList.size(); i++) {
 			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
 			Field field = entityFieldMethod.getField();
@@ -82,21 +82,22 @@ public class CommonSqlUtil {
 			if (!field.isAnnotationPresent(Id.class)) {
 				// #没有@Id注解的字段作为修改内容
 				columns.append(column).append("=?, ");
+				paramsColumns.add(ReflectionUtil.invokeMethod(entity, method));
 			} else {
 				// #有@Id的字段作为主键，用来当修改条件
 				where.append(" and ").append(column).append("=?");
-				hashIdField = true;
+				paramsWhere.add(ReflectionUtil.invokeMethod(entity, method));
 			}
-			params[i] = ReflectionUtil.invokeMethod(entity, method);
 		}
 		columns.replace(columns.lastIndexOf(", "), columns.length(), " ");
 		sql = sql + columns.toString() + where.toString();
 
-		if (!hashIdField) {
+		if (CollectionUtil.isEmpty(paramsWhere)) {
 			//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
 			throw new RuntimeException("update entity failure!cannot find any field with @Id in " + entity.getClass());
 		}
-		return new SqlPackage(sql, params, null);
+		paramsColumns.addAll(paramsWhere);
+		return new SqlPackage(sql, paramsColumns.toArray(), null);
 	}
 
 	public static SqlPackage getDeleteSqlPackage(Object entity) {
