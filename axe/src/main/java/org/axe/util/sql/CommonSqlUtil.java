@@ -59,6 +59,8 @@ import org.slf4j.LoggerFactory;
 public class CommonSqlUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonSqlUtil.class);
 
+	private CommonSqlUtil() {}
+	
 	public static SqlPackage getUpdateSqlPackage(Object entity) {
 		String sql = "UPDATE " + TableHelper.getTableName(entity.getClass()) + " SET ";
 		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());

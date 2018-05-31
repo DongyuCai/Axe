@@ -28,11 +28,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,11 +42,11 @@ import org.axe.bean.mvc.ExceptionHolder;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.ResultHolder;
-import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.exception.RestException;
 import org.axe.interface_.mvc.Filter;
 import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
+import org.axe.util.JsonUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.RequestUtil;
 
@@ -88,7 +85,241 @@ public class AxeRequestParamSetFilter implements Filter {
 		convertRequestParam2ActionParam(handler.getActionMethod(), param, request, response);
 		return true;
 	}
+	
+	//新方法
+	private void convertRequestParam2ActionParam(Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
+    	Type[] parameterTypes = actionMethod.getGenericParameterTypes();
+    	Annotation[][] parameterAnnotations = actionMethod.getParameterAnnotations();
+    	parameterTypes = parameterTypes == null?new Class<?>[0]:parameterTypes;
+    	//按顺序来，塞值
+    	List<Object> parameterValueList = new ArrayList<>();
+    	List<String> requiredParameterError = new ArrayList<>();
+    	for(int i=0;i<parameterTypes.length;i++){
+    		Object parameterValue = null;
+    		do{
+    			Type parameterType = parameterTypes[i];
+    			Annotation[] parameterAnnotationAry = parameterAnnotations[i];
+    			
+    			RequestParam requestParam = null;
+    			RequestEntity requestEntity = null;
+    			Default def = null;
+    			for(Annotation anno:parameterAnnotationAry){
+    				if(anno instanceof RequestParam){
+    					requestParam = (RequestParam)anno;
+    				}else if(anno instanceof RequestEntity){
+    					requestEntity = (RequestEntity)anno;
+					}else if(anno instanceof Default){
+						def = (Default)anno;
+					}
+    			}
+    			
+    			//## 是否@RequestParam标注的
+    			if(requestParam != null){
+    				String fieldName = requestParam.value();
+					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
+					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
+					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType);
+					//默认值
+					if(parameterValue == null){
+						if(def != null && def.value() != null && def.value().length > 0){
+							parameterValue = CastUtil.castType(def.value()[0], parameterType);
+						}
+					}
+					
+					//检测是否必填
+					if(requestParam.required() && parameterValue ==  null){
+    					requiredParameterError.add(fieldName);
+    				}
+					break;
+    			}else if(requestEntity != null){
+					if(CollectionUtil.isNotEmpty(param.getBodyParamMap())){
+						Map<String, Object> bodyParamMap = param.getBodyParamMap();
+						if(requestEntity.excludedFields() != null){
+							//排除字段
+							//userName
+							//roleList.*.createTime
+							for(String excludedField:requestEntity.excludedFields()){
+								excludedMap(bodyParamMap, excludedField);
+							}
+							//默认值
+							if(def != null && def.value() != null && def.value().length > 0){
+								for(String defVal:def.value()){
+									String key = defVal.substring(0, defVal.indexOf(":"));
+									String value = defVal.substring(defVal.indexOf(":")+1);
+									defMap(bodyParamMap, key, value);
+								}
+							}
+							//必填字段
+							if(requestEntity.requiredFields() != null){
+								for(String requiredField:requestEntity.requiredFields()){
+									boolean hasValue = requiredMap(bodyParamMap, requiredField);
+									if(!hasValue){
+										requiredParameterError.add(requiredField);
+									}
+								}
+							}
+						}
 
+	    				Class<?> entityClass = (Class<?>)parameterType;
+	    				String bodyParamMapJson = JsonUtil.toJson(bodyParamMap);
+	    				parameterValue = JsonUtil.fromJson(bodyParamMapJson, entityClass);
+					}else{
+						for(String requiredField:requestEntity.requiredFields()){
+							requiredParameterError.add(requiredField);
+						}
+					}
+    			}else{
+    				Class<?> parameterClass = null; 
+    				if(parameterType instanceof Class){
+    					parameterClass = (Class<?>)parameterType;
+    				}else if(parameterType instanceof ParameterizedType){
+    					parameterClass = (Class<?>)((ParameterizedType) parameterType).getRawType();
+    				}
+    				if(parameterClass != null){
+    					//## 不含注解的
+    					//* 如果是HttpServletRequest
+    					if(ReflectionUtil.compareType(HttpServletRequest.class, parameterClass)){
+    						parameterValue = request;
+    						break;
+    					}
+    					if(ReflectionUtil.compareType(HttpServletResponse.class, parameterClass)){
+    						parameterValue = response;
+    						break;
+    					}
+    					//* 如果是Param
+    					if(ReflectionUtil.compareType(Param.class,parameterClass)){
+    						parameterValue = param;
+    						break;
+    					}
+    					//* 如果是Map<String,Object> 
+    					if(ReflectionUtil.compareType(Map.class, parameterClass)){
+    						parameterValue = param.getBodyParamMap();
+    						break;
+    					}
+    					
+    				}
+    			}
+    			
+    			//## 其他杂七杂八类型，只能给null，框架不管
+    		}while(false);
+    		parameterValueList.add(parameterValue);
+    	}
+    	
+    	if(CollectionUtil.isNotEmpty(requiredParameterError)){
+			throw new RestException("必填参数"+requiredParameterError.toString()+"未获取到值");
+		}
+    	param.setActionParamList(parameterValueList);
+    }
+	
+	@SuppressWarnings("unchecked")
+	private void excludedMap(Map<String,Object> bodyParamMap,String fieldStack){
+		//把fieldStack从bodyParamMap里删掉
+		int pointIndex = fieldStack.indexOf(".");
+		if(pointIndex>0){
+			String field = fieldStack.substring(0,pointIndex);
+			String nextFieldStack = fieldStack.substring(pointIndex+1);
+			Object nextBodyParamMap = bodyParamMap.get(field);
+			if(nextBodyParamMap != null){
+				if(Map.class.isAssignableFrom(nextBodyParamMap.getClass())){
+					excludedMap((Map<String,Object>)nextBodyParamMap, nextFieldStack);
+				}else if(List.class.isAssignableFrom(nextBodyParamMap.getClass())){
+					excludedList((List<Object>)nextBodyParamMap, nextFieldStack);
+				}
+			}
+		}else{
+			bodyParamMap.remove(fieldStack);
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void excludedList(List<Object> list,String fieldStack){
+		for(Object el:list){
+			if(Map.class.isAssignableFrom(el.getClass())){
+				excludedMap((Map<String,Object>)el, fieldStack);
+			}else if(List.class.isAssignableFrom(el.getClass())){
+				excludedList((List<Object>)el, fieldStack);
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void defMap(Map<String,Object> bodyParamMap,String fieldStack,Object defValue){
+		//把fieldStack从bodyParamMap里删掉
+		int pointIndex = fieldStack.indexOf(".");
+		if(pointIndex>0){
+			String field = fieldStack.substring(0,pointIndex);
+			String nextFieldStack = fieldStack.substring(pointIndex+1);
+			Object nextBodyParamMap = bodyParamMap.get(field);
+			if(nextBodyParamMap != null){
+				if(Map.class.isAssignableFrom(nextBodyParamMap.getClass())){
+					defMap((Map<String,Object>)nextBodyParamMap, nextFieldStack, defValue);
+				}else if(List.class.isAssignableFrom(nextBodyParamMap.getClass())){
+					defList((List<Object>)nextBodyParamMap, nextFieldStack, defValue);
+				}
+			}
+		}else{
+			Object fieldValue = bodyParamMap.get(fieldStack);
+			if(fieldValue == null){
+				bodyParamMap.put(fieldStack, defValue);
+			}
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void defList(List<Object> list,String fieldStack,Object defValue){
+		for(Object el:list){
+			if(Map.class.isAssignableFrom(el.getClass())){
+				defMap((Map<String,Object>)el, fieldStack, defValue);
+			}else if(List.class.isAssignableFrom(el.getClass())){
+				defList((List<Object>)el, fieldStack, defValue);
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean requiredMap(Map<String,Object> bodyParamMap,String fieldStack){
+		//把fieldStack从bodyParamMap里删掉
+		int pointIndex = fieldStack.indexOf(".");
+		if(pointIndex>0){
+			String field = fieldStack.substring(0,pointIndex);
+			String nextFieldStack = fieldStack.substring(pointIndex+1);
+			Object nextBodyParamMap = bodyParamMap.get(field);
+			if(nextBodyParamMap != null){
+				if(Map.class.isAssignableFrom(nextBodyParamMap.getClass())){
+					return requiredMap((Map<String,Object>)nextBodyParamMap, nextFieldStack);
+				}else if(List.class.isAssignableFrom(nextBodyParamMap.getClass())){
+					return requiredList((List<Object>)nextBodyParamMap, nextFieldStack);
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}else{
+			Object fieldValue = bodyParamMap.get(fieldStack);
+			return fieldValue!=null;
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean requiredList(List<Object> list,String fieldStack){
+		for(Object el:list){
+			if(Map.class.isAssignableFrom(el.getClass())){
+				return requiredMap((Map<String,Object>)el, fieldStack);
+			}else if(List.class.isAssignableFrom(el.getClass())){
+				return requiredList((List<Object>)el, fieldStack);
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	/*
+	//老方法
 	private void convertRequestParam2ActionParam(Method actionMethod,Param param,HttpServletRequest request, HttpServletResponse response){
     	Type[] parameterTypes = actionMethod.getGenericParameterTypes();
     	Annotation[][] parameterAnnotations = actionMethod.getParameterAnnotations();
@@ -226,7 +457,7 @@ public class AxeRequestParamSetFilter implements Filter {
 			throw new RestException("必填参数"+requiredParameterError.toString()+"未获取到值");
 		}
     	param.setActionParamList(parameterValueList);
-    }
+    }*/
 
 	@Override
 	public void doEnd(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler,

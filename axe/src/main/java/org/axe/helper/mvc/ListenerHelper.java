@@ -49,6 +49,7 @@ public final class ListenerHelper implements Helper{
 			if(CollectionUtil.isNotEmpty(classSet)){
 				for(Class<?> listenerClass:classSet){
 					Listener listener = ReflectionUtil.newInstance(listenerClass);
+					listener.init();
 					LISTENER_LIST.add(listener);
 				}
 			}
@@ -56,15 +57,6 @@ public final class ListenerHelper implements Helper{
 	}
 
 	@Override
-	public void onStartUp() throws Exception {
-		synchronized (this) {
-			if (CollectionUtil.isNotEmpty(LISTENER_LIST)) {
-				for(Listener listener:LISTENER_LIST){
-					listener.init();//初始化
-				}
-			}
-		}
-	}
-	
+	public void onStartUp() throws Exception {}
 
 }

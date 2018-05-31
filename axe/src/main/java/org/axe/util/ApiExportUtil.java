@@ -57,6 +57,8 @@ import org.axe.interface_implement.mvc.HeaderFilter;
  * @author CaiDongyu on 2018年2月3日 上午10:00:55.
  */
 public class ApiExportUtil {
+
+	private ApiExportUtil() {}
 	
 	public final static class Level_1{
 		private int index;

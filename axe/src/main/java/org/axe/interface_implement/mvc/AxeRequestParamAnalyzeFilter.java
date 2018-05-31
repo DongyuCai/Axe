@@ -23,7 +23,6 @@
  */
 package org.axe.interface_implement.mvc;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,9 +33,9 @@ import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.ResultHolder;
 import org.axe.exception.RestException;
-import org.axe.helper.mvc.AjaxRequestHelper;
 import org.axe.helper.mvc.FormRequestHelper;
 import org.axe.interface_.mvc.Filter;
+import org.axe.util.AjaxRequestUtil;
 
 /**
  * Axe 请求参数解析Filter
@@ -81,8 +80,8 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
         }else{
             //如果不是
             try {
-				AjaxRequestHelper.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
-			} catch (IOException e) {
+				AjaxRequestUtil.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
+			} catch (Exception e) {
 				e.printStackTrace();
 				throw new RestException(RestException.SC_INTERNAL_SERVER_ERROR,e.getMessage());
 			}

@@ -55,7 +55,8 @@ public final class FilterHelper implements Helper {
 					if(isAbstract) continue;
 					
 					Filter filter = ReflectionUtil.newInstance(filterClass);
-
+					filter.init();// 初始化Filter
+					
 					// 排序比较，按顺序插入到Filter链里
 					if (CollectionUtil.isEmpty(filterSortedList)) {
 						filterSortedList.add(filter);
@@ -87,14 +88,6 @@ public final class FilterHelper implements Helper {
 	}
 
 	@Override
-	public void onStartUp() throws Exception {
-		synchronized (this) {
-			if (CollectionUtil.isNotEmpty(FILTER_LIST)) {
-				for(Filter filter:FILTER_LIST){
-					filter.init();// 初始化Filter
-				}
-			}
-		}
-	}
+	public void onStartUp() throws Exception {}
 
 }

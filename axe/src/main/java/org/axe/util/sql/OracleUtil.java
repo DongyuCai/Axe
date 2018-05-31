@@ -48,6 +48,9 @@ import org.axe.util.StringUtil;
  * Sql 解析 助手类 剥离自DataBaseHelper @author CaiDongyu on 2016/5/6.
  */
 public final class OracleUtil {
+	
+	private OracleUtil() {}
+	
 	/**
 	 * oracle sql 关键字
 	 */

@@ -34,12 +34,15 @@ import org.axe.interface_.base.Helper;
 import org.axe.util.PropsUtil;
 import org.axe.util.sql.MySqlUtil;
 import org.axe.util.sql.OracleUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author CaiDongyu
  * 数据库Schema 助手类
  */
 public class SchemaHelper implements Helper{
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaHelper.class);
 	
 	@Override
 	public void init() throws Exception {}
@@ -54,24 +57,28 @@ public class SchemaHelper implements Helper{
 			String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
 			Properties configProps = ConfigHelper.getCONFIG_PROPS();
 			Boolean autoCreateTable = PropsUtil.getBoolean(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_AUTO_CREATE_TABLE,null);
-			if(autoCreateTable == null){
-				//默认按@Table里的来
-				if(TableHelper.isTableAutoCreate(entityClass)){
+			try {
+				if(autoCreateTable == null){
+					//默认按@Table里的来
+					if(TableHelper.isTableAutoCreate(entityClass)){
+						if(!tnsBegin){
+							tnsBegin = true;
+							DataBaseHelper.beginTransaction();
+						}
+						createTable(entityClass);
+					}
+				}else if(autoCreateTable){
 					if(!tnsBegin){
 						tnsBegin = true;
 						DataBaseHelper.beginTransaction();
 					}
+					//全局开启，优先级最高，不管@Table如何定义，这个数据源的表全部创建
 					createTable(entityClass);
+				}else{
+					//全局关闭了，优先级也最高，直接不创建
 				}
-			}else if(autoCreateTable){
-				if(!tnsBegin){
-					tnsBegin = true;
-					DataBaseHelper.beginTransaction();
-				}
-				//全局开启，优先级最高，不管@Table如何定义，这个数据源的表全部创建
-				createTable(entityClass);
-			}else{
-				//全局关闭了，优先级也最高，直接不创建
+			} catch (Exception e) {
+				LOGGER.error(entityClass+" create table failed",e);
 			}
 		}
 		if(tnsBegin){

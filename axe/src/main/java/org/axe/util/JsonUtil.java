@@ -26,6 +26,7 @@ package org.axe.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -34,9 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public final class JsonUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtil.class);
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
+    
     private JsonUtil() {}
     
     /**
@@ -45,6 +44,7 @@ public final class JsonUtil {
     public static String toJson(Object obj){
         String json;
         try {
+        	ObjectMapper OBJECT_MAPPER = new ObjectMapper();
             json = OBJECT_MAPPER.writeValueAsString(obj);
         } catch (Exception e){
             LOGGER.error("convert POJO to JSON failure",e);
@@ -60,6 +60,7 @@ public final class JsonUtil {
 	public static <T> T fromJson(String json, Class<T> type){
         T pojo;
         try {
+        	ObjectMapper OBJECT_MAPPER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
         	if(String.class.equals(type)){
             	pojo = (T) json;
             }else{

@@ -52,6 +52,9 @@ import org.axe.util.StringUtil;
  * Sql 解析 助手类 剥离自DataBaseHelper @author CaiDongyu on 2016/5/6.
  */
 public final class MySqlUtil {
+	
+	private MySqlUtil() {}
+	
 	/**
 	 * mysql sql 关键字
 	 */
@@ -131,7 +134,7 @@ public final class MySqlUtil {
 		String tableName = TableHelper.getTableName(entityClass);
 
 		StringBuilder createTableSqlBufer = new StringBuilder();
-		createTableSqlBufer.append("CREATE TABLE ").append(tableName).append(" (");
+		createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS ").append(tableName).append(" (");
 		// #取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
 		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
 		// #转类非主键字段到数据库表字段定义
@@ -265,7 +268,7 @@ public final class MySqlUtil {
 		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
 		StringBuilder columns = new StringBuilder("(");
 		StringBuilder values = new StringBuilder("(");
-		Object[] params = new Object[entityFieldMethodList.size()];
+		List<Object> params = new ArrayList<>();
 		for (int i = 0; i < entityFieldMethodList.size(); i++) {
 			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
 			Field field = entityFieldMethod.getField();
@@ -276,14 +279,14 @@ public final class MySqlUtil {
 			}
 			Method method = entityFieldMethod.getMethod();
 			String column = StringUtil.camelToUnderline(field.getName());
-			columns.append(column).append(", ");
+			columns.append("`").append(column).append("`, ");
 			values.append("?, ");
-			params[i] = ReflectionUtil.invokeMethod(entity, method);
+			params.add(ReflectionUtil.invokeMethod(entity, method));
 		}
 		columns.replace(columns.lastIndexOf(", "), columns.length(), ")");
 		values.replace(values.lastIndexOf(", "), values.length(), ")");
 		sql += columns + " VALUES " + values;
-		return new SqlPackage(sql, params, null);
+		return new SqlPackage(sql, params.toArray(), null);
 	}
 	
 /*
