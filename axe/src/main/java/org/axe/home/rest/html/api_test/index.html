@@ -28,7 +28,7 @@ SOFTWARE.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>Bootstrap</title>
+    <title>接口测试</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -98,12 +98,13 @@ SOFTWARE.
           <div class="col-md-12" style="display: none;display: {{request?'inline':'none'}};">
             <!--名字 -->
             <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
-            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter链（有序）：<br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
-            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor链（无序）：<br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
+            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter链（有序） <br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
+            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor链（无序） <br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
             <!--url区域 -->
-            <div class="input-group" style="margin-top: 15px;">
+            <h5 style="margin-top: 5px;margin-bottom: 5px;">URL <small><span nc-text="{{request.url}}"></span></small></h5>
+            <div class="input-group">
               <div class="input-group-addon">{{request.method}}</div>
-              <input type="text" class="form-control" readonly="true" placeholder="http://xxx..." value="{{request.url}}">
+              <input type="text" class="form-control" nc-value="request.sendUrl">
               <span class="input-group-btn">
                 <button class="btn btn-info" type="button" onclick="{{sendMethod}}()">Send</button>
               </span>
@@ -145,7 +146,8 @@ SOFTWARE.
             </div>
 
             <!--Reuest Param -->
-            <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;padding-top: 15px;">
+            <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;">
+              <hr style="margin-top: 0px;"></hr>
               <div class="panel panel-default">
                 <div class="panel-heading">参数 Reuest Parameter Body</div>
 				<div class="panel-body">
@@ -156,12 +158,18 @@ SOFTWARE.
             </div>
 
             <!--Response -->
-            <div nc-if="request.sendUrl" class="col-md-12" style="padding-left:0px;padding-right: 0px;">
+            <div class="col-md-12" style="padding-left:0px;padding-right: 0px;">
               <hr style="margin-top: 0px;"></hr>
-              <div class="panel panel-default">
-                <div class="panel-heading">响应 Response <span class="text-primary" nc-text="来自：{{request.sendUrl}}"></span></div>
-                <div class="panel-body" nc-if="request.response || request.response+'#' == '0#'">
-                  <pre nc-text="{{request.response}}"></pre>
+              <div class="input-group" style="margin-top: 15px;">
+              <div class="input-group-addon">响应</div>
+	             <input type="text" class="form-control" nc-value="request.sendUrl">
+	             <span class="input-group-btn">
+	               <button class="btn btn-info" type="button" onclick="{{sendMethod}}(prompt('请输入循环次数','1'))">Again</button>
+	             </span>
+              </div>
+              <div nc-if="request.response || request.response+'#' == '0#'" class="panel panel-default">
+                <div class="panel-body">
+                  	<pre nc-text="{{request.response}}"></pre>
                 </div>
               </div>
             </div>
@@ -495,7 +503,7 @@ SOFTWARE.
         });
       }
 
-      function sendAjaxRequest(){
+      function sendAjaxRequest(repeatNum){
     	
         $scope_main.request['response'] = '';
 	
@@ -511,23 +519,26 @@ SOFTWARE.
           }
         }
 
-        if($scope_main.request.method == 'POST'){
-          $.post(url,data,headers,successCallback,errorCallback);
-        }else if($scope_main.request.method == 'DELETE'){
-          $.delete(url,data,headers,successCallback,errorCallback);
-        }else if($scope_main.request.method == 'PUT'){
-          $.put(url,data,headers,successCallback,errorCallback);
-        }else if($scope_main.request.method == 'GET'){
-          //get的话，展示用的参数要拼接到后面
-          for(var key in data){
-            if($scope_main.request['sendUrl'] == url){
-              $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"?";
-            }else{
-              $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"&";
-            }
-            $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+key+"="+data[key];
-          }
-          $.get(url,data,headers,successCallback,errorCallback);
+        repeatNum = isNaN(repeatNum)?1:repeatNum;
+        for(var i=0;i<repeatNum;i++){
+			if($scope_main.request.method == 'POST'){
+		       $.post(url,data,headers,successCallback,errorCallback);
+		    }else if($scope_main.request.method == 'DELETE'){
+		       $.delete(url,data,headers,successCallback,errorCallback);
+		    }else if($scope_main.request.method == 'PUT'){
+		       $.put(url,data,headers,successCallback,errorCallback);
+		    }else if($scope_main.request.method == 'GET'){
+		       //get的话，展示用的参数要拼接到后面
+		       for(var key in data){
+		         if($scope_main.request['sendUrl'] == url){
+		           $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"?";
+		         }else{
+		           $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"&";
+		         }
+		         $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+key+"="+data[key];
+		       }
+		       $.get(url,data,headers,successCallback,errorCallback);
+		    }
         }
         
         //缓存
