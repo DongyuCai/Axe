@@ -95,6 +95,10 @@ SOFTWARE.
         
         <!--主要的页面切换区域 -->
         <div id="main_div">
+          <div class="col-md-12" style="display: none;display: {{request?'none':'inline'}};">
+          	<h1>Api Test <small><span>axe inner page.</span></small></h1>
+          	<h5>不足之处欢迎指正！邮箱1157656909@qq.com</h5>
+          </div>
           <div class="col-md-12" style="display: none;display: {{request?'inline':'none'}};">
             <!--名字 -->
             <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
