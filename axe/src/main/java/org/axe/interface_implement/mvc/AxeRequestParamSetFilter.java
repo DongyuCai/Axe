@@ -134,35 +134,39 @@ public class AxeRequestParamSetFilter implements Filter {
     			}else if(requestEntity != null){
 					if(CollectionUtil.isNotEmpty(param.getBodyParamMap())){
 						Map<String, Object> bodyParamMap = param.getBodyParamMap();
-						if(requestEntity.excludedFields() != null){
-							//排除字段
-							//userName
-							//roleList.*.createTime
-							for(String excludedField:requestEntity.excludedFields()){
-								excludedMap(bodyParamMap, excludedField);
+						//排除字段
+						//userName
+						//roleList.*.createTime
+						for(String excludedField:requestEntity.excludedFields()){
+							excludedMap(bodyParamMap, excludedField);
+						}
+						//默认值
+						if(def != null && def.value() != null && def.value().length > 0){
+							for(String defVal:def.value()){
+								String key = defVal.substring(0, defVal.indexOf(":"));
+								String value = defVal.substring(defVal.indexOf(":")+1);
+								defMap(bodyParamMap, key, value);
 							}
-							//默认值
-							if(def != null && def.value() != null && def.value().length > 0){
-								for(String defVal:def.value()){
-									String key = defVal.substring(0, defVal.indexOf(":"));
-									String value = defVal.substring(defVal.indexOf(":")+1);
-									defMap(bodyParamMap, key, value);
-								}
-							}
-							//必填字段
-							if(requestEntity.requiredFields() != null){
-								for(String requiredField:requestEntity.requiredFields()){
-									boolean hasValue = requiredMap(bodyParamMap, requiredField);
-									if(!hasValue){
-										requiredParameterError.add(requiredField);
-									}
+						}
+						//必填字段
+						if(requestEntity.requiredFields() != null){
+							for(String requiredField:requestEntity.requiredFields()){
+								boolean hasValue = requiredMap(bodyParamMap, requiredField);
+								if(!hasValue){
+									requiredParameterError.add(requiredField);
 								}
 							}
 						}
-
-	    				Class<?> entityClass = (Class<?>)parameterType;
-	    				String bodyParamMapJson = JsonUtil.toJson(bodyParamMap);
-	    				parameterValue = JsonUtil.fromJson(bodyParamMapJson, entityClass);
+						
+						if(CollectionUtil.isEmpty(requiredParameterError)){
+							Class<?> entityClass = (Class<?>)parameterType;
+							String bodyParamMapJson = JsonUtil.toJson(bodyParamMap);
+							try {
+								parameterValue = JsonUtil.fromJson(bodyParamMapJson, entityClass);
+							} catch (Exception e) {
+								throw new RestException("参数格式错误，无法转换："+e.getMessage());
+							}
+						}
 					}else{
 						for(String requiredField:requestEntity.requiredFields()){
 							requiredParameterError.add(requiredField);

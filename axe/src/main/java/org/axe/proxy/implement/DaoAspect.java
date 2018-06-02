@@ -164,7 +164,6 @@ public class DaoAspect implements Proxy {
 							result = DataBaseHelper.queryMap(sql, methodParams, parameterTypes, dataSourceName);
 						}
 					} else if (ReflectionUtil.compareType(String.class, rawType)
-							|| ReflectionUtil.compareType(Date.class, rawType)
 							|| ReflectionUtil.compareType(Byte.class, rawType)
 							|| ReflectionUtil.compareType(Boolean.class, rawType)
 							|| ReflectionUtil.compareType(Short.class, rawType)

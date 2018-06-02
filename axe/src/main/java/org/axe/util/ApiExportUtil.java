@@ -24,7 +24,10 @@
 package org.axe.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +44,6 @@ import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
 import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Comment;
-import org.axe.annotation.persistence.Transient;
 import org.axe.bean.mvc.FileParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
@@ -104,7 +106,8 @@ public class ApiExportUtil {
 		private List<String> filterList;
 		private List<String> interceptorList;
 		private List<Header> headerList;
-		private List<Param> requestParamList;
+		private Map<String,Object> requestParamBody;
+		private Map<String,Object> requestParamBodyFormat;
 		
 		public String getControllerClassName() {
 			return controllerClassName;
@@ -166,54 +169,25 @@ public class ApiExportUtil {
 		public void setIndex(int index) {
 			this.index = index;
 		}
-		public List<Param> getRequestParamList() {
-			return requestParamList;
+		public Map<String, Object> getRequestParamBody() {
+			return requestParamBody;
 		}
-		public void setRequestParamList(List<Param> requestParamList) {
-			this.requestParamList = requestParamList;
+		public void setRequestParamBody(Map<String, Object> requestParamBody) {
+			this.requestParamBody = requestParamBody;
+		}
+		public Map<String, Object> getRequestParamBodyFormat() {
+			return requestParamBodyFormat;
+		}
+		public void setRequestParamBodyFormat(Map<String, Object> requestParamBodyFormat) {
+			this.requestParamBodyFormat = requestParamBodyFormat;
 		}
 		
 	}
 	
-	public final static class Param{
-		private String paramName;
-		private String paramValue;
-		private String desc;
-		private String type;
-		private boolean required = false;
-		public String getParamName() {
-			return paramName;
-		}
-		public void setParamName(String paramName) {
-			this.paramName = paramName;
-		}
-		public String getParamValue() {
-			return paramValue;
-		}
-		public void setParamValue(String paramValue) {
-			this.paramValue = paramValue;
-		}
-		public String getDesc() {
-			return desc;
-		}
-		public void setDesc(String desc) {
-			this.desc = desc;
-		}
-		public String getType() {
-			return type;
-		}
-		public void setType(String type) {
-			this.type = type;
-		}
-		public boolean isRequired() {
-			return required;
-		}
-		public void setRequired(boolean required) {
-			this.required = required;
-		}
-	}
-	
 	public static List<Level_1> asApiTest(String basePath){
+		StringBuilder requestParamFormatBuf = new StringBuilder();
+		
+		
 		List<Level_1> list = new ArrayList<>();
 		Map<String,Integer> map = new HashMap<>();//存下标
 		//获取Controller 到 action的关系表
@@ -308,8 +282,10 @@ public class ApiExportUtil {
 			}
 			
 			//request param
-			List<Param> requestParamList = new ArrayList<>();
-			level_2.setRequestParamList(requestParamList);
+			Map<String,Object> requestParamBody = new HashMap<>();
+			Map<String,Object> requestParamBodyFormat = new HashMap<>();
+			level_2.setRequestParamBody(requestParamBody);
+			level_2.setRequestParamBodyFormat(requestParamBodyFormat);
 			List<ActionParam> actionParamList = handler.getActionParamList();
 			if(CollectionUtil.isNotEmpty(actionParamList)){
 				for(ActionParam ap:actionParamList){
@@ -331,81 +307,44 @@ public class ApiExportUtil {
 						if(rp != null){
 							//如果RequestParam存在，但是url里不包含此参数，那么需要加入到Param里
 							//url包含的参数，是不需要放到requestParamList里的
-							Param param = new Param();
-							param.setParamName(rp.value());
-							if(StringUtil.isNotEmpty(rp.desc())){
-								param.setDesc(rp.desc());
-							}
+							String name = rp.value();
+							String required = "否";
+							String type = ap.getParamType().getSimpleName();
+							String defaultValue = null;
+							String desc = null;
 							if(rp.required() || handler.getMappingPath().contains("{"+rp.value()+"}")){
 								//有required注解，或者url中包含，都可以算必填
-								param.setRequired(true);;
+								required = "是";
 							}
 							if(def != null && def.value() != null && def.value().length > 0){
-								param.setParamValue(def.value()[0]);
+								defaultValue = def.value()[0];
 							}
-							param.setType(ap.getParamType().getSimpleName());
-							requestParamList.add(param);
-						}else if(re != null){
-							//排除字段
-							Set<String> excludedFieldSet = new HashSet<>();
-							if(re.excludedFields() != null){
-								for(String excludedField:re.excludedFields()){
-									excludedFieldSet.add(excludedField);
-								}
+							if(StringUtil.isNotEmpty(rp.desc())){
+								desc = rp.desc();
 							}
 							
-							List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(ap.getParamType(),excludedFieldSet);
-							if(CollectionUtil.isNotEmpty(setMethodList)){
-								//必填字段
-								Set<String> requiredFieldSet = new HashSet<>();
-								if(re.requiredFields() != null){
-									for(String requiredField:re.requiredFields()){
-										requiredFieldSet.add(requiredField);
-									}
-								}
-								
-								Map<String,String> defMap = new HashMap<>();
-								if(def != null && def.value() != null && def.value().length > 0){
-									for(String defVal:def.value()){
-										String key = defVal.substring(0, defVal.indexOf(":"));
-										String value = defVal.substring(defVal.indexOf(":")+1);
-										defMap.put(key, value);
-									}
-								}
-								
-								for(EntityFieldMethod fm:setMethodList){
-									if(fm.getField().getAnnotation(Transient.class) != null){
-										continue;
-									}
-									
-									String fieldName = fm.getField().getName();
-									if(!handler.getMappingPath().contains("{"+fieldName+"}")){
-										Param param = new Param();
-										param.setParamName(fieldName);
-										Comment comment = fm.getField().getAnnotation(Comment.class);
-										if(comment != null){
-											param.setDesc(comment.value());
-										}
-										
-										ColumnDefine columnDefine = fm.getField().getAnnotation(ColumnDefine.class);
-										if(columnDefine != null && columnDefine.value().toUpperCase().indexOf(" COMMENT ")>0){
-											int index = columnDefine.value().toUpperCase().indexOf(" COMMENT ");
-											int indexStart = columnDefine.value().toUpperCase().indexOf("'", index);
-											int indexEnd = columnDefine.value().toUpperCase().indexOf("'", indexStart+1);
-											if(indexStart < indexEnd){
-												param.setDesc(columnDefine.value().substring(indexStart+1, indexEnd));
-											}
-										}
-										if(requiredFieldSet.contains(fieldName)){
-											param.setRequired(true);
-										}
-										param.setParamValue(defMap.get(fieldName));
-										
-										param.setType(fm.getField().getType().getSimpleName());
-										requestParamList.add(param);
-									}
-								}
+							requestParamFormatBuf.delete(0, requestParamFormatBuf.length());
+							if(StringUtil.isNotEmpty(required)){
+								requestParamFormatBuf.append("[").append("必填：").append(required).append("]");
 							}
+							if(StringUtil.isNotEmpty(type)){
+								requestParamFormatBuf.append("[").append("类型：").append(type).append("]");
+							}
+							if(StringUtil.isNotEmpty(defaultValue)){
+								requestParamFormatBuf.append("[").append("默认值：").append(defaultValue).append("]");
+							}
+							if(StringUtil.isNotEmpty(desc)){
+								requestParamFormatBuf.append("[").append("含义：").append(desc).append("]");
+							}
+							requestParamBody.put(name, defaultValue);
+							requestParamBodyFormat.put(name, requestParamFormatBuf.toString());
+							requestParamFormatBuf.delete(0, requestParamFormatBuf.length());
+						}else if(re != null){
+							Set<String> excludedFieldSet = new HashSet<>();
+							Set<String> requiredFieldSet = new HashSet<>();
+							Map<String,String> defValueMap = new HashMap<>();
+							Set<String> keyHistory = new HashSet<>();
+							askEachField("", requestParamBody, requestParamBodyFormat, ap.getParamType(), excludedFieldSet, requiredFieldSet, defValueMap, keyHistory, requestParamFormatBuf);
 						}
 					}
 				}
@@ -413,7 +352,185 @@ public class ApiExportUtil {
 		}
 		return list;
 	}
+	
+	// 注意，如果是集合类型数据结构，那么只能是List和Map
+	private static void askEachField(
+			String rootFieldName,
+			Map<String, Object> bodyParamMap, 
+			Map<String, Object> bodyParamMapFormat,
+			Class<?> entityClass, 
+			Set<String> excludedFieldSet, 
+			Set<String> requiredFieldSet,
+			Map<String,String> defValueMap,
+			Set<String> keyHistory,
+			StringBuilder buf) {
+		List<EntityFieldMethod> setMethodList = ReflectionUtil.getSetMethodList(entityClass);
 		
+		List<Field> listField = new ArrayList<>();
+		List<Field> mapField = new ArrayList<>();
+		List<Field> entityField = new ArrayList<>();
+		for (EntityFieldMethod ef : setMethodList) {
+			Field field = ef.getField();
+			Type genericType = field.getGenericType();// List<?>
+			Class<?> rawType = field.getType();// List
+			
+			String historyFlag = entityClass.getName()+"#"+rawType.getName()+"#"+field.getName();
+			if(keyHistory.contains(historyFlag)){
+				continue;//防止自定义类自身嵌套死循环
+			}else{
+				keyHistory.add(historyFlag);
+			}
+			
+			if (genericType instanceof ParameterizedType) {
+				// 说明带泛型
+				if (List.class.isAssignableFrom(rawType)) {
+					listField.add(field);//保证结构完整，先解析当前层的，这种嵌套类型的后解析
+				} else if (Map.class.isAssignableFrom(rawType)) {
+					mapField.add(field);
+				}
+			} else {
+				// 不带泛型，那有三种可能
+				// 1.基本类型
+				// 2.List
+				// 3.Map
+				// 4.自定义
+				// 2和3就没办法考虑了，只能考虑1和4
+				if (ReflectionUtil.compareType(String.class, rawType) || ReflectionUtil.compareType(Byte.class, rawType)
+						|| ReflectionUtil.compareType(Boolean.class, rawType)
+						|| ReflectionUtil.compareType(Short.class, rawType)
+						|| ReflectionUtil.compareType(Character.class, rawType)
+						|| ReflectionUtil.compareType(Integer.class, rawType)
+						|| ReflectionUtil.compareType(Long.class, rawType)
+						|| ReflectionUtil.compareType(Float.class, rawType)
+						|| ReflectionUtil.compareType(Double.class, rawType)
+						|| rawType.getName().startsWith("java.")){
+					setBodyMap(rootFieldName, bodyParamMap, bodyParamMapFormat, excludedFieldSet, requiredFieldSet, defValueMap, buf, field);
+				} else if ((rawType).isPrimitive()) {
+					setBodyMap(rootFieldName, bodyParamMap, bodyParamMapFormat, excludedFieldSet, requiredFieldSet, defValueMap, buf, field);
+				} else if (List.class.isAssignableFrom(rawType)) {
+					// 什么都不做
+				} else if (Map.class.isAssignableFrom(rawType)) {
+					// 什么都不做
+				} else {
+					//自定义类型，也是放到后面处理，防止层级结构混乱
+					entityField.add(field);
+				}
+			}
+		}
+		
+
+		for (Field field : listField) {
+			Type genericType = field.getGenericType();// List<?>
+			Type[] actualTypes = ((ParameterizedType) genericType).getActualTypeArguments();
+			
+			// 如果是List，那么就新建一个列表，加一个元素，然后继续元素迭代
+			List<Object> list = new ArrayList<>();
+			Map<String, Object> listChildMap = new HashMap<>();
+			list.add(listChildMap);
+			bodyParamMap.put(field.getName(), list);
+			
+			List<Object> listFormat = new ArrayList<>();
+			Map<String, Object> listChildMapFormat = new HashMap<>();
+			listFormat.add(listChildMapFormat);
+			bodyParamMapFormat.put(field.getName(), listFormat);
+			
+			askEachField(rootFieldName+field.getName()+".",listChildMap, listChildMapFormat, (Class<?>) actualTypes[0], excludedFieldSet, requiredFieldSet,
+					defValueMap,keyHistory,buf);
+		}
+
+		for (Field field : mapField) {
+			Type genericType = field.getGenericType();// List<?>
+			Type[] actualTypes = ((ParameterizedType) genericType).getActualTypeArguments();
+			
+			// 如果是Map，那么就新建一个Map，Map的键肯地只能是String，那么value进行迭代
+			Map<String, Object> map = new HashMap<>();
+			bodyParamMap.put(field.getName(), map);
+			
+			Map<String, Object> mapFormat = new HashMap<>();
+			bodyParamMapFormat.put(field.getName(), mapFormat);
+			
+			askEachField(rootFieldName+field.getName()+".",map, mapFormat, (Class<?>) actualTypes[1], excludedFieldSet, requiredFieldSet,
+					defValueMap,keyHistory,buf);
+		}
+		
+		for(Field field : entityField){
+			Class<?> rawType = field.getType();// List
+			
+			// 就是自定义类型
+			Map<String, Object> map = new HashMap<>();
+			bodyParamMap.put(field.getName(), map);
+
+			Map<String, Object> mapFormat = new HashMap<>();
+			bodyParamMapFormat.put(field.getName(), mapFormat);
+			
+			askEachField(rootFieldName+field.getName()+".",map, mapFormat, rawType, excludedFieldSet, requiredFieldSet, defValueMap,keyHistory,buf);
+		}
+		
+	}
+	
+	private static void setBodyMap(
+			String rootFieldName,
+			Map<String, Object> bodyParamMap, 
+			Map<String, Object> bodyParamMapFormat,
+			Set<String> excludedFieldSet, 
+			Set<String> requiredFieldSet,
+			Map<String, String> defValueMap, 
+			StringBuilder buf,
+			Field field){
+		do{
+			String name = field.getName();
+			if(excludedFieldSet.contains(rootFieldName+name)){
+				break;//排除掉
+			}
+			
+			
+			buf.delete(0, buf.length());
+			String required = "否";
+			String type = field.getType().getSimpleName();
+			String defaultValue = "";
+			String desc = null;
+			if(requiredFieldSet.contains(rootFieldName+name)){
+				//有required注解，或者url中包含，都可以算必填
+				required = "是";
+			}
+			if(defValueMap.containsKey(rootFieldName+name)){
+				defaultValue = defValueMap.get(rootFieldName+name);
+			}
+			Comment comment = field.getAnnotation(Comment.class);
+			if(comment != null){
+				desc = comment.value();
+			}
+			
+			ColumnDefine columnDefine = field.getAnnotation(ColumnDefine.class);
+			if(columnDefine != null && columnDefine.value().toUpperCase().indexOf(" COMMENT ")>0){
+				int index = columnDefine.value().toUpperCase().indexOf(" COMMENT ");
+				int indexStart = columnDefine.value().toUpperCase().indexOf("'", index);
+				int indexEnd = columnDefine.value().toUpperCase().indexOf("'", indexStart+1);
+				if(indexStart < indexEnd){
+					desc = columnDefine.value().substring(indexStart+1, indexEnd);
+				}
+			}
+			
+			buf.delete(0, buf.length());
+			if(StringUtil.isNotEmpty(required)){
+				buf.append("[").append("必填：").append(required).append("]");
+			}
+			if(StringUtil.isNotEmpty(type)){
+				buf.append("[").append("类型：").append(type).append("]");
+			}
+			if(StringUtil.isNotEmpty(defaultValue)){
+				buf.append("[").append("默认值：").append(defaultValue).append("]");
+			}
+			if(StringUtil.isNotEmpty(desc)){
+				buf.append("[").append("含义：").append(desc).append("]");
+			}
+			
+			bodyParamMap.put(name, defaultValue);
+			bodyParamMapFormat.put(name, buf.toString());
+			buf.delete(0, buf.length());
+		}while(false);
+	}
+	
 	/**
 	 * 转成Postman文件 格式为 collection format v2
 	 * 例子：asPostmanV2("xxxapi接口","http://

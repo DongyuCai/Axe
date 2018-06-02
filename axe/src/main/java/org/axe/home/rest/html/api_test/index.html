@@ -147,45 +147,17 @@ SOFTWARE.
             <!--Reuest Param -->
             <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;padding-top: 15px;">
               <div class="panel panel-default">
-                <div class="panel-heading">参数 Reuest Parameter</div>
-                <!--一般的参数列表，不含文件上传，是不走这个form的 -->
-                <form id="requestForm_form" method="{{request.method}}">
-                  <table class="table">
-                    <tbody>
-                      <tr nc-for="param in request.requestParamList">
-                        <td>
-                          <div class="col-md-4">
-                            <input nc-if="param.editable" type="text" class="form-control" placeholder="paramName" nc-value="param.paramName"></input>
-                            <input nc-if="!param.editable" type="text" class="form-control" readonly="true" nc-value="param.paramName"></input>
-                          </div>
-                          <div class="col-md-1" style="padding-top: 6px;text-align: center;">
-                            =
-                          </div>
-                          <div class="col-md-4">
-                            <input name="{{param.paramName}}" nc-if="param.type != 'FileParam'" type="text" class="form-control" placeholder="{{param.type}}" nc-value="param.paramValue"></input>
-                            <input name="{{param.paramName}}" nc-if="param.type == 'FileParam'" type="file" class="form-control"></input>
-                          </div>
-                          <div class="col-md-1" style="padding-top: 6px;text-align: center;">
-                            <p class="text-info" nc-if="param.required">必</p>
-                          </div>
-                          <div class="col-md-1" style="padding-right: 0px;text-align: right;">
-                            <button nc-if="!param.required" class="btn btn-default" onclick="delRequestParam({{param.$index}})">×</button>
-                          </div>
-                          <div class="col-md-1" >
-                            <button class="btn btn-default" onclick="addRequestParam({{param.$index}})">+</button>
-                          </div>
-                          <div class="col-md-12" nc-text="<b>{{param.desc}}</b>"></div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </form>
+                <div class="panel-heading">参数 Reuest Parameter Body</div>
+				<div class="panel-body">
+                  <pre style="height: 200px;" class="col-md-6" nc-text="{{request.requestParamBodyFormat_str}}"></pre>
+                  <textarea id="request_requestParamBody_str" style="resize:none;overflow:auto;height: 200px;" class="col-md-6" nc-text="{{request.requestParamBody_str}}"></textarea>
+                </div>     
               </div>
             </div>
 
             <!--Response -->
             <div nc-if="request.sendUrl" class="col-md-12" style="padding-left:0px;padding-right: 0px;">
-              <hr></hr>
+              <hr style="margin-top: 0px;"></hr>
               <div class="panel panel-default">
                 <div class="panel-heading">响应 Response <span class="text-primary" nc-text="来自：{{request.sendUrl}}"></span></div>
                 <div class="panel-body" nc-if="request.response || request.response+'#' == '0#'">
@@ -295,10 +267,14 @@ SOFTWARE.
 
         //给主要区域赋请求对象
         $scope_main.request = action;
-        if(action.requestParamList.length <= 0){
-          action.requestParamList.push({
-            editable:true
-          });
+        if(!$scope_main.request['sendUrl']){
+        	$scope_main.request['sendUrl'] = $scope_main.request.url;
+        }
+        if(!$scope_main.request.requestParamBodyFormat_str){
+	        $scope_main.request.requestParamBodyFormat_str = JSON.stringify($scope_main.request.requestParamBodyFormat,null,2);
+        }
+        if(!$scope_main.request.requestParamBody_str){
+	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
         }
         if(action.headerList.length <= 0){
           action.headerList.push({
@@ -374,6 +350,15 @@ SOFTWARE.
 
           //给主要区域赋请求对象
           $scope_main.request = $scope_tab.actions[tabIndex];
+          if(!$scope_main.request['sendUrl']){
+          	$scope_main.request['sendUrl'] = $scope_main.request.url;
+          }
+          if(!$scope_main.request.requestParamBodyFormat_str){
+  	        $scope_main.request.requestParamBodyFormat_str = JSON.stringify($scope_main.request.requestParamBodyFormat,null,2);
+          }
+          if(!$scope_main.request.requestParamBody_str){
+  	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
+          }
         }else{
            $scope_sidebar.level_2_index = '';
            $scope_sidebar.level_1_index = -1;
@@ -419,6 +404,15 @@ SOFTWARE.
           //给主要区域赋请求对象
           if($scope_sidebar.level_2_index){
             $scope_main.request = $scope_sidebar.sidebarMenuAryFull[$scope_sidebar.level_1_index]['requestList'][$scope_sidebar.level_2_index.split('_')[1]];
+            if(!$scope_main.request['sendUrl']){
+            	$scope_main.request['sendUrl'] = $scope_main.request.url;
+            }
+            if(!$scope_main.request.requestParamBodyFormat_str){
+    	        $scope_main.request.requestParamBodyFormat_str = JSON.stringify($scope_main.request.requestParamBodyFormat,null,2);
+            }
+            if(!$scope_main.request.requestParamBody_str){
+    	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
+            }
           }
         }
         
@@ -469,14 +463,6 @@ SOFTWARE.
 
         MVVM_MAIN.$init();
         
-        MVVM_MAIN.$watch('request.requestParamList',function(requestParamList){
-          $scope.sendMethod = 'sendAjaxRequest';
-          for(var i=0;requestParamList && i<requestParamList.length;i++){
-            if(requestParamList[i] && requestParamList[i].type && requestParamList[i].type == 'FileParam'){
-              $scope.sendMethod = 'sendFormRequest';
-            }
-          }
-        });
         MVVM_MAIN.$watch('request.response',function(response){
           console.log(response);
         });
@@ -509,43 +495,14 @@ SOFTWARE.
         });
       }
 
-      function delRequestParam(index){
-        $scope_main.request.requestParamList.splice(index,1);
-        if($scope_main.request.requestParamList.length <= 0){
-          $scope_main.request.requestParamList.push({
-            editable:true
-          });
-        }
-      }
-
-      function addRequestParam(index){
-        $scope_main.request.requestParamList.splice(index+1,0,{
-          paramName:'',
-          paramValue:'',
-          editable:true
-        });
-      }
-
       function sendAjaxRequest(){
+    	
         $scope_main.request['response'] = '';
-
-        var url = $scope_main.request.url;
-        var data = {};
-        for(var i=0;i<$scope_main.request.requestParamList.length;i++){
-          var param = $scope_main.request.requestParamList[i];
-          if(param.paramValue || param.paramValue+"#" == '0#'){
-            //替换url中的参数
-            if(url.indexOf('{'+param.paramName+'}') >= 0){
-              var paramReg =  new RegExp('\\{'+param.paramName+'\\}','g');
-              url = url.replace(paramReg,param.paramValue);
-            }else{
-              data[param.paramName] = param.paramValue;
-            }
-          }
-        }
-
-        $scope_main.request['sendUrl'] = url;
-
+	
+        $scope_main.request.requestParamBody_str = $("#request_requestParamBody_str").val();
+        var data = JSON.parse($scope_main.request.requestParamBody_str);
+        var url = $scope_main.request['sendUrl'];
+        
         var headers = {};
         for(var i=0;i<$scope_main.request.headerList.length;i++){
           var header = $scope_main.request.headerList[i];
@@ -608,21 +565,9 @@ SOFTWARE.
 
       function sendFormRequest(){
         $scope_main.request['response'] = '';
-
-        var url = $scope_main.request.url;
-        for(var i=0;i<$scope_main.request.requestParamList.length;i++){
-          var param = $scope_main.request.requestParamList[i];
-          if(param.paramValue || param.paramValue+"#" == '0#'){
-            //替换url中的参数
-            if(url.indexOf('{'+param.paramName+'}') >= 0){
-              var paramReg =  new RegExp('\\{'+param.paramName+'\\}','g');
-              url = url.replace(paramReg,param.paramValue);
-            }
-          }
-        }
-
-        $scope_main.request['sendUrl'] = url;
-
+        
+        var url = $scope_main.request['sendUrl'];
+        
         var headers = {};
         for(var i=0;i<$scope_main.request.headerList.length;i++){
           var header = $scope_main.request.headerList[i];
