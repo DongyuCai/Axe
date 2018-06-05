@@ -37,12 +37,14 @@ import org.axe.interface_implement.type_convert.Integer2LongConvert;
 import org.axe.interface_implement.type_convert.Long2BigDecimalConvert;
 import org.axe.interface_implement.type_convert.Long2DateConvert;
 import org.axe.interface_implement.type_convert.Long2SqlDateConvert;
+import org.axe.interface_implement.type_convert.SqlDate2DateConvert;
 import org.axe.interface_implement.type_convert.String2BigDecimalConvert;
 import org.axe.interface_implement.type_convert.String2DateConvert;
 import org.axe.interface_implement.type_convert.String2DoubleConvert;
 import org.axe.interface_implement.type_convert.String2IntegerConvert;
 import org.axe.interface_implement.type_convert.String2LongConvert;
 import org.axe.interface_implement.type_convert.String2SqlTimestampConvert;
+import org.axe.interface_implement.type_convert.Timestamp2DateConvert;
 
 /**
  * 类型转换工具类
@@ -76,6 +78,9 @@ public final class  CastUtil {
 		TYPE_2_TYPE_MAP.put("java.lang.Double=>java.math.BigDecimal", new Double2BigDecimalConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.Integer=>java.math.BigDecimal", new Integer2BigDecimalConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.math.BigDecimal", new Long2BigDecimalConvert());
+		
+		TYPE_2_TYPE_MAP.put("java.sql.Date=>java.util.Date", new SqlDate2DateConvert());
+		TYPE_2_TYPE_MAP.put("java.sql.Timestamp=>java.util.Date", new Timestamp2DateConvert());
 		
 	}
 
