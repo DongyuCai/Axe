@@ -593,7 +593,7 @@ public final class DataBaseHelper implements Helper{
 		if(findId && idValueIsOk){
 			int affectRows = updateEntity(entity, dataSourceName);
 			if(affectRows == 0){
-				entity = null;//如果没有记录被影响，那么返回null
+				entity = insertEntity(entity, dataSourceName);//如果没有记录被影响，说明@Id记录不存在，那么就插入
 			}
 		}else{
 			entity = insertEntity(entity, dataSourceName);
