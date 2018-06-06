@@ -341,8 +341,27 @@ public class ApiExportUtil {
 							requestParamFormatBuf.delete(0, requestParamFormatBuf.length());
 						}else if(re != null){
 							Set<String> excludedFieldSet = new HashSet<>();
+							if(re.excludedFields() != null){
+								for(String excludedField:re.excludedFields()){
+									excludedFieldSet.add(excludedField);
+								}
+							}
 							Set<String> requiredFieldSet = new HashSet<>();
+							if(re.requiredFields() != null){
+								for(String requiredField:re.requiredFields()){
+									requiredFieldSet.add(requiredField);
+								}
+							}
 							Map<String,String> defValueMap = new HashMap<>();
+							if(def != null && def.value() != null && def.value().length > 0){
+								for(String defVal:def.value()){
+									String key = defVal.substring(0, defVal.indexOf(":"));
+									String value = defVal.substring(defVal.indexOf(":")+1);
+									defValueMap.put(key, value);
+								}
+							}
+							
+							
 							Set<String> keyHistory = new HashSet<>();
 							askEachField("", requestParamBody, requestParamBodyFormat, ap.getParamType(), excludedFieldSet, requiredFieldSet, defValueMap, keyHistory, requestParamFormatBuf);
 						}
