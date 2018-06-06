@@ -33,7 +33,7 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 		<dependency>
 			<groupId>org.axe</groupId>
 			<artifactId>axe</artifactId>
-			<version>18.4.27</version>
+			<version>18.5.29</version>
 		</dependency>
 		<!-- Apache DBCP 数据源(这是默认数据源，可以自我指定数据源) -->
 		<dependency>
