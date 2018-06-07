@@ -28,7 +28,7 @@ SOFTWARE.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>接口测试</title>
+    <title>	Api Test</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -48,13 +48,13 @@ SOFTWARE.
     <!--侧边菜单 -->
     <div id="sidebar_div" class="col-md-3" style="height: {{sidebarHeight}}px;overflow-y: auto;">
       <div class="col-md-12">
-        <input class="form-control" placeholder="过滤" nc-value="sidebarMenuSearch"></input>
+        <input class="form-control" placeholder="Filter" nc-value="sidebarMenuSearch"></input>
       </div>
       <div class="col-md-12">
         <nav class="bs-docs-sidebar" style="padding-left: 0px;">
             <ul class="nav bs-docs-sidenav">
                 <li nc-for="item in sidebarMenuAry" class="{{level_1_index==item.index?'active':''}}">
-                  <a href="javascript:void(0)" nc-text="{{item.index+1}}、{{item.title}}" onclick="clickLevel_1({{item.index}})"></a>
+                  <a href="javascript:void(0)" nc-text="{{item.index+1}}.{{item.title}}" onclick="clickLevel_1({{item.index}})"></a>
                   <ul class="nav">
                     <li nc-for="request in item.requestList" class="{{level_2_index==item.index+'_'+request.index?'active':''}}" onclick="clickLevel_2({{item.index}},{{request.index}})" nc-text="{{request|sidebarMenuConvert}}"></li>
                   </ul>
@@ -75,7 +75,7 @@ SOFTWARE.
           </dir>
           <div id="tabUlContainer_div" class="{{showArrow?'col-md-10':'col-md-12'}}" style="padding: 0px;overflow-x: auto;height: 100px;">
             <ul class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
-              <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">首页</a></li>
+              <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">Home</a></li>
               <li id="tab_li_{{tab.level_2_index}}" name="tab_li" role="presentation" class="{{refreshTabs|actionTabActiveFilter:tab}}" nc-for="tab in actions">
                 <a href="javascript:void(0)" onclick="clickTab({{tab.$index}})">
                   <span nc-text="{{tab.requestTitle}} "></span>&nbsp;
@@ -97,13 +97,13 @@ SOFTWARE.
         <div id="main_div">
           <div class="col-md-12" style="display: none;display: {{request?'none':'inline'}};">
           	<h1>Api Test <small><span>axe inner page.</span></small></h1>
-          	<h5>不足之处欢迎指正！邮箱1157656909@qq.com</h5>
+          	<h5>Email:1157656909@qq.com</h5>
           </div>
           <div class="col-md-12" style="display: none;display: {{request?'inline':'none'}};">
             <!--名字 -->
             <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
-            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter链（有序） <br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
-            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor链（无序） <br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
+            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter（sorted） <br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
+            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor（unsorted） <br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
             <!--url区域 -->
             <h5 style="margin-top: 5px;margin-bottom: 5px;">URL <small><span nc-text="{{request.url}}"></span></small></h5>
             <div class="input-group">
@@ -114,13 +114,13 @@ SOFTWARE.
               </span>
             </div>
             <div nc-if="request.url.indexOf('{') >= 0">
-              <span class="text-danger">此URL中含有参数，参数必填！</span>
+              <span class="text-danger">url param is required!</span>
             </div>
             
             <!--Header -->
             <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;padding-top: 15px;">
               <div class="panel panel-default">
-                <div class="panel-heading">头信息 Headers</div>
+                <div class="panel-heading">Header</div>
                 <table class="table">
                   <tr nc-for="header in request.headerList">
                     <td>
@@ -153,7 +153,7 @@ SOFTWARE.
             <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;">
               <hr style="margin-top: 0px;"></hr>
               <div class="panel panel-default">
-                <div class="panel-heading">参数 Reuest Parameter Body</div>
+                <div class="panel-heading">Reuest Parameter Body</div>
 				<div class="panel-body">
                   <pre style="height: 200px;" class="col-md-6">{{request.requestParamBodyFormat_str}}</pre>
                   <textarea id="request_requestParamBody_str" style="resize:none;overflow:auto;height: 200px;" class="col-md-6"></textarea>
@@ -165,10 +165,10 @@ SOFTWARE.
             <div class="col-md-12" style="padding-left:0px;padding-right: 0px;">
               <hr style="margin-top: 0px;"></hr>
               <div class="input-group" style="margin-top: 15px;">
-              <div class="input-group-addon">响应</div>
+              <div class="input-group-addon">Response</div>
 	             <input type="text" class="form-control" nc-value="request.sendUrl">
 	             <span class="input-group-btn">
-	               <button class="btn btn-info" type="button" onclick="{{sendMethod}}(prompt('请输入循环次数','1'))">Again</button>
+	               <button class="btn btn-info" type="button" onclick="{{sendMethod}}(prompt('set request times','1'))">Again</button>
 	             </span>
               </div>
               <div nc-if="request.response || request.response+'#' == '0#'" class="panel panel-default">
@@ -538,15 +538,6 @@ SOFTWARE.
 		    }else if($scope_main.request.method == 'PUT'){
 		       $.put(url,data,headers,successCallback,errorCallback);
 		    }else if($scope_main.request.method == 'GET'){
-		       //get的话，展示用的参数要拼接到后面
-		       for(var key in data){
-		         if($scope_main.request['sendUrl'] == url){
-		           $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"?";
-		         }else{
-		           $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"&";
-		         }
-		         $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+key+"="+data[key];
-		       }
 		       $.get(url,data,headers,successCallback,errorCallback);
 		    }
         }

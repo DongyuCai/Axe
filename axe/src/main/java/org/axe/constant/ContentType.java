@@ -36,8 +36,8 @@ public enum ContentType {
 	
 	public String CONTENT_TYPE;
 
-	private ContentType(String cONTENT_TYPE) {
-		CONTENT_TYPE = cONTENT_TYPE;
+	private ContentType(String CONTENT_TYPE) {
+		this.CONTENT_TYPE = CONTENT_TYPE;
 	}
 	
 }
