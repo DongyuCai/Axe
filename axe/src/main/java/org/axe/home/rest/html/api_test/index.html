@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 MIT License
 
 Copyright (c) 2017 CaiDongyu
@@ -28,7 +28,7 @@ SOFTWARE.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>	Api Test</title>
+    <title>Api Test</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -102,8 +102,8 @@ SOFTWARE.
           <div class="col-md-12" style="display: none;display: {{request?'inline':'none'}};">
             <!--名字 -->
             <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
-            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter（sorted） <br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
-            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor（unsorted） <br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
+            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter (sorted)<br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
+            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor (unsorted) <br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
             <!--url区域 -->
             <h5 style="margin-top: 5px;margin-bottom: 5px;">URL <small><span nc-text="{{request.url}}"></span></small></h5>
             <div class="input-group">
