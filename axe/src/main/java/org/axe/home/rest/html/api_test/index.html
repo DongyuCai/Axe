@@ -155,8 +155,8 @@ SOFTWARE.
               <div class="panel panel-default">
                 <div class="panel-heading">参数 Reuest Parameter Body</div>
 				<div class="panel-body">
-                  <pre style="height: 200px;" class="col-md-6" nc-text="{{request.requestParamBodyFormat_str}}"></pre>
-                  <textarea id="request_requestParamBody_str" style="resize:none;overflow:auto;height: 200px;" class="col-md-6" nc-text="{{request.requestParamBody_str}}"></textarea>
+                  <pre style="height: 200px;" class="col-md-6">{{request.requestParamBodyFormat_str}}</pre>
+                  <textarea id="request_requestParamBody_str" style="resize:none;overflow:auto;height: 200px;" class="col-md-6"></textarea>
                 </div>     
               </div>
             </div>
@@ -288,6 +288,8 @@ SOFTWARE.
         if(!$scope_main.request.requestParamBody_str){
 	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
         }
+        $("#request_requestParamBody_str").text($scope_main.request.requestParamBody_str);
+        $("#request_requestParamBody_str").val($scope_main.request.requestParamBody_str);
         if(action.headerList.length <= 0){
           action.headerList.push({
             editable:true
@@ -371,6 +373,8 @@ SOFTWARE.
           if(!$scope_main.request.requestParamBody_str){
   	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
           }
+          $("#request_requestParamBody_str").text($scope_main.request.requestParamBody_str);
+	      $("#request_requestParamBody_str").val($scope_main.request.requestParamBody_str);
         }else{
            $scope_sidebar.level_2_index = '';
            $scope_sidebar.level_1_index = -1;
@@ -425,6 +429,8 @@ SOFTWARE.
             if(!$scope_main.request.requestParamBody_str){
     	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
             }
+            $("#request_requestParamBody_str").text($scope_main.request.requestParamBody_str);
+	        $("#request_requestParamBody_str").val($scope_main.request.requestParamBody_str);
           }
         }
         
