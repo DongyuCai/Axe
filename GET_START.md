@@ -22,14 +22,16 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-	</properties>
-
 	<dependencies>
-		<!-- Axe -->
+		<!-- log4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+
+		<!-- ############################################################## -->
+		<!-- Axe 核心依赖 0.1是版本 .7是jdk7 -->
 		<dependency>
 			<groupId>org.axe</groupId>
 			<artifactId>axe</artifactId>
@@ -43,17 +45,6 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 		</dependency>
 
 		<!-- ######################### java web ################################# -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-		</dependency>
-
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
 		<!-- cross domain 可选，如果不跨域可以去掉 -->
 
 		<dependency>
@@ -66,6 +57,18 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 			<groupId>com.thetransactioncompany</groupId>
 			<artifactId>cors-filter</artifactId>
 			<version>2.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
 		</dependency>
 	</dependencies>
 
@@ -85,6 +88,7 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 		</plugins>
 	</build>
 </project>
+
 
 ```
 3、转化工程。如果IDE是eclipse，打开cmd，切换到pom.xml所在路径下，执行以下命令。
