@@ -68,13 +68,13 @@ SOFTWARE.
     <div id="content_div" class="col-md-9" style="height: {{contentHeight}}px;overflow-y: auto;">
         <!--tab导航区域 -->
         <div id="tab_div" class="col-md-12" style="height: 60px;overflow: hidden;">
-          <dir nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
+          <div nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
             <ul class="nav nav-tabs" >
               <li><a style="padding-left: 0px;" href="javascript:void(0)" onclick="tabScrollLeft()"><span class="glyphicon glyphicon-menu-left"></span></a></li>
             </ul>
-          </dir>
+          </div>
           <div id="tabUlContainer_div" class="{{showArrow?'col-md-10':'col-md-12'}}" style="padding: 0px;overflow-x: auto;height: 100px;">
-            <ul class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
+            <ul id="tabUlContainer_ul" class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
               <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">Home</a></li>
               <li id="tab_li_{{tab.level_2_index}}" name="tab_li" role="presentation" class="{{refreshTabs|actionTabActiveFilter:tab}}" nc-for="tab in actions">
                 <a href="javascript:void(0)" onclick="clickTab({{tab.$index}})">
@@ -86,11 +86,16 @@ SOFTWARE.
               </li>
             </ul>
           </div>
-          <dir nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
+          <div nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
             <ul class="nav nav-tabs" >
-              <li style="float: right;"><a style="padding-right: 0px;" href="javascript:void(0)" onclick="tabScrollRight()"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+              <li style="float: right;">
+              	<a style="padding-right: 0px;" href="javascript:void(0)" onclick="tabScrollRight()"><span class="glyphicon glyphicon-menu-right"></span></a>
+              </li>
+              <li style="float: right;">
+        		<a style="padding-right:0px;padding-left:0px;" href="javascript:void(0)" onclick="cleanTab()"><span class="glyphicon glyphicon-remove"></span></a>
+              </li>
             </ul>
-          </dir>
+          </div>
         </div>
         
         <!--主要的页面切换区域 -->
@@ -438,6 +443,22 @@ SOFTWARE.
         localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
         return false;
       }
+      
+      function cleanTab(){
+          if(confirm("确定关闭所有页面？")){
+        	  $scope_tab.refreshTabs++;//通知tab导航栏刷新
+              
+              $scope_tab.actions.splice(0, $scope_tab.actions.length);
+              $scope_sidebar.level_1_index=-1;
+              $scope_sidebar.level_2_index='';
+              $scope_main.request = null;
+              $("#tabUlContainer_div").scrollLeft(0);
+              
+              //缓存
+              localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
+          }
+          return false;
+        }
 
       function tabUlWidthFilter(refreshTabs){
         var tab_li_ary = $("li[name='tab_li']");
