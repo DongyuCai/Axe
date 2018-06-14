@@ -299,16 +299,15 @@ public class DaoAspect implements Proxy {
 		} else {
 			resultList = DataBaseHelper.queryList(sql, methodParams, parameterTypes, dataSourceName);
 		}
-		if (resultList != null && resultList.size() > 0) {
-			List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<Object>();
+		if (CollectionUtil.isNotEmpty(resultList)) {
 			for (Map<String, Object> row : resultList) {
 				if (row.size() == 1) {
 					list.add(row.entrySet().iterator().next().getValue());
 				}
 			}
-			return list.size() > 0 ? list : null;
 		}
-		return null;
+		return list;
 	}
 	
 
