@@ -23,6 +23,8 @@
  */
 package org.axe.helper;
 
+import java.net.URL;
+
 import javax.servlet.ServletContext;
 
 import org.axe.Axe;
@@ -100,7 +102,8 @@ public final class HelperLoader {
         ClassHelper.release();
 		
 		//装载的类日志分析
-		String path = Axe.class.getClassLoader().getResource("").getPath();
+        URL url = Axe.class.getClassLoader().getResource("");
+		String path = url==null?"null":url.getPath();
 		System.out.println(">>>>>>>>>\t Axe started success! \t<<<<<<<<<<");
         System.out.println(">>>>>>>>>\t Home is \"/axe\"  \t<<<<<<<<<<");
         System.out.println(">>>>>>>>>\t Class path is "+path);
