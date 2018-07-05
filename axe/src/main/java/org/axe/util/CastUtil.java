@@ -43,6 +43,7 @@ import org.axe.interface_implement.type_convert.String2DateConvert;
 import org.axe.interface_implement.type_convert.String2DoubleConvert;
 import org.axe.interface_implement.type_convert.String2IntegerConvert;
 import org.axe.interface_implement.type_convert.String2LongConvert;
+import org.axe.interface_implement.type_convert.String2SqlDateConvert;
 import org.axe.interface_implement.type_convert.String2SqlTimestampConvert;
 import org.axe.interface_implement.type_convert.Timestamp2DateConvert;
 
@@ -65,7 +66,7 @@ public final class  CastUtil {
 		TYPE_2_TYPE_MAP.put("java.lang.Long=>java.sql.Date", new Long2SqlDateConvert());
 		
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.util.Date", new String2DateConvert());
-		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlTimestampConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Date", new String2SqlDateConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Timestamp", new String2SqlTimestampConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Double", new String2DoubleConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>double", new String2DoubleConvert());
@@ -90,14 +91,21 @@ public final class  CastUtil {
     public static <T> Object castType(Object value,T toType,Object ...args){
 		do{
 			if(value == null) break;
+
+			if(ReflectionUtil.compareType(value.getClass(),(Class<?>)toType)){
+				//如果目标类型与目前的类型一致，不需要转换了
+				break;
+			}
 			
 			if(ReflectionUtil.compareType((Class<?>)toType,String.class)){
+				//如果目标类型不一致，目标类型是String，那么直接调用toString
 				value = value.toString();
 				break;
 			}
 			
 			String valueTypeName = value.getClass().getName();
 			String javaTypeName = ((Class<?>)toType).getName();
+			
 			BaseTypeConvert typeConvert = TYPE_2_TYPE_MAP.get(valueTypeName+"=>"+javaTypeName);
 			if(typeConvert == null){
 				//就用加一级String中间转换
