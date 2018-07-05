@@ -104,30 +104,30 @@ public final class MySqlUtil {
 	
 	
 	// #所有列出的java到mysql的类型转换
-	private static Map<String, String> JAVA2MYSQL_MAP = new HashMap<>(); // #所有列出的java到mysql的类型转换
+	private static Map<String, String> JAVA_TYPE_2_MYSQL_TYPE_MAP = new HashMap<>(); // #所有列出的java到mysql的类型转换
 	static {
-		JAVA2MYSQL_MAP.put("byte", "tinyint(4)");
-		JAVA2MYSQL_MAP.put("java.lang.Byte", "tinyint(4)");
-		JAVA2MYSQL_MAP.put("short", "smallint(6)");
-		JAVA2MYSQL_MAP.put("java.lang.Short", "smallint(6)");
-		JAVA2MYSQL_MAP.put("int", "int(11)");
-		JAVA2MYSQL_MAP.put("java.lang.Integer", "int(11)");
-		JAVA2MYSQL_MAP.put("long", "bigint(20)");
-		JAVA2MYSQL_MAP.put("java.lang.Long", "bigint(20)");
-		JAVA2MYSQL_MAP.put("float", "float");
-		JAVA2MYSQL_MAP.put("java.lang.Float", "float");
-		JAVA2MYSQL_MAP.put("double", "double");
-		JAVA2MYSQL_MAP.put("java.lang.Double", "double");
-		JAVA2MYSQL_MAP.put("char", "char(1)");
-		JAVA2MYSQL_MAP.put("java.lang.Character", "char(1)");
-		JAVA2MYSQL_MAP.put("boolean", "bit(1)");
-		JAVA2MYSQL_MAP.put("java.lang.Boolean", "bit(1)");
-		JAVA2MYSQL_MAP.put("java.lang.String", "varchar(255)");
-		JAVA2MYSQL_MAP.put("java.math.BigDecimal", "decimal(19,2)");
-		JAVA2MYSQL_MAP.put("java.sql.Date", "datetime");
-		JAVA2MYSQL_MAP.put("java.util.Date", "datetime");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("byte", "tinyint(4)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Byte", "tinyint(4)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("short", "smallint(6)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Short", "smallint(6)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("int", "int(11)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Integer", "int(11)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("long", "bigint(20)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Long", "bigint(20)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("float", "float");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Float", "float");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("double", "double");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Double", "double");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("char", "char(1)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Character", "char(1)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("boolean", "bit(1)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.Boolean", "bit(1)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.lang.String", "varchar(255)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.math.BigDecimal", "decimal(19,2)");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.sql.Date", "datetime");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("java.util.Date", "datetime");
 		// byte[]
-		JAVA2MYSQL_MAP.put("[B", "tinyblob");
+		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("[B", "tinyblob");
 	}
 
 	public static String getTableCreateSql(String dataSourceName, Class<?> entityClass) {
@@ -252,7 +252,7 @@ public final class MySqlUtil {
 			columnDefine.append(field.getAnnotation(ColumnDefine.class).value());
 		} else {
 			String javaType = field.getType().getName();
-			String dbColumnType = JAVA2MYSQL_MAP.get(javaType);
+			String dbColumnType = JAVA_TYPE_2_MYSQL_TYPE_MAP.get(javaType);
 			if (StringUtil.isNotEmpty(dbColumnType)) {
 				columnDefine.append(nullAble ? dbColumnType + " DEFAULT NULL" : dbColumnType + " NOT NULL");
 			}
@@ -411,5 +411,9 @@ public final class MySqlUtil {
 			params = newParams;
 		} while (false);
 		return new SqlPackage(sql, params, paramTypes, new boolean[] { getFlagComm, getFlagSpec });
+	}
+	
+	public static Map<String, String> getJAVA_TYPE_2_MYSQL_TYPE_MAP() {
+		return JAVA_TYPE_2_MYSQL_TYPE_MAP;
 	}
 }

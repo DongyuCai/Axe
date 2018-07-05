@@ -73,31 +73,31 @@ public final class OracleUtil {
 			+ "VIEW,WHENEVER,WHERE,WITH,";
 	
 	// #所有列出的java到oracle的类型转换
-	private static Map<String, String> JAVA2ORACLE_MAP = new HashMap<>(); // #所有列出的java到oracle的类型转换
+	private static Map<String, String> JAVA_TYPE_2_ORACLE_TYPE_MAP = new HashMap<>(); // #所有列出的java到oracle的类型转换
 	static {
-		JAVA2ORACLE_MAP.put("byte", "number(2)");
-		JAVA2ORACLE_MAP.put("java.lang.Byte", "number(2)");
-		JAVA2ORACLE_MAP.put("short", "number(4)");
-		JAVA2ORACLE_MAP.put("java.lang.Short", "number(4)");
-		JAVA2ORACLE_MAP.put("int", "number(9)");
-		JAVA2ORACLE_MAP.put("java.lang.Integer", "number(9)");
-		JAVA2ORACLE_MAP.put("long", "number(18)");
-		JAVA2ORACLE_MAP.put("java.lang.Long", "number(18)");
-		JAVA2ORACLE_MAP.put("float", "float");
-		JAVA2ORACLE_MAP.put("java.lang.Float", "number(9)");
-		JAVA2ORACLE_MAP.put("double", "double");
-		JAVA2ORACLE_MAP.put("java.lang.Double", "number(18)");
-		JAVA2ORACLE_MAP.put("char", "char(1)");
-		JAVA2ORACLE_MAP.put("java.lang.Character", "char(1)");
-		JAVA2ORACLE_MAP.put("boolean", "number(1)");
-		JAVA2ORACLE_MAP.put("java.lang.Boolean", "number(1)");
-		JAVA2ORACLE_MAP.put("java.lang.String", "varchar(255)");
-		JAVA2ORACLE_MAP.put("java.math.BigDecimal", "number");
-		JAVA2ORACLE_MAP.put("java.sql.Date", "date");
-		JAVA2ORACLE_MAP.put("java.sql.Timestamp", "date");
-		JAVA2ORACLE_MAP.put("java.util.Date", "date");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("byte", "number(2)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Byte", "number(2)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("short", "number(4)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Short", "number(4)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("int", "number(9)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Integer", "number(9)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("long", "number(18)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Long", "number(18)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("float", "float");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Float", "number(9)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("double", "double");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Double", "number(18)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("char", "char(1)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Character", "char(1)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("boolean", "number(1)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.Boolean", "number(1)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.lang.String", "varchar(255)");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.math.BigDecimal", "number");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.sql.Date", "date");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.sql.Timestamp", "date");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("java.util.Date", "date");
 		// byte[]
-		JAVA2ORACLE_MAP.put("[B", "blob");
+		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("[B", "blob");
 	}
 
 	public static List<String> getTableCreateSql(String dataSourceName, Class<?> entityClass) {
@@ -240,7 +240,7 @@ public final class OracleUtil {
 			columnDefine.append(field.getAnnotation(ColumnDefine.class).value());
 		} else {
 			String javaType = field.getType().getName();
-			String dbColumnType = JAVA2ORACLE_MAP.get(javaType);
+			String dbColumnType = JAVA_TYPE_2_ORACLE_TYPE_MAP.get(javaType);
 			if (StringUtil.isNotEmpty(dbColumnType)) {
 				columnDefine.append(nullAble ? dbColumnType + " DEFAULT NULL" : dbColumnType + " NOT NULL");
 			}
@@ -347,4 +347,7 @@ public final class OracleUtil {
 		return new SqlPackage(sql, params, paramTypes, new boolean[] { getFlagComm, getFlagSpec });
 	}
 
+	public static Map<String, String> getJAVA_TYPE_2_ORACLE_TYPE_MAP() {
+		return JAVA_TYPE_2_ORACLE_TYPE_MAP;
+	}
 }
