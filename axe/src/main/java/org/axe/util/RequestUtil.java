@@ -319,7 +319,7 @@ public final class RequestUtil {
 				//判断如果有Default注解，那么格式是否正确
 				if(def != null && def.value() != null && def.value().length > 0){
 					for(String defVal:def.value()){
-						if(defVal.indexOf(":")<0 || defVal.startsWith(":") || defVal.endsWith(":")){
+						if(defVal.indexOf(":")<0 || defVal.startsWith(":")){
 							throw new Exception(actionMethod.toGenericString()+"'s "+(i+1)+"th parameter has a wrong type @Default value");
 						}
 					}

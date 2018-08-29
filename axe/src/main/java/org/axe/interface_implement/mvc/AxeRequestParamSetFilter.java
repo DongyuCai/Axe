@@ -144,7 +144,10 @@ public class AxeRequestParamSetFilter implements Filter {
 						if(def != null && def.value() != null && def.value().length > 0){
 							for(String defVal:def.value()){
 								String key = defVal.substring(0, defVal.indexOf(":"));
-								String value = defVal.substring(defVal.indexOf(":")+1);
+								String value = "";
+								if(!defVal.endsWith(":")){
+									value = defVal.substring(defVal.indexOf(":")+1);
+								}
 								defMap(bodyParamMap, key, value);
 							}
 						}
