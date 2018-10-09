@@ -47,18 +47,19 @@ public final class AjaxRequestUtil {
 //        String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
         String body = StreamUtil.getString(request.getInputStream());
         Map<String,Object> bodyParamMap = null;
-        if(StringUtil.isNotEmpty(body)){
-            try {
-            	if(StringUtil.isNotEmpty(body)){
-            		if(body.startsWith("[") && body.endsWith("]")){
-            			body = "{\"\":"+body+"}";
-            		}
-            		bodyParamMap = JsonUtil.fromJson(body, Map.class);
-            	}
-            } catch (Exception e){
-            	throw new Exception("read body to json failure",e);
-            }
-        }
+    	if(StringUtil.isNotEmpty(body)){
+    		body = body.trim();
+    		if(body.startsWith("[") && body.endsWith("]")){
+    			body = "{\"\":"+body+"}";
+    		}
+    		if(body.startsWith("{")){
+    			try {
+    				bodyParamMap = JsonUtil.fromJson(body, Map.class);
+                } catch (Exception e){
+                	throw new Exception("read body to json failure",e);
+                }
+    		}
+    	}
         param.init(body,formParamList,null,bodyParamMap);
     }
 }
