@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import org.axe.annotation.ioc.Controller;
 import org.axe.annotation.mvc.FilterFuckOff;
 import org.axe.annotation.mvc.Request;
+import org.axe.annotation.mvc.UnFuckOff;
 import org.axe.bean.mvc.Handler;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
@@ -86,7 +87,7 @@ public final class ControllerHelper implements Helper{
 	                            
 	                            //检查mappingPath是否合规
 	                            if(!RequestUtil.checkMappingPath(mappingPath)){
-	                            	throw new RuntimeException("invalid @Request.value ["+mappingPath+"] of action: "+method);
+	                            	throw new RuntimeException("invalid @Request.value ["+mappingPath+"] of action: "+method.getName());
 	                            }
 	                            
 	                            //检查actionMethod是否合规
@@ -145,6 +146,9 @@ public final class ControllerHelper implements Helper{
     			//##Filter 链
     			List<Filter> filterList = new ArrayList<>();
     			for(Filter filter:FilterHelper.getSortedFilterList()){
+    				//#判断，此filter是否不可排除
+    				UnFuckOff unFuckOff = filter.getClass().getAnnotation(UnFuckOff.class);
+    				
     				//#首先判断是否匹配mappingPath
     				if(filter.setMapping() == null){
     					throw new RuntimeException("invalid filter["+filter.getClass()+"] setMapping is null");
@@ -161,13 +165,22 @@ public final class ControllerHelper implements Helper{
     				if(controllerClass.isAnnotationPresent(FilterFuckOff.class)){
     					FilterFuckOff filterFuckOff = controllerClass.getAnnotation(FilterFuckOff.class);
     					boolean findFuckOffFilter = false;
-    					if(filterFuckOff.value().length == 0){ 
-    						findFuckOffFilter = true;
+    					if(filterFuckOff.value().length == 0){
+    						//数组长度是0表示默认排除所有filter，此时如果filter是可排除的，那么就准许排除
+    						//如果filter是不可排除的，按照默认原则，不报错，自动不排除
+    						if(unFuckOff == null){
+    							findFuckOffFilter = true;
+    						}
     					}else{
     						for(Class<?> filterClass:filterFuckOff.value()){
         						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
-        							findFuckOffFilter = true;
-        							break;
+        							//如果指明排除某个Filter，那么要看，这个filter是否可排除，如果不可排除，则报错提示
+        							if(unFuckOff == null){
+        								findFuckOffFilter = true;
+            							break;
+        							}else{
+        								throw new RuntimeException("unFuckOff filter ["+filter.getClass()+"] of controller: "+controllerClass.getName());
+        							}
         						}
         					}
     					}
@@ -192,12 +205,21 @@ public final class ControllerHelper implements Helper{
     					FilterFuckOff filterFuckOff = actionMethod.getAnnotation(FilterFuckOff.class);
     					boolean findFuckOffFilter = false;
     					if(filterFuckOff.value().length == 0){ 
-    						findFuckOffFilter = true;
+    						//数组长度是0表示默认排除所有filter，此时如果filter是可排除的，那么就准许排除
+    						//如果filter是不可排除的，按照默认原则，不报错，自动不排除
+    						if(unFuckOff == null){
+    							findFuckOffFilter = true;
+    						}
     					}else{
     						for(Class<?> filterClass:filterFuckOff.value()){
 	    						if(ReflectionUtil.compareType(filter.getClass(), filterClass)){
-	    							findFuckOffFilter = true;
-	    							break;
+	    							//如果指明排除某个Filter，那么要看，这个filter是否可排除，如果不可排除，则报错提示
+        							if(unFuckOff == null){
+        								findFuckOffFilter = true;
+            							break;
+        							}else{
+        								throw new RuntimeException("unFuckOff filter ["+filter.getClass()+"] of controller: "+actionMethod.toGenericString());
+        							}
 	    						}
     						}
     					}
