@@ -1223,8 +1223,8 @@ try {
 String path = request.getContextPath();
 String baseDomain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 String basePath = baseDomain + path;
-List<Level_1> asApiTest = ApiExportUtil.asApiTest(basePath);
-return asApiTest;
+List<Level_1> list = ApiExportUtil.asApiTest(basePath);
+return list;
 } catch (Exception e) {
 e.printStackTrace();
 throw new RestException(e.getMessage());

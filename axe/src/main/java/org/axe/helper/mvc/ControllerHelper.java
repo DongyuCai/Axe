@@ -25,6 +25,8 @@ package org.axe.helper.mvc;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -116,6 +118,14 @@ public final class ControllerHelper implements Helper{
 	                }
 	            }
 	        }
+	        
+	        //ACTION_LIST排序
+	        Collections.sort(ACTION_LIST, new Comparator<Handler>() {
+				@Override
+				public int compare(Handler o1, Handler o2) {
+					return o1.getMappingPath().compareTo(o2.getMappingPath());
+				}
+			});
 		}
 	}
 
