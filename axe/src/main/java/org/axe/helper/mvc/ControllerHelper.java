@@ -151,7 +151,8 @@ public final class ControllerHelper implements Helper{
     				
     				//#首先判断是否匹配mappingPath
     				if(filter.setMapping() == null){
-    					throw new RuntimeException("invalid filter["+filter.getClass()+"] setMapping is null");
+						//throw new RuntimeException("invalid filter["+filter.getClass()+"] setMapping is null");
+    					continue;
     				}
     				Matcher mappingPathMatcher = filter.setMapping().matcher(requestMethod+":"+mappingPath);
     				if(!mappingPathMatcher.find()) continue;
