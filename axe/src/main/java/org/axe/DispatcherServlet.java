@@ -178,7 +178,9 @@ public class DispatcherServlet extends HttpServlet{
 		} catch (Exception e) {
 			exceptionHolder.setException(e);
 		} finally {
-			LOGGER.info("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
+			if(RESPONSE_IS_USED>0){
+				LOGGER.error("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
+			}
 			//##5.执行Filter链各个节点的收尾工作
 			while(CollectionUtil.isNotEmpty(doEndFilterStack)){
 				try {
