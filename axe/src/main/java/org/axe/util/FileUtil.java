@@ -24,6 +24,8 @@
 package org.axe.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -40,6 +42,66 @@ public final class FileUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 
     private FileUtil() {}
+    
+	/**
+	 * 复制文件
+	 * 
+	 * @param srcPath
+	 *            源文件绝对路径
+	 * @param destDir
+	 *            目标文件所在目录
+	 * @return boolean
+	 * @throws Exception 
+	 */
+	public static void copy(String srcPath, String destDir) throws Exception {
+		File srcFile = new File(srcPath);
+		if (!srcFile.exists()) { // 源文件不存在
+			throw new Exception("源文件不存在！"+srcPath);
+		}
+		
+		// 获取待复制文件的文件名
+		String fileName = srcPath.substring(srcPath.lastIndexOf(File.separator));
+		String destPath = destDir + fileName;
+		if (destPath.equals(srcPath)) { // 源文件路径和目标文件路径重复
+			throw new Exception("源文件路径和目标文件路径重复!"+srcPath);
+		}
+		
+		File destFile = new File(destPath);
+		/*if (destFile.exists() && destFile.isFile()) { // 该路径下已经有一个同名文件
+			System.out.println("目标目录下已有同名文件!");
+			return false;
+		}*/
+ 
+		File destFileDir = new File(destDir);
+		destFileDir.mkdirs();
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try {
+			fis = new FileInputStream(srcPath);
+			fos = new FileOutputStream(destFile);
+			byte[] buf = new byte[1024];
+			int c;
+			while ((c = fis.read(buf)) != -1) {
+				fos.write(buf, 0, c);
+			}
+			
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if(fis != null){
+				try {
+					fis.close();
+				} catch (Exception e2) {
+				}
+			}
+			if(fos != null){
+				try {
+					fos.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+	}
     
     /**
      * 获取真实文件名 (自动去掉文件路径)
