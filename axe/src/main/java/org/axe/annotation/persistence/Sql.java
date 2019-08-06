@@ -35,5 +35,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Sql {
+	
 	String value();
+
+	//CaiDongyu 2019/2/14 这在sql解析自动union之后，会作为整句开始拼接
+	String headAfterUnion() default "";
+	
+	//CaiDongyu 2019/2/14 这在sql解析自动union之后，会作为整句结尾拼接
+	String tailAfterUnion() default "";
 }

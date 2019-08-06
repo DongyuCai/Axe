@@ -65,7 +65,7 @@ public final class FormRequestHelper {
     /**
      * 初始化
      */
-    public static void init(ServletContext servletContext) {
+    public static void init(ServletContext servletContext) throws Exception{
         File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
         servletFileUpload = new ServletFileUpload(new DiskFileItemFactory(DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD, repository));
         int uploadLimit = ConfigHelper.getAppUploadLimit();

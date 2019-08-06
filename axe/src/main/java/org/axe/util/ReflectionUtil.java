@@ -102,13 +102,14 @@ public final class ReflectionUtil {
     public static List<EntityFieldMethod> getGetMethodList(Class<?> cls, Set<String> withoutFieldNameSet){
     	withoutFieldNameSet = withoutFieldNameSet == null?new HashSet<String>():withoutFieldNameSet;
     	Field[] fields = cls.getDeclaredFields();
-    	Map<String,Field> fieldMap = new HashMap<>();
+    	Map<String,Integer> fieldMap = new HashMap<>();
     	//#组成一个字段名的比较串，后面用来比较get方法是不是有意义的get方法
-    	for(Field field:fields){
-    		fieldMap.put(field.getName(), field);
+    	for(int i=0;i<fields.length;i++){
+    		fieldMap.put(fields[i].getName(), i);
     	}
     	Method[] methodAry =  cls.getDeclaredMethods();
-    	List<EntityFieldMethod> getMethodList = new ArrayList<>();
+    	//与fields长度一样的数组，最后把空项去掉，就是有序的，这样只需要遍历一次
+    	EntityFieldMethod[] entityFieldMethodAry = new EntityFieldMethod[fields.length];
     	//#获取Entity类的get方法
     	for(Method method:methodAry){
     		//#get开头
@@ -118,23 +119,30 @@ public final class ReflectionUtil {
     		String fieldName2 = fieldName.substring(1);
     		//#get之后的字符串，必须和class类成员变量对应，第一个字符小写大写对应
     		fieldName = fieldName1.toLowerCase()+fieldName2;
-    		Field field = fieldMap.get(fieldName);
-    		if(field == null) continue;
+    		Integer fieldIndex = fieldMap.get(fieldName);
+    		if(fieldIndex == null) continue;
     		//#无参
     		if(method.getParameterTypes().length > 0) continue;
     		//#排除的字段
     		if(withoutFieldNameSet.contains(fieldName)) continue;
     		
-    		getMethodList.add(new EntityFieldMethod(field, method));
+    		entityFieldMethodAry[fieldIndex] = new EntityFieldMethod(fields[fieldIndex], method);
     		withoutFieldNameSet.add(fieldName);
     	}
     	
+    	List<EntityFieldMethod> getMethodList = new ArrayList<>();
     	Class<?> superClass = cls.getSuperclass();
     	if(superClass != null && !superClass.equals(Object.class)){
     		//#迭代父类
     		getMethodList.addAll(getGetMethodList(superClass,withoutFieldNameSet));
     	}
     	
+    	//把不是空的元素，取出来放到list里，保证了与字段定义是顺序是一致的
+    	for(EntityFieldMethod efm:entityFieldMethodAry){
+    		if(efm != null){
+    			getMethodList.add(efm);
+    		}
+    	}
     	return getMethodList;
     }
 

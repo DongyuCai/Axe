@@ -39,7 +39,7 @@ import org.axe.util.ReflectionUtil;
 public final class IocHelper implements Helper{
 	
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			//获取所有 Bean 与 Bean 实例之间的映射 BEAN_MAP
 	        Map<Class<?>,Object> beanMap = BeanHelper.getBeanMap();

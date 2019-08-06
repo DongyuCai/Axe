@@ -69,7 +69,7 @@ public final class ControllerHelper implements Helper{
 	private static Map<String, Object> ACTION_MAP;
 
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			ACTION_LIST = new LinkedList<>();
 			ACTION_MAP = new HashMap<>();
@@ -89,15 +89,11 @@ public final class ControllerHelper implements Helper{
 	                            
 	                            //检查mappingPath是否合规
 	                            if(!RequestUtil.checkMappingPath(mappingPath)){
-	                            	throw new RuntimeException("invalid @Request.value ["+mappingPath+"] of action: "+method.getName());
+	                            	throw new Exception("invalid @Request.value ["+mappingPath+"] of action: "+method.getName());
 	                            }
 	                            
 	                            //检查actionMethod是否合规
-	                            try {
-	                            	RequestUtil.checkActionMethod(method);
-								} catch (Exception e) {
-									throw new RuntimeException("invalid Controler method : "+e.getMessage());
-								}
+	                            RequestUtil.checkActionMethod(method);
 	                            
 	                            //格式化
 	                            mappingPath = RequestUtil.formatUrl(mappingPath);

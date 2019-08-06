@@ -39,7 +39,7 @@ public final class ConfigHelper implements Helper{
     private static Properties CONFIG_PROPS;
 
     @Override
-    public void init() {
+    public void init() throws Exception{
     	synchronized (this) {
     		CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
 		}

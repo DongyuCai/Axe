@@ -34,7 +34,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,7 +67,8 @@ import org.slf4j.LoggerFactory;
  * 请求转发器
  * @author CaiDongyu on 2016/4/11.
  */
-@WebServlet(urlPatterns = "/*" , loadOnStartup = 0)
+//保留一个，就使用web.xml中的配置就行
+//@WebServlet(urlPatterns = "/*" , loadOnStartup = 0)
 public class DispatcherServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	

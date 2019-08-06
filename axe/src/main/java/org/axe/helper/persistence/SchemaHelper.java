@@ -28,57 +28,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.axe.bean.persistence.TableSchema;
 import org.axe.constant.ConfigConstant;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.util.PropsUtil;
 import org.axe.util.sql.MySqlUtil;
 import org.axe.util.sql.OracleUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author CaiDongyu
  * 数据库Schema 助手类
  */
 public class SchemaHelper implements Helper{
-    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaHelper.class);
-	
 	@Override
 	public void init() throws Exception {}
 
 	@Override
 	public void onStartUp() throws Exception {
 		//在框架的Helper都初始化后，同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
-		Map<String, Class<?>> ENTITY_CLASS_MAP = TableHelper.getEntityClassMap();
+		Map<String, TableSchema> ENTITY_TABLE_MAP = TableHelper.getEntityTableMap();
 		//默认按@Table里的来
 		boolean tnsBegin = false;
-		for(Class<?> entityClass:ENTITY_CLASS_MAP.values()){
-			String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
+		for(TableSchema tableSchema:ENTITY_TABLE_MAP.values()){
 			Properties configProps = ConfigHelper.getCONFIG_PROPS();
-			Boolean autoCreateTable = PropsUtil.getBoolean(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_AUTO_CREATE_TABLE,null);
-			try {
-				if(autoCreateTable == null){
-					//默认按@Table里的来
-					if(TableHelper.isTableAutoCreate(entityClass)){
-						if(!tnsBegin){
-							tnsBegin = true;
-							DataBaseHelper.beginTransaction();
-						}
-						createTable(entityClass);
-					}
-				}else if(autoCreateTable){
+			Boolean autoCreateTable = PropsUtil.getBoolean(configProps,ConfigConstant.JDBC_DATASOURCE + "." + tableSchema.getDataSourceName() + "." + ConfigConstant.JDBC_AUTO_CREATE_TABLE,null);
+			if(autoCreateTable == null){
+				//默认按@Table里的来
+				if(tableSchema.getAutoCreate()){
 					if(!tnsBegin){
 						tnsBegin = true;
 						DataBaseHelper.beginTransaction();
 					}
-					//全局开启，优先级最高，不管@Table如何定义，这个数据源的表全部创建
-					createTable(entityClass);
-				}else{
-					//全局关闭了，优先级也最高，直接不创建
+					createTable(tableSchema);
 				}
-			} catch (Exception e) {
-				LOGGER.error(entityClass+" create table failed",e);
+			}else if(autoCreateTable){
+				if(!tnsBegin){
+					tnsBegin = true;
+					DataBaseHelper.beginTransaction();
+				}
+				//全局开启，优先级最高，不管@Table如何定义，这个数据源的表全部创建
+				createTable(tableSchema);
+			}else{
+				//全局关闭了，优先级也最高，直接不创建
 			}
 		}
 		if(tnsBegin){
@@ -86,18 +78,30 @@ public class SchemaHelper implements Helper{
 		}
 	}
 	
-	public void createTable(Class<?> entityClass) throws SQLException{
-		String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
-		if(DataSourceHelper.isMySql(dataSourceName)){
-			String createTableSql = MySqlUtil.getTableCreateSql(dataSourceName,entityClass);
-			DataBaseHelper.executeUpdate(createTableSql.toString(), new Object[]{}, new Class<?>[]{}, dataSourceName);
-		}else if(DataSourceHelper.isOracle(dataSourceName)){
-			List<String> createTableSqlList = OracleUtil.getTableCreateSql(dataSourceName,entityClass);
-			for(String createTableSql:createTableSqlList){
-				DataBaseHelper.executeUpdate(createTableSql.toString(), new Object[]{}, new Class<?>[]{}, dataSourceName);
+	public void createTable(TableSchema tableSchema) throws SQLException{
+		if(DataSourceHelper.isMySql(tableSchema.getDataSourceName())){
+			String createTableSql = null;
+			if(tableSchema.getSharding()){
+				//分片
+				createTableSql = MySqlUtil.getShardingTableCreateSql(tableSchema.getDataSourceName(), tableSchema);
+			}else{
+				createTableSql = MySqlUtil.getTableCreateSql(tableSchema.getDataSourceName(),tableSchema);
 			}
+			DataBaseHelper.executeUpdate(new String[]{createTableSql}, new Object[]{}, new Class<?>[]{}, tableSchema.getDataSourceName());
+		}else if(DataSourceHelper.isOracle(tableSchema.getDataSourceName())){
+			List<String> createTableSqlList = null;
+			if(tableSchema.getSharding()){
+				createTableSqlList = OracleUtil.getShardingTableCreateSql(tableSchema.getDataSourceName(), tableSchema);
+			}else{
+				createTableSqlList = OracleUtil.getTableCreateSql(tableSchema.getDataSourceName(),tableSchema);
+			}
+			String[] sqlAry = new String[createTableSqlList.size()];
+			for(int i=0;i<sqlAry.length;i++){
+				sqlAry[i] = createTableSqlList.get(i);
+			}
+			DataBaseHelper.executeUpdate(sqlAry, new Object[]{}, new Class<?>[]{}, tableSchema.getDataSourceName());
 		}else {
-			throw new RuntimeException(entityClass.getName()+" connot create table, unspported dbtype driver, only mysql/oracle");
+			throw new RuntimeException(tableSchema.getEntityClass()+" connot create table, unspported dbtype driver, only mysql/oracle");
 		}
 	}
 	

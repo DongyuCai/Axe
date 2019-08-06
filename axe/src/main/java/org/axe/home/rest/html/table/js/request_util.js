@@ -48,7 +48,7 @@ $.get = function (url,data,headers,successCallback,errorCallback){
     $.ajax({
         url:url,
         type:"GET",
-        contentType:"application/json",
+        contentType:'application/json;charset=utf-8',
         dataType:"text",
         timeout:10000,
         data:data,
@@ -78,9 +78,10 @@ $.post = function(url,data,headers,successCallback,errorCallback){
     $.ajax({
         url:url,
         type:"POST",
+        contentType:'application/json;charset=utf-8',
         dataType:"text",
         traditional:true,
-        data:data,
+        data:JSON.stringify(data),
         timeout:60000,
         beforeSend:function(request) {
             for(var key in headers){
@@ -136,7 +137,7 @@ $.delete = function(url,data,headers,successCallback,errorCallback){
     $.ajax({
         url:url,
         type:"DELETE",
-        contentType:"application/json",
+        contentType:'application/json;charset=utf-8',
         dataType:"text",
         data:JSON.stringify(data),
         beforeSend:function(request) {

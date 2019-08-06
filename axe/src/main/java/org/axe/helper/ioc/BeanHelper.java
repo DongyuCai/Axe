@@ -45,7 +45,7 @@ public final class BeanHelper implements Helper{
     private static Map<Class<?>,Object> BEAN_MAP;
     
     @Override
-    public void init() {
+    public void init() throws Exception{
     	synchronized (this) {
     		BEAN_MAP = new HashMap<>();
         	Set<Class<?>> beanClassSet = ClassHelper.getBeanClassSet();

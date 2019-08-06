@@ -23,10 +23,7 @@
  */
 package org.axe.util.sql;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,36 +31,31 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.axe.annotation.persistence.Id;
-import org.axe.annotation.persistence.Table;
-import org.axe.annotation.persistence.Transient;
-import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.bean.persistence.SqlPackage;
+import org.axe.bean.persistence.TableSchema;
+import org.axe.bean.persistence.TableSchema.ColumnSchema;
 import org.axe.constant.ConfigConstant;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
-import org.axe.util.JsonUtil;
 import org.axe.util.PropsUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 统一的Sql解析处理工具，从SqlHelper中迁移过来
  * @author CaiDongyu 2018/5/29
  */
 public class CommonSqlUtil {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommonSqlUtil.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(CommonSqlUtil.class);
 
 	private CommonSqlUtil() {}
 	
 	public static SqlPackage getUpdateSqlPackage(Object entity) {
-		String sql = "UPDATE " + TableHelper.getTableName(entity.getClass()) + " SET ";
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+		String sql = "UPDATE " + TableHelper.getRealTableName(entity) + " SET ";
+		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		// #会做修改的字段
 		StringBuilder columns = new StringBuilder();
 		// #修改的条件
@@ -71,24 +63,15 @@ public class CommonSqlUtil {
 		// #占位符的值
 		List<Object> paramsColumns = new ArrayList<>();
 		List<Object> paramsWhere = new ArrayList<>();
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-			if (!field.isAnnotationPresent(Id.class)) {
+		for (ColumnSchema columnSchema : mappingColumnList) {
+			if (!columnSchema.getPrimary()) {
 				// #没有@Id注解的字段作为修改内容
-				columns.append(column).append("=?, ");
-				paramsColumns.add(ReflectionUtil.invokeMethod(entity, method));
+				columns.append(columnSchema.getColumnName()).append("=?, ");
+				paramsColumns.add(ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod()));
 			} else {
 				// #有@Id的字段作为主键，用来当修改条件
-				where.append(" and ").append(column).append("=?");
-				paramsWhere.add(ReflectionUtil.invokeMethod(entity, method));
+				where.append(" and ").append(columnSchema.getColumnName()).append("=?");
+				paramsWhere.add(ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod()));
 			}
 		}
 		columns.replace(columns.lastIndexOf(", "), columns.length(), " ");
@@ -103,32 +86,29 @@ public class CommonSqlUtil {
 	}
 
 	public static SqlPackage getDeleteSqlPackage(Object entity) {
-		String sql = "DELETE FROM " + TableHelper.getTableName(entity.getClass());
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+		String sql = "DELETE FROM " + TableHelper.getRealTableName(entity);
+		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 		// #占位符的值
 		// #先过滤出带有@Id的EntityFieldMethod
-		List<EntityFieldMethod> idFieldList = new ArrayList<>();
-		for (EntityFieldMethod entityFieldMethod : entityFieldMethodList) {
-			if (entityFieldMethod.getField().isAnnotationPresent(Id.class)) {
-				idFieldList.add(entityFieldMethod);
+		List<ColumnSchema> idColumnList = new ArrayList<>();
+		for (ColumnSchema columnSchema : mappingColumnList) {
+			if (columnSchema.getPrimary()) {
+				idColumnList.add(columnSchema);
 			}
 		}
 
-		Object[] params = new Object[idFieldList.size()];
-		for (int i = 0; i < idFieldList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = idFieldList.get(i);
-			Field field = entityFieldMethod.getField();
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
+		Object[] params = new Object[idColumnList.size()];
+		for (int i = 0; i < idColumnList.size(); i++) {
+			ColumnSchema columnSchema = idColumnList.get(i);
 			// #有@Id的字段作为主键，用来当修改条件
-			where.append(" and ").append(column).append("=?");
-			params[i] = ReflectionUtil.invokeMethod(entity, method);
+			where.append(" and ").append(columnSchema.getColumnName()).append("=?");
+			params[i] = ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod());
 		}
 		sql = sql + where.toString();
 
-		if (CollectionUtil.isEmpty(idFieldList)) {
+		if (CollectionUtil.isEmpty(idColumnList)) {
 			// 注意，deleteEntity，如果Entity中没有标注@Id的字段，是不能删除的，否则会where 1=1 全表删除！
 			throw new RuntimeException("delete entity failure!cannot find any field with @Id in " + entity.getClass());
 		}
@@ -136,51 +116,48 @@ public class CommonSqlUtil {
 	}
 
 	public static SqlPackage getSelectByIdSqlPackage(Object entity) {
-		String sql = "SELECT * FROM " + TableHelper.getTableName(entity.getClass());
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+		String sql = "SELECT * FROM " + TableHelper.getRealTableName(entity);
+		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 		// #占位符的值
 		// #先过滤出带有@Id的EntityFieldMethod
-		List<EntityFieldMethod> idFieldList = new ArrayList<>();
-		for (EntityFieldMethod entityFieldMethod : entityFieldMethodList) {
-			if (entityFieldMethod.getField().isAnnotationPresent(Id.class)) {
-				idFieldList.add(entityFieldMethod);
+		List<ColumnSchema> idColumnList = new ArrayList<>();
+		for (ColumnSchema columnSchema:mappingColumnList) {
+			if (columnSchema.getPrimary()) {
+				idColumnList.add(columnSchema);
 			}
 		}
 		// 注意，如果Entity中没有标注@Id的字段，就不能匹配了
-		if (CollectionUtil.isEmpty(idFieldList)) {
+		if (CollectionUtil.isEmpty(idColumnList)) {
 			throw new RuntimeException("select entity failure!cannot find any field with @Id in " + entity.getClass());
 		}
 
-		Object[] params = new Object[idFieldList.size()];
-		for (int i = 0; i < idFieldList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = idFieldList.get(i);
-			Field field = entityFieldMethod.getField();
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
+		Object[] params = new Object[idColumnList.size()];
+		for (int i = 0; i < idColumnList.size(); i++) {
+			ColumnSchema columnSchema = idColumnList.get(i);
 			// #有@Id的字段作为主键，用来当修改条件
-			where.append(" and ").append(column).append("=?");
-			params[i] = ReflectionUtil.invokeMethod(entity, method);
+			where.append(" and ").append(columnSchema.getColumnName()).append("=?");
+			params[i] = ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod());
 		}
 		sql = sql + where.toString();
 
 		return new SqlPackage(sql, params, null);
 	}
 	
-	public static Map<String, Class<?>> matcherEntityClassMap(String sql) {
-		Map<String, Class<?>> entityClassMap = TableHelper.getEntityClassMap();
+	public static Map<String, TableSchema> matcherEntityTableMap(String sql) {
+		Map<String, TableSchema> entityTableMap = TableHelper.getEntityTableMap();
 		String sqlClean = sql.replaceAll("[,><=!\\+\\-\\*/\\(\\)]", " ");
 		String[] sqlWords = sqlClean.split(" ");
-		LOGGER.debug("sqlWords : " + Arrays.toString(sqlWords));
+//		LOGGER.debug("sqlWords : " + Arrays.toString(sqlWords));
 
-		Map<String, Class<?>> sqlEntityClassMap = new HashMap<>();
+		Map<String, TableSchema> sqlEntityTableMap = new HashMap<>();
 		for (String word : sqlWords) {
-			if (entityClassMap.containsKey(word) && !sqlEntityClassMap.containsKey(word)) {
-				sqlEntityClassMap.put(word, entityClassMap.get(word));
+			if (entityTableMap.containsKey(word) && !sqlEntityTableMap.containsKey(word)) {
+				sqlEntityTableMap.put(word, entityTableMap.get(word));
 			}
 		}
-		return sqlEntityClassMap;
+		return sqlEntityTableMap;
 	}
 
 	public static boolean checkIsSqlKeyword(String SQL_KEYWORD,String word){
@@ -188,125 +165,105 @@ public class CommonSqlUtil {
 	}
 	
 	/**
-	 * 检测sql是否可做hql转换 目前只做类到表的表名、字段是否会影响sql语句中的mysql关键字。
+	 * 检测sql是否可做hql转换 目前只做到表的表名、字段是否会影响sql语句中的mysql关键字。
 	 * 比如表名叫cOunt，这就会影响，因为经过驼峰转换下划线后会替换成c_ount，
 	 * 会导致后续的hql解析时，如果sql中正好有count关键字，也会被替换掉，
 	 * 因为在sql中cOunt不区分大小写情况下，是可以执行的，这就破坏了sql。 如果检测通过，会额外返回检测时已经匹配好的get方法和字段的map
 	 */
-	private static Map<String, Class<?>> checkHqlConvertIfOk(String SQL_KEYWORD,String sql) {
-		// 匹配出Entity-Class
-		Map<String, Class<?>> sqlEntityClassMap = matcherEntityClassMap(sql);
+	public static Map<String, TableSchema> convertSqlEntity2Table(String sql) {
+		// 匹配出Entity-Table
+		Map<String, TableSchema> sqlEntityTableMap = matcherEntityTableMap(sql);
 		do {
-			if (CollectionUtil.isEmpty(sqlEntityClassMap))
+			if (CollectionUtil.isEmpty(sqlEntityTableMap))
 				break;
-
-			for (Map.Entry<String, Class<?>> entity : sqlEntityClassMap.entrySet()) {
-				String entityClassName = entity.getKey();
-				// #检测表名是否影响
-				// * 如果KEYWORDS中包含此表名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
-				if (checkIsSqlKeyword(SQL_KEYWORD,entityClassName)) {
-					String afterTryCast2TableName = StringUtil.camelToUnderline(entityClassName);
-					if (!entityClassName.equalsIgnoreCase(afterTryCast2TableName))
-						throw new RuntimeException("invalid class name[" + entityClassName + "] for sql#[" + sql
-								+ "], because sql keyword will be affected!");
-				}
-
-				Class<?> entityClass = entity.getValue();
-				// #检测表字锻是否影响
-				List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
-				if (CollectionUtil.isNotEmpty(entityFieldMethodList)) {
-					for (EntityFieldMethod efm : entityFieldMethodList) {
-						String fieldName = efm.getField().getName();
-						// *
-						// 如果KEYWORDS中包含此字段名，并且表名通过驼峰->下划线转换后，与原来不一致，那就不行
-						if (checkIsSqlKeyword(SQL_KEYWORD,fieldName)) {
-							String afterTryCast2ColumnName = StringUtil.camelToUnderline(fieldName);
-							if (!fieldName.equalsIgnoreCase(afterTryCast2ColumnName))
-								throw new RuntimeException(
-										"invalid field name#[" + fieldName + "] in class#[" + entityClassName
-												+ "] for sql#[" + sql + "], because sql keyword will be affected!");
-						}
-					}
-				}
-			}
 		} while (false);
-		return sqlEntityClassMap;
+		return sqlEntityTableMap;
 	}
 
 	/**
 	 * 解析sql中的类信息
 	 */
-	public static String[] convertHql2Sql(String SQL_KEYWORD,String sql) {
-		// 末尾多加一个空格，防止select * from table这样的bug，会找不到表名
-		sql = sql + " ";
-		LOGGER.debug("sql : " + sql);
-		// #根据sql匹配出Entity类
-		Map<String, Class<?>> sqlEntityClassMap = checkHqlConvertIfOk(SQL_KEYWORD,sql);
-		LOGGER.debug("sqlEntityClassMap : " + JsonUtil.toJson(sqlEntityClassMap));
-		String dataSourceName = null;
-		if (!CollectionUtil.isEmpty(sqlEntityClassMap)) {
-			// #获取数据源名称，以第一个表entity的为准
-			// #解析表名
-			String[] sqlAndDataSource = convertTableName(sql, sqlEntityClassMap);
-			sql = sqlAndDataSource[0];
-			dataSourceName = sqlAndDataSource[1];
-			// #解析字段
-			sql = convertColumnName(sql, sqlEntityClassMap);
+	public static List<String> convertRawSql(String sql,Map<String, TableSchema> sqlEntityTableMap,List<Map<String,String>> sqlEntityTableNameList) {
+		List<String> sqlList = null;
+		if(StringUtil.isNotEmpty(sql)){
+			// 末尾多加一个空格，防止select * from table这样的bug，会找不到表名
+			sql = sql + " ";
+//			LOGGER.debug("sql : " + sql);
+//			LOGGER.debug("sqlEntityClassMap : " + JsonUtil.toJson(sqlEntityClassMap));
+//			LOGGER.debug("sqlEntityTableNameList : " + JsonUtil.toJson(sqlEntityTableNameList));
+			if (CollectionUtil.isNotEmpty(sqlEntityTableMap)) {
+				// #获取数据源名称，以第一个表entity的为准
+				// #解析字段
+				sql = convertColumnName(sql, sqlEntityTableMap);
+			}
+			if(CollectionUtil.isNotEmpty(sqlEntityTableNameList)){
+				// #解析表名
+				sqlList = convertTableName(sql, sqlEntityTableNameList);
+			}else{
+				sqlList = new ArrayList<>();
+				sqlList.add(sql);
+			}
 		}
-		return new String[] { sql, dataSourceName };
+		return sqlList;
 	}
 	
-	private static String[] convertTableName(String sql, Map<String, Class<?>> sqlEntityClassMap) {
-		// #表名可能被这些东西包围，空格本身就用来分割，所以不算在内
-		String dataSourceName = null;
-		for (Map.Entry<String, Class<?>> sqlEntityClassEntry : sqlEntityClassMap.entrySet()) {
-			String entityClassSimpleName = sqlEntityClassEntry.getKey();
-			Class<?> entityClass = sqlEntityClassEntry.getValue();
-			if (dataSourceName == null) {
-				dataSourceName = TableHelper.getTableDataSourceName(entityClass);
-			}
-			Table tableAnnotation = entityClass.getAnnotation(Table.class);
-			// #替换表名
-			// 这里的表达式就需要空格了
-			String tableNameReg = "([,><=!\\+\\-\\*/\\(\\) ])" + entityClassSimpleName + "([,><=!\\+\\-\\*/\\(\\) ])";
-			Pattern p = Pattern.compile(tableNameReg);
-			Matcher m = p.matcher(sql);
-			while (m.find()) {// 这就可以找到表名，包括表名前后的字符，后面替换的时候，就能很方便替换了
-				String tablePre = m.group(1);
-				String tableAfter = m.group(2);
-				if ("+-*()".contains(tablePre)) {
-					tablePre = "\\" + tablePre;
-				}
-				if ("+-*()".contains(tableAfter)) {
-					tableAfter = "\\" + tableAfter;
-				}
-				tableNameReg = tablePre + entityClassSimpleName + tableAfter;
-				String tableNameAround = tablePre + tableAnnotation.value() + tableAfter;
-				sql = sql.replaceAll(tableNameReg, tableNameAround);
-			}
-		}
+	private static List<String> convertTableName(String sql, List<Map<String,String>> sqlEntityTableNameList) {
+		
+		List<String> sqlList = new ArrayList<>();
+		sqlList.add(sql);
 
-		return new String[] { sql, dataSourceName };
+		// #表名可能被这些东西包围，空格本身就用来分割，所以不算在内
+		for (Map<String, String> sqlEntityTableNameMap : sqlEntityTableNameList) {
+			List<String> tmpSqlList = new ArrayList<>();
+			for(String rawSql:sqlList){
+				for(String tableName:sqlEntityTableNameMap.keySet()){
+					String entityClassSimpleName = sqlEntityTableNameMap.get(tableName);
+					
+//					String tableName = TableHelper.getTableName(entityClass);
+					// #替换表名
+					// 这里的表达式就需要空格了
+					String tableNameReg = "([,><=!\\+\\-\\*/\\(\\) ])" + entityClassSimpleName + "([,><=!\\+\\-\\*/\\(\\) ])";
+					Pattern p = Pattern.compile(tableNameReg);
+					String tmpSql = new String(rawSql);
+					Matcher m = p.matcher(tmpSql);
+					while (m.find()) {// 这就可以找到表名，包括表名前后的字符，后面替换的时候，就能很方便替换了
+						String tablePre = m.group(1);
+						String tableAfter = m.group(2);
+						if ("+-*()".contains(tablePre)) {
+							tablePre = "\\" + tablePre;
+						}
+						if ("+-*()".contains(tableAfter)) {
+							tableAfter = "\\" + tableAfter;
+						}
+						tableNameReg = tablePre + entityClassSimpleName + tableAfter;
+						String tableNameAround = tablePre + tableName + tableAfter;
+						tmpSql = tmpSql.replaceAll(tableNameReg, tableNameAround);
+					}
+					tmpSqlList.add(tmpSql);
+				}
+			}
+			sqlList = tmpSqlList;
+		}
+		
+		return sqlList;
 	}
 
-	private static String convertColumnName(String sql, Map<String, Class<?>> sqlEntityClassMap) {
+	private static String convertColumnName(String sql, Map<String, TableSchema> sqlEntityTableMap) {
 
-		for (Map.Entry<String, Class<?>> sqlEntityClassEntry : sqlEntityClassMap.entrySet()) {
-			Class<?> entityClass = sqlEntityClassEntry.getValue();
-			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
+		for (Map.Entry<String, TableSchema> entry : sqlEntityTableMap.entrySet()) {
+			TableSchema tableSchema = entry.getValue();
+			List<ColumnSchema> mappingColumnList = tableSchema.getMappingColumnList();
 			// #根据get方法来解析字段名
-			for (EntityFieldMethod entityFieldMethod : entityFieldMethodList) {
-				String field = entityFieldMethod.getField().getName();
-				String column = StringUtil.camelToUnderline(field);
+			for (ColumnSchema columnSchema : mappingColumnList) {
 				// TODO:暂时先解决=前后一样字段名的问题，这个问题是因为两个相同的字段名，中间只隔了一个字符，导致下面的正则匹配，只能匹配到一侧
-				sql = sql.replaceAll(field + "=" + field, field + " = " + field);
+				sql = sql.replaceAll(columnSchema.getFieldName() + "=" + columnSchema.getFieldName(), columnSchema.getFieldName() + " = " + columnSchema.getFieldName());
 
 				// 前后表达式不同
 				// 前面有!
 				// 前面有(
 				// 前面有.
 				// 后面有)
-				String columnNameReg = "([,><=\\+\\-\\*/\\(\\. ])" + field + "([,><=!\\+\\-\\*/\\) ])";
+				String columnNameReg = "([,><=\\+\\-\\*/\\(\\. ])" + columnSchema.getFieldName() + "([,><=!\\+\\-\\*/\\) ])";
 				Pattern p = Pattern.compile(columnNameReg);
 				Matcher m = p.matcher(sql);
 				while (m.find()) {// 这就可以找到表名，包括表名前后的字符，后面替换的时候，就能很方便替换了
@@ -318,8 +275,8 @@ public class CommonSqlUtil {
 					if ("+-*)".contains(columnAfter)) {
 						columnAfter = "\\" + columnAfter;
 					}
-					columnNameReg = columnPre + field + columnAfter;
-					String columnNameAround = columnPre + column + columnAfter;
+					columnNameReg = columnPre + columnSchema.getFieldName() + columnAfter;
+					String columnNameAround = columnPre + columnSchema.getColumnName() + columnAfter;
 					sql = sql.replaceAll(columnNameReg, columnNameAround);
 				}
 			}
@@ -471,21 +428,23 @@ public class CommonSqlUtil {
 	 * @return
 	 */
 	public static String convertSqlAppendCommand(String sql, Object[] params) {
-		Pattern p = Pattern.compile("#([1-9][0-9]*)");
-		Matcher m = p.matcher(sql);
-		while (m.find()) {
-			String getFlagNumber = m.group(1);
-			String command = "#" + getFlagNumber;
-			int paramIndex = CastUtil.castInteger(getFlagNumber) - 1;
+		if(StringUtil.isNotEmpty(sql)){
+			Pattern p = Pattern.compile("#([1-9][0-9]*)");
+			Matcher m = p.matcher(sql);
+			while (m.find()) {
+				String getFlagNumber = m.group(1);
+				String command = "#" + getFlagNumber;
+				int paramIndex = CastUtil.castInteger(getFlagNumber) - 1;
 
-			Object param = params[paramIndex];
-			if (String.class.isAssignableFrom(param.getClass())) {
-				// 如果参数是字符串
-				String append = (String) param;
-				sql = sql.replaceFirst(command, append);
-			} else {
-				throw new RuntimeException(
-						"invalid sql[" + sql + "] ,paramType of command[#" + getFlagNumber + "] must be String.class");
+				Object param = params[paramIndex];
+				if (String.class.isAssignableFrom(param.getClass())) {
+					// 如果参数是字符串
+					String append = (String) param;
+					sql = sql.replaceFirst(command, append);
+				} else {
+					throw new RuntimeException(
+							"invalid sql[" + sql + "] ,paramType of command[#" + getFlagNumber + "] must be String.class");
+				}
 			}
 		}
 		return sql;

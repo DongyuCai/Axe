@@ -55,7 +55,7 @@ public class TransactionAspect extends AspectProxy {
         if(flag == null && method.isAnnotationPresent(Tns.class)){
             DataBaseHelper.beginTransaction();
             FLAG_HOLDER.set(method.toGenericString());
-            LOGGER.debug("begin transaction by TNS");
+            LOGGER.debug("begin transaction on point:"+method.getName());
         }
     }
     
@@ -66,7 +66,7 @@ public class TransactionAspect extends AspectProxy {
     	if(flag != null && flag.equals(method.toGenericString()) && method.isAnnotationPresent(Tns.class)){
         	DataBaseHelper.commitTransaction();
         	FLAG_HOLDER.remove();
-        	LOGGER.debug("commit transaction by TNS");
+        	LOGGER.debug("commit transaction on point:"+method.getName());
         }
     }
     
@@ -75,7 +75,7 @@ public class TransactionAspect extends AspectProxy {
     	String flag = FLAG_HOLDER.get();
     	if(flag != null && flag.equals(method.toGenericString()) && method.isAnnotationPresent(Tns.class)){
     		 DataBaseHelper.rollbackTransaction();
-             LOGGER.debug("rollback transaction",e);
+//             LOGGER.debug("rollback transaction",e);
              FLAG_HOLDER.remove();
     	}
     }

@@ -44,7 +44,7 @@ public final class FilterHelper implements Helper {
 	private static List<Filter> FILTER_LIST;// 保证顺序
 
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			FILTER_LIST = new ArrayList<>();
 			Set<Class<?>> filterClassSet = ClassHelper.getClassSetBySuper(Filter.class);
@@ -67,7 +67,7 @@ public final class FilterHelper implements Helper {
 								filterSortedList.add(index, filter);
 								break;
 							} else if (filter.setLevel() == filter_.setLevel()){
-								throw new RuntimeException("find the same level "+filter.setLevel()+" Filter: "+filterClass+" === "+filter_.getClass());
+								throw new Exception("find the same level "+filter.setLevel()+" Filter: "+filterClass+" === "+filter_.getClass());
 							} else {
 								index++;
 							}

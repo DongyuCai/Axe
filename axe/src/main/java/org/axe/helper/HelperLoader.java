@@ -76,10 +76,10 @@ public final class HelperLoader {
                 new AopHelper(),//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
                 new IocHelper(),//组装所有@Autowired
                 new ControllerHelper(),//加载ACTION_MAP
-                new TableHelper(),//加载所有的@Table
-                new SchemaHelper(),//初始化所有entity的表结构自建
                 new DataSourceHelper(),//加载DataSource配置
                 new DataBaseHelper(),//初始化数据库配置
+                new TableHelper(),//加载所有的@Table
+                new SchemaHelper(),//初始化所有entity的表结构自建
                 new MailHelper()//初始化邮件助手的配置
         };
     }

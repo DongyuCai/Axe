@@ -1,0 +1,33 @@
+<java>
+@Request(value = "/table", method = RequestMethod.GET)
+public void table(
+		@RequestParam("token")String token, 
+		@RequestParam(value = "s", required = true) String statics, 
+		HttpServletRequest request,HttpServletResponse response) {
+	ContentType ct = ContentType.APPLICATION_HTML;
+	if (statics.endsWith(".html")) {
+		ct = ContentType.APPLICATION_HTML;
+	} else if (statics.endsWith(".js")) {
+		ct = ContentType.APPLICATION_JS;
+	} else if (statics.endsWith(".css")) {
+		ct = ContentType.APPLICATION_CSS;
+	}
+	printFile(response, "org/axe/home/rest/html/table/" + statics, ct, token);
+}
+
+@Request(value = "/table/table_list", method = RequestMethod.GET)
+public List<Level_1> table_table_list(
+	@RequestParam("token")String token,  
+	HttpServletRequest request, HttpServletResponse response) {
+	try {
+		String path = request.getContextPath();
+		String baseDomain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+		String basePath = baseDomain + path;
+		List<Level_1> list = ApiExportUtil.asApiTest(basePath);
+		return list;
+	} catch (Exception e) {
+		e.printStackTrace();
+		throw new RestException(e.getMessage());
+	}
+}
+</java>

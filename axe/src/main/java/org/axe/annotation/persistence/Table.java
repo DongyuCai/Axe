@@ -46,6 +46,10 @@ public @interface Table {
 	 */
 	String value();
 	/**
+	 * 描述
+	 */
+	String comment() default "";
+	/**
 	 * 是否自建
 	 * 默认是自建，但是，需要全局打开jdbc.auto_create_table参数，才会生效
 	 * 如果改成false，那么就算全局打开了jdbc.auto_create_table参数，也不会自建此表

@@ -42,8 +42,9 @@ public final class StreamUtil {
     
     /**
      * 从输入流中获取字符串
+     * @throws Exception 
      */
-    public static String getString(InputStream is){
+    public static String getString(InputStream is) throws Exception{
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = null;
         try {
@@ -53,8 +54,8 @@ public final class StreamUtil {
                 sb.append(line);
             }
         } catch (Exception e){
-            LOGGER.error("get String failure",e);
-            throw new RuntimeException(e);
+//            LOGGER.error("get String failure",e);
+            throw e;
         } finally {
 			if(reader != null){
 				try {

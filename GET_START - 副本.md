@@ -187,32 +187,57 @@ public class ToJspController{
 ```
 
 
-## Restful，怎么写一个ajax后端接口
-restful的具体定义这里不做解释了，axe对rest请求url中的参数支持如下的解析方式。
+## Restful
+具体定义这里不做解释了，axe对rest请求url中的参数支持如下的解析方式。
 
 - 如 /get/{id}_{name}  中id和name是参数 
 - 如 /get_{id}/{name}  也是id和name表示参数
 - 参数只能是数字和字母，url只能是数字、字母、下划线和$符
 
-请看下面的POST接口，我们习惯POST方式表示新增，url中的名称表示资源，这是一个新增用户的接口
+下面是一个比较完整的请求参数事例。
 ```java
-	@Request(value="/user",method=RequestMethod.POST)
-    public String addUser(
-			//框架要求必须使用包装类型，使用int（类似）类型无法准确判断参数是否有值
-        	@RequestParam("age")Integer age,
-        	@RequestParam("name")String name){
-    	....
-		return "success";
+@Request(value="/post{money}/4{id}_{name}",method=RequestMethod.POST)
+    public Data postPathParam(
+        	@RequestParam("money")Integer money,//如果money是整数，这里就有值，如果是别的，甚至是字符串，就会是null
+    		
+    		@RequestParam("file")FileParam file1,//单个文件，如果上传的是多文件，只会拿到最后一个
+    		@RequestParam("file")Object file2,
+    		@RequestParam("file")List<FileParam> filesList1,
+    		@RequestParam("file")List<?> filesList2,
+    		@RequestParam("file")List filesList3,
+    		@RequestParam("file")FileParam[] filesAry1,
+    		@RequestParam("file")Object[] filesAry2,
+    		
+    		@RequestParam("ids")Integer ids,//如果传递的参数是多个，只会拿到最后一个
+    		@RequestParam("ids")List<String> idsList1,
+    		@RequestParam("ids")List<?> idsList2,
+    		@RequestParam("ids")List<Integer> idsList3,
+    		@RequestParam("ids")List idsList4,
+    		@RequestParam("ids")String[] idsAry1,//如果传递的参数是多个，会用","拼接
+    		@RequestParam("ids")Integer[] idsAry2,
+    		@RequestParam("ids")Double[] idsAry3,
+    		@RequestParam("ids")Object[] idsAry4,
+    		
+    		@RequestParam("name")String name1,
+    		@RequestParam("name")Object name2,
+    		@RequestParam("name")List<String> nameList1,
+    		@RequestParam("name")List<?> nameList2,
+    		@RequestParam("name")List nameList3,
+    		@RequestParam("name")String[] nameAry1,
+    		@RequestParam("name")Object[] nameAry2,
+    		
+    		HttpServletRequest request,
+    		HttpServletResponse response,
+    		Param param,
+    		Map<String,String> body,
+    		String otherParam){//这里总是null，如果有人这么写，那只能在别的地方手工调用这个方法时候传值了，框架不会映射的。
+    	System.out.println("postPathParam");
+//    	Data data = analysisParam(param);
+        return null;
     }
+ 
 ```
-> 需要注意的是，@RequestParam 要求必须使用包装类型，比如例子中的age参数，不可以是int类型。
-
-## 大表自动分片
-当我们的表数据量过大的时候，sql操作的耗时会急剧上升，成为系统瓶颈，这时我们需要做分库分表等一些优化，axe对此自带了分片功能。
-
-- 如果一张表是需要分片的，那么在框架启动时，自动创建的，不是真正的表，而是管理表
-- 当执行sql插入时，先询问管理表有没有可以插入的分片数据表，没有的话，新增管理表一条记录，再创建出一张分片数据表
-- 每次对分片数据表做更新，都要更新管理表中当前插入的分片数据表对应的一行数据的”记录数”字段
+> 需要注意的是，不允许两条完全一样的url存在。
 
 ## 框架有哪些重要的组成
 

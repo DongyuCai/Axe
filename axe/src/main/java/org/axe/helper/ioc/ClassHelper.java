@@ -51,7 +51,7 @@ public final class ClassHelper implements Helper{
     private static Set<Class<?>> CLASS_SET;
     
     @Override
-    public void init() {
+    public void init() throws Exception{
     	synchronized (this) {
     		CLASS_SET = new HashSet<>();
         	
@@ -62,7 +62,7 @@ public final class ClassHelper implements Helper{
             	String[] basePackages = appBasePackage.split(",");
             	for(String basePackage:basePackages){
             		if(basePackage.startsWith(axePackage)){
-            			throw new RuntimeException(ConfigConstant.APP_BASE_PACKAGE+":"+"不可以使用"+axePackage+"开头,"+axePackage+"被框架保留!");
+            			throw new Exception(ConfigConstant.APP_BASE_PACKAGE+":"+"不可以使用"+axePackage+"开头,"+axePackage+"被框架保留!");
             		}
             		CLASS_SET.addAll(ClassUtil.getClassSet(basePackage));
             	}

@@ -39,7 +39,7 @@ public final class FrameworkStatusHelper implements Helper{
 	private static Date STARTUP_TIME;
 	
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			STARTUP_TIME = new Date();
 		}

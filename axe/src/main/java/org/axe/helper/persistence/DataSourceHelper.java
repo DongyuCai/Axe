@@ -48,7 +48,7 @@ public final class DataSourceHelper implements Helper{
 	private static Map<String,BaseDataSource> DATA_SOURCE;
 	
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			Set<Class<?>> dataSourceFactoryClassSet = ClassHelper.getClassSetBySuper(BaseDataSource.class);
 			Map<String,Class<?>> dataSourceFactoryClassMap = new HashMap<>();
@@ -56,9 +56,9 @@ public final class DataSourceHelper implements Helper{
 				if(dataSourceFactoryClass.isAnnotationPresent(DataSource.class)){
 					String dataSourceName = dataSourceFactoryClass.getAnnotation(DataSource.class).value();
 					if(StringUtil.isEmpty(dataSourceName))
-						throw new RuntimeException("find the empty name DataSource:"+dataSourceFactoryClass);
+						throw new Exception("find the empty name DataSource:"+dataSourceFactoryClass);
 					if(dataSourceFactoryClassMap.containsKey(dataSourceName))
-						throw new RuntimeException("find the same name DataSource:"+DATA_SOURCE.get(dataSourceName).getClass()+"==="+dataSourceFactoryClass);
+						throw new Exception("find the same name DataSource:"+DATA_SOURCE.get(dataSourceName).getClass()+"==="+dataSourceFactoryClass);
 					dataSourceFactoryClassMap.put(dataSourceName, dataSourceFactoryClass);
 				}
 			}
@@ -76,6 +76,8 @@ public final class DataSourceHelper implements Helper{
 					if(dataSourceFactoryClassMap.containsKey(dataSourceNameConfig)){
 						BaseDataSource dataSource = ReflectionUtil.newInstance(dataSourceFactoryClassMap.get(dataSourceNameConfig));
 						DATA_SOURCE.put(dataSourceNameConfig, dataSource);
+					}else{
+						throw new Exception("can not find DataSource:"+dataSourceNameConfig);
 					}
 				}
 			}

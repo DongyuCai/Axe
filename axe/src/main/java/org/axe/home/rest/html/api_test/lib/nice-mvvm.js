@@ -1,18 +1,18 @@
 /*
  * MIT License
- * 
+ *
  * Copyright (c) 2017 CaiDongyu
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +22,12 @@
  * SOFTWARE.
  */
 'use strict';
-console.log('mvvm version:18.4.16');
+//删除代码块 C001，纠正了表达式解析中，数组的取值处理问题：如果[]内不是数字，将无法取值
+console.log('nice-mvvm version:19.5.17');
+//补充GET_VAL里的正则匹配项
+// console.log('nice-mvvm version:19.4.9');
+//修复GET_VAL bug  indexOf改用正则匹配
+// console.log('nice-mvvm version:19.4.4');
 
 var $NICE_MVVM = function (mvvmElementId, excludeIds) {
     var mvvmElement = document.getElementById(mvvmElementId);
@@ -54,14 +59,46 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
         }
     };
     //节点渲染执行完毕后的回调
-    var $AFTER_RENDER = null;
+    var $AFTER_RENDER_CALLBACK_ARY = [];
     var $onload = function (fun) {
-        $AFTER_RENDER = fun;
+        $AFTER_RENDER_CALLBACK_ARY.push(fun);
     };
     //在nice-mvvm刷新周期内，会被主动调用一次。
-    var $AFTER_FLUSH = null;
-    var $onflush = function (fun) {
-        $AFTER_FLUSH = fun;
+    var $AFTER_FLUSH_CALLBACK_ARY = [];
+    //fun 回调函数
+    //timeOut 多少毫秒执行一次，超过设定值才会执行
+    //repeat 是否重复执行
+    //id 用来$onflush重复调用时候去重，如果id已存在，就会跟新对应的fun和参数，如果不存在，追加到末尾
+    var $onflush = function (fun,timeOut,repeat,id) {
+        timeOut = timeOut?timeOut:0;
+
+        var exists = false;
+        var flushObject = {};
+        for(var i=0;i<$AFTER_FLUSH_CALLBACK_ARY.length;i++){
+            if($AFTER_FLUSH_CALLBACK_ARY[i].id && $AFTER_FLUSH_CALLBACK_ARY[i].id==id){
+                flushObject = {
+                    fun:fun,
+                    timeOut:timeOut,
+                    repeat:repeat,
+                    id:id,
+                    startTime:new Date().getTime()
+                };
+                $AFTER_FLUSH_CALLBACK_ARY[i] = flushObject;
+                break;
+                exists = true;
+            }
+        }
+        if(!exists){
+            flushObject = {
+                fun:fun,
+                timeOut:timeOut,
+                repeat:repeat,
+                id:id,
+                startTime:new Date().getTime()
+            };
+            $AFTER_FLUSH_CALLBACK_ARY.push(flushObject);
+        }
+        return flushObject;
     };
 
     //强制刷新参数关联的所有node节点，无论是否在获取焦点的状态下
@@ -73,7 +110,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             proPathAry.push(proPath);
         }
         for (var i = 0; i < proPathAry.length; i++) {
-            $APPLY_PRO_PATH_MAP[proPathAry[i]] = true;//构造map，只是为了降低时间复杂度   
+            $APPLY_PRO_PATH_MAP[proPathAry[i]] = true;//构造map，只是为了降低时间复杂度
         }
 
         $SCOPE.$FLUSH();
@@ -81,6 +118,10 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
         $APPLY_PRO_PATH_MAP = new Object();
     };
 
+    var $STOP_FLAG = false;
+    var $stop = function(){
+        $STOP_FLAG = true;
+    };
     var $INITED = false;
     var $init = function () {
         if (!$INITED) {
@@ -88,12 +129,24 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
         } else {
             //把缓存放回去
             var newElement = document.getElementById(mvvmElementId);
-            newElement.innerHTML = "";
+            newElement.innerHTML = '';
             while (mvvmElement.childNodes && mvvmElement.childNodes.length > 0) {
                 newElement.appendChild(mvvmElement.firstChild);
             }
+            for(var nodePackKey in $SCOPE.$V2M_NODE_MAP){
+                var nodePackAry = $SCOPE.$V2M_NODE_MAP[nodePackKey];
+                for(var npIndex=0;npIndex<nodePackAry.length;npIndex++){
+                    var np = nodePackAry[npIndex];
+                    if(np.parentNode == mvvmElement){
+                        np.parentNode = newElement;
+                    }
+                }
+            }
             mvvmElement = newElement;
-
+            $STOP_FLAG = false;//继续开始刷新
+            $SCOPE.$NEED_AFTER_RENDER = true;
+            $SCOPE.timeOut = 1;//检测到需要渲染，那么刷新率改成1毫秒
+            $SCOPE.$INTERVAL();//再次启动定时机
             return false;
         }
 
@@ -108,26 +161,6 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             expression = expression.replace(/\[/g, '.');
             expression = expression.replace(/\]/g, '');
 
-            /*
-                        //TODO:因为后续改了expression的分析方式，所以不需要这样僵化的替换原生方法
-                        //还有别的原生方法，如果没写全，要补充
-                        expression = expression.replace(/\.indexOf\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.substring\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.substr\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.subStr\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.charAt\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.lastIndexOf\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.match\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.search\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.slice\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.split\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.split\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.length\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.toLowerCase\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.toUpperCase\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.replace\(/g,' ');//不能让原生方法影响参数解析
-                        expression = expression.replace(/\.length/g,' ');//不能让原生方法影响参数解析
-            */
             var find = false;
             for (var pro in $SCOPE.$DATA_SOLID_COPY) {
                 var expression_ = $SCOPE.$REPLACE_PROPATH(expression, pro, '');
@@ -151,7 +184,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
             if (!find) {
                 //尝试是否是数组形式的
-                var proReg = new RegExp("^" + expression + '\\.[0-9]+\\..*');
+                var proReg = new RegExp('^' + expression + '\\.[0-9]+\\..*');
                 for (var pro in $SCOPE.$DATA_SOLID_COPY) {
                     if (proReg.test(pro)) {
                         if (!$SCOPE.$V2M_NODE_MAP[expression]) {
@@ -177,7 +210,9 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                 //尝试常量表达式解析，如果能解析，那就直接作为常量值
                 try {
                     var val = eval(expression);
-                    nodePack.render(expression, val);
+                    if(val !== undefined){//如果expression是"item.name"这样的零时变量，根本不会有值
+                        nodePack.render(expression, val);
+                    }
                 } catch (err) {
                 }
             }
@@ -310,6 +345,11 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                             if (!proPathVal) {
                                 proPathVal = [];
                             }
+                            //如果是字符串，那么就按逗号分隔了看
+                            var proPathValType = typeof proPathVal;
+                            if(proPathValType === 'string'){
+                                proPathVal = proPathVal.split(',');
+                            }
                             if (node.checked) {
                                 var findSameVal = false;
                                 for (var i = 0; i < proPathVal.length; i++) {
@@ -318,6 +358,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                                         break;
                                     }
                                 }
+
                                 if (!findSameVal) {
                                     proPathVal.push(node.value);
                                 }
@@ -332,6 +373,11 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                                 if (spliceIndex >= 0) {
                                     proPathVal.splice(spliceIndex, 1);
                                 }
+                            }
+
+                            if(proPathValType === 'string'){
+                                //如果是字符串，那么还是要换回字符串
+                                proPathVal = proPathVal.join(',');
                             }
                             $SCOPE.$SET_VAL(proPath, proPathVal);
                         } else {
@@ -434,13 +480,13 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             'nc-src': {
                 'commandName': 'nc-src',//绑定src属性，必须要求有nc-src值，可以避免原生html的src因为表达式出现网络404的问题。
                 'initFunc': function (node, proPath, parentNodePackIds) {
-                    return $SCOPE.$BIND_TXT(node, 'src', parentNodePackIds);
+                    return $SCOPE.$BIND_TXT(node, null, 'src', node.getAttribute('nc-src'), parentNodePackIds);
                 }
             },
             'nc-text': {
                 'commandName': 'nc-text',//可以直接渲染元素的文本
                 'initFunc': function (node, proPath, parentNodePackIds) {
-                    return $SCOPE.$BIND_TXT(node, 'innerHTML', parentNodePackIds);
+                    return $SCOPE.$BIND_TXT(node, null, 'innerHTML', node.getAttribute('nc-text'), parentNodePackIds);
                 }
             },
             'nc-for': {
@@ -572,13 +618,29 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                         'expression': expression,
                         'render': function (expression, val) {
                             if (val) {
-                                if (!this.node.parentNode) {
-                                    if (this.nextSibling) {
-                                        this.parentNode.insertBefore(this.node, this.nextSibling);
-                                    } else {
+                                //不再判断此时this.node是否还具有parentNode，因为这个在ie8下会失效，
+                                //在高版本浏览器正常都已经是this.node.parentNod=null
+                                //而ie8下是this.node.parentNod=HtmlDocument，也就是说，remove掉的节点，还是有parenNode的。
+                                // if (!this.node.parentNode) {
+                                if (this.nextSibling) {
+                                    //2018-9-6 nc-if可能会导致节点的兄弟关系改变，因此需要再次确认是否真的是兄弟节点，才做插入
+                                    var tmpChildNodes = this.parentNode.childNodes;
+                                    var findNextSibling = false;
+                                    for(var nodeIndex=0;nodeIndex<tmpChildNodes.length;nodeIndex++){
+                                        if(tmpChildNodes[nodeIndex] == this.nextSibling){
+                                            this.parentNode.insertBefore(this.node, this.nextSibling);
+                                            findNextSibling = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!findNextSibling){
+                                        //ie8下可能会出现：两个挨着的标签都有nc-if，那么第一个标签会一直存在一个sibling，可是实际上当只有第一个标签显示的时候，他是没有sibling的，ie8就是这样，所以需要反复确认
                                         this.parentNode.appendChild(this.node);
                                     }
+                                } else {
+                                    this.parentNode.appendChild(this.node);
                                 }
+                                // }
                             } else {
                                 if (this.node.parentNode) {
                                     this.node.parentNode.removeChild(this.node);
@@ -595,7 +657,10 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
 
         $SCOPE.$BIND_NODE = function (node, parentNodePackIds) {
-            var attributes = node.attributes;
+            var attributes = [];
+            for(var i=0;i<node.attributes.length;i++){
+                attributes.push(node.attributes[i]);
+            }
             var nodePackIds = '';
             if (attributes && attributes.length > 0) {
                 for (var i = 0; i < attributes.length; i++) {
@@ -610,9 +675,18 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                             }
                             nodePackIds = nodePackIds + nodePackId;
                         }
+                    } else if(nodeName.indexOf('nc-') === 0){
+                        //2018.8.21 换一种方式，渲染原nc-*指令，渲染过程中，进行setAttribute
+                        var nodePackId = $SCOPE.$BIND_TXT(attributes[i], node, nodeName, nodeValue, parentNodePackIds);
+                        if (nodePackId) {
+                            if (nodePackIds.length > 0) {
+                                nodePackIds = nodePackIds + ',';
+                            }
+                            nodePackIds = nodePackIds + nodePackId;
+                        }
                     } else {
                         //将普通属性也作为节点，尝试纯文本解析{{}}
-                        var nodePackId = $SCOPE.$BIND_TXT(attributes[i], 'nodeValue', parentNodePackIds);
+                        var nodePackId = $SCOPE.$BIND_TXT(attributes[i], null, 'nodeValue', nodeValue, parentNodePackIds);
                         if (nodePackId) {
                             if (nodePackIds.length > 0) {
                                 nodePackIds = nodePackIds + ',';
@@ -625,22 +699,14 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             return nodePackIds;
         };
 
-        $SCOPE.$BIND_TXT = function (node, renderType, parentNodePackIds) {
-            var content = '';
-            if (renderType == 'nodeValue') {
-                content = node.nodeValue;
-            } else if (renderType == 'src') {
-                content = node.getAttribute('nc-src');
-            } else if (renderType == 'innerHTML') {
-                content = node.getAttribute('nc-text');
-            }
-            if (!content) {
+        $SCOPE.$BIND_TXT = function (node, parentNode, renderType, renderContent, parentNodePackIds) {
+            if (!renderContent) {
                 return false;
             } else {
-                content = content + '';//转成String
+                renderContent = renderContent + '';//转成String
             }
-            var start = content.indexOf('{{');
-            var end = content.indexOf('}}');
+            var start = renderContent.indexOf('{{');
+            var end = renderContent.indexOf('}}');
             if (start < 0 || end <= 0) {
                 return false;
             }
@@ -649,7 +715,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             var expressionAry = [];
             var stop = false;
             for (; !stop;) {
-                var first = content.substring(0, start);//常量部分
+                var first = renderContent.substring(0, start);//常量部分
                 //##########前面常量部分的保存
                 nodeTxtAry.push({
                     'name': first,
@@ -657,10 +723,11 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                 });
 
                 //##########中间变量部分表达式的解析
-                var second = content.substring(start + 2, end);//{{}}内的部分
-                //转换数组的表达形式
-                second = second.replace(/\[/g, '.');
-                second = second.replace(/\]/g, '');
+                var second = renderContent.substring(start + 2, end);//{{}}内的部分
+                //C001 转换数组的表达形式{
+                //second = second.replace(/\[/g, '.');
+                //second = second.replace(/\]/g, '');
+                //}
                 var filter = '';
                 if (second.indexOf('|') > 0) {
                     filter = second.substring(second.indexOf('|') + 1);
@@ -691,19 +758,19 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
                 nodeTxtAry.push({
                     'name': second,
-                    'value': '',
+                    'value': second.indexOf('.$index')>0?second:'',//对下标变量进行额外过滤，不需要进行变量解析，用原文本进行代替，避免解析过程中出现提前解析
                     'filterParamAry': filterParamAry
                 });
 
                 //##########后面常量部分的保存
-                var content = content.substring(end + 2);
-                start = content.indexOf('{{');
-                end = content.indexOf('}}');
+                var renderContent = renderContent.substring(end + 2);
+                start = renderContent.indexOf('{{');
+                end = renderContent.indexOf('}}');
                 if (start < 0 || end <= 0) {
-                    //如果下面没有需要解析的{{}}了，就结束，把卒后一个content拼接上
+                    //如果下面没有需要解析的{{}}了，就结束，把卒后一个renderContent拼接上
                     nodeTxtAry.push({
-                        'name': content,
-                        'value': content
+                        'name': renderContent,
+                        'value': renderContent
                     });
                     stop = true;
                 }
@@ -713,13 +780,14 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             for (var i = 0; i < expressionAry.length; i++) {
                 var node_nc_id = $SCOPE.$NODE_ID_POINT++;
                 if (node_nc_ids.length > 0) {
-                    node_nc_ids = node_nc_ids + ",";
+                    node_nc_ids = node_nc_ids + ',';
                 }
                 node_nc_ids = node_nc_ids + node_nc_id;
                 $SCOPE.$ADD_V2M_NODE_MAP(expressionAry[i].expression, {
                     'id': node_nc_id,
                     'parentNodePackIds': parentNodePackIds,
                     'node': node,
+                    'parentNode': parentNode,//2018.8.21 如果是nc-的绑定指令，那就会有这个值
                     'expression': expressionAry[i].expression,
                     'render': function (expression, val) {
                         //判断是否是主表达式，如果不是，那么val要改成主表达式的值，val的值，是filter里的参数的
@@ -767,7 +835,18 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
                             renderVal = renderVal + this.nodeTxtAry[j].value;
                         }
-                        this.node[this.renderType] = renderVal;
+                        //2018.7.18 ie8一下没有这个方法,就不支持nc-自定义指令了
+                        if(this.renderType.indexOf('nc-') === 0){
+                            if(this.parentNode.setAttribute){
+                                if(!renderVal && ('#'+renderVal) != '#0'){
+                                    this.parentNode.removeAttribute(this.renderType.substring(3));
+                                }else{
+                                    this.parentNode.setAttribute(this.renderType.substring(3),renderVal);
+                                }
+                            }
+                        }else{
+                            this.node[this.renderType] = renderVal;
+                        }
                     },
                     'mainExpression': expressionAry[i].mainExpression,//这是主表达式
                     'expressionFilter': expressionAry[i].filter,
@@ -798,20 +877,6 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
         $SCOPE.PRO_PATH_CACHE = {};
         $SCOPE.$GET_VAL = function (proPath) {
-            /*var pros = proPath.split('.');
-            var obj = $SCOPE.$DATA;
-            for(var i=0;i<pros.length;i++){
-                if(i == pros.length-1){
-                    //到底了
-                    return obj[pros[i]];
-                }else{
-                    if( obj[pros[i]]){
-                        obj = obj[pros[i]];
-                    }else{
-                        return null;
-                    }
-                }
-            }*/
             try {
                 if ($SCOPE.PRO_PATH_CACHE[proPath] === undefined) {
                     var key = proPath;
@@ -820,14 +885,17 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                     //有可能是 !name
                     //还有可能是 name.something 或者 age-1这样
                     for (var pro in $SCOPE.$DATA_SOLID_COPY) {
-                        if (proPath.indexOf(pro) >= 0) {
+                        //abc  a.abc  a.abc.a  a.abc[1]
+                        var proPathReg = new RegExp('^(.*[^a-zA-Z0-9_])?'+pro+'([^a-zA-Z0-9_].*)?$');//new RegExp('^(.*\\\.)?'+pro+'([\\\)|\\\.|\\\[|\\\+|\\\-|\\\*|\\\/|=|>|<|\\\!|\\\%| ].*)?$');
+                        if (proPathReg.test(proPath)) {
+                        // if (proPath.indexOf(pro) >= 0) {
                             var words = proPath.split(pro);
                             //比如 ' user.name' 按照'user.name'分解会有一个空格和一个'user.name'
                             if (words.length > 1) {
                                 var newProPath = '';
                                 for (var i = 0; i < words.length - 1; i++) {
                                     if (words[i].length > 0) {
-                                        if (words[i].substring(words[i].length - 1) == ".") {
+                                        if (words[i].substring(words[i].length - 1) == '.') {
                                             newProPath = newProPath + words[i] + pro;
                                         } else {
                                             newProPath = newProPath + words[i] + '$SCOPE.$DATA.' + pro;
@@ -872,6 +940,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                 var result = eval(proPath);
                 return result;
             } catch (err) {
+                // console.log(err);
                 return undefined;
             }
         };
@@ -949,52 +1018,8 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                         if ($SCOPE.$V2M_NODE_MAP[proPath][i]['version'] !== version) {
                             keys[proPath] = version;
                             break;
-                        } else {
-                            /*var node = $SCOPE.$V2M_NODE_MAP[proPath][i].node;
-                            if(node.type){
-                                if(node.type.toLowerCase() == 'checkbox'){
-                                    var proPathVal = $SCOPE.$DATA_SOLID_COPY[proPath]['value'];
-                                    if(!proPathVal){
-                                        proPathVal = [];
-                                    }
-                                    if(node.checked){
-                                        var findSameVal = false;
-                                        for(var k=0;k<proPathVal.length;k++){
-                                            if(proPathVal[k]===node.value){
-                                                findSameVal = true;
-                                                break;
-                                            }
-                                        }
-                                        if(!findSameVal){
-                                            proPathVal.push(node.value);
-                                        }
-                                    }else{
-                                        var spliceIndex = -1;
-                                        for(var k=0;k<proPathVal.length;k++){
-                                            if(proPathVal[k]===node.value){
-                                                spliceIndex = k;
-                                                break;
-                                            }
-                                        }
-                                        if(spliceIndex >= 0){
-                                            proPathVal.splice(spliceIndex,1);
-                                        }
-                                    }
-                                    $SCOPE.$SET_VAL(proPath,proPathVal);
-                                }else if(node.type.toLowerCase() == 'radio'){
-                                    if(node.value !== undefined && node.value !== $SCOPE.$DATA_SOLID_COPY[proPath]['value']){
-                                        if(node.checked){
-                                            $SCOPE.$SET_VAL(proPath,node.value);
-                                        }
-                                    }
-                                }else if(node.nodeName.toLowerCase() != 'select'){
-                                    //如果版本相等，但是值不等，那就需要以节点值为准
-                                    if(node.value !== undefined && node.value !== $SCOPE.$DATA_SOLID_COPY[proPath]['value']){
-                                        $SCOPE.$SET_VAL(proPath,node.value);
-                                    }
-                                }
-                            }*/
                         }
+
                         //select元素，很有可能在nc-for对option进行渲染后，会自动改变select的值，自动选中最后一个。
                         //这是不行的，所以必须把值调整回来，调整到正确值。
                         if ($SCOPE.$V2M_NODE_MAP[proPath][i]['node']['nodeName'].toLowerCase() == 'select') {
@@ -1103,8 +1128,8 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                 if ($SCOPE.$NEED_AFTER_RENDER) {
                     //不需要渲染了，那么就执行一次回调，然后等待下次需要渲染的时候再次触发。
                     $SCOPE.$NEED_AFTER_RENDER = false;
-                    if ($AFTER_RENDER) {
-                        $AFTER_RENDER();
+                    for (var afterRenderIndex=0;afterRenderIndex<$AFTER_RENDER_CALLBACK_ARY.length;afterRenderIndex++) {
+                        $AFTER_RENDER_CALLBACK_ARY[afterRenderIndex]();
                     }
                     $SCOPE.timeOut = 100;//不需要渲染了，刷新率降低
                     /*var num=0;
@@ -1117,9 +1142,23 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                     console.log('['+mvvmElementId+']总计:'+num);*/
                 }
                 //#flush周期回调，次数是，每次当flush空闲刷新的时候，都会被回调。
-                if ($AFTER_FLUSH) {
-                    $AFTER_FLUSH();
+                var NEXT_AFTER_FLUSH_CALLBACK_ARY = [];
+                for (var afterFlushIndex=0;afterFlushIndex<$AFTER_FLUSH_CALLBACK_ARY.length;afterFlushIndex++) {
+                    var afterFlushObj = $AFTER_FLUSH_CALLBACK_ARY[afterFlushIndex];
+                    var afterFlushDurTime = new Date().getTime()-afterFlushObj.startTime;
+                    var afterFlushExcuted = false;
+                    if(afterFlushDurTime>afterFlushObj.timeOut){
+                        afterFlushObj.fun();
+                        afterFlushObj.startTime = new Date().getTime();
+                        afterFlushExcuted = true;
+                    }
+                    if(!afterFlushExcuted){
+                        NEXT_AFTER_FLUSH_CALLBACK_ARY.push(afterFlushObj);
+                    }else if(afterFlushObj.repeat){
+                        NEXT_AFTER_FLUSH_CALLBACK_ARY.push(afterFlushObj);
+                    }
                 }
+                $AFTER_FLUSH_CALLBACK_ARY = NEXT_AFTER_FLUSH_CALLBACK_ARY;
 
             }
 
@@ -1127,6 +1166,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
 
         //parentNodePackIds形如 ,1,2,
         $SCOPE.$INIT_MVVM = function (node, parentNodePackIds) {
+            if(!node) return '';
             ///Attribute  nodeType值为2，表示节点属性
             ///Comment    nodeType值为8，表示注释文本
             ///Document   nodeType值为9，表示Document
@@ -1156,7 +1196,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
             //3代表节点为文本
             if (node.nodeType == 3) {
 
-                nodePackIds = $SCOPE.$BIND_TXT(node, 'nodeValue', parentNodePackIds);
+                nodePackIds = $SCOPE.$BIND_TXT(node, null, 'nodeValue', node.nodeValue, parentNodePackIds);
             }
 
             var nodePackIds_4_return = '';
@@ -1197,7 +1237,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
                 if(endTime-startTime > 100){
                     console.log('['+mvvmElementId+']耗时：'+(endTime-startTime)+'ms');
                 }*/
-                $SCOPE.$INTERVAL();
+                if(!$STOP_FLAG) $SCOPE.$INTERVAL();
             }, $SCOPE.timeOut);
         };
         $SCOPE.$INTERVAL();
@@ -1210,7 +1250,7 @@ var $NICE_MVVM = function (mvvmElementId, excludeIds) {
         '$onload': $onload,
         '$onflush': $onflush,
         '$init': $init,
-        '$apply': $apply
+        '$apply': $apply,
+        '$stop': $stop
     };
 };
-

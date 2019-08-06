@@ -49,6 +49,7 @@ public class AxeRestCodeGenerator {
 			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_home/axe_action_$.html",writer);
 			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_home/axe_tns.html",writer);
 			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_home/axe_dao.html",writer);
+			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_home/axe_table.html",writer);
 			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_home/axe_dataSource.html",writer);
 //			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_axe.properties.html",writer);
 //			Html2JavaUtil.convertHtmlCode("src/main/java/org/axe/home/rest/html/axe_refresh_config.html",writer);

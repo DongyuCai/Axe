@@ -45,7 +45,10 @@ public final class AjaxRequestUtil {
         List<FormParam> formParamList = new ArrayList<>();
         formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));
 //        String body = CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
-        String body = StreamUtil.getString(request.getInputStream());
+        String body = "";
+        try {
+        	body=StreamUtil.getString(request.getInputStream());
+		} catch (Exception e) {}
         Map<String,Object> bodyParamMap = null;
     	if(StringUtil.isNotEmpty(body)){
     		body = body.trim();

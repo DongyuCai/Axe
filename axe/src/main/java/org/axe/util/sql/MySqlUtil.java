@@ -24,7 +24,6 @@
 package org.axe.util.sql;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,14 +32,11 @@ import java.util.Properties;
 
 import org.axe.annotation.persistence.ColumnDefine;
 import org.axe.annotation.persistence.Comment;
-import org.axe.annotation.persistence.Id;
-import org.axe.annotation.persistence.Transient;
-import org.axe.annotation.persistence.Unique;
-import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.bean.persistence.SqlPackage;
+import org.axe.bean.persistence.TableSchema;
+import org.axe.bean.persistence.TableSchema.ColumnSchema;
 import org.axe.constant.ConfigConstant;
-import org.axe.constant.IdGenerateWay;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.util.CollectionUtil;
@@ -130,109 +126,108 @@ public final class MySqlUtil {
 		JAVA_TYPE_2_MYSQL_TYPE_MAP.put("[B", "tinyblob");
 	}
 
-	public static String getTableCreateSql(String dataSourceName, Class<?> entityClass) {
-		String tableName = TableHelper.getTableName(entityClass);
-
+	//只是给SchemaHelper用，在框架启动初期，还没有entity对象，只能有entityClass的时候，用于统一建表
+	public static String getTableCreateSql(String dataSourceName, TableSchema tableSchema) {
+		return getTableCreateSql(dataSourceName, tableSchema.getTableName(), tableSchema);
+	}
+	//给DaoAspect在做分片检测、动态建表时候用，此时已经有entity了
+	public static String getTableCreateSql(String dataSourceName, Object entity) throws Exception {
+		TableSchema tableSchema = TableHelper.getTableSchema(entity);
+		//由于是通过entity拿到的表结构，因此getTableName应该是真实的tableName
+		tableSchema.setTableName(TableHelper.getRealTableName(entity));
+		return getTableCreateSql(dataSourceName, tableSchema);
+	}
+	
+	private static String getTableCreateSql(String dataSourceName,String tableName,TableSchema tableSchema){
 		StringBuilder createTableSqlBufer = new StringBuilder();
 		createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS ").append(tableName).append(" (");
-		// #取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
+		
+		List<ColumnSchema> mappingColumnList = tableSchema.getMappingColumnList();
 		// #转类非主键字段到数据库表字段定义
-		List<Field> primaryKeyFieldList = new ArrayList<>();
-		List<Field> normalKeyFieldList = new ArrayList<>();
-		;
-		List<Field> uniqueKeyFieldList = new ArrayList<>();
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-
-			if (field.isAnnotationPresent(Id.class)) {
+		List<ColumnSchema> primaryColumnList = new ArrayList<>();
+		List<ColumnSchema> normalColumnList = new ArrayList<>();
+		List<ColumnSchema> uniqueColumnList = new ArrayList<>();
+		for (ColumnSchema columnSchema:mappingColumnList) {
+			if (columnSchema.getPrimary()) {
 				// #等会儿主键处理
-				primaryKeyFieldList.add(field);
+				primaryColumnList.add(columnSchema);
 			} else {
 				// #普通建处理
-				normalKeyFieldList.add(field);
-				if (field.isAnnotationPresent(Unique.class)) {
+				normalColumnList.add(columnSchema);
+				if (columnSchema.getUnique()) {
 					// #唯一键
-					uniqueKeyFieldList.add(field);
+					uniqueColumnList.add(columnSchema);
 				}
 			}
 		}
 		// #普通建处理
-		for (int i = 0; i < normalKeyFieldList.size(); i++) {
-			Field field = normalKeyFieldList.get(i);
-			String column = StringUtil.camelToUnderline(field.getName());
-			createTableSqlBufer.append(column);
-			String columnDefine = javaType2MysqlColumnDefine(field, true);
+		for (int i = 0; i < normalColumnList.size(); i++) {
+			ColumnSchema columnSchema = normalColumnList.get(i);
+			createTableSqlBufer.append(columnSchema.getColumnName());
+			String columnDefine = javaType2MysqlColumnDefine(columnSchema.getColumnSchema().getField(), true);
 			if (StringUtil.isEmpty(columnDefine)) {
-				throw new RuntimeException(entityClass.getName() + "#[" + field.getName() + "] connot convert to mysql type from " + field.getType().getName());
+				throw new RuntimeException(tableSchema.getEntityClass().getName() + "#[" + columnSchema.getFieldName() + "] connot convert to mysql type from " + columnSchema.getFieldType());
 			}
 			createTableSqlBufer.append(" ").append(columnDefine);
 
-			if (i < normalKeyFieldList.size() - 1) {
+			if (i < normalColumnList.size() - 1) {
 				createTableSqlBufer.append(",");
 			}
 		}
 		// #主键定义
-		if (CollectionUtil.isNotEmpty(primaryKeyFieldList)) {
+		if (CollectionUtil.isNotEmpty(primaryColumnList)) {
 			createTableSqlBufer.append(",");
 
-			for (int i = 0; i < primaryKeyFieldList.size(); i++) {
-				Field primaryKeyField = primaryKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-				createTableSqlBufer.append(column);
-				String columnDefine = javaType2MysqlColumnDefine(primaryKeyField, false);
+			for (int i = 0; i < primaryColumnList.size(); i++) {
+				ColumnSchema columnSchema = primaryColumnList.get(i);
+				createTableSqlBufer.append(columnSchema.getColumnName());
+				String columnDefine = javaType2MysqlColumnDefine(columnSchema.getColumnSchema().getField(), false);
 				if (StringUtil.isEmpty(columnDefine)) {
-					throw new RuntimeException(entityClass.getName() + "#[" + primaryKeyField.getName()
-							+ "] connot convert to mysql type from " + primaryKeyField.getType().getName());
+					throw new RuntimeException(tableSchema.getEntityClass().getName() + "#[" + columnSchema.getFieldName()
+							+ "] connot convert to mysql type from " + columnSchema.getFieldType());
 				}
 				createTableSqlBufer.append(" ").append(columnDefine);
-				if (primaryKeyFieldList.size() == 1) {
-					// #若只有一个@Id主键，那么默认 AUTO_INCREMENT
-					Field field = primaryKeyFieldList.get(0);
-					if (!field.isAnnotationPresent(ColumnDefine.class)) {
-						if (field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)) {
-							createTableSqlBufer.append(" AUTO_INCREMENT");
-						}
+				if (!columnSchema.getColumnSchema().getField().isAnnotationPresent(ColumnDefine.class)) {
+					if (columnSchema.getPrimaryKeyAutoIncrement()) {
+						createTableSqlBufer.append(" AUTO_INCREMENT");
 					}
 				}
 				createTableSqlBufer.append(",");
 			}
 
-			createTableSqlBufer.append("PRIMARY KEY (");
-			for (int i = 0; i < primaryKeyFieldList.size(); i++) {
-				Field primaryKeyField = primaryKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-				createTableSqlBufer.append(column);
-				if (i < primaryKeyFieldList.size() - 1) {
-					createTableSqlBufer.append(",");
-				}
-			}
-			createTableSqlBufer.append(")");
+			createTableSqlBufer.append("PRIMARY KEY (").append(tableSchema.getIdColumns()).append(")");
 
 		}
 
 		// #唯一键约束
-		if (CollectionUtil.isNotEmpty(uniqueKeyFieldList)) {
+		if (CollectionUtil.isNotEmpty(uniqueColumnList)) {
 			createTableSqlBufer.append(",");
 
-			String keyName = tableName + "_uq";
-			createTableSqlBufer.append("UNIQUE KEY " + keyName + " (");
-			for (int i = 0; i < uniqueKeyFieldList.size(); i++) {
-				Field primaryKeyField = uniqueKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-				createTableSqlBufer.append(column);
-				if (i < uniqueKeyFieldList.size() - 1) {
-					createTableSqlBufer.append(",");
-				}
-			}
-			createTableSqlBufer.append(")");
+			createTableSqlBufer.append("UNIQUE KEY ").append(tableName).append("_uq (").append(tableSchema.getUniqueColumns()).append(")");
 		}
+
+		Properties configProps = ConfigHelper.getCONFIG_PROPS();
+		String jdbcCharacter = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_CHARACTER,"utf8");
+		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(jdbcCharacter);
+		String jdbcCollate = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_COLLATE);
+		if (StringUtil.isNotEmpty(jdbcCollate)) {
+			// 如果有校验编码，那么也要
+			createTableSqlBufer.append(" COLLATE=").append(jdbcCollate);
+		}
+
+		return createTableSqlBufer.toString();
+	}
+	
+	public static String getShardingTableCreateSql(String dataSourceName, TableSchema tableSchema) {
+
+		StringBuilder createTableSqlBufer = new StringBuilder();
+		createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS ").append(tableSchema.getTableName()).append("_sharding_gt").append(" (");
+		//分片ID，来自内存计算，不要担心分布式架构或多线程并发下会出现冲突，冲突了也只是覆盖，相反自增才会出现极端情况出现两条新表分片
+		createTableSqlBufer.append("`sharding_flag` int(11) NOT NULL COMMENT '分片ID',");
+		createTableSqlBufer.append("`sharding_table_status` int(11) NOT NULL COMMENT '状态：1.对应的分片数据表可以正常插入 0.不可插入',");
+		createTableSqlBufer.append("`row_count` bigint(20) NOT NULL COMMENT '总计数据条数',");
+		// #主键定义
+		createTableSqlBufer.append("PRIMARY KEY (`sharding_flag`)");
 
 		Properties configProps = ConfigHelper.getCONFIG_PROPS();
 		String jdbcCharacter = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_CHARACTER,"utf8");
@@ -264,100 +259,28 @@ public final class MySqlUtil {
 	}
 
 	public static SqlPackage getInsertSqlPackage(Object entity) {
-		String sql = "INSERT INTO " + TableHelper.getTableName(entity.getClass());
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+		String sql = "INSERT INTO " + TableHelper.getRealTableName(entity);
+		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		StringBuilder columns = new StringBuilder("(");
 		StringBuilder values = new StringBuilder("(");
 		List<Object> params = new ArrayList<>();
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-			columns.append("`").append(column).append("`, ");
+		for (ColumnSchema columnSchema:mappingColumnList) {
+			columns.append("`").append(columnSchema.getColumnName()).append("`, ");
 			values.append("?, ");
-			params.add(ReflectionUtil.invokeMethod(entity, method));
+			params.add(ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod()));
 		}
 		columns.replace(columns.lastIndexOf(", "), columns.length(), ")");
 		values.replace(values.lastIndexOf(", "), values.length(), ")");
 		sql += columns + " VALUES " + values;
 		return new SqlPackage(sql, params.toArray(), null);
 	}
-	
-/*
-	public static SqlPackage getInsertOnDuplicateKeyUpdateSqlPackage(Object entity) {
-		String sql = "INSERT INTO " + TableHelper.getTableName(entity.getClass());
-		// #只取拥有get方法的字段作为数据库映射字段，没有get方法的字段，认为是不需要持久化的字段
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-		// #字段
-		StringBuilder columnsInsert = new StringBuilder("(");
-		StringBuilder valuesInsert = new StringBuilder(" VALUES (");
-		StringBuilder columnsUpdate = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
-		// #占位符的值
-		List<Object> params = new ArrayList<>();
-		boolean hashIdField = false;
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			// # insert
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-
-			columnsInsert.append("`").append(column).append("`, ");
-			valuesInsert.append("?, ");
-			params.add(ReflectionUtil.invokeMethod(entity, method));
-		}
-		columnsInsert.replace(columnsInsert.lastIndexOf(", "), columnsInsert.length(), ")");
-		valuesInsert.replace(valuesInsert.lastIndexOf(", "), valuesInsert.length(), ")");
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			// # update
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			String column = StringUtil.camelToUnderline(field.getName());
-
-			// # update
-			if (!field.isAnnotationPresent(Id.class)) {
-				// #没有@Id注解的字段作为修改内容
-				columnsUpdate.append("`").append(column).append("`").append("=?, ");
-				params.add(ReflectionUtil.invokeMethod(entity, method));
-			} else {
-				hashIdField = true;
-			}
-		}
-		columnsUpdate.replace(columnsUpdate.lastIndexOf(", "), columnsUpdate.length(), " ");
-
-		sql = sql + columnsInsert.toString() + valuesInsert.toString() + columnsUpdate.toString();
-
-		if (!hashIdField) {
-			// 注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
-			throw new RuntimeException("update entity failure!cannot find any field with @Id in " + entity.getClass());
-		}
-		return new SqlPackage(sql, params.toArray(), null);
-	}
-*/
 
 	/**
 	 * 转换占位符 ?1 转换pageConfig占位符
 	 */
 	public static SqlPackage convertGetFlag(String sql, Object[] params, Class<?>[] paramTypes) {
 		// #转换pageConfig
-		SqlPackage sqlPackage = convertPagConfig(sql, params, paramTypes);
+		SqlPackage sqlPackage = convertPagConfig(sql, params, paramTypes,false);
 		return CommonSqlUtil.convertGetFlag(sqlPackage);
 	}
 
@@ -365,7 +288,7 @@ public final class MySqlUtil {
 	 * 转换 分页查询条件 转换有条件，如果params里包含约定位置(末尾)的pageConfig，就转换，如果没有，就不作处理
 	 * 但是，如果有pageConfig但是书写方式不符合约定，会报异常
 	 */
-	public static SqlPackage convertPagConfig(String sql, Object[] params, Class<?>[] paramTypes) {
+	public static SqlPackage convertPagConfig(String sql, Object[] params, Class<?>[] paramTypes,boolean pageTypeIsUnion) {
 		// #检测占位符是否都符合格式
 		// ?后面跟1~9,如果两位数或者更多位,则十位开始可以0~9
 		// 但是只用检测个位就好
@@ -382,7 +305,16 @@ public final class MySqlUtil {
 			PageConfig pageConfig = CommonSqlUtil.getPageConfigFromParams(params, paramTypes);
 			if (pageConfig == null)
 				break;
-
+			//改用直接拼接分页参数
+			if(pageTypeIsUnion){
+				//union模式的内部分页，是limit 0,pageNum*pageSize
+				//TODO:这样有一个问题，大表如果非常大了，那么越往后分页，性能会越差
+				sql = sql + " limit 0,"+(pageConfig.getPageNum()*pageConfig.getPageSize());
+			}else{
+				//非union模式的外部分页，就是limit n1,n2
+				sql = sql + " limit "+pageConfig.getLimitParam1()+","+pageConfig.getLimitParam2();
+			}
+			/* CaiDongyu 2019/2/14 因为改用直接拼接，不在动态改变参数数量和位置
 			if (!getFlagComm && !getFlagSpec) {
 				// 默认这里采用getFlagSpec模式，因为默认情况下，不指定参数位置，会破坏约定，比如分页参数必须是最后一个
 				getFlagSpec = true;
@@ -400,7 +332,7 @@ public final class MySqlUtil {
 				} else if (getFlagSpec) {// ?1
 					sql = sql + " limit ?" + (paramTypes.length) + ",?" + (paramTypes.length + 1);
 				}
-			}
+//			}
 			// 替换params
 			Object[] newParams = new Object[params.length + 1];
 			for (int i = 0; i < newParams.length - 2; i++) {
@@ -408,7 +340,7 @@ public final class MySqlUtil {
 			}
 			newParams[newParams.length - 2] = pageConfig.getLimitParam1();
 			newParams[newParams.length - 1] = pageConfig.getLimitParam2();
-			params = newParams;
+			params = newParams;*/
 		} while (false);
 		return new SqlPackage(sql, params, paramTypes, new boolean[] { getFlagComm, getFlagSpec });
 	}

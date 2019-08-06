@@ -38,31 +38,23 @@ import org.axe.interface_.base.Helper;
 import org.axe.interface_.proxy.Proxy;
 import org.axe.proxy.base.ProxyManger;
 import org.axe.util.ReflectionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 方法拦截助手类
  * @author CaiDongyu on 2016/4/14.
  */
 public final class AopHelper implements Helper{
-    private static final Logger LOGGER = LoggerFactory.getLogger(AopHelper.class);
-
     @Override
-    public void init() {
+    public void init() throws Exception{
     	synchronized (this) {
-    		try {
-                Map<Class<?>,Set<Class<?>>> proxyMap = createProxyMap();
-                Map<Class<?>,List<Proxy>> targetMap = createTargetMap(proxyMap);
-                for (Map.Entry<Class<?>,List<Proxy>> targetEntry:targetMap.entrySet()){
-                    Class<?> targetClass = targetEntry.getKey();
-                    List<Proxy> proxyList = targetEntry.getValue();
-                    //真正的创建目标类的代理对象
-                    Object proxy = ProxyManger.createProxy(targetClass,proxyList);
-                    BeanHelper.setBean(targetClass,proxy);
-                }
-            } catch (Exception e){
-                LOGGER.error("aop failure",e);
+    		Map<Class<?>,Set<Class<?>>> proxyMap = createProxyMap();
+            Map<Class<?>,List<Proxy>> targetMap = createTargetMap(proxyMap);
+            for (Map.Entry<Class<?>,List<Proxy>> targetEntry:targetMap.entrySet()){
+                Class<?> targetClass = targetEntry.getKey();
+                List<Proxy> proxyList = targetEntry.getValue();
+                //真正的创建目标类的代理对象
+                Object proxy = ProxyManger.createProxy(targetClass,proxyList);
+                BeanHelper.setBean(targetClass,proxy);
             }
 		}
     }

@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 MIT License
 
 Copyright (c) 2017 CaiDongyu
@@ -28,11 +28,11 @@ SOFTWARE.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>Bootstrap</title>
+    <title>Api Test</title>
 
     <!-- Bootstrap -->
-    <link href="lib/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
-    <link href="lib/bootstrap/3.3.7/doc.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="api_test?s=lib/doc.min.css&token={{token}}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,13 +48,13 @@ SOFTWARE.
     <!--侧边菜单 -->
     <div id="sidebar_div" class="col-md-3" style="height: {{sidebarHeight}}px;overflow-y: auto;">
       <div class="col-md-12">
-        <input class="form-control" placeholder="过滤" nc-value="sidebarMenuSearch"></input>
+        <input class="form-control" placeholder="Filter" nc-value="sidebarMenuSearch"></input>
       </div>
       <div class="col-md-12">
         <nav class="bs-docs-sidebar" style="padding-left: 0px;">
             <ul class="nav bs-docs-sidenav">
                 <li nc-for="item in sidebarMenuAry" class="{{level_1_index==item.index?'active':''}}">
-                  <a href="javascript:void(0)" nc-text="{{item.index+1}}、{{item.title}}" onclick="clickLevel_1({{item.index}})"></a>
+                  <a href="javascript:void(0)" nc-text="{{item.index+1}}.{{item.title}}" onclick="clickLevel_1({{item.index}})"></a>
                   <ul class="nav">
                     <li nc-for="request in item.requestList" class="{{level_2_index==item.index+'_'+request.index?'active':''}}" onclick="clickLevel_2({{item.index}},{{request.index}})" nc-text="{{request|sidebarMenuConvert}}"></li>
                   </ul>
@@ -68,14 +68,14 @@ SOFTWARE.
     <div id="content_div" class="col-md-9" style="height: {{contentHeight}}px;overflow-y: auto;">
         <!--tab导航区域 -->
         <div id="tab_div" class="col-md-12" style="height: 60px;overflow: hidden;">
-          <dir nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
+          <div nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
             <ul class="nav nav-tabs" >
               <li><a style="padding-left: 0px;" href="javascript:void(0)" onclick="tabScrollLeft()"><span class="glyphicon glyphicon-menu-left"></span></a></li>
             </ul>
-          </dir>
+          </div>
           <div id="tabUlContainer_div" class="{{showArrow?'col-md-10':'col-md-12'}}" style="padding: 0px;overflow-x: auto;height: 100px;">
-            <ul class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
-              <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">首页</a></li>
+            <ul id="tabUlContainer_ul" class="nav nav-tabs" style="width: {{refreshTabs|tabUlWidthFilter}}px;">
+              <li name="tab_li" role="presentation" class="{{refreshTabs|homeTabActiveFilter}}"><a href="javascript:void(0)" onclick="clickHomeTab()">Home</a></li>
               <li id="tab_li_{{tab.level_2_index}}" name="tab_li" role="presentation" class="{{refreshTabs|actionTabActiveFilter:tab}}" nc-for="tab in actions">
                 <a href="javascript:void(0)" onclick="clickTab({{tab.$index}})">
                   <span nc-text="{{tab.requestTitle}} "></span>&nbsp;
@@ -86,48 +86,58 @@ SOFTWARE.
               </li>
             </ul>
           </div>
-          <dir nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
+          <div nc-if="showArrow" class="col-md-1" style="padding: 0px;margin: 0px;">
             <ul class="nav nav-tabs" >
-              <li style="float: right;"><a style="padding-right: 0px;" href="javascript:void(0)" onclick="tabScrollRight()"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+              <li style="float: right;">
+              	<a style="padding-right: 0px;" href="javascript:void(0)" onclick="tabScrollRight()"><span class="glyphicon glyphicon-menu-right"></span></a>
+              </li>
+              <li style="float: right;">
+        		<a style="padding-right:0px;padding-left:0px;" href="javascript:void(0)" onclick="cleanTab()"><span class="glyphicon glyphicon-remove"></span></a>
+              </li>
             </ul>
-          </dir>
+          </div>
         </div>
         
         <!--主要的页面切换区域 -->
         <div id="main_div">
+          <div class="col-md-12" style="display: none;display: {{request?'none':'inline'}};">
+          	<h1>Api Test <small><span>axe inner page.</span></small></h1>
+          	<h5>Email:1157656909@qq.com</h5>
+          </div>
           <div class="col-md-12" style="display: none;display: {{request?'inline':'none'}};">
             <!--名字 -->
             <h4 style="margin-top: 15px;">{{request.controllerTitle}}#{{request.requestTitle}} <small nc-text="{{request.controllerClassName}}#{{request.requestMethodName}}"></small></h4>
-            <h6 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter链（有序）：<br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h6>
-            <h6 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor链（无序）：<br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h6>
+            <h5 nc-if="request.filterList && request.filterList.length > 0" style="margin-top: 5px;">Filter (sorted)<br/><small nc-for="filter in request.filterList"><span nc-text="{{filter}}"></span><br/></small></h5>
+            <h5 nc-if="request.interceptorList && request.interceptorList.length > 0" style="margin-top: 5px;">Interceptor (unsorted) <br/><small nc-for="interceptor in request.interceptorList"><span nc-text="{{interceptor}}"></span><br/></small></h5>
             <!--url区域 -->
-            <div class="input-group" style="margin-top: 15px;">
+            <h5 style="margin-top: 5px;margin-bottom: 5px;">URL <small><span nc-text="{{request.url}}"></span></small></h5>
+            <div class="input-group">
               <div class="input-group-addon">{{request.method}}</div>
-              <input type="text" class="form-control" readonly="true" placeholder="http://xxx..." value="{{request.url}}">
+              <input type="text" class="form-control" nc-value="request.sendUrl">
               <span class="input-group-btn">
                 <button class="btn btn-info" type="button" onclick="{{sendMethod}}()">Send</button>
               </span>
             </div>
             <div nc-if="request.url.indexOf('{') >= 0">
-              <span class="text-danger">此URL中含有参数，参数必填！</span>
+              <span class="text-danger">url param is required!</span>
             </div>
             
             <!--Header -->
             <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;padding-top: 15px;">
               <div class="panel panel-default">
-                <div class="panel-heading">头信息 Headers</div>
+                <div class="panel-heading">Header</div>
                 <table class="table">
                   <tr nc-for="header in request.headerList">
                     <td>
                       <div class="col-md-4">
-                        <input nc-if="header.editable" type="text" class="form-control" placeholder="headerName" nc-value="header.headerName"></input>
-                        <input nc-if="!header.editable" type="text" class="form-control" readonly="true" nc-value="header.headerName"></input>
+                        <input nc-if="header.editable" type="text" class="form-control" placeholder="headerName" nc-value="header.name"></input>
+                        <input nc-if="!header.editable" type="text" class="form-control" readonly="true" nc-value="header.name"></input>
                       </div>
                       <div class="col-md-1" style="padding-top: 6px;text-align: center;">
                         =
                       </div>
                       <div class="col-md-4">
-                        <input type="text" class="form-control" nc-value="header.headerValue" placeholder="headerValue"></input>
+                        <input type="text" class="form-control" nc-value="header.value" placeholder="headerValue"></input>
                       </div>
                       <div class="col-md-1" style="padding-top: 6px;text-align: center;">
                         
@@ -145,51 +155,30 @@ SOFTWARE.
             </div>
 
             <!--Reuest Param -->
-            <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;padding-top: 15px;">
+            <div class="col-md-12" style="padding-left: 0px;padding-right: 0px;">
+              <hr style="margin-top: 0px;"></hr>
               <div class="panel panel-default">
-                <div class="panel-heading">参数 Reuest Parameter</div>
-                <!--一般的参数列表，不含文件上传，是不走这个form的 -->
-                <form id="requestForm_form" method="{{request.method}}">
-                  <table class="table">
-                    <tbody>
-                      <tr nc-for="param in request.requestParamList">
-                        <td>
-                          <div class="col-md-4">
-                            <input nc-if="param.editable" type="text" class="form-control" placeholder="paramName" nc-value="param.paramName"></input>
-                            <input nc-if="!param.editable" type="text" class="form-control" readonly="true" nc-value="param.paramName"></input>
-                          </div>
-                          <div class="col-md-1" style="padding-top: 6px;text-align: center;">
-                            =
-                          </div>
-                          <div class="col-md-4">
-                            <input name="{{param.paramName}}" nc-if="param.type != 'FileParam'" type="text" class="form-control" placeholder="{{param.type}}" nc-value="param.paramValue"></input>
-                            <input name="{{param.paramName}}" nc-if="param.type == 'FileParam'" type="file" class="form-control"></input>
-                          </div>
-                          <div class="col-md-1" style="padding-top: 6px;text-align: center;">
-                            <p class="text-info" nc-if="param.required">必</p>
-                          </div>
-                          <div class="col-md-1" style="padding-right: 0px;text-align: right;">
-                            <button nc-if="!param.required" class="btn btn-default" onclick="delRequestParam({{param.$index}})">×</button>
-                          </div>
-                          <div class="col-md-1" >
-                            <button class="btn btn-default" onclick="addRequestParam({{param.$index}})">+</button>
-                          </div>
-                          <div class="col-md-12" nc-text="<b>{{param.desc}}</b>"></div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </form>
+                <div class="panel-heading">Reuest Parameter Body</div>
+				<div class="panel-body">
+                  <pre style="height: 200px;" class="col-md-6">{{request.requestParamBodyFormat_str}}</pre>
+                  <textarea id="request_requestParamBody_str" style="resize:none;overflow:auto;height: 200px;" class="col-md-6"></textarea>
+                </div>     
               </div>
             </div>
 
             <!--Response -->
-            <div nc-if="request.sendUrl" class="col-md-12" style="padding-left:0px;padding-right: 0px;">
-              <hr></hr>
-              <div class="panel panel-default">
-                <div class="panel-heading">响应 Response <span class="text-primary" nc-text="来自：{{request.sendUrl}}"></span></div>
-                <div class="panel-body" nc-if="request.response || request.response+'#' == '0#'">
-                  <pre nc-text="{{request.response}}"></pre>
+            <div class="col-md-12" style="padding-left:0px;padding-right: 0px;">
+              <hr style="margin-top: 0px;"></hr>
+              <div class="input-group" style="margin-top: 15px;">
+              <div class="input-group-addon">Response</div>
+	             <input type="text" class="form-control" nc-value="request.sendUrl">
+	             <span class="input-group-btn">
+	               <button class="btn btn-info" type="button" onclick="{{sendMethod}}(prompt('set request times','1'))">Again</button>
+	             </span>
+              </div>
+              <div nc-if="request.response || request.response+'#' == '0#'" class="panel panel-default">
+                <div class="panel-body">
+                  	<pre nc-text="{{request.response}}"></pre>
                 </div>
               </div>
             </div>
@@ -198,15 +187,14 @@ SOFTWARE.
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="lib/jquery/1.12.4/jquery.min.js"></script>
-    <script src="lib/jquery-form/jquery.form.min.js"></script>
+    <script src="api_test?s=lib/jquery.min.js&token={{token}}"></script>
+    <script src="api_test?s=lib/jquery.form.min.js&token={{token}}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="lib/bootstrap/3.3.7/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- nice mvvm -->
-    <script src="lib/nice-mvvm/nice-mvvm.js"></script>
+    <script src="api_test?s=lib/nice-mvvm.js&token={{token}}"></script>
     <!-- ajax -->
-    <script src="js/config.js"></script>
-    <script src="js/requestUtil.js"></script>
+    <script src="api_test?s=js/request_util.js&token={{token}}"></script>
 
     <script>
       'use strict';
@@ -219,7 +207,7 @@ SOFTWARE.
         $scope.level_1_index = -1;//选择的第一级菜单
         $scope.level_2_index = '';//选择的第二级菜单，由第一级加第二级组成比如1_1
         $scope.sidebarMenuAry = [];
-        $scope.sidebarMenuAryFull = {};
+        $scope.sidebarMenuAryFull = [];
         $scope.sidebarMenuSearch = '';
 
         MVVM_SIDEBAR.$onflush(function(){
@@ -257,14 +245,8 @@ SOFTWARE.
           }
         });
 
-
-
         MVVM_SIDEBAR.$init();
 
-        //加载api列表，作为左侧菜单树
-        $.get(API_BASE_DOMAIN+"/api_test",null,null,function(data){
-          $scope.sidebarMenuAryFull = data;
-        });
         return $scope;
       }
       var $scope_sidebar = initSidebar();//初始化
@@ -302,16 +284,25 @@ SOFTWARE.
 
         //给主要区域赋请求对象
         $scope_main.request = action;
-        if(action.requestParamList.length <= 0){
-          action.requestParamList.push({
-            editable:true
-          });
+        if(!$scope_main.request['sendUrl']){
+        	$scope_main.request['sendUrl'] = $scope_main.request.url;
         }
+        if(!$scope_main.request.requestParamBodyFormat_str){
+	        $scope_main.request.requestParamBodyFormat_str = JSON.stringify($scope_main.request.requestParamBodyFormat,null,2);
+        }
+        if(!$scope_main.request.requestParamBody_str){
+	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
+        }
+        $("#request_requestParamBody_str").text($scope_main.request.requestParamBody_str);
+        $("#request_requestParamBody_str").val($scope_main.request.requestParamBody_str);
         if(action.headerList.length <= 0){
           action.headerList.push({
             editable:true
           });
         }
+        
+        //缓存
+        localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
       }
 
       //菜单选项的渲染器
@@ -346,7 +337,9 @@ SOFTWARE.
       function  initTab(){
         var MVVM_TAB = $NICE_MVVM('tab_div');
         var $scope = MVVM_TAB.$scope;
-        $scope.actions = [];//选择的第二级菜单，这个和打开的tab页对应
+
+        $scope.actions = []//选择的第二级菜单，这个和打开的tab页对应
+        
         $scope.refreshTabs = 0;//触发导航条渲染的计数器
         $scope.showArrow = false;//是否显示左右箭头
 
@@ -376,6 +369,17 @@ SOFTWARE.
 
           //给主要区域赋请求对象
           $scope_main.request = $scope_tab.actions[tabIndex];
+          if(!$scope_main.request['sendUrl']){
+          	$scope_main.request['sendUrl'] = $scope_main.request.url;
+          }
+          if(!$scope_main.request.requestParamBodyFormat_str){
+  	        $scope_main.request.requestParamBodyFormat_str = JSON.stringify($scope_main.request.requestParamBodyFormat,null,2);
+          }
+          if(!$scope_main.request.requestParamBody_str){
+  	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
+          }
+          $("#request_requestParamBody_str").text($scope_main.request.requestParamBody_str);
+	      $("#request_requestParamBody_str").val($scope_main.request.requestParamBody_str);
         }else{
            $scope_sidebar.level_2_index = '';
            $scope_sidebar.level_1_index = -1;
@@ -383,6 +387,7 @@ SOFTWARE.
            //给主要区域赋请求对象
            $scope_main.request = null;
         }
+        
       }
 
       function closeTab(tabIndex,ev){
@@ -395,7 +400,6 @@ SOFTWARE.
               
         if($scope_tab.actions[tabIndex].level_2_index != $scope_sidebar.level_2_index){
           $scope_tab.actions.splice(tabIndex,1);//删除这个
-          return false;//如果关闭的tab页不是选中的那个，那么不做换页处理
         }else{
           $scope_tab.actions.splice(tabIndex,1);//删除这个
           if(tabIndex <= 0){
@@ -421,10 +425,40 @@ SOFTWARE.
           //给主要区域赋请求对象
           if($scope_sidebar.level_2_index){
             $scope_main.request = $scope_sidebar.sidebarMenuAryFull[$scope_sidebar.level_1_index]['requestList'][$scope_sidebar.level_2_index.split('_')[1]];
+            if(!$scope_main.request['sendUrl']){
+            	$scope_main.request['sendUrl'] = $scope_main.request.url;
+            }
+            if(!$scope_main.request.requestParamBodyFormat_str){
+    	        $scope_main.request.requestParamBodyFormat_str = JSON.stringify($scope_main.request.requestParamBodyFormat,null,2);
+            }
+            if(!$scope_main.request.requestParamBody_str){
+    	        $scope_main.request.requestParamBody_str = JSON.stringify($scope_main.request.requestParamBody,null,2);
+            }
+            $("#request_requestParamBody_str").text($scope_main.request.requestParamBody_str);
+	        $("#request_requestParamBody_str").val($scope_main.request.requestParamBody_str);
           }
         }
+        
+        //缓存
+        localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
         return false;
       }
+      
+      function cleanTab(){
+          if(confirm("确定关闭所有页面？")){
+        	  $scope_tab.refreshTabs++;//通知tab导航栏刷新
+              
+              $scope_tab.actions.splice(0, $scope_tab.actions.length);
+              $scope_sidebar.level_1_index=-1;
+              $scope_sidebar.level_2_index='';
+              $scope_main.request = null;
+              $("#tabUlContainer_div").scrollLeft(0);
+              
+              //缓存
+              localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
+          }
+          return false;
+        }
 
       function tabUlWidthFilter(refreshTabs){
         var tab_li_ary = $("li[name='tab_li']");
@@ -436,6 +470,7 @@ SOFTWARE.
           //ul的宽度超过父div的宽度，那么会出现滚动条，这时候就需要左右箭头了。
           $scope_tab.showArrow = true;
         }else{
+          width = $("#tabUlContainer_div").width();
           $scope_tab.showArrow = false;
         }
         return width;
@@ -460,20 +495,13 @@ SOFTWARE.
       function initMain(){
         var MVVM_MAIN = $NICE_MVVM("main_div");
         var $scope = MVVM_MAIN.$scope;
-
+		
         $scope.request = null;//请求对象
+        
         $scope.sendMethod = 'sendAjaxRequest';//默认是普通请求，如果有文件参数，那就是sendFormRequest
 
         MVVM_MAIN.$init();
         
-        MVVM_MAIN.$watch('request.requestParamList',function(requestParamList){
-          $scope.sendMethod = 'sendAjaxRequest';
-          for(var i=0;requestParamList && i<requestParamList.length;i++){
-            if(requestParamList[i] && requestParamList[i].type && requestParamList[i].type == 'FileParam'){
-              $scope.sendMethod = 'sendFormRequest';
-            }
-          }
-        });
         MVVM_MAIN.$watch('request.response',function(response){
           console.log(response);
         });
@@ -506,73 +534,44 @@ SOFTWARE.
         });
       }
 
-      function delRequestParam(index){
-        $scope_main.request.requestParamList.splice(index,1);
-        if($scope_main.request.requestParamList.length <= 0){
-          $scope_main.request.requestParamList.push({
-            editable:true
-          });
-        }
-      }
-
-      function addRequestParam(index){
-        $scope_main.request.requestParamList.splice(index+1,0,{
-          paramName:'',
-          paramValue:'',
-          editable:true
-        });
-      }
-
-      function sendAjaxRequest(){
+      function sendAjaxRequest(repeatNum){
+    	
         $scope_main.request['response'] = '';
-
-        var url = $scope_main.request.url;
-        var data = {};
-        for(var i=0;i<$scope_main.request.requestParamList.length;i++){
-          var param = $scope_main.request.requestParamList[i];
-          if(param.paramValue || param.paramValue+"#" == '0#'){
-            //替换url中的参数
-            if(url.indexOf('{'+param.paramName+'}') >= 0){
-              var paramReg =  new RegExp('\\{'+param.paramName+'\\}','g');
-              url = url.replace(paramReg,param.paramValue);
-            }else{
-              data[param.paramName] = param.paramValue;
-            }
-          }
-        }
-
-        $scope_main.request['sendUrl'] = url;
-
+	
+        $scope_main.request.requestParamBody_str = $("#request_requestParamBody_str").val();
+        var data = JSON.parse($scope_main.request.requestParamBody_str);
+        var url = $scope_main.request['sendUrl'];
+        
         var headers = {};
         for(var i=0;i<$scope_main.request.headerList.length;i++){
           var header = $scope_main.request.headerList[i];
-          if(header.headerValue || header.headerValue+"#" == '0#'){
-            headers[header.headerName] = header.headerValue;
+          if(header.value || header.value+"#" == '0#'){
+            headers[header.name] = header.value;
           }
         }
 
-        if($scope_main.request.method == 'POST'){
-          $.post(url,data,headers,successCallback,errorCallback);
-        }else if($scope_main.request.method == 'DELETE'){
-          $.delete(url,data,headers,successCallback,errorCallback);
-        }else if($scope_main.request.method == 'PUT'){
-          $.put(url,data,headers,successCallback,errorCallback);
-        }else if($scope_main.request.method == 'GET'){
-          //get的话，展示用的参数要拼接到后面
-          for(var key in data){
-            if($scope_main.request['sendUrl'] == url){
-              $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"?";
-            }else{
-              $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+"&";
-            }
-            $scope_main.request['sendUrl'] = $scope_main.request['sendUrl']+key+"="+data[key];
-          }
-          $.get(url,data,headers,successCallback,errorCallback);
+        repeatNum = isNaN(repeatNum)?1:repeatNum;
+        for(var i=0;i<repeatNum;i++){
+			if($scope_main.request.method == 'POST'){
+		       $.post(url,data,headers,successCallback,errorCallback);
+		    }else if($scope_main.request.method == 'DELETE'){
+		       $.delete(url,data,headers,successCallback,errorCallback);
+		    }else if($scope_main.request.method == 'PUT'){
+		       $.put(url,data,headers,successCallback,errorCallback);
+		    }else if($scope_main.request.method == 'GET'){
+		       $.get(url,data,headers,successCallback,errorCallback);
+		    }
         }
+        
+        //缓存
+        localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
       }
 
       function successCallback(result){
         $scope_main.request['response'] = JSON.stringify(result,null,2);
+        
+        //缓存
+        localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
       }
 
       function errorCallback(XMLHttpRequest, textStatus, errorThrown){
@@ -593,30 +592,20 @@ SOFTWARE.
           }
         }
         
+        //缓存
+        localStorage.setItem('$scope_tab.actions',JSON.stringify($scope_tab.actions));
       }
 
       function sendFormRequest(){
         $scope_main.request['response'] = '';
-
-        var url = $scope_main.request.url;
-        for(var i=0;i<$scope_main.request.requestParamList.length;i++){
-          var param = $scope_main.request.requestParamList[i];
-          if(param.paramValue || param.paramValue+"#" == '0#'){
-            //替换url中的参数
-            if(url.indexOf('{'+param.paramName+'}') >= 0){
-              var paramReg =  new RegExp('\\{'+param.paramName+'\\}','g');
-              url = url.replace(paramReg,param.paramValue);
-            }
-          }
-        }
-
-        $scope_main.request['sendUrl'] = url;
-
+        
+        var url = $scope_main.request['sendUrl'];
+        
         var headers = {};
         for(var i=0;i<$scope_main.request.headerList.length;i++){
           var header = $scope_main.request.headerList[i];
-          if(header.headerValue || header.headerValue+"#" == '0#'){
-            headers[header.headerName] = header.headerValue;
+          if(header.value || header.value+"#" == '0#'){
+            headers[header.name] = header.value;
           }
         }
 
@@ -639,6 +628,20 @@ SOFTWARE.
       }
 
       var $scope_content = initContent();
+      
+      
+      //初始化数据
+      //加载api列表，作为左侧菜单树
+      $.get("api_test/api_list?token={{token}}",null,null,function(data){
+        $scope_sidebar.sidebarMenuAryFull = data;
+        
+      	//缓存
+      	var actions = localStorage.getItem('$scope_tab.actions');
+      	if(actions && actions.length > 0){
+      		$scope_tab.actions = JSON.parse(actions);
+      		clickTab(-1);
+      	}
+      });
     </script>
   </body>
 </html>

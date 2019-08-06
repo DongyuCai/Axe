@@ -42,7 +42,7 @@ public final class InterceptorHelper implements Helper{
 	private static Map<Class<? extends Interceptor>,Interceptor> INTERCEPTOR_MAP;//不保证顺序
 	
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			INTERCEPTOR_MAP = new HashMap<>();
 			Set<Class<?>> interceptorClassSet = ClassHelper.getClassSetBySuper(Interceptor.class);

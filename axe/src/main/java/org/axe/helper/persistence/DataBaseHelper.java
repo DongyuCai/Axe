@@ -38,12 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.axe.annotation.persistence.Id;
-import org.axe.annotation.persistence.Transient;
 import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.InsertResult;
+import org.axe.bean.persistence.SqlExecutor;
 import org.axe.bean.persistence.SqlPackage;
-import org.axe.constant.IdGenerateWay;
+import org.axe.bean.persistence.TableSchema.ColumnSchema;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.CastUtil;
@@ -68,7 +67,7 @@ public final class DataBaseHelper implements Helper{
     private static ThreadLocal<HashMap<String,Connection>> CONNECTION_HOLDER;
     
     @Override
-    public void init() {
+    public void init() throws Exception{
     	synchronized (this) {
     		//#数据库连接池
             CONNECTION_HOLDER = new ThreadLocal<>();
@@ -129,7 +128,7 @@ public final class DataBaseHelper implements Helper{
     			if(con == null) break;
 				if(!con.isClosed()){
 					con.close();
-					LOGGER.debug("release connection of dataSource["+dataSourceName+"]:"+con);
+//					LOGGER.debug("release connection of dataSource["+dataSourceName+"]:"+con);
 				}
     		}while(false);
 		} catch (SQLException e) {
@@ -146,7 +145,7 @@ public final class DataBaseHelper implements Helper{
 				}
 				if(isAllConClosed){
 					CONNECTION_HOLDER.remove();
-					LOGGER.debug("clean CONNECTION_HOLDER");
+//					LOGGER.debug("clean CONNECTION_HOLDER");
 				}
 			}
         }
@@ -155,7 +154,15 @@ public final class DataBaseHelper implements Helper{
     /**
      * sql前去数据库路上的终点站，出了这个方法，就是奈何桥了。
      */
-    private static PreparedStatement getPrepareStatement(String dataSourceName,Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
+    private static SqlExecutor getPrepareStatement(String dataSourceName,Connection conn, String sql, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
+		// #空格格式化，去掉首位空格，规范中间的空格{
+//		sql = sql.trim();
+		while (sql.contains("  ")) {
+			sql = sql.replaceAll("  ", " ");
+		}
+		sql = sql.trim();
+		// }
+    	
     	SqlPackage sp = null;
     	if(DataSourceHelper.isMySql(dataSourceName)){
     		sp = MySqlUtil.convertGetFlag(sql, params, paramTypes);
@@ -163,12 +170,6 @@ public final class DataBaseHelper implements Helper{
     		sp = OracleUtil.convertGetFlag(sql, params, paramTypes);
     	}
     	
-    	//半路杀出个“程咬金”
-    	/*if(sqlCyj != null){
-    		sp = sqlCyj.robSqlPackage(sp);
-    	}*/
-    	//打印调试sql
-    	CommonSqlUtil.debugSql(dataSourceName,sp);
     	PreparedStatement ps = null;
     	if(RETURN_GENERATED_KEYS){
     		ps = conn.prepareStatement(sp.getSql(), Statement.RETURN_GENERATED_KEYS);
@@ -178,11 +179,20 @@ public final class DataBaseHelper implements Helper{
     	for(int parameterIndex=1;parameterIndex<=sp.getParams().length;parameterIndex++){
     		ps.setObject(parameterIndex, sp.getParams()[parameterIndex-1]);
     	}
-    	return ps;
+    	return new SqlExecutor(dataSourceName,sp,ps);
+    }
+    private static SqlExecutor[] getPrepareStatement(String dataSourceName,Connection conn, String[] sqlAry, Object[] params, Class<?>[] paramTypes,boolean RETURN_GENERATED_KEYS) throws SQLException{
+    	SqlExecutor[] sqlExecutorAry = new SqlExecutor[sqlAry.length];
+    	for(int i=0;i<sqlAry.length;i++){
+        	sqlExecutorAry[i] = getPrepareStatement(dataSourceName, conn, sqlAry[i], params, paramTypes, RETURN_GENERATED_KEYS);
+    	}
+    	
+    	
+    	return sqlExecutorAry;
     }
     
     public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-    	   String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
+    	   String dataSourceName = TableHelper.getTableSchema(entityClass).getDataSourceName();
     	   return queryEntityList(entityClass, sql, params, paramTypes, dataSourceName);
     }
     
@@ -194,8 +204,8 @@ public final class DataBaseHelper implements Helper{
         List<T> entityList = new ArrayList<>();
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName, conn, sql, params, paramTypes, false);
-        	ResultSet table = ps.executeQuery();
+        	SqlExecutor se = getPrepareStatement(dataSourceName, conn, sql, params, paramTypes, false);
+        	ResultSet table = se.readyExecuteStatement().executeQuery();
         	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
 			Set<String> transientField = new HashSet<>();
         	while(table.next()){
@@ -205,12 +215,6 @@ public final class DataBaseHelper implements Helper{
 					String fieldName = field.getName();
 					if(transientField.contains(fieldName)){
 						continue;
-					}
-					if(field.isAnnotationPresent(Transient.class)){
-						if(!field.getAnnotation(Transient.class).query()){
-							transientField.add(fieldName);
-							continue;
-						}
 					}
 					Method method = entityFieldMethod.getMethod();
 					String columnName = StringUtil.camelToUnderline(fieldName);
@@ -229,7 +233,7 @@ public final class DataBaseHelper implements Helper{
 				entityList.add(entity);
 			}
 			table.close();
-			ps.close();
+			se.close();
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
             throw e;
@@ -242,7 +246,7 @@ public final class DataBaseHelper implements Helper{
     }
 
 	public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-        String dataSourceName = TableHelper.getTableDataSourceName(entityClass);
+        String dataSourceName = TableHelper.getTableSchema(entityClass).getDataSourceName();
         return queryEntity(entityClass, sql, params, paramTypes, dataSourceName);
 	}
 	
@@ -254,19 +258,14 @@ public final class DataBaseHelper implements Helper{
         T entity = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
-        	ResultSet table = ps.executeQuery();
+        	SqlExecutor se =  getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
+        	ResultSet table = se.readyExecuteStatement().executeQuery();
         	if(table.next()){
     			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getSetMethodList(entityClass);
     			entity = ReflectionUtil.newInstance(entityClass);
     			for(EntityFieldMethod entityFieldMethod:entityFieldMethodList){
 					Field field = entityFieldMethod.getField();
 					String fieldName = field.getName();
-					if(field.isAnnotationPresent(Transient.class)){
-						if(!field.getAnnotation(Transient.class).query()){
-							continue;
-						}
-					}
 					Method method = entityFieldMethod.getMethod();
 					String columnName = StringUtil.camelToUnderline(fieldName);
 					try {
@@ -283,7 +282,7 @@ public final class DataBaseHelper implements Helper{
 				}
 			}
 			table.close();
-			ps.close();
+			se.close();
         } catch (SQLException e) {
             LOGGER.error("query entity failure", e);
             throw e;
@@ -296,7 +295,7 @@ public final class DataBaseHelper implements Helper{
     }
 
     public static List<Map<String, Object>> queryList(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-        String dataSourceName = TableHelper.getTableDataSourceName(null);
+        String dataSourceName = DataSourceHelper.getDefaultDataSourceName();
     	return queryList(sql, params, paramTypes, dataSourceName);
     }
     
@@ -308,8 +307,8 @@ public final class DataBaseHelper implements Helper{
         List<Map<String, Object>> result = new ArrayList<>();
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
-        	ResultSet table = ps.executeQuery();
+        	SqlExecutor se =  getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
+        	ResultSet table = se.readyExecuteStatement().executeQuery();
         	ResultSetMetaData rsmd = table.getMetaData();
 			while(table.next()){
 				Map<String, Object> row = new HashMap<>();
@@ -319,7 +318,7 @@ public final class DataBaseHelper implements Helper{
 				result.add(row);
 			}
 			table.close();
-			ps.close();
+			se.close();
         } catch (SQLException e) {
             LOGGER.error("execute queryList failure", e);
             throw e;
@@ -331,10 +330,10 @@ public final class DataBaseHelper implements Helper{
         return result;
     }
     
-    public static Map<String, Object> queryMap(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+    /*public static Map<String, Object> queryMap(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
         String dataSourceName = TableHelper.getTableDataSourceName(null);
         return queryMap(sql, params, paramTypes, dataSourceName);
-    }
+    }*/
     
     /**
      * 执行单条查询
@@ -344,8 +343,8 @@ public final class DataBaseHelper implements Helper{
         Map<String, Object> result = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
-        	ResultSet table = ps.executeQuery();
+        	SqlExecutor se =  getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
+        	ResultSet table = se.readyExecuteStatement().executeQuery();
         	ResultSetMetaData rsmd = table.getMetaData();
         	if(table.next()){
         		result = new HashMap<>();
@@ -354,7 +353,7 @@ public final class DataBaseHelper implements Helper{
 	        	}
 			}
 			table.close();
-			ps.close();
+			se.close();
         } catch (SQLException e) {
             LOGGER.error("execute queryMap failure", e);
             throw e;
@@ -366,10 +365,10 @@ public final class DataBaseHelper implements Helper{
         return result;
     }
 
-	public static <T> T queryPrimitive(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+	/*public static <T> T queryPrimitive(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
     	String dataSourceName = TableHelper.getTableDataSourceName(null);
     	return queryPrimitive(sql, params, paramTypes, dataSourceName);
-	}
+	}*/
 
     /**
      * 执行返回结果是基本类型的查询
@@ -380,8 +379,8 @@ public final class DataBaseHelper implements Helper{
     	T result = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
-        	ResultSet table = ps.executeQuery();
+        	SqlExecutor se =  getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
+        	ResultSet table = se.readyExecuteStatement().executeQuery();
         	if(table.next()){
             	ResultSetMetaData rsmd = table.getMetaData();
             	if(rsmd.getColumnCount() > 0);
@@ -389,7 +388,7 @@ public final class DataBaseHelper implements Helper{
 			}
         	
 			table.close();
-			ps.close();
+			se.close();
         } catch (SQLException e) {
             LOGGER.error("execute queryPrimitive failure", e);
             throw e;
@@ -403,7 +402,7 @@ public final class DataBaseHelper implements Helper{
     
 
 	public static long countQuery(String sql, Object[] params, Class<?>[] paramTypes) {
-		String dataSourceName = TableHelper.getTableDataSourceName(null);
+		String dataSourceName = DataSourceHelper.getDefaultDataSourceName();
 		return countQuery(sql, params, paramTypes, dataSourceName);
 	}
 	
@@ -426,22 +425,24 @@ public final class DataBaseHelper implements Helper{
         return result;
     }
     
-    public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-        String dataSourceName = TableHelper.getTableDataSourceName(null);
-        return executeUpdate(sql, params, paramTypes, dataSourceName);
+    public static int executeUpdate(String[] sqlAry, Object[] params, Class<?>[] paramTypes) throws SQLException {
+        String dataSourceName = DataSourceHelper.getDefaultDataSourceName();
+        return executeUpdate(sqlAry, params, paramTypes, dataSourceName);
     }
 
     /**
      * 执行更新语句 （包括 update、delete）
      * @throws SQLException 
      */
-    public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
+    public static int executeUpdate(String[] sqlAry, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
         int rows = 0;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
-        	rows = ps.executeUpdate();
-			ps.close();
+        	SqlExecutor[] seAry =  getPrepareStatement(dataSourceName,conn, sqlAry, params, paramTypes, false);
+        	for(int i=0;i<seAry.length;i++){
+        		rows = rows+seAry[i].readyExecuteStatement().executeUpdate();
+        		seAry[i].close();
+        	}
         } catch (SQLException e) {
             LOGGER.error("execute update failure", e);
             throw e;
@@ -468,14 +469,10 @@ public final class DataBaseHelper implements Helper{
         Object generatedKey = null;
         Connection conn = getConnection(dataSourceName);
         try {
-        	PreparedStatement ps = getPrepareStatement(dataSourceName, conn, sql, params, paramTypes, true);
-        	rows = ps.executeUpdate();
-        	ResultSet rs = ps.getGeneratedKeys();
-        	if(rs.next()){
-        		generatedKey = rs.getObject(1);
-        	}
-        	rs.close();
-			ps.close();
+        	SqlExecutor se =  getPrepareStatement(dataSourceName, conn, sql, params, paramTypes, true);
+        	rows = se.readyExecuteStatement().executeUpdate();
+        	generatedKey = se.getGeneratedKeys();
+			se.close();
         } catch (SQLException e) {
             LOGGER.error("execute insert failure", e);
             throw e;
@@ -489,7 +486,7 @@ public final class DataBaseHelper implements Helper{
 
 
     public static <T> T insertEntity(T entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
     	return insertEntity(entity, dataSourceName);
     }
     
@@ -517,16 +514,15 @@ public final class DataBaseHelper implements Helper{
     			generatedKey = queryPrimitive(OracleUtil.getGenerateIdSql(entity), new Object[0], new Class<?>[0],dataSourceName);
     		}
     		if(generatedKey != null){
-    			List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
-    			for(EntityFieldMethod entityFieldMethod : entityFieldMethodList){
-    				Field field = entityFieldMethod.getField();
-    				if(field.isAnnotationPresent(Id.class) && field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)){
-    					Method method = entityFieldMethod.getMethod();
+    			List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+    			for(ColumnSchema columnSchema : mappingColumnList){
+    				if(columnSchema.getPrimary() && columnSchema.getPrimaryKeyAutoIncrement()){
+    					Method method = columnSchema.getColumnSchema().getMethod();
     					Object idValue = ReflectionUtil.invokeMethod(entity, method);
     					if(idValue == null){
     						//如果id字段没有值，就用返回的自增主键赋值
-    						Object setMethodArg = CastUtil.castType(generatedKey,field.getType());
-    						ReflectionUtil.setField(entity, field, setMethodArg);
+    						Object setMethodArg = CastUtil.castType(generatedKey,columnSchema.getColumnSchema().getField().getType());
+    						ReflectionUtil.setField(entity, columnSchema.getColumnSchema().getField(), setMethodArg);
     					}
     					break;
     				}
@@ -539,7 +535,7 @@ public final class DataBaseHelper implements Helper{
     
 
     public static int updateEntity(Object entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
     	return updateEntity(entity, dataSourceName);
     }
 
@@ -551,12 +547,12 @@ public final class DataBaseHelper implements Helper{
     	if(entity == null)
     		throw new RuntimeException("updateEntity failure, updateEntity param is null!");
         SqlPackage sp = CommonSqlUtil.getUpdateSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
+        return executeUpdate(new String[]{sp.getSql()}, sp.getParams(), sp.getParamTypes(), dataSourceName);
     }
     
 
     public static <T> T insertOnDuplicateKeyEntity(T entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
     	return insertOnDuplicateKeyEntity(entity, dataSourceName);
     }
     
@@ -568,21 +564,13 @@ public final class DataBaseHelper implements Helper{
     	if(entity == null)
     		throw new RuntimeException("insertOnDuplicateKeyEntity failure, insertOnDuplicateKeyEntity param is null!");
         
-    	List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+    	List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
     	boolean findId = false;
     	boolean idValueIsOk = true;
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			Method method = entityFieldMethod.getMethod();
-			if (field.isAnnotationPresent(Id.class)) {
+		for (ColumnSchema columnSchema:mappingColumnList) {
+			if (columnSchema.getPrimary()) {
 				findId = true;//是否有@Id
-				Object value = ReflectionUtil.invokeMethod(entity, method);
+				Object value = ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod());
 				if(value == null){
 					idValueIsOk = false;
 				}
@@ -602,7 +590,7 @@ public final class DataBaseHelper implements Helper{
     }
 
     public static int deleteEntity(Object entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
     	return deleteEntity(entity,dataSourceName);
     }
 
@@ -614,12 +602,12 @@ public final class DataBaseHelper implements Helper{
     	if(entity == null)
     		throw new RuntimeException("deleteEntity failure, deleteEntity param is null!");
         SqlPackage sp = CommonSqlUtil.getDeleteSqlPackage(entity);
-        return executeUpdate(sp.getSql(), sp.getParams(), sp.getParamTypes(), dataSourceName);
+        return executeUpdate(new String[]{sp.getSql()}, sp.getParams(), sp.getParamTypes(), dataSourceName);
     }
     
 
 	public static <T> T getEntity(T entity) throws SQLException{
-    	String dataSourceName = TableHelper.getTableDataSourceName(entity.getClass());
+    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
 		return getEntity(entity, dataSourceName);
 	}
     

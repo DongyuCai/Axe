@@ -46,7 +46,7 @@ public final class MailHelper implements Helper{
 	private static List<MailSenderInfo> mailInfoList;
 	
 	@Override
-	public void init() {
+	public void init() throws Exception{
 		synchronized (this) {
 			mailInfoList = new ArrayList<>();
 			String axeEmail = ConfigHelper.getAxeEmail();

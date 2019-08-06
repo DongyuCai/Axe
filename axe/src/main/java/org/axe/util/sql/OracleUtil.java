@@ -24,20 +24,17 @@
 package org.axe.util.sql;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.axe.annotation.persistence.ColumnDefine;
-import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Id;
-import org.axe.annotation.persistence.Transient;
-import org.axe.annotation.persistence.Unique;
-import org.axe.bean.persistence.EntityFieldMethod;
 import org.axe.bean.persistence.PageConfig;
 import org.axe.bean.persistence.SqlPackage;
+import org.axe.bean.persistence.TableSchema;
+import org.axe.bean.persistence.TableSchema.ColumnSchema;
 import org.axe.constant.IdGenerateWay;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.util.CollectionUtil;
@@ -100,76 +97,74 @@ public final class OracleUtil {
 		JAVA_TYPE_2_ORACLE_TYPE_MAP.put("[B", "blob");
 	}
 
-	public static List<String> getTableCreateSql(String dataSourceName, Class<?> entityClass) {
-		String tableName = TableHelper.getTableName(entityClass);
+	//只是给SchemaHelper用，在框架启动初期，还没有entity对象，只能有entityClass的时候，用于统一建表
+	public static List<String> getTableCreateSql(String dataSourceName, TableSchema tableSchema) {
+		return getTableCreateSql(dataSourceName, tableSchema.getTableName(), tableSchema);
+	}
+	//给DaoAspect在做分片检测、动态建表时候用，此时已经有entity了
+	public static List<String> getTableCreateSql(String dataSourceName, Object entity) throws Exception {
+		TableSchema tableSchema = TableHelper.getTableSchema(entity);
+		//由于是通过entity拿到的表结构，因此getTableName应该是真实的tableName
+		tableSchema.setTableName(TableHelper.getRealTableName(entity));
+		return getTableCreateSql(dataSourceName, tableSchema);
+	}
+	
+	private static List<String> getTableCreateSql(String dataSourceName,String tableName, TableSchema tableSchema) {
 		List<String> sqlList = new ArrayList<>();
 		StringBuilder createTableSqlBufer = new StringBuilder();
 		createTableSqlBufer.append("CREATE TABLE ").append(tableName).append(" (");
-		// #取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
+		List<ColumnSchema> mappingColumnList = tableSchema.getMappingColumnList();
 		// #转类非主键字段到数据库表字段定义
-		List<Field> primaryKeyFieldList = new ArrayList<>();
-		List<Field> normalKeyFieldList = new ArrayList<>();
-		;
-		List<Field> uniqueKeyFieldList = new ArrayList<>();
-		for (int i = 0; i < entityFieldMethodList.size(); i++) {
-			EntityFieldMethod entityFieldMethod = entityFieldMethodList.get(i);
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-
-			if (field.isAnnotationPresent(Id.class)) {
+		List<ColumnSchema> primaryColumnList = new ArrayList<>();
+		List<ColumnSchema> normalColumnList = new ArrayList<>();
+		List<ColumnSchema> uniqueColumnList = new ArrayList<>();
+		for (ColumnSchema columnSchema:mappingColumnList) {
+			if (columnSchema.getPrimary()) {
 				// #等会儿主键处理
-				primaryKeyFieldList.add(field);
+				primaryColumnList.add(columnSchema);
 			} else {
 				// #普通建处理
-				normalKeyFieldList.add(field);
-				if (field.isAnnotationPresent(Unique.class)) {
+				normalColumnList.add(columnSchema);
+				if (columnSchema.getUnique()) {
 					// #唯一键
-					uniqueKeyFieldList.add(field);
+					uniqueColumnList.add(columnSchema);
 				}
 			}
 		}
 		// #普通建处理
-		for (int i = 0; i < normalKeyFieldList.size(); i++) {
-			Field field = normalKeyFieldList.get(i);
-			String column = StringUtil.camelToUnderline(field.getName());
-			createTableSqlBufer.append("").append(column).append("");
-			String columnDefine = javaType2OracleColumnDefine(field, true);
+		for (int i = 0; i < normalColumnList.size(); i++) {
+			ColumnSchema columnSchema = normalColumnList.get(i);
+			createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+			String columnDefine = javaType2OracleColumnDefine(columnSchema.getColumnSchema().getField(), true);
 			if (StringUtil.isEmpty(columnDefine)) {
-				throw new RuntimeException(entityClass.getName() + "#[" + field.getName() + "] connot convert to oracle type from " + field.getType().getName());
+				throw new RuntimeException(tableSchema.getEntityClass().getName() + "#[" + columnSchema.getFieldName() + "] connot convert to oracle type from " + columnSchema.getFieldType());
 			}
 			createTableSqlBufer.append(" ").append(columnDefine);
 
-			if (i < normalKeyFieldList.size() - 1) {
+			if (i < normalColumnList.size() - 1) {
 				createTableSqlBufer.append(",");
 			}
 		}
 		// #主键定义
-		if (CollectionUtil.isNotEmpty(primaryKeyFieldList)) {
+		if (CollectionUtil.isNotEmpty(primaryColumnList)) {
 			createTableSqlBufer.append(",");
 
-			for (int i = 0; i < primaryKeyFieldList.size(); i++) {
-				Field primaryKeyField = primaryKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-				createTableSqlBufer.append("").append(column).append("");
-				String columnDefine = javaType2OracleColumnDefine(primaryKeyField, false);
+			for (int i = 0; i < primaryColumnList.size(); i++) {
+				ColumnSchema columnSchema = primaryColumnList.get(i);
+				createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+				String columnDefine = javaType2OracleColumnDefine(columnSchema.getColumnSchema().getField(), false);
 				if (StringUtil.isEmpty(columnDefine)) {
-					throw new RuntimeException(entityClass.getName() + "#[" + primaryKeyField.getName()
-							+ "] connot convert to oracle type from " + primaryKeyField.getType().getName());
+					throw new RuntimeException(tableSchema.getEntityClass().getName() + "#[" + columnSchema.getFieldName()
+							+ "] connot convert to oracle type from " + columnSchema.getFieldType());
 				}
 				createTableSqlBufer.append(" ").append(columnDefine).append(",");
 			}
 
 			createTableSqlBufer.append("CONSTRAINT ").append(tableName).append("_pk").append(" PRIMARY KEY (");
-			for (int i = 0; i < primaryKeyFieldList.size(); i++) {
-				Field primaryKeyField = primaryKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-				createTableSqlBufer.append("").append(column).append("");
-				if (i < primaryKeyFieldList.size() - 1) {
+			for (int i = 0; i < primaryColumnList.size(); i++) {
+				ColumnSchema columnSchema = primaryColumnList.get(i);
+				createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+				if (i < primaryColumnList.size() - 1) {
 					createTableSqlBufer.append(",");
 				}
 			}
@@ -178,15 +173,14 @@ public final class OracleUtil {
 		}
 
 		// #唯一键约束
-		if (CollectionUtil.isNotEmpty(uniqueKeyFieldList)) {
+		if (CollectionUtil.isNotEmpty(uniqueColumnList)) {
 			createTableSqlBufer.append(",");
 
 			createTableSqlBufer.append("CONSTRAINT ").append(tableName).append("_uq").append("UNIQUE KEY (");
-			for (int i = 0; i < uniqueKeyFieldList.size(); i++) {
-				Field primaryKeyField = uniqueKeyFieldList.get(i);
-				String column = StringUtil.camelToUnderline(primaryKeyField.getName());
-				createTableSqlBufer.append("").append(column).append("");
-				if (i < uniqueKeyFieldList.size() - 1) {
+			for (int i = 0; i < uniqueColumnList.size(); i++) {
+				ColumnSchema columnSchema = uniqueColumnList.get(i);
+				createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+				if (i < uniqueColumnList.size() - 1) {
 					createTableSqlBufer.append(",");
 				}
 			}
@@ -198,29 +192,27 @@ public final class OracleUtil {
 		createTableSqlBufer.delete(0, createTableSqlBufer.length());
 
 		// 注解
-		for (Field field : primaryKeyFieldList) {
-			if (field.isAnnotationPresent(Comment.class)) {
-				String column = StringUtil.camelToUnderline(field.getName());
-				createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(column)
-						.append(" IS '").append(field.getAnnotation(Comment.class).value()).append("'");
+		for (ColumnSchema columnSchema:primaryColumnList) {
+			if (StringUtil.isNotEmpty(columnSchema.getComment())) {
+				createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(columnSchema.getColumnName())
+						.append(" IS '").append(columnSchema.getComment()).append("'");
 				sqlList.add(createTableSqlBufer.toString());
 				createTableSqlBufer.delete(0, createTableSqlBufer.length());
 			}
 		}
-		for (Field field : normalKeyFieldList) {
-			if (field.isAnnotationPresent(Comment.class)) {
-				String column = StringUtil.camelToUnderline(field.getName());
-				createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(column)
-						.append(" IS '").append(field.getAnnotation(Comment.class).value()).append("'");
+		for (ColumnSchema columnSchema:normalColumnList) {
+			if (StringUtil.isNotEmpty(columnSchema.getComment())) {
+				createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(columnSchema.getColumnName())
+						.append(" IS '").append(columnSchema.getComment()).append("'");
 				sqlList.add(createTableSqlBufer.toString());
 				createTableSqlBufer.delete(0, createTableSqlBufer.length());
 			}
 		}
 
 		// 主键如果自增，则要创建sequence
-		if (primaryKeyFieldList.size() == 1) {
+		if (primaryColumnList.size() == 1) {
 			// #若只有一个@Id主键，那么默认 AUTO_INCREMENT
-			Field field = primaryKeyFieldList.get(0);
+			Field field = primaryColumnList.get(0).getColumnSchema().getField();
 			if (!field.isAnnotationPresent(ColumnDefine.class)) {
 				if (field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)) {
 					createTableSqlBufer.append("CREATE SEQUENCE ").append(tableName).append("_sq").append(" ")
@@ -231,6 +223,31 @@ public final class OracleUtil {
 				}
 			}
 		}
+		return sqlList;
+	}
+
+	public static List<String> getShardingTableCreateSql(String dataSourceName, TableSchema tableSchema) {
+		List<String> sqlList = new ArrayList<>();
+		StringBuilder createTableSqlBufer = new StringBuilder();
+		createTableSqlBufer.append("CREATE TABLE ").append(tableSchema.getTableName()).append("_sharding_gt").append(" (");
+		//分片ID，来自内存计算，不要担心分布式架构或多线程并发下会出现冲突，冲突了也只是覆盖，相反自增才会出现极端情况出现两条新表分片
+		createTableSqlBufer.append("sharding_flag number(9) PRIMARY KEY,");
+		createTableSqlBufer.append("sharding_table_status number(9),");
+		createTableSqlBufer.append("row_count number(18)");
+		createTableSqlBufer.append(")");
+		sqlList.add(createTableSqlBufer.toString());
+		createTableSqlBufer.delete(0, createTableSqlBufer.length());
+
+		// 注解
+		createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".sharding_flag IS '分片ID'");
+		sqlList.add(createTableSqlBufer.toString());
+		createTableSqlBufer.delete(0, createTableSqlBufer.length());
+		createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".sharding_table_status IS '状态：1.对应的分片数据表可以正常插入 0.不可插入'");
+		sqlList.add(createTableSqlBufer.toString());
+		createTableSqlBufer.delete(0, createTableSqlBufer.length());
+		createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".row_count IS '总计数据条数'");
+		sqlList.add(createTableSqlBufer.toString());
+		createTableSqlBufer.delete(0, createTableSqlBufer.length());
 		return sqlList;
 	}
 
@@ -249,34 +266,22 @@ public final class OracleUtil {
 	}
 
 	public static SqlPackage getInsertSqlPackage(Object entity) {
-		String tableName = TableHelper.getTableName(entity.getClass());
+		String tableName = TableHelper.getRealTableName(entity);
 		String sql = "INSERT INTO " + tableName;
-		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entity.getClass());
+		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		StringBuilder columns = new StringBuilder("(");
 		StringBuilder values = new StringBuilder("(");
 		List<Object> params = new ArrayList<>();
-		for (EntityFieldMethod entityFieldMethod: entityFieldMethodList) {
-			Field field = entityFieldMethod.getField();
-			if (field.isAnnotationPresent(Transient.class)) {
-				if (!field.getAnnotation(Transient.class).save()) {
-					continue;
-				}
-			}
-			
+		for (ColumnSchema columnSchema: mappingColumnList) {
 			//如果有@Id，如果是AutoIncrement，那么就自增
 			//并且对应的值是空的，才自增
-			Method method = entityFieldMethod.getMethod();
-			Object param = ReflectionUtil.invokeMethod(entity, method);
-			if (field.isAnnotationPresent(Id.class) && 
-				field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT) && 
-				param == null
+			Object param = ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod());
+			if (columnSchema.getPrimary() && columnSchema.getPrimaryKeyAutoIncrement() && param == null
 				) {
-				String column = StringUtil.camelToUnderline(field.getName());
-				columns.append(column).append(", ");
+				columns.append(columnSchema.getColumnName()).append(", ");
 				values.append(tableName+"_sq.nextval, ");
 			}else{
-				String column = StringUtil.camelToUnderline(field.getName());
-				columns.append(column).append(", ");
+				columns.append(columnSchema.getColumnName()).append(", ");
 				values.append("?, ");
 				params.add(param);//只有不是id，或者是id但是不是自增，或者是id也是自增，但是已经给了值，才会作为预处理参数
 			}
@@ -288,7 +293,7 @@ public final class OracleUtil {
 	}
 	
 	public static String getGenerateIdSql(Object entity){
-		String tableName = TableHelper.getTableName(entity.getClass());
+		String tableName = TableHelper.getRealTableName(entity);
 		return "select "+tableName+"_sq.currval from dual";
 	}
 	
@@ -323,6 +328,10 @@ public final class OracleUtil {
 			if (pageConfig == null)
 				break;
 
+			//改用直接拼接分页参数
+			sql = sql + " limit "+pageConfig.getLimitParam1()+","+pageConfig.getLimitParam2();
+			
+			/* CaiDongyu 2019/2/14 因为改用直接拼接，不在动态改变参数数量和位置
 			if (!getFlagComm && !getFlagSpec) {
 				// 默认这里采用getFlagSpec模式，因为默认情况下，不指定参数位置，会破坏约定，比如分页参数必须是最后一个
 				getFlagSpec = true;
@@ -342,7 +351,7 @@ public final class OracleUtil {
 			newParams[newParams.length - 1] = pageConfig.getLimitParam1()+1;
 			//<=，这里本来-1，因为rownum从1开始，所以这里不用加了
 			newParams[newParams.length - 2] = pageConfig.getLimitParam1()+pageConfig.getPageSize();
-			params = newParams;
+			params = newParams;*/
 		} while (false);
 		return new SqlPackage(sql, params, paramTypes, new boolean[] { getFlagComm, getFlagSpec });
 	}
