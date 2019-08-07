@@ -44,34 +44,37 @@ SOFTWARE.
   <body>
   	<div class="container">
 	    <div id="main_div">
-	    	<div style="margin-top: 15px;" class="jumbotron">
-			  <h1>Axe Table</h1>
-			  <p>所有的持久层对象的定义&nbsp;<span class="badge" nc-text="{{tableList.length}}"></span></p>
-			  <p>
-			  	<a onclick="showAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button" onclick="">全部展开</a>
-			  	<a onclick="hideAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button">全部收起</a>
-			  	<a nc-if="sortType==0 || sortType==2" onclick="sortByName()" class="btn btn-info btn-lg" href="javascript:void(0)" role="button">名称排序</a>
-			  </p>
-			</div>
+	    	<div class="col-md-12">
+		    	<div style="margin-top: 15px;" class="jumbotron">
+				  <h1>Axe Table</h1>
+				  <p>所有的持久层对象的定义&nbsp;<span class="badge" nc-text="{{tableList.length}}"></span></p>
+				  <p>
+				  	<a onclick="showAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button" onclick="">全部展开</a>
+				  	<a onclick="hideAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button">全部收起</a>
+				  	<a nc-if="sortType==0 || sortType==2" onclick="sortByName()" class="btn btn-info btn-lg" href="javascript:void(0)" role="button">名称排序</a>
+				  </p>
+				</div>
+	    	</div>
 	    
 	    	<div nc-for="row in tableList" class="{{row.columnList?'col-md-12':'col-md-4'}}">
 	    		<div class="panel panel-default">
-				  <div class="panel-heading" style="height:65px;">
+				  <div class="panel-heading" style="height:65px;padding-left: 0px;">
 				  	<h4 class="col-md-10" nc-text="{{row.name}} <small>{{row.packageName}} {{row.comment}}</small>"></h4>
-				  	<div class="col-md-2" onclick="showTableDetail({{row.$index}})" style="text-align:right;cursor: pointer;" ><span nc-class="{{row.columnList?'glyphicon glyphicon-chevron-up':'glyphicon glyphicon-chevron-down'}}"></span></div>
+				  	<div class="col-md-2" onclick="showTableDetail({{row.$index}})" style="text-align:right;cursor: pointer;padding-top: 10px;" ><span nc-class="{{row.columnList?'glyphicon glyphicon-chevron-up':'glyphicon glyphicon-chevron-down'}}"></span></div>
 				  </div>
-				  <div>
-				  	  <table nc-if="row.columnList && row.columnList.length>0" class="table table-hover" >
-					 	<tbody>
-							<tr nc-for="col in row.columnList">
-								<td nc-text="{{col.name}}"></td>
-								<td nc-text="{{col.type}}"></td>
-								<td nc-text="{{col.comment}}"></td>
-							</tr>
-					 	</tbody>
-					  </table>
-				  </div>
-				  <div nc-if="row.idFields || row.uniqueFields" class="panel-footer" nc-text="{{row.idFields?'Primary[ '+row.idFields+' ]':''}}&nbsp;&nbsp;{{row.uniqueFields?'Unique[ '+row.uniqueFields+' ]':''}}"></div>
+				  <table nc-if="row.columnList && row.columnList.length>0" class="table table-hover" >
+				 	<tbody>
+						<tr nc-for="col in row.columnList">
+							<td>
+								<span nc-text="&nbsp;&nbsp;{{col.name}}"></span>
+								<span nc-if="col.autoIncreament" class='label label-info'>自增</span>
+							</td>
+							<td nc-text="{{col.type}}"></td>
+							<td nc-text="{{col.comment}}"></td>
+						</tr>
+				 	</tbody>
+				  </table>
+				  <div nc-if="row.idFields || row.uniqueFields" class="panel-footer" nc-text="{{row.idFields?'Primary key[ '+row.idFields+' ]':''}}&nbsp;&nbsp;{{row.uniqueFields?'Unique key[ '+row.uniqueFields+' ]':''}}"></div>
 				</div>
 	    	</div>
     	</div>
