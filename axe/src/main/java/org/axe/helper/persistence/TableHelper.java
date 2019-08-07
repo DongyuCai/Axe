@@ -112,8 +112,10 @@ public final class TableHelper implements Helper{
 		
 		// #取含有get方法的字段，作为数据库表字段，没有get方法的字段，认为不是数据库表字段
 		List<EntityFieldMethod> entityFieldMethodList = ReflectionUtil.getGetMethodList(entityClass);
-		StringBuilder idsBuffer = new StringBuilder();
-		StringBuilder uniqueBuffer = new StringBuilder();
+		StringBuilder idsFieldBuffer = new StringBuilder();
+		StringBuilder idsColumnBuffer = new StringBuilder();
+		StringBuilder uniqueFieldBuffer = new StringBuilder();
+		StringBuilder uniqueColumnBuffer = new StringBuilder();
 		List<ColumnSchema> mappingColumnList = new ArrayList<>();
 		if(CollectionUtil.isNotEmpty(entityFieldMethodList)){
 			for(EntityFieldMethod efm:entityFieldMethodList){
@@ -136,10 +138,12 @@ public final class TableHelper implements Helper{
 				if (field.isAnnotationPresent(Id.class)) {
 					columnSchema.setPrimary(true);
 					// #主键
-					if(idsBuffer.length() > 0){
-						idsBuffer.append(",");
+					if(idsFieldBuffer.length() > 0){
+						idsFieldBuffer.append(",");
+						idsColumnBuffer.append(",");
 					}
-					idsBuffer.append(columnSchema.getFieldName());
+					idsFieldBuffer.append(columnSchema.getFieldName());
+					idsColumnBuffer.append(columnSchema.getColumnName());
 					
 					if(field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)){
 						columnSchema.setPrimaryKeyAutoIncrement(true);//自增
@@ -147,9 +151,13 @@ public final class TableHelper implements Helper{
 				} else if (field.isAnnotationPresent(Unique.class)) {
 					columnSchema.setUnique(true);
 					// #唯一键
-					if(uniqueBuffer.length() > 0){
-						uniqueBuffer.append(",");
+					if(uniqueFieldBuffer.length() > 0){
+						uniqueFieldBuffer.append(",");
+						uniqueColumnBuffer.append(",");
 					}
+					uniqueFieldBuffer.append(columnSchema.getFieldName());
+					uniqueColumnBuffer.append(columnSchema.getColumnName());
+					
 				}
 				
 				
@@ -164,9 +172,11 @@ public final class TableHelper implements Helper{
 			}
 		}
 		tableSchema.setMappingColumnList(mappingColumnList);
-		
-		tableSchema.setIdColumns(idsBuffer.toString());
-		tableSchema.setUniqueColumns(uniqueBuffer.toString());
+
+		tableSchema.setIdFields(idsFieldBuffer.toString());
+		tableSchema.setIdColumns(idsColumnBuffer.toString());
+		tableSchema.setUniqueFields(uniqueFieldBuffer.toString());
+		tableSchema.setUniqueColumns(uniqueColumnBuffer.toString());
 		
 		return tableSchema;
 	}

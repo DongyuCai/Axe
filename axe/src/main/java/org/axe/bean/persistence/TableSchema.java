@@ -122,8 +122,10 @@ public class TableSchema {
 	private List<ColumnSchema> mappingColumnList;
 	
 	//主键约束
+	private String idFields;
 	private String idColumns;
 	//唯一键约束
+	private String uniqueFields;
 	private String uniqueColumns;
 	
 	
@@ -170,11 +172,23 @@ public class TableSchema {
 	public void setMappingColumnList(List<ColumnSchema> mappingColumnList) {
 		this.mappingColumnList = mappingColumnList;
 	}
+	public String getIdFields() {
+		return idFields;
+	}
+	public void setIdFields(String idFields) {
+		this.idFields = idFields;
+	}
 	public String getIdColumns() {
 		return idColumns;
 	}
 	public void setIdColumns(String idColumns) {
 		this.idColumns = idColumns;
+	}
+	public String getUniqueFields() {
+		return uniqueFields;
+	}
+	public void setUniqueFields(String uniqueFields) {
+		this.uniqueFields = uniqueFields;
 	}
 	public String getUniqueColumns() {
 		return uniqueColumns;

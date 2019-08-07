@@ -217,7 +217,7 @@ public void home(@RequestParam("token")String token, HttpServletRequest request,
 					<td align="left">Service x"+serviceSize+"</td>
 					<td align="left"><a href=""+contextPath+"/axe/tns?token="+token+"">Tns point </a> x"+tnsPointCount+"</td>
 					<td align="left"><a href=""+contextPath+"/axe/dao?token="+token+"">Dao</a> x"+daoSize+"</td>
-					<td align="left"><a href=""+contextPath+"/axe/table?token="+token+"">Table</a> x"+TableHelper.getEntityClassMap().size()+"</td>
+					<td align="left"><a href=""+contextPath+"/axe/table?s=index.html&token="+token+"" target="blank">Table</a> x"+TableHelper.getEntityTableMap().size()+"</td>
 					<td align="left"><a href=""+contextPath+"/axe/dataSource?token="+token+"">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>
 				</tr>
 			</table>

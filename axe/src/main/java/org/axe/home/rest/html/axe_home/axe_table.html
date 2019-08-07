@@ -16,15 +16,10 @@ public void table(
 }
 
 @Request(value = "/table/table_list", method = RequestMethod.GET)
-public List<Level_1> table_table_list(
-	@RequestParam("token")String token,  
-	HttpServletRequest request, HttpServletResponse response) {
+public List<Table> table_table_list(@RequestParam("token") String token, HttpServletRequest request,
+		HttpServletResponse response) {
 	try {
-		String path = request.getContextPath();
-		String baseDomain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-		String basePath = baseDomain + path;
-		List<Level_1> list = ApiExportUtil.asApiTest(basePath);
-		return list;
+		return TableExportUtil.exportTableList();
 	} catch (Exception e) {
 		e.printStackTrace();
 		throw new RestException(e.getMessage());
