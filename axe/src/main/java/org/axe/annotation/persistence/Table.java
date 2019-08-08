@@ -48,7 +48,7 @@ public @interface Table {
 	/**
 	 * 描述
 	 */
-	String comment() default "";
+	String comment();
 	/**
 	 * 是否自建
 	 * 默认是自建，但是，需要全局打开jdbc.auto_create_table参数，才会生效

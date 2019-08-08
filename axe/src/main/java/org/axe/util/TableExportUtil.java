@@ -90,7 +90,9 @@ public class TableExportUtil {
 		private String name;
 		private String type;
 		private String comment;
+		private boolean primary;
 		private boolean autoIncreament;
+		private boolean unique;
 		
 		public String getName() {
 			return name;
@@ -110,11 +112,23 @@ public class TableExportUtil {
 		public void setComment(String comment) {
 			this.comment = comment;
 		}
-		public boolean isAutoIncreament() {
+		public boolean getPrimary() {
+			return primary;
+		}
+		public void setPrimary(boolean primary) {
+			this.primary = primary;
+		}
+		public boolean getAutoIncreament() {
 			return autoIncreament;
 		}
 		public void setAutoIncreament(boolean autoIncreament) {
 			this.autoIncreament = autoIncreament;
+		}
+		public boolean getUnique() {
+			return unique;
+		}
+		public void setUnique(boolean unique) {
+			this.unique = unique;
 		}
 	}
 	
@@ -138,7 +152,9 @@ public class TableExportUtil {
 				c.setName(cs.getFieldName());
 				c.setType(cs.getFieldType());
 				c.setComment(cs.getComment());
+				c.setPrimary(cs.getPrimary());
 				c.setAutoIncreament(cs.getPrimaryKeyAutoIncrement());
+				c.setUnique(cs.getUnique());
 				cList.add(c);
 			}
 			table.setColumnList(cList);

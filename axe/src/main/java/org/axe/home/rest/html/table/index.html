@@ -52,6 +52,7 @@ SOFTWARE.
 				  	<a onclick="showAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button" onclick="">全部展开</a>
 				  	<a onclick="hideAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button">全部收起</a>
 				  	<a nc-if="sortType==0 || sortType==2" onclick="sortByName()" class="btn btn-info btn-lg" href="javascript:void(0)" role="button">名称排序</a>
+				  	<a nc-if="sortType==0 || sortType==1" onclick="sortByPackage()" class="btn btn-info btn-lg" href="javascript:void(0)" role="button">包名排序</a>
 				  </p>
 				</div>
 	    	</div>
@@ -67,7 +68,9 @@ SOFTWARE.
 						<tr nc-for="col in row.columnList">
 							<td>
 								<span nc-text="&nbsp;&nbsp;{{col.name}}"></span>
-								<span nc-if="col.autoIncreament" class='label label-info'>自增</span>
+								<span nc-if="col.primary" style="padding: .2em .6em .2em;" class='label label-danger'>主键</span>
+								<span nc-if="col.unique" style="padding: .2em .6em .2em;" class='label label-warning'>唯一</span>
+								<span nc-if="col.autoIncreament" style="padding: .2em .6em .2em;" class='label label-success'>自增</span>
 							</td>
 							<td nc-text="{{col.type}}"></td>
 							<td nc-text="{{col.comment}}"></td>
@@ -199,7 +202,36 @@ SOFTWARE.
     	  $scope_main.tableList = newScopeTableList;
     	  
       }
-      
+
+      function sortByPackage(){
+    	  if($scope_main.sortType == 2){
+    		  return false;
+    	  }
+    	  
+    	  $scope_main.sortType = 2;
+    	  
+    	  var sortAry = [];
+    	  for(var i=0;i<tableList.length;i++){
+    		  sortAry.push(tableList[i].packageName);
+    	  }
+    	  
+    	  sortAry.sort();
+    	  
+    	  var newTableList = [];
+    	  var newScopeTableList = [];
+    	  for(var i=0;i<sortAry.length;i++){
+    		 for(var j=0;j<tableList.length;j++){
+    			 if(tableList[j].packageName === sortAry[i]){
+    				 newTableList.push(tableList.splice(j,1)[0]);
+    				 newScopeTableList.push($scope_main.tableList.splice(j,1)[0]);
+    				 break;
+    			 }
+    		 } 
+    	  }
+    	  tableList = newTableList;
+    	  $scope_main.tableList = newScopeTableList;
+    	  
+      }
     </script>
   </body>
 </html>
