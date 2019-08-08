@@ -132,7 +132,7 @@ reader.close();
 }
 }
 
-@Request(value = "/sign-in", method = RequestMethod.GET)
+@Request(path = "/sign-in", method = RequestMethod.GET)
 public void signIn(HttpServletRequest request, HttpServletResponse response,Param param) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -302,7 +302,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 }
 
-@Request(value = "/sign-in", method = RequestMethod.POST)
+@Request(path = "/sign-in", method = RequestMethod.POST)
 public View signIn(HttpServletRequest request, HttpServletResponse response,@RequestParam("id")String id,@RequestParam("password")String password) {
 String contextPath = request.getContextPath();
 
@@ -347,12 +347,12 @@ return null;
 
 
 
-@Request(value = "/sign-out", method = RequestMethod.GET)
+@Request(path = "/sign-out", method = RequestMethod.GET)
 public View signOut(@RequestParam("token")String token, HttpServletResponse response) {
 homeService.signOut();
 return new View("/axe/sign-in");
 }
-@Request(value = "", method = RequestMethod.GET)
+@Request(path = "", method = RequestMethod.GET)
 public void home(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -584,7 +584,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/filter", method = RequestMethod.GET)
+@Request(path = "/filter", method = RequestMethod.GET)
 public void filter(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -640,7 +640,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/interceptor", method = RequestMethod.GET)
+@Request(path = "/interceptor", method = RequestMethod.GET)
 public void interceptor(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -686,7 +686,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/controller", method = RequestMethod.GET)
+@Request(path = "/controller", method = RequestMethod.GET)
 public void controller(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -750,7 +750,7 @@ actionCount++;
 Controller controller = controllerClass.getAnnotation(Controller.class);
 html.append("<tr>");
 html.append("<td align=\"left\">"+(id++)+"</td>");
-html.append("<td align=\"left\">"+controller.title()+"</td>");
+html.append("<td align=\"left\">"+controller.desc()+"</td>");
 html.append("<td align=\"left\">"+basePath+"</td>");
 html.append("<td align=\"left\">"+controllerClass.getName()+"</td>");
 String basePathHashCode = null;
@@ -771,7 +771,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/action", method = RequestMethod.GET)
+@Request(path = "/action", method = RequestMethod.GET)
 public void action(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -860,7 +860,7 @@ hashCode = String.valueOf(code);
 }
 html.append("<tr>");
 html.append("<td align=\"left\">"+(id++)+"</td>");
-html.append("<td align=\"left\">"+controller.title()+"."+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>");
+html.append("<td align=\"left\">"+controller.desc()+"."+handler.getActionMethod().getAnnotation(Request.class).desc()+"</td>");
 html.append("<td align=\"left\">"+mappingPath+"</td>");
 html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"\">"+handler.getControllerClass().getName()+"</a></td>");
@@ -883,12 +883,12 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/controller-{basePathHashCode}/action", method = RequestMethod.GET)
+@Request(path = "/controller-{basePathHashCode}/action", method = RequestMethod.GET)
 public void action(@RequestParam("token")String token, @RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request,
 HttpServletResponse response) {
 this.action(token, request, response, basePathHashCode);
 }
-@Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
+@Request(path = "/action/{mappingHashCode}", method = RequestMethod.GET)
 public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 do {
@@ -943,7 +943,7 @@ html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">action-title</td>");
-html.append("<td align=\"left\">"+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>");
+html.append("<td align=\"left\">"+handler.getActionMethod().getAnnotation(Request.class).desc()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
@@ -973,7 +973,7 @@ html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
 html.append("<td align=\"left\">controller-title</td>");
-html.append("<td align=\"left\">"+handler.getControllerClass().getAnnotation(Controller.class).title()+"</td>");
+html.append("<td align=\"left\">"+handler.getControllerClass().getAnnotation(Controller.class).desc()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
@@ -1047,7 +1047,7 @@ html.append("</html>");
 printHtml(response, html.toString());
 } while (false);
 }
-@Request(value = "/tns", method = RequestMethod.GET)
+@Request(path = "/tns", method = RequestMethod.GET)
 public void tns(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -1099,7 +1099,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/dao", method = RequestMethod.GET)
+@Request(path = "/dao", method = RequestMethod.GET)
 public void dao(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -1144,7 +1144,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/table", method = RequestMethod.GET)
+@Request(path = "/table", method = RequestMethod.GET)
 public void table(
 @RequestParam("token")String token,
 @RequestParam(value = "s", required = true) String statics,
@@ -1160,7 +1160,7 @@ ct = ContentType.APPLICATION_CSS;
 printFile(response, "org/axe/home/rest/html/table/" + statics, ct, token);
 }
 
-@Request(value = "/table/table_list", method = RequestMethod.GET)
+@Request(path = "/table/table_list", method = RequestMethod.GET)
 public List<Table> table_table_list(@RequestParam("token") String token, HttpServletRequest request,
 HttpServletResponse response) {
 try {
@@ -1170,7 +1170,7 @@ e.printStackTrace();
 throw new RestException(e.getMessage());
 }
 }
-@Request(value="/dataSource", method=RequestMethod.GET)
+@Request(path="/dataSource", method=RequestMethod.GET)
 public void dataSource(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();
@@ -1227,7 +1227,7 @@ html.append("</body>");
 html.append("</html>");
 printHtml(response, html.toString());
 }
-@Request(value = "/api_test", method = RequestMethod.GET)
+@Request(path = "/api_test", method = RequestMethod.GET)
 public void api_test(
 @RequestParam("token")String token,
 @RequestParam(value = "s", required = true) String statics,
@@ -1243,7 +1243,7 @@ ct = ContentType.APPLICATION_CSS;
 printFile(response, "org/axe/home/rest/html/api_test/" + statics, ct, token);
 }
 
-@Request(value = "/api_test/api_list", method = RequestMethod.GET)
+@Request(path = "/api_test/api_list", method = RequestMethod.GET)
 public List<Level_1> api_test_api_list(
 @RequestParam("token")String token,
 HttpServletRequest request, HttpServletResponse response) {

@@ -196,7 +196,7 @@ public class ApiExportUtil {
 			Class<?> controllerClass = handler.getControllerClass();
 			Controller controllerAnnotation = controllerClass.getAnnotation(Controller.class);
 			//没有title不要
-			String controllerTitle = controllerAnnotation.title();
+			String controllerTitle = controllerAnnotation.desc();
 			if(StringUtil.isEmpty(controllerTitle)) continue;
 			
 			//存第一级
@@ -224,7 +224,7 @@ public class ApiExportUtil {
 			Method actionMethod = handler.getActionMethod();
 			Request requestAnnotation = actionMethod.getAnnotation(Request.class);
 			
-			String requestTitle = requestAnnotation.title();
+			String requestTitle = requestAnnotation.desc();
 			if(StringUtil.isEmpty(requestTitle)) continue;//如果action没有标题，也不要
 			
 			Level_2 level_2 = new Level_2();
@@ -591,10 +591,10 @@ public class ApiExportUtil {
 		for(Class<?> controllerClass:actionMap.keySet()){
 			Controller controllerAnnotation = controllerClass.getAnnotation(Controller.class);
 			//类没有名字的不显示
-			if(StringUtil.isEmpty(controllerAnnotation.title())) continue;
+			if(StringUtil.isEmpty(controllerAnnotation.desc())) continue;
 			
 			Map<String,Object> folder = new HashMap<>();
-			folder.put("name", controllerAnnotation.title());
+			folder.put("name", controllerAnnotation.desc());
 			folder.put("description", controllerClass.getName());
 			folderList.add(folder);
 			List<Handler> handlerList = actionMap.get(controllerClass);
@@ -603,10 +603,10 @@ public class ApiExportUtil {
 				Method actionMethod = handler.getActionMethod();
 				Request requestAnnotation = actionMethod.getAnnotation(Request.class);
 				//action没有名字的，也过掉
-				if(StringUtil.isEmpty(requestAnnotation.title())) continue;
+				if(StringUtil.isEmpty(requestAnnotation.desc())) continue;
 				
 				Map<String,Object> url = new HashMap<>();
-				url.put("name", requestAnnotation.title());
+				url.put("name", requestAnnotation.desc());
 				Map<String,Object> requestConfig = new HashMap<>();
 				requestConfig.put("description", controllerClass.getName()+"#"+actionMethod.getName());
 				requestConfig.put("url", basePath+handler.getMappingPath());

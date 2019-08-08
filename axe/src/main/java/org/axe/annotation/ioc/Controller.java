@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Controller {
-	String title() default "";
+	String desc() default "";
 	/**
 	 * 路径 path
 	 */

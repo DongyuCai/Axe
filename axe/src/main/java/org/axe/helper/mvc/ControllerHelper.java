@@ -84,7 +84,7 @@ public final class ControllerHelper implements Helper{
 	                        //判断方法是否带有 Action 注解
 	                        if (method.isAnnotationPresent(Request.class)) {
 	                        	Request action = method.getAnnotation(Request.class);
-	                            String mappingPath = basePath+"/"+action.value();
+	                            String mappingPath = basePath+"/"+action.path();
 	                            String requestMethod = action.method().REQUEST_METHOD;
 	                            
 	                            //检查mappingPath是否合规

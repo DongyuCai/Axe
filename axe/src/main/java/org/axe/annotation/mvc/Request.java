@@ -40,11 +40,11 @@ import org.axe.constant.RequestMethod;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Request {
 
-	String title() default "";
+	String desc() default "";
     /**
      * 请求路径
      */
-    String value();
+    String path();
     
     /**
      * 请求类型
