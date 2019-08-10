@@ -36,12 +36,32 @@ import org.axe.util.StringUtil;
  * @author CaiDongyu on 2016/4/11.
  */
 public class Param {
+	/**
+	 * 原始的请求时候的url
+	 */
 	private String requestPath;
+	/**
+	 * http请求的body部分
+	 */
 	private String body;
+	/**
+	 * 完整的请求参数列表，formParam格式
+	 */
 	private List<FormParam> formParamList;
-	private List<FileParam> fileParamList;
+	
+	/**
+	 * 完整的请求参数列表，map格式
+	 */
 	private Map<String,Object> bodyParamMap;
 	
+	/**
+	 * 文件上传列表
+	 */
+	private List<FileParam> fileParamList;
+	
+	/**
+	 * action method的调用参数
+	 */
 	private List<Object> actionParamList;
 
 	public Param(String requestPath) {

@@ -46,6 +46,12 @@ public class Handler {
 	 * 完整的 Action rest 串
 	 */
 	private String mappingPath;
+	
+	/**
+	 * 完整的mappingPath描述，也就是uri描述，来自controllerDesc+"."+actionDesc
+	 */
+	private String mappingPathDesc;
+	
 	/**
 	 * Mime-Type 类型
 	 */
@@ -58,11 +64,22 @@ public class Handler {
      * Controller 类
      */
     private Class<?> controllerClass;
+    
+    /**
+     * controller的描述
+     */
+    private String controllerDesc;
 
     /**
      * Action 方法
      */
     private Method actionMethod;
+
+
+    /**
+     * action的描述
+     */
+    private String actionDesc;
     
     public class ActionParam{
     	private Class<?> paramType;
@@ -98,54 +115,60 @@ public class Handler {
     
     
     public Handler(String requestMethod, String mappingPath, 
-			Class<?> controllerClass, Method actionMethod, List<Filter> filterList, List<Interceptor> interceptorList) {
+			Class<?> controllerClass, String controllerDesc, Method actionMethod, String actionDesc, List<Filter> filterList, List<Interceptor> interceptorList) {
 		this.requestMethod = requestMethod;
 		this.mappingPath = mappingPath;
+		this.mappingPathDesc = controllerDesc+"."+actionDesc;
 		this.controllerClass = controllerClass;
+		this.controllerDesc = controllerDesc;
 		this.actionMethod = actionMethod;
+		this.actionDesc = actionDesc;
 		this.filterList = filterList;
 		this.interceptorList = interceptorList;
-		init();
-	}
-
-	private void init() {
-    	if(this.actionMethod.isAnnotationPresent(Request.class)){
-    		Request request = this.actionMethod.getAnnotation(Request.class);
-    		this.contentType = request.contentType().CONTENT_TYPE;
-    		this.characterEncoding = request.characterEncoding().CHARACTER_ENCODING;
-    		
-    		Annotation[][] parameterAnnotations = this.actionMethod.getParameterAnnotations();
-    		Class<?>[] parameterTypes = this.actionMethod.getParameterTypes();
-    		if(parameterTypes != null){
-    			if(parameterTypes.length == parameterAnnotations.length){
-    				for(int i=0;i<parameterTypes.length;i++){
-    					Class<?> paramType = parameterTypes[i];
-    					Annotation[] annotations = parameterAnnotations[i];
-    					if(actionParamList == null){
-    						actionParamList = new ArrayList<>();
-    					}
-    					ActionParam actionParam = new ActionParam();
-    					actionParam.setAnnotations(annotations);
-    					actionParam.setParamType(paramType);
-    					actionParamList.add(actionParam);
-    				}
-    			}else{
-    				throw new RuntimeException("create Hanlder failed ,wrong parameterTypes.length["+parameterTypes.length+"] and "
-    						+ "parameterAnnotations.length["+parameterAnnotations.length+"]: "+this.actionMethod.toGenericString());
-    			}
-    		}
-    	}
+		
+		Request request = this.actionMethod.getAnnotation(Request.class);
+		this.contentType = request.contentType().CONTENT_TYPE;
+		this.characterEncoding = request.characterEncoding().CHARACTER_ENCODING;
+		
+		Annotation[][] parameterAnnotations = this.actionMethod.getParameterAnnotations();
+		Class<?>[] parameterTypes = this.actionMethod.getParameterTypes();
+		if(parameterTypes != null){
+			if(parameterTypes.length == parameterAnnotations.length){
+				for(int i=0;i<parameterTypes.length;i++){
+					Class<?> paramType = parameterTypes[i];
+					Annotation[] annotations = parameterAnnotations[i];
+					if(actionParamList == null){
+						actionParamList = new ArrayList<>();
+					}
+					ActionParam actionParam = new ActionParam();
+					actionParam.setAnnotations(annotations);
+					actionParam.setParamType(paramType);
+					actionParamList.add(actionParam);
+				}
+			}else{
+				throw new RuntimeException("create Hanlder failed ,wrong parameterTypes.length["+parameterTypes.length+"] and "
+						+ "parameterAnnotations.length["+parameterAnnotations.length+"]: "+this.actionMethod.toGenericString());
+			}
+		}
 	}
 
 	public Class<?> getControllerClass() {
         return controllerClass;
     }
 
-    public Method getActionMethod() {
+    public String getControllerDesc() {
+		return controllerDesc;
+	}
+
+	public Method getActionMethod() {
         return actionMethod;
     }
     
-    public String getRequestMethod() {
+    public String getActionDesc() {
+		return actionDesc;
+	}
+
+	public String getRequestMethod() {
 		return requestMethod;
 	}
     
@@ -153,7 +176,11 @@ public class Handler {
 		return mappingPath;
 	}
     
-    public List<ActionParam> getActionParamList() {
+    public String getMappingPathDesc() {
+		return mappingPathDesc;
+	}
+
+	public List<ActionParam> getActionParamList() {
 		return actionParamList;
 	}
 

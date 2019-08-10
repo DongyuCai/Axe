@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/interceptor", method = RequestMethod.GET)
+@Request(path = "/interceptor", method = RequestMethod.GET)
 public void interceptor(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();

@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/controller", method = RequestMethod.GET)
+@Request(path = "/controller", method = RequestMethod.GET)
 public void controller(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
@@ -72,7 +72,7 @@ public void controller(@RequestParam("token")String token, HttpServletRequest re
 				</java>
 				<tr>
 					<td align="left">"+(id++)+"</td>
-					<td align="left">"+controller.title()+"</td>
+					<td align="left">"+controller.desc()+"</td>
 					<td align="left">"+basePath+"</td>
 					<td align="left">"+controllerClass.getName()+"</td>
 					<java>

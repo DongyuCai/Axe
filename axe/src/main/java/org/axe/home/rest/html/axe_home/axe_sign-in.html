@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/sign-in", method = RequestMethod.GET)
+@Request(path = "/sign-in", method = RequestMethod.GET)
 public void signIn(HttpServletRequest request, HttpServletResponse response,Param param) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
@@ -171,7 +171,7 @@ public void signIn(HttpServletRequest request, HttpServletResponse response,Para
 	printHtml(response, html.toString());
 }
 
-@Request(value = "/sign-in", method = RequestMethod.POST)
+@Request(path = "/sign-in", method = RequestMethod.POST)
 public View signIn(HttpServletRequest request, HttpServletResponse response,@RequestParam("id")String id,@RequestParam("password")String password) {
 	String contextPath = request.getContextPath();
 
@@ -218,7 +218,7 @@ public View signIn(HttpServletRequest request, HttpServletResponse response,@Req
 
 
 
-@Request(value = "/sign-out", method = RequestMethod.GET)
+@Request(path = "/sign-out", method = RequestMethod.GET)
 public View signOut(@RequestParam("token")String token, HttpServletResponse response) {
 	homeService.signOut();
 	return new View("/axe/sign-in");

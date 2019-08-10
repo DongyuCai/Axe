@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/action/{mappingHashCode}", method = RequestMethod.GET)
+@Request(path = "/action/{mappingHashCode}", method = RequestMethod.GET)
 public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode, @RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	do {
@@ -42,8 +42,6 @@ public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode
 			}
 		}
 		if(handler == null) break;
-
-		String basePath = handler.getControllerClass().getAnnotation(Controller.class).basePath();
 		</java>
 		<tr><td align="center"><font size="28">Action Detail - "+handler.getMappingPath()+"</font></td></tr>
 
@@ -60,48 +58,38 @@ public void actionDetail(@RequestParam("mappingHashCode") String mappingHashCode
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">action-title</td>
-					<td align="left">"+handler.getActionMethod().getAnnotation(Request.class).title()+"</td>
+					<td align="left">Desc</td>
+					<td align="left">"+handler.getMappingPathDesc()+"</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">mapping</td>
+					<td align="left">Uri</td>
 					<td align="left">"+handler.getMappingPath()+"</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">request-method</td>
+					<td align="left">Method</td>
 					<td align="left">"+handler.getRequestMethod()+"</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">content-type</td>
+					<td align="left">Content-type</td>
 					<td align="left">"+handler.getContentType()+"</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">character-encoding</td>
+					<td align="left">Character-encoding</td>
 					<td align="left">"+handler.getCharacterEncoding()+"</td>
 				</tr>
 				<tr>
 					<td align="left">&nbsp;</td>
-					<td align="left">action-method</td>
-					<td align="left">"+handler.getActionMethod().toString()+"</td>
-				</tr>
-				<tr>
-					<td align="left">&nbsp;</td>
-					<td align="left">controller-title</td>
-					<td align="left">"+handler.getControllerClass().getAnnotation(Controller.class).title()+"</td>
-				</tr>
-				<tr>
-					<td align="left">&nbsp;</td>
-					<td align="left">basePath</td>
-					<td align="left">"+basePath+"</td>
-				</tr>
-				<tr>
-					<td align="left">&nbsp;</td>
-					<td align="left">action-controller</td>
+					<td align="left">Class</td>
 					<td align="left">"+handler.getControllerClass().getName()+"</td>
+				</tr>
+				<tr>
+					<td align="left">&nbsp;</td>
+					<td align="left">Method</td>
+					<td align="left">"+handler.getActionMethod().toString()+"</td>
 				</tr>
 			</table>
 		</td></tr><tr><td>&nbsp;</td></tr>

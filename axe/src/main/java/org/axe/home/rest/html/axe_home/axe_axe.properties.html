@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/axe.properties", method = RequestMethod.GET)
+@Request(path = "/axe.properties", method = RequestMethod.GET)
 public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response, String basePathHashCode) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();
@@ -362,7 +362,7 @@ public void axeProperties(@RequestParam("token")String token, HttpServletRequest
 	printHtml(response, html.toString());
 }
 
-@Request(value = "/axe.properties", method = RequestMethod.POST)
+@Request(path = "/axe.properties", method = RequestMethod.POST)
 public void axeProperties(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response,Param param) {
 	String contextPath = request.getContextPath();
 	

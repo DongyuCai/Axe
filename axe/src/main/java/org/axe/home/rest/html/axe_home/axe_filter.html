@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/filter", method = RequestMethod.GET)
+@Request(path = "/filter", method = RequestMethod.GET)
 public void filter(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();

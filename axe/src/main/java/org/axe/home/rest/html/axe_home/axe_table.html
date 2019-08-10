@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/table", method = RequestMethod.GET)
+@Request(path = "/table", method = RequestMethod.GET)
 public void table(
 		@RequestParam("token")String token, 
 		@RequestParam(value = "s", required = true) String statics, 
@@ -15,7 +15,7 @@ public void table(
 	printFile(response, "org/axe/home/rest/html/table/" + statics, ct, token);
 }
 
-@Request(value = "/table/table_list", method = RequestMethod.GET)
+@Request(path = "/table/table_list", method = RequestMethod.GET)
 public List<Table> table_table_list(@RequestParam("token") String token, HttpServletRequest request,
 		HttpServletResponse response) {
 	try {

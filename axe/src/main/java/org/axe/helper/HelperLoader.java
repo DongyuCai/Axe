@@ -70,16 +70,24 @@ public final class HelperLoader {
         		new FrameworkStatusHelper(),//框架基础信息初始化
                 new ClassHelper(),//加载package下所有class到CLASS_SET
                 new BeanHelper(),//实例化CLASS_SET里的类，放到BEAN_MAP里
-                new FilterHelper(),//实例化所有Filter链表，并按层级排好序
-                new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
-                new ListenerHelper(),//实例化所有ListenerHelper
                 new AopHelper(),//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
-                new IocHelper(),//组装所有@Autowired
-                new ControllerHelper(),//加载ACTION_MAP
+                
+                //*DAO
                 new DataSourceHelper(),//加载DataSource配置
                 new DataBaseHelper(),//初始化数据库配置
                 new TableHelper(),//加载所有的@Table
                 new SchemaHelper(),//初始化所有entity的表结构自建
+                
+                //*MVC
+                new FilterHelper(),//实例化所有Filter链表，并按层级排好序
+                new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
+                new ListenerHelper(),//实例化所有ListenerHelper
+                new ControllerHelper(),//加载ACTION_MAP
+                
+                //*IOC组装
+                new IocHelper(),//组装所有@Autowired
+                
+                //*邮件
                 new MailHelper()//初始化邮件助手的配置
         };
     }

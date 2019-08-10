@@ -860,7 +860,7 @@ hashCode = String.valueOf(code);
 }
 html.append("<tr>");
 html.append("<td align=\"left\">"+(id++)+"</td>");
-html.append("<td align=\"left\">"+controller.desc()+"."+handler.getActionMethod().getAnnotation(Request.class).desc()+"</td>");
+html.append("<td align=\"left\">"+handler.getMappingPathDesc()+"</td>");
 html.append("<td align=\"left\">"+mappingPath+"</td>");
 html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/controller-"+hashCode+"/action?token="+token+"\">"+handler.getControllerClass().getName()+"</a></td>");
@@ -925,8 +925,6 @@ break;
 }
 }
 if(handler == null) break;
-
-String basePath = handler.getControllerClass().getAnnotation(Controller.class).basePath();
 html.append("<tr><td align=\"center\"><font size=\"28\">Action Detail - "+handler.getMappingPath()+"</font></td></tr>");
 html.append("");
 html.append("<tr><td><table cellspacing=\"0px\"><tr><td style=\"background-color: #AE0000\">");
@@ -942,48 +940,38 @@ html.append("<td align=\"left\"><b>值</b></td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">action-title</td>");
-html.append("<td align=\"left\">"+handler.getActionMethod().getAnnotation(Request.class).desc()+"</td>");
+html.append("<td align=\"left\">Desc</td>");
+html.append("<td align=\"left\">"+handler.getMappingPathDesc()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">mapping</td>");
+html.append("<td align=\"left\">Uri</td>");
 html.append("<td align=\"left\">"+handler.getMappingPath()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">request-method</td>");
+html.append("<td align=\"left\">Method</td>");
 html.append("<td align=\"left\">"+handler.getRequestMethod()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">content-type</td>");
+html.append("<td align=\"left\">Content-type</td>");
 html.append("<td align=\"left\">"+handler.getContentType()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">character-encoding</td>");
+html.append("<td align=\"left\">Character-encoding</td>");
 html.append("<td align=\"left\">"+handler.getCharacterEncoding()+"</td>");
 html.append("</tr>");
 html.append("<tr>");
 html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">action-method</td>");
-html.append("<td align=\"left\">"+handler.getActionMethod().toString()+"</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">controller-title</td>");
-html.append("<td align=\"left\">"+handler.getControllerClass().getAnnotation(Controller.class).desc()+"</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">basePath</td>");
-html.append("<td align=\"left\">"+basePath+"</td>");
-html.append("</tr>");
-html.append("<tr>");
-html.append("<td align=\"left\">&nbsp;</td>");
-html.append("<td align=\"left\">action-controller</td>");
+html.append("<td align=\"left\">Class</td>");
 html.append("<td align=\"left\">"+handler.getControllerClass().getName()+"</td>");
+html.append("</tr>");
+html.append("<tr>");
+html.append("<td align=\"left\">&nbsp;</td>");
+html.append("<td align=\"left\">Method</td>");
+html.append("<td align=\"left\">"+handler.getActionMethod().toString()+"</td>");
 html.append("</tr>");
 html.append("</table>");
 html.append("</td></tr><tr><td>&nbsp;</td></tr>");
@@ -1170,7 +1158,7 @@ e.printStackTrace();
 throw new RestException(e.getMessage());
 }
 }
-@Request(path="/dataSource", method=RequestMethod.GET)
+@Request(path = "/dataSource", method=RequestMethod.GET)
 public void dataSource(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 String contextPath = request.getContextPath();
 StringBuilder html = new StringBuilder();

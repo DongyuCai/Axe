@@ -77,23 +77,23 @@ public final class ControllerHelper implements Helper{
 	        Set<Class<?>> controllerClassSet = ClassHelper.getControllerClassSet();
 	        if (CollectionUtil.isNotEmpty(controllerClassSet)) {
 	            for (Class<?> controllerClass : controllerClassSet) {
-	            	String basePath = controllerClass.getAnnotation(Controller.class).basePath();
-	                Method[] methods = controllerClass.getDeclaredMethods();
-	                if (ArrayUtil.isNotEmpty(methods)) {
-	                    for (Method method : methods) {
+	            	Controller controller = controllerClass.getAnnotation(Controller.class);
+	                Method[] actionMethods = controllerClass.getDeclaredMethods();
+	                if (ArrayUtil.isNotEmpty(actionMethods)) {
+	                    for (Method actionMethod : actionMethods) {
 	                        //判断方法是否带有 Action 注解
-	                        if (method.isAnnotationPresent(Request.class)) {
-	                        	Request action = method.getAnnotation(Request.class);
-	                            String mappingPath = basePath+"/"+action.path();
+	                        if (actionMethod.isAnnotationPresent(Request.class)) {
+	                        	Request action = actionMethod.getAnnotation(Request.class);
+	                            String mappingPath = controller.basePath()+"/"+action.path();
 	                            String requestMethod = action.method().REQUEST_METHOD;
 	                            
 	                            //检查mappingPath是否合规
 	                            if(!RequestUtil.checkMappingPath(mappingPath)){
-	                            	throw new Exception("invalid @Request.value ["+mappingPath+"] of action: "+method.getName());
+	                            	throw new Exception("invalid @Request.value ["+mappingPath+"] of action: "+actionMethod.getName());
 	                            }
 	                            
 	                            //检查actionMethod是否合规
-	                            RequestUtil.checkActionMethod(method);
+	                            RequestUtil.checkActionMethod(actionMethod);
 	                            
 	                            //格式化
 	                            mappingPath = RequestUtil.formatUrl(mappingPath);
@@ -108,7 +108,7 @@ public final class ControllerHelper implements Helper{
 	                            		subNodeNameLineAry[i] = nodeNames[i+1];
 	                            	}
 	                            }
-	                            generateActionMap(nodeName, ACTION_MAP, controllerClass, method, subNodeNameLineAry,requestMethod,mappingPath);
+	                            generateActionMap(nodeName, ACTION_MAP, controllerClass,controller.desc(), actionMethod,action.desc(), subNodeNameLineAry,requestMethod,mappingPath);
 	                        }
 	                    }
 	                }
@@ -127,14 +127,14 @@ public final class ControllerHelper implements Helper{
 
     
     @SuppressWarnings("unchecked")
-	private static void generateActionMap(String nodeName,Map<String,Object> node,Class<?> controllerClass,Method actionMethod,String[] subNodeNameLineAry,String requestMethod,String mappingPath){
+	private static void generateActionMap(String nodeName,Map<String,Object> node,Class<?> controllerClass,String controllerDesc,Method actionMethod,String actionDesc,String[] subNodeNameLineAry,String requestMethod,String mappingPath){
     	//如果nodeName中有pathParam，全部替换成占位符?
     	nodeName = RequestUtil.castPathParam(nodeName);
     	
     	if(subNodeNameLineAry.length > 0){
-    		Object nodeValue = null;
+    		Map<String,Object> nodeValue = null;
     		if(node.containsKey(nodeName)){
-    			nodeValue = node.get(nodeName);
+    			nodeValue = (Map<String,Object>)node.get(nodeName);
     		}else{
     			nodeValue = new HashMap<String,Object>();
     			node.put(nodeName, nodeValue);
@@ -144,7 +144,7 @@ public final class ControllerHelper implements Helper{
         	for(int i=0;i<subNodeNameLineAry_next.length;i++){
         		subNodeNameLineAry_next[i] = subNodeNameLineAry[i+1];
         	}
-    		generateActionMap(nodeName_next, (Map<String,Object>)nodeValue, controllerClass, actionMethod, subNodeNameLineAry_next, requestMethod, mappingPath);
+    		generateActionMap(nodeName_next, nodeValue, controllerClass, controllerDesc, actionMethod, actionDesc, subNodeNameLineAry_next, requestMethod, mappingPath);
     	}else{
     		//到最后了
     		nodeName = requestMethod+":"+nodeName;
@@ -282,7 +282,7 @@ public final class ControllerHelper implements Helper{
     					}
     				}
     			}
-    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass, actionMethod,filterList,interceptorList);
+    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass,controllerDesc, actionMethod,actionDesc,filterList,interceptorList);
     			//构建树
     			node.put(nodeName, handler);
     			//存根到ACTIN_LIST

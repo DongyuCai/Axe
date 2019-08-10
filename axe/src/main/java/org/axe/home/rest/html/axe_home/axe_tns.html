@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/tns", method = RequestMethod.GET)
+@Request(path = "/tns", method = RequestMethod.GET)
 public void tns(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();

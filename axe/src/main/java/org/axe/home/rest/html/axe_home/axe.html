@@ -1,5 +1,5 @@
 <java>
-@Request(value = "", method = RequestMethod.GET)
+@Request(path = "", method = RequestMethod.GET)
 public void home(@RequestParam("token")String token, HttpServletRequest request, HttpServletResponse response) {
 	String contextPath = request.getContextPath();
 	StringBuilder html = new StringBuilder();

@@ -132,10 +132,7 @@ public final class MySqlUtil {
 	}
 	//给DaoAspect在做分片检测、动态建表时候用，此时已经有entity了
 	public static String getTableCreateSql(String dataSourceName, Object entity) throws Exception {
-		TableSchema tableSchema = TableHelper.getTableSchema(entity);
-		//由于是通过entity拿到的表结构，因此getTableName应该是真实的tableName
-		tableSchema.setTableName(TableHelper.getRealTableName(entity));
-		return getTableCreateSql(dataSourceName, tableSchema);
+		return getTableCreateSql(dataSourceName, TableHelper.getRealTableName(entity), TableHelper.getTableSchema(entity));
 	}
 	
 	private static String getTableCreateSql(String dataSourceName,String tableName,TableSchema tableSchema){

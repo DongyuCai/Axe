@@ -1,5 +1,5 @@
 <java>
-@Request(value = "/api_test", method = RequestMethod.GET)
+@Request(path = "/api_test", method = RequestMethod.GET)
 public void api_test(
 		@RequestParam("token")String token, 
 		@RequestParam(value = "s", required = true) String statics, 
@@ -15,7 +15,7 @@ public void api_test(
 	printFile(response, "org/axe/home/rest/html/api_test/" + statics, ct, token);
 }
 
-@Request(value = "/api_test/api_list", method = RequestMethod.GET)
+@Request(path = "/api_test/api_list", method = RequestMethod.GET)
 public List<Level_1> api_test_api_list(
 	@RequestParam("token")String token,  
 	HttpServletRequest request, HttpServletResponse response) {
