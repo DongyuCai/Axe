@@ -156,34 +156,9 @@ public class TransactionAspect extends AspectProxy {
     		}
     		
     		SHARDING_TABLE_CREATE_TASK_POINT_FLAG_HOLDER.remove();
-    		SHARDING_TABLE_CREATE_TASK_HOLDER.set(new HashSet<ShardingTableCreateTask>());
+    		SHARDING_TABLE_CREATE_TASK_HOLDER.remove();
         	LOGGER.debug("clean sharding table create task set on point:"+methodPoint);
         }
     }
     
-    /*@Override
-    public Object doProxy(ProxyChain proxyChain) throws Throwable {
-        Object result;
-        boolean flag = FLAG_HOLDER.get();
-        Method method = proxyChain.getTargetMethod();
-        if(!flag && method.isAnnotationPresent(Tns.class)){
-            FLAG_HOLDER.set(true);
-            try {
-                DataBaseHelper.beginTransaction();
-                LOGGER.debug("begin transaction by TNS");
-                result = proxyChain.doProxyChain();
-                DataBaseHelper.commitTransaction();
-                LOGGER.debug("commit transaction by TNS");
-            } catch (Exception e){
-                DataBaseHelper.rollbackTransaction();
-                LOGGER.debug("rollback transaction",e);
-                throw e;
-            } finally {
-                FLAG_HOLDER.remove();
-            }
-        } else {
-            result = proxyChain.doProxyChain();
-        }
-        return result;
-    }*/
 }
