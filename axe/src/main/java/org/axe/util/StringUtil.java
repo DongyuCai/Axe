@@ -43,7 +43,7 @@ public final class StringUtil {
 			buf.append("0");
 		}
 		String result = buf.toString();
-		buf.delete(0, buf.length());
+		buf.setLength(0);
 		return result;
 	}
 	
@@ -53,7 +53,7 @@ public final class StringUtil {
 			buf.insert(0, "0");
 		}
 		String result = buf.toString();
-		buf.delete(0, buf.length());
+		buf.setLength(0);
 		return result;
 	}
 

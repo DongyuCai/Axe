@@ -35,7 +35,7 @@ public class MD5Util {
             sBuffer.append(byteToArrayString(bByte[i]));
         }
         String result = sBuffer.toString();
-        sBuffer.delete(0, sBuffer.length());
+        sBuffer.setLength(0);
         return result;
     }
 

@@ -24,13 +24,15 @@ public abstract class Sharding implements TableNameEditor{
 	public abstract int oneTableMaxCount();
 	
 	@Override
-	public final String realTableName() {
+	public final String realTableName()throws Exception {
 		String realTableName = null;
 		Table table = this.getClass().getAnnotation(Table.class);
 		if(table != null){
 			realTableName = table.value()+"_sharding_"+shardingFlag;
+			return realTableName;
+		}else{
+			throw new Exception("no @Table annotation,so no real table name");
 		}
-		return realTableName;
 	}
 	
 }

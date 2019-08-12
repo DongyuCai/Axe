@@ -215,27 +215,42 @@ public final class MySqlUtil {
 		return createTableSqlBufer.toString();
 	}
 	
-	public static String getShardingTableCreateSql(String dataSourceName, TableSchema tableSchema) {
+	/**
+	 * 分片表完整结构初始化
+	 * 会创建分片管理表gt表、分片数据表首张表
+	 */
+	public static List<String> getShardingTableCreateSql(String dataSourceName, TableSchema tableSchema) {
 
-		StringBuilder createTableSqlBufer = new StringBuilder();
-		createTableSqlBufer.append("CREATE TABLE IF NOT EXISTS ").append(tableSchema.getTableName()).append("_sharding_gt").append(" (");
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.append("CREATE TABLE IF NOT EXISTS ").append(tableSchema.getTableName()).append("_sharding_gt").append(" (");
 		//分片ID，来自内存计算，不要担心分布式架构或多线程并发下会出现冲突，冲突了也只是覆盖，相反自增才会出现极端情况出现两条新表分片
-		createTableSqlBufer.append("`sharding_flag` int(11) NOT NULL COMMENT '分片ID',");
-		createTableSqlBufer.append("`sharding_table_status` int(11) NOT NULL COMMENT '状态：1.对应的分片数据表可以正常插入 0.不可插入',");
-		createTableSqlBufer.append("`row_count` bigint(20) NOT NULL COMMENT '总计数据条数',");
+		sqlBuffer.append("`sharding_flag` int(11) NOT NULL COMMENT '分片ID',");
+		sqlBuffer.append("`sharding_table_status` int(11) NOT NULL COMMENT '状态：1.对应的分片数据表可以正常插入 0.不可插入',");
+		sqlBuffer.append("`row_count` bigint(20) NOT NULL COMMENT '总计数据条数',");
 		// #主键定义
-		createTableSqlBufer.append("PRIMARY KEY (`sharding_flag`)");
+		sqlBuffer.append("PRIMARY KEY (`sharding_flag`)");
 
 		Properties configProps = ConfigHelper.getCONFIG_PROPS();
 		String jdbcCharacter = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_CHARACTER,"utf8");
-		createTableSqlBufer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(jdbcCharacter);
+		sqlBuffer.append(") ENGINE=InnoDB DEFAULT CHARSET=").append(jdbcCharacter);
 		String jdbcCollate = PropsUtil.getString(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_COLLATE);
 		if (StringUtil.isNotEmpty(jdbcCollate)) {
 			// 如果有校验编码，那么也要
-			createTableSqlBufer.append(" COLLATE=").append(jdbcCollate);
+			sqlBuffer.append(" COLLATE=").append(jdbcCollate);
 		}
-
-		return createTableSqlBufer.toString();
+		
+		List<String> sqlList = new ArrayList<>();
+		//创建分表gt表的sql
+		String shardingGtTableSql = sqlBuffer.toString();
+		sqlList.add(shardingGtTableSql);
+		//创建分表首张数据表的sql
+		String shardingFirstDataTableSql = getTableCreateSql(dataSourceName,tableSchema.getTableName()+"_sharding_1",tableSchema);
+		sqlList.add(shardingFirstDataTableSql);
+		//新增分片记录
+		String shardingGtTableInsertRecordSql=CommonSqlUtil.getShardingGtTableRecordSql(tableSchema, 1);
+		sqlList.add(shardingGtTableInsertRecordSql);
+		
+		return sqlList;
 	}
 
 	private static String javaType2MysqlColumnDefine(Field field, boolean nullAble) {

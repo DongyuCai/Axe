@@ -276,7 +276,7 @@ public final class HttpUtil {
 				LOGGER.error("发送POST请求 关闭输出流、输入流出现异常！"+ex.getMessage()+"["+url+"]");
 			}
 		}
-		buffer.delete(0, buffer.length());
+		buffer.setLength(0);
 		return result;
 	}
 

@@ -53,8 +53,19 @@ public class CommonSqlUtil {
 
 	private CommonSqlUtil() {}
 	
+	public static String getShardingGtTableRecordSql(TableSchema tableSchema,int shardingFlag){
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.setLength(0);
+		sqlBuffer.append("INSERT INTO ")
+		.append(tableSchema.getTableName())
+		.append("_sharding_gt(sharding_flag,sharding_table_status,row_count) VALUES (")
+		.append(shardingFlag).append(",1,0)");
+		return sqlBuffer.toString();
+	}
+	
 	public static SqlPackage getUpdateSqlPackage(Object entity) {
-		String sql = "UPDATE " + TableHelper.getRealTableName(entity) + " SET ";
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.append("UPDATE ").append(TableHelper.getRealTableName(entity)).append(" SET ");
 		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		// #会做修改的字段
 		StringBuilder columns = new StringBuilder();
@@ -75,18 +86,19 @@ public class CommonSqlUtil {
 			}
 		}
 		columns.replace(columns.lastIndexOf(", "), columns.length(), " ");
-		sql = sql + columns.toString() + where.toString();
+		sqlBuffer.append(columns.toString()).append(where.toString());
 
 		if (CollectionUtil.isEmpty(paramsWhere)) {
 			//注意，updateEntity，如果Entity中没有标注@Id的字段，是不能更新的，否则会where 1=1 全表更新！
 			throw new RuntimeException("update entity failure!cannot find any field with @Id in " + entity.getClass());
 		}
 		paramsColumns.addAll(paramsWhere);
-		return new SqlPackage(sql, paramsColumns.toArray(), null);
+		return new SqlPackage(sqlBuffer.toString(), paramsColumns.toArray(), null);
 	}
 
 	public static SqlPackage getDeleteSqlPackage(Object entity) {
-		String sql = "DELETE FROM " + TableHelper.getRealTableName(entity);
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.append("DELETE FROM ").append(TableHelper.getRealTableName(entity));
 		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
@@ -106,17 +118,18 @@ public class CommonSqlUtil {
 			where.append(" and ").append(columnSchema.getColumnName()).append("=?");
 			params[i] = ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod());
 		}
-		sql = sql + where.toString();
+		sqlBuffer.append(where.toString());
 
 		if (CollectionUtil.isEmpty(idColumnList)) {
 			// 注意，deleteEntity，如果Entity中没有标注@Id的字段，是不能删除的，否则会where 1=1 全表删除！
 			throw new RuntimeException("delete entity failure!cannot find any field with @Id in " + entity.getClass());
 		}
-		return new SqlPackage(sql, params, null);
+		return new SqlPackage(sqlBuffer.toString(), params, null);
 	}
 
 	public static SqlPackage getSelectByIdSqlPackage(Object entity) {
-		String sql = "SELECT * FROM " + TableHelper.getRealTableName(entity);
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.append("SELECT * FROM ").append(TableHelper.getRealTableName(entity));
 		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
@@ -140,9 +153,9 @@ public class CommonSqlUtil {
 			where.append(" and ").append(columnSchema.getColumnName()).append("=?");
 			params[i] = ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod());
 		}
-		sql = sql + where.toString();
+		sqlBuffer.append(where.toString());
 
-		return new SqlPackage(sql, params, null);
+		return new SqlPackage(sqlBuffer.toString(), params, null);
 	}
 	
 	public static Map<String, TableSchema> matcherEntityTableMap(String sql) {

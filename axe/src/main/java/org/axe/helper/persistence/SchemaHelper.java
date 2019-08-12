@@ -24,6 +24,7 @@
 package org.axe.helper.persistence;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -79,29 +80,39 @@ public class SchemaHelper implements Helper{
 	}
 	
 	public void createTable(TableSchema tableSchema) throws SQLException{
+		List<String> createDataTableSqlList = new ArrayList<>();
 		if(DataSourceHelper.isMySql(tableSchema.getDataSourceName())){
-			String createTableSql = null;
 			if(tableSchema.getSharding()){
 				//分片
-				createTableSql = MySqlUtil.getShardingTableCreateSql(tableSchema.getDataSourceName(), tableSchema);
+				createDataTableSqlList = MySqlUtil.getShardingTableCreateSql(tableSchema.getDataSourceName(), tableSchema);
 			}else{
-				createTableSql = MySqlUtil.getTableCreateSql(tableSchema.getDataSourceName(),tableSchema);
+				String tableCreateSql = MySqlUtil.getTableCreateSql(tableSchema.getDataSourceName(),tableSchema);
+				createDataTableSqlList.add(tableCreateSql);
 			}
-			DataBaseHelper.executeUpdate(new String[]{createTableSql}, new Object[]{}, new Class<?>[]{}, tableSchema.getDataSourceName());
 		}else if(DataSourceHelper.isOracle(tableSchema.getDataSourceName())){
-			List<String> createTableSqlList = null;
 			if(tableSchema.getSharding()){
-				createTableSqlList = OracleUtil.getShardingTableCreateSql(tableSchema.getDataSourceName(), tableSchema);
+				createDataTableSqlList = OracleUtil.getShardingTableCreateSql(tableSchema.getDataSourceName(), tableSchema);
 			}else{
-				createTableSqlList = OracleUtil.getTableCreateSql(tableSchema.getDataSourceName(),tableSchema);
+				createDataTableSqlList = OracleUtil.getTableCreateSql(tableSchema.getDataSourceName(),tableSchema);
 			}
-			String[] sqlAry = new String[createTableSqlList.size()];
-			for(int i=0;i<sqlAry.length;i++){
-				sqlAry[i] = createTableSqlList.get(i);
-			}
-			DataBaseHelper.executeUpdate(sqlAry, new Object[]{}, new Class<?>[]{}, tableSchema.getDataSourceName());
+			
 		}else {
 			throw new RuntimeException(tableSchema.getEntityClass()+" connot create table, unspported dbtype driver, only mysql/oracle");
+		}
+		
+		String[] sqlAry = new String[createDataTableSqlList.size()];
+		for(int i=0;i<sqlAry.length;i++){
+			sqlAry[i] = createDataTableSqlList.get(i);
+		}
+		try {
+			DataBaseHelper.executeUpdate(sqlAry, new Object[]{}, new Class<?>[]{}, tableSchema.getDataSourceName());
+		} catch (Exception e) {
+			//如果是重复键异常，则不做处理，这种情况
+			if(e != null && e.getMessage().toUpperCase().contains("DUPLICATE")){
+				//不做处理
+			}else{
+				throw e;
+			}
 		}
 	}
 	

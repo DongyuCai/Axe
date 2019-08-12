@@ -108,8 +108,8 @@ public final class OracleUtil {
 	
 	private static List<String> getTableCreateSql(String dataSourceName,String tableName, TableSchema tableSchema) {
 		List<String> sqlList = new ArrayList<>();
-		StringBuilder createTableSqlBufer = new StringBuilder();
-		createTableSqlBufer.append("CREATE TABLE ").append(tableName).append(" (");
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.append("CREATE TABLE ").append(tableName).append(" (");
 		List<ColumnSchema> mappingColumnList = tableSchema.getMappingColumnList();
 		// #转类非主键字段到数据库表字段定义
 		List<ColumnSchema> primaryColumnList = new ArrayList<>();
@@ -131,78 +131,78 @@ public final class OracleUtil {
 		// #普通建处理
 		for (int i = 0; i < normalColumnList.size(); i++) {
 			ColumnSchema columnSchema = normalColumnList.get(i);
-			createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+			sqlBuffer.append("").append(columnSchema.getColumnName()).append("");
 			String columnDefine = javaType2OracleColumnDefine(columnSchema.getColumnSchema().getField(), true);
 			if (StringUtil.isEmpty(columnDefine)) {
 				throw new RuntimeException(tableSchema.getEntityClass().getName() + "#[" + columnSchema.getFieldName() + "] connot convert to oracle type from " + columnSchema.getFieldType());
 			}
-			createTableSqlBufer.append(" ").append(columnDefine);
+			sqlBuffer.append(" ").append(columnDefine);
 
 			if (i < normalColumnList.size() - 1) {
-				createTableSqlBufer.append(",");
+				sqlBuffer.append(",");
 			}
 		}
 		// #主键定义
 		if (CollectionUtil.isNotEmpty(primaryColumnList)) {
-			createTableSqlBufer.append(",");
+			sqlBuffer.append(",");
 
 			for (int i = 0; i < primaryColumnList.size(); i++) {
 				ColumnSchema columnSchema = primaryColumnList.get(i);
-				createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+				sqlBuffer.append("").append(columnSchema.getColumnName()).append("");
 				String columnDefine = javaType2OracleColumnDefine(columnSchema.getColumnSchema().getField(), false);
 				if (StringUtil.isEmpty(columnDefine)) {
 					throw new RuntimeException(tableSchema.getEntityClass().getName() + "#[" + columnSchema.getFieldName()
 							+ "] connot convert to oracle type from " + columnSchema.getFieldType());
 				}
-				createTableSqlBufer.append(" ").append(columnDefine).append(",");
+				sqlBuffer.append(" ").append(columnDefine).append(",");
 			}
 
-			createTableSqlBufer.append("CONSTRAINT ").append(tableName).append("_pk").append(" PRIMARY KEY (");
+			sqlBuffer.append("CONSTRAINT ").append(tableName).append("_pk").append(" PRIMARY KEY (");
 			for (int i = 0; i < primaryColumnList.size(); i++) {
 				ColumnSchema columnSchema = primaryColumnList.get(i);
-				createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+				sqlBuffer.append("").append(columnSchema.getColumnName()).append("");
 				if (i < primaryColumnList.size() - 1) {
-					createTableSqlBufer.append(",");
+					sqlBuffer.append(",");
 				}
 			}
-			createTableSqlBufer.append(")");
+			sqlBuffer.append(")");
 
 		}
 
 		// #唯一键约束
 		if (CollectionUtil.isNotEmpty(uniqueColumnList)) {
-			createTableSqlBufer.append(",");
+			sqlBuffer.append(",");
 
-			createTableSqlBufer.append("CONSTRAINT ").append(tableName).append("_uq").append("UNIQUE KEY (");
+			sqlBuffer.append("CONSTRAINT ").append(tableName).append("_uq").append("UNIQUE KEY (");
 			for (int i = 0; i < uniqueColumnList.size(); i++) {
 				ColumnSchema columnSchema = uniqueColumnList.get(i);
-				createTableSqlBufer.append("").append(columnSchema.getColumnName()).append("");
+				sqlBuffer.append("").append(columnSchema.getColumnName()).append("");
 				if (i < uniqueColumnList.size() - 1) {
-					createTableSqlBufer.append(",");
+					sqlBuffer.append(",");
 				}
 			}
-			createTableSqlBufer.append(")");
+			sqlBuffer.append(")");
 		}
 
-		createTableSqlBufer.append(")");
-		sqlList.add(createTableSqlBufer.toString());
-		createTableSqlBufer.delete(0, createTableSqlBufer.length());
+		sqlBuffer.append(")");
+		sqlList.add(sqlBuffer.toString());
+		sqlBuffer.setLength(0);
 
 		// 注解
 		for (ColumnSchema columnSchema:primaryColumnList) {
 			if (StringUtil.isNotEmpty(columnSchema.getComment())) {
-				createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(columnSchema.getColumnName())
+				sqlBuffer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(columnSchema.getColumnName())
 						.append(" IS '").append(columnSchema.getComment()).append("'");
-				sqlList.add(createTableSqlBufer.toString());
-				createTableSqlBufer.delete(0, createTableSqlBufer.length());
+				sqlList.add(sqlBuffer.toString());
+				sqlBuffer.setLength(0);
 			}
 		}
 		for (ColumnSchema columnSchema:normalColumnList) {
 			if (StringUtil.isNotEmpty(columnSchema.getComment())) {
-				createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(columnSchema.getColumnName())
+				sqlBuffer.append("COMMENT ON COLUMN ").append(tableName).append(".").append(columnSchema.getColumnName())
 						.append(" IS '").append(columnSchema.getComment()).append("'");
-				sqlList.add(createTableSqlBufer.toString());
-				createTableSqlBufer.delete(0, createTableSqlBufer.length());
+				sqlList.add(sqlBuffer.toString());
+				sqlBuffer.setLength(0);
 			}
 		}
 
@@ -212,39 +212,50 @@ public final class OracleUtil {
 			Field field = primaryColumnList.get(0).getColumnSchema().getField();
 			if (!field.isAnnotationPresent(ColumnDefine.class)) {
 				if (field.getAnnotation(Id.class).idGenerateWay().equals(IdGenerateWay.AUTO_INCREMENT)) {
-					createTableSqlBufer.append("CREATE SEQUENCE ").append(tableName).append("_sq").append(" ")
+					sqlBuffer.append("CREATE SEQUENCE ").append(tableName).append("_sq").append(" ")
 							.append("MINVALUE 1 ").append("MAXVALUE 99999999 ").append("START WITH 1 ")
 							.append("INCREMENT BY 1 ").append("CACHE 20");
-					sqlList.add(createTableSqlBufer.toString());
-					createTableSqlBufer.delete(0, createTableSqlBufer.length());
+					sqlList.add(sqlBuffer.toString());
+					sqlBuffer.setLength(0);
 				}
 			}
 		}
 		return sqlList;
 	}
-
+	/**
+	 * 分片表完整结构初始化
+	 * 会创建分片管理表gt表、分片数据表首张表
+	 */
 	public static List<String> getShardingTableCreateSql(String dataSourceName, TableSchema tableSchema) {
 		List<String> sqlList = new ArrayList<>();
-		StringBuilder createTableSqlBufer = new StringBuilder();
-		createTableSqlBufer.append("CREATE TABLE ").append(tableSchema.getTableName()).append("_sharding_gt").append(" (");
+		StringBuilder sqlBuffer = new StringBuilder();
+		sqlBuffer.append("CREATE TABLE ").append(tableSchema.getTableName()).append("_sharding_gt").append(" (");
 		//分片ID，来自内存计算，不要担心分布式架构或多线程并发下会出现冲突，冲突了也只是覆盖，相反自增才会出现极端情况出现两条新表分片
-		createTableSqlBufer.append("sharding_flag number(9) PRIMARY KEY,");
-		createTableSqlBufer.append("sharding_table_status number(9),");
-		createTableSqlBufer.append("row_count number(18)");
-		createTableSqlBufer.append(")");
-		sqlList.add(createTableSqlBufer.toString());
-		createTableSqlBufer.delete(0, createTableSqlBufer.length());
+		sqlBuffer.append("sharding_flag number(9) PRIMARY KEY,");
+		sqlBuffer.append("sharding_table_status number(9),");
+		sqlBuffer.append("row_count number(18)");
+		sqlBuffer.append(")");
+		sqlList.add(sqlBuffer.toString());
+		sqlBuffer.setLength(0);
 
 		// 注解
-		createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".sharding_flag IS '分片ID'");
-		sqlList.add(createTableSqlBufer.toString());
-		createTableSqlBufer.delete(0, createTableSqlBufer.length());
-		createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".sharding_table_status IS '状态：1.对应的分片数据表可以正常插入 0.不可插入'");
-		sqlList.add(createTableSqlBufer.toString());
-		createTableSqlBufer.delete(0, createTableSqlBufer.length());
-		createTableSqlBufer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".row_count IS '总计数据条数'");
-		sqlList.add(createTableSqlBufer.toString());
-		createTableSqlBufer.delete(0, createTableSqlBufer.length());
+		sqlBuffer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".sharding_flag IS '分片ID'");
+		sqlList.add(sqlBuffer.toString());
+		sqlBuffer.setLength(0);
+		sqlBuffer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".sharding_table_status IS '状态：1.对应的分片数据表可以正常插入 0.不可插入'");
+		sqlList.add(sqlBuffer.toString());
+		sqlBuffer.setLength(0);
+		sqlBuffer.append("COMMENT ON COLUMN ").append(tableSchema.getTableName()).append("_sharding_gt").append(".row_count IS '总计数据条数'");
+		sqlList.add(sqlBuffer.toString());
+		sqlBuffer.setLength(0);
+		
+
+		//创建分表首张数据表的sql
+		sqlList.addAll(getTableCreateSql(dataSourceName,tableSchema.getTableName()+"_sharding_1",tableSchema));
+		//新增分片记录
+		String shardingGtTableInsertRecordSql=CommonSqlUtil.getShardingGtTableRecordSql(tableSchema, 1);
+		sqlList.add(shardingGtTableInsertRecordSql);
+		
 		return sqlList;
 	}
 

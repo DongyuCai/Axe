@@ -41,6 +41,7 @@ import org.axe.annotation.persistence.ResultProxy;
 import org.axe.annotation.persistence.Sql;
 import org.axe.bean.persistence.Page;
 import org.axe.bean.persistence.PageConfig;
+import org.axe.bean.persistence.ShardingTableCreateTask;
 import org.axe.bean.persistence.SqlPackage;
 import org.axe.bean.persistence.TableSchema;
 import org.axe.helper.persistence.DataBaseHelper;
@@ -115,15 +116,15 @@ public class DaoAspect implements Proxy {
 				Map<String,String> sqlEntityTableNameMap = new HashMap<>();
 				//分片的需要获取分片表集合
 				if(tableSchema.getSharding()){
-					StringBuilder sqlBuf = new StringBuilder();
-					sqlBuf.append("SELECT sharding_flag FROM ")
+					StringBuilder sqlBuffer = new StringBuilder();
+					sqlBuffer.append("SELECT sharding_flag FROM ")
 					.append(tableSchema.getTableName())
 					.append("_sharding_gt ORDER BY sharding_flag ASC");
-					List<Map<String, Object>> queryList = DataBaseHelper.queryList(sqlBuf.toString(), new Object[]{}, new Class<?>[]{},daoDataSourceName);
+					List<Map<String, Object>> queryList = DataBaseHelper.queryList(sqlBuffer.toString(), new Object[]{}, new Class<?>[]{},daoDataSourceName);
 					for(Map<String,Object> row:queryList){
-						sqlBuf.delete(0, sqlBuf.length());
-						sqlBuf.append(tableSchema.getTableName()).append("_sharding_").append(row.get("sharding_flag").toString());
-						sqlEntityTableNameMap.put(sqlBuf.toString(), entityClassSimpleName);
+						sqlBuffer.setLength(0);
+						sqlBuffer.append(tableSchema.getTableName()).append("_sharding_").append(row.get("sharding_flag").toString());
+						sqlEntityTableNameMap.put(sqlBuffer.toString(), entityClassSimpleName);
 					}
 				}else{
 					sqlEntityTableNameMap.put(tableSchema.getTableName(), entityClassSimpleName);
@@ -526,54 +527,58 @@ public class DaoAspect implements Proxy {
 			//如果是保存，那就不需要了。
 			if(sentity.getShardingFlag() == null){
 				//查询当前可以插入的表分片的id
-				StringBuilder sql = new StringBuilder();
-				sql.append("SELECT sharding_flag FROM ")
+				StringBuilder sqlBuffer = new StringBuilder();
+				sqlBuffer.append("SELECT sharding_flag FROM ")
 				.append(tableSchema.getTableName())
 				.append("_sharding_gt WHERE sharding_table_status=1 ORDER BY sharding_flag ASC");
 				Integer shardingFlag = null;
-				shardingFlag = DataBaseHelper.queryPrimitive(sql.toString(), new Object[]{}, new Class<?>[]{},dataSourceName);
+				shardingFlag = DataBaseHelper.queryPrimitive(sqlBuffer.toString(), new Object[]{}, new Class<?>[]{},dataSourceName);
 				
 				if(shardingFlag == null){
 					//如果是空，没有可用的分片id，需要新增分片记录和分片数据表
 					//#1.计算新的分片id
 					//那么继续看，最后一条不可用的分片id是多少，倒序排序，取第一条
-					sql.delete(0, sql.length());
-					sql.append("SELECT sharding_flag FROM ")
+					sqlBuffer.setLength(0);
+					sqlBuffer.append("SELECT sharding_flag FROM ")
 					.append(tableSchema.getTableName())
 					.append("_sharding_gt WHERE sharding_table_status=0 ORDER BY sharding_flag DESC");//这里不加limit因为标准sql，不能有方言
-					shardingFlag = DataBaseHelper.queryPrimitive(sql.toString(), new Object[]{}, new Class<?>[]{},dataSourceName);
+					shardingFlag = DataBaseHelper.queryPrimitive(sqlBuffer.toString(), new Object[]{}, new Class<?>[]{},dataSourceName);
+					//先将entity数据对象的分片标识+1，下面开始构建新的分片数据表，但是由于分片数据表要退出事务后才创建，所以等下还得把分片标识先改回来
+					sentity.setShardingFlag(shardingFlag+1);
 					
-					if(shardingFlag == null){
-						//如果还是空，说明是第一次，那么从1开始
-						shardingFlag = 1;
-					}else{
-						//有值，就加1，作为新的分片id
-						shardingFlag = shardingFlag+1;
-					}
-					
-					//#2.新增分片数据表，一定是先增表，后增分片记录，这样如果出现中断，再次走一遍不会出问题
-					sentity.setShardingFlag(shardingFlag);//用于建表
+					//#2.新增分片数据表的sql，一定是先增表，后增分片记录，这样如果出现中断，再次走一遍不会出问题
+//					sentity.setShardingFlag(shardingFlag);//用于建表
+					List<String> shardingTableCreateSqlAry = new ArrayList<>();
 					if(DataSourceHelper.isMySql(dataSourceName)){
 						String createTableSql = MySqlUtil.getTableCreateSql(dataSourceName,entity);
-						DataBaseHelper.executeUpdate(new String[]{createTableSql}, new Object[]{}, new Class<?>[]{}, dataSourceName);
+						shardingTableCreateSqlAry.add(createTableSql);
+//						DataBaseHelper.executeUpdate(new String[]{createTableSql}, new Object[]{}, new Class<?>[]{}, dataSourceName);
 					}else if(DataSourceHelper.isOracle(dataSourceName)){
-						List<String> createTableSqlList = OracleUtil.getTableCreateSql(dataSourceName,entity);
-						String[] sqlAry = new String[createTableSqlList.size()];
-						for(int i=0;i<sqlAry.length;i++){
-							sqlAry[i] = createTableSqlList.get(i);
-						}
-						DataBaseHelper.executeUpdate(sqlAry, new Object[]{}, new Class<?>[]{}, dataSourceName);
+						shardingTableCreateSqlAry = OracleUtil.getTableCreateSql(dataSourceName,entity);
+//						DataBaseHelper.executeUpdate(sqlAry, new Object[]{}, new Class<?>[]{}, dataSourceName);
 					}else {
-						throw new Exception(tableSchema.getEntityClass().getName()+" sharding table connot create table, unspported dbtype driver, only mysql/oracle");
+						throw new Exception(tableSchema.getEntityClass().getName()+" sharding table create task make failed, unspported dbtype driver, only mysql/oracle");
 					}
 					
-					//#3.新增分片记录
-					sql.delete(0, sql.length());
-					sql.append("INSERT INTO ")
-					.append(tableSchema.getTableName())
-					.append("_sharding_gt(sharding_flag,sharding_table_status,row_count) VALUES (")
-					.append(shardingFlag).append(",1,0)");
-					shardingFlag = DataBaseHelper.executeUpdate(new String[]{sql.toString()}, new Object[]{}, new Class<?>[]{},dataSourceName);
+					//#3.新增分片记录的sql
+					String updateGtTableRecordSql = CommonSqlUtil.getShardingGtTableRecordSql(tableSchema, shardingFlag+1);
+					
+					//#4.构建新增分片数据表的任务，放在事务之后执行
+					ShardingTableCreateTask task = new ShardingTableCreateTask();
+					task.setDataSourceName(dataSourceName);
+					task.setTableName(tableSchema.getTableName());
+					task.setShardingFlag(task.getShardingFlag());
+					String[] createDataTableSqlAry = new String[shardingTableCreateSqlAry.size()];
+					for(int i=0;i<createDataTableSqlAry.length;i++){
+						createDataTableSqlAry[i] = shardingTableCreateSqlAry.get(i);
+					}
+					task.setCreateDataTableSqlAry(createDataTableSqlAry);
+					task.setUpdateGtTableRecordSql(updateGtTableRecordSql);
+					TransactionAspect.addShardingTableCreateTask(task);
+					
+					
+					//将数据中的分片标识，改回来，还是存在老的分片数据表，等下次新的分片表好了，再去插入
+					sentity.setShardingFlag(shardingFlag);
 				}else{
 					//如果查到了分片id，直接塞入，准备后续下一步插入
 					sentity.setShardingFlag(shardingFlag);
@@ -604,18 +609,18 @@ public class DaoAspect implements Proxy {
 			}
 			
 			//查询当前可以插入的表分片的id
-			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT count(1) FROM ").append(TableHelper.getRealTableName(entity));
-			long row_count = DataBaseHelper.queryPrimitive(sql.toString(), new Object[]{}, new Class<?>[]{},dataSourceName);
-			sql.delete(0, sql.length());
-			sql.append("UPDATE ")
+			StringBuilder sqlBuffer = new StringBuilder();
+			sqlBuffer.append("SELECT count(1) FROM ").append(TableHelper.getRealTableName(entity));
+			long row_count = DataBaseHelper.queryPrimitive(sqlBuffer.toString(), new Object[]{}, new Class<?>[]{},dataSourceName);
+			sqlBuffer.setLength(0);
+			sqlBuffer.append("UPDATE ")
 			.append(tableSchema.getTableName())
 			.append("_sharding_gt set row_count=").append(row_count);
 			if(row_count >= sentity.oneTableMaxCount()){
-				sql.append(",sharding_table_status=0");
+				sqlBuffer.append(",sharding_table_status=0");
 			}
-			sql.append(" where sharding_flag=").append(sentity.getShardingFlag());
-			DataBaseHelper.executeUpdate(new String[]{sql.toString()}, new Object[]{}, new Class<?>[]{},dataSourceName);
+			sqlBuffer.append(" where sharding_flag=").append(sentity.getShardingFlag());
+			DataBaseHelper.executeUpdate(new String[]{sqlBuffer.toString()}, new Object[]{}, new Class<?>[]{},dataSourceName);
 		}
 	}
 	

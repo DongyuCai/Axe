@@ -315,7 +315,7 @@ public class ApiExportUtil {
 								desc = rp.desc();
 							}
 							
-							requestParamFormatBuf.delete(0, requestParamFormatBuf.length());
+							requestParamFormatBuf.setLength(0);
 							if(StringUtil.isNotEmpty(required)){
 								requestParamFormatBuf.append("[").append("必填：").append(required).append("]");
 							}
@@ -330,7 +330,7 @@ public class ApiExportUtil {
 							}
 							requestParamBody.put(name, defaultValue);
 							requestParamBodyFormat.put(name, requestParamFormatBuf.toString());
-							requestParamFormatBuf.delete(0, requestParamFormatBuf.length());
+							requestParamFormatBuf.setLength(0);
 						}else if(re != null){
 							Set<String> excludedFieldSet = new HashSet<>();
 							if(re.excludedFields() != null){
@@ -498,7 +498,7 @@ public class ApiExportUtil {
 			}
 			
 			
-			buf.delete(0, buf.length());
+			buf.setLength(0);
 			String required = "否";
 			String type = field.getType().getSimpleName();
 			String defaultValue = "";
@@ -524,8 +524,8 @@ public class ApiExportUtil {
 					desc = columnDefine.value().substring(indexStart+1, indexEnd);
 				}
 			}
-			
-			buf.delete(0, buf.length());
+
+			buf.setLength(0);
 			if(StringUtil.isNotEmpty(required)){
 				buf.append("[").append("必填：").append(required).append("]");
 			}
@@ -541,7 +541,7 @@ public class ApiExportUtil {
 			
 			bodyParamMap.put(name, defaultValue);
 			bodyParamMapFormat.put(name, buf.toString());
-			buf.delete(0, buf.length());
+			buf.setLength(0);
 		}while(false);
 	}
 	

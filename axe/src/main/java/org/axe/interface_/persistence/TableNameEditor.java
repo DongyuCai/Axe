@@ -10,6 +10,6 @@ public interface TableNameEditor {
 	/**
 	 * 最终的真实表名，可以是实体类类名
 	 */
-	public String realTableName();
+	public String realTableName()throws Exception;
 	
 }

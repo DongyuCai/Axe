@@ -51,8 +51,6 @@ import org.axe.util.StringUtil;
 import org.axe.util.sql.CommonSqlUtil;
 import org.axe.util.sql.MySqlUtil;
 import org.axe.util.sql.OracleUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -62,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * TODO(OK):自动返回新增主键
  */
 public final class DataBaseHelper implements Helper{
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
     
     private static ThreadLocal<HashMap<String,Connection>> CONNECTION_HOLDER;
     
@@ -103,7 +101,7 @@ public final class DataBaseHelper implements Helper{
         			connMap.put(dataSourceName, connection);
         		}
             } catch (SQLException e) {
-                LOGGER.error("get connection failure", e);
+//                LOGGER.error("get connection failure", e);
                 throw e;
             }
             
@@ -132,7 +130,7 @@ public final class DataBaseHelper implements Helper{
 				}
     		}while(false);
 		} catch (SQLException e) {
-			LOGGER.error("release connection of dataSource["+dataSourceName+"] failure", e);
+//			LOGGER.error("release connection of dataSource["+dataSourceName+"] failure", e);
 			throw e;
 		}  finally {
 			if(connMap != null){
@@ -235,7 +233,7 @@ public final class DataBaseHelper implements Helper{
 			table.close();
 			se.close();
         } catch (SQLException e) {
-            LOGGER.error("query entity list failure", e);
+//            LOGGER.error("query entity list failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -284,7 +282,7 @@ public final class DataBaseHelper implements Helper{
 			table.close();
 			se.close();
         } catch (SQLException e) {
-            LOGGER.error("query entity failure", e);
+//            LOGGER.error("query entity failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -320,7 +318,7 @@ public final class DataBaseHelper implements Helper{
 			table.close();
 			se.close();
         } catch (SQLException e) {
-            LOGGER.error("execute queryList failure", e);
+//            LOGGER.error("execute queryList failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -355,7 +353,7 @@ public final class DataBaseHelper implements Helper{
 			table.close();
 			se.close();
         } catch (SQLException e) {
-            LOGGER.error("execute queryMap failure", e);
+//            LOGGER.error("execute queryMap failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -390,7 +388,7 @@ public final class DataBaseHelper implements Helper{
 			table.close();
 			se.close();
         } catch (SQLException e) {
-            LOGGER.error("execute queryPrimitive failure", e);
+//            LOGGER.error("execute queryPrimitive failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -419,7 +417,7 @@ public final class DataBaseHelper implements Helper{
 //        	SqlPackage sp = SqlHelper.convertGetFlag(sql, params, paramTypes);
             result = CastUtil.castLong(queryPrimitive(sql, params, paramTypes, dataSourceName));
         } catch (Exception e) {
-            LOGGER.error("execute countQuery failure", e);
+//            LOGGER.error("execute countQuery failure", e);
             throw new RuntimeException(e);
         }
         return result;
@@ -444,7 +442,34 @@ public final class DataBaseHelper implements Helper{
         		seAry[i].close();
         	}
         } catch (SQLException e) {
-            LOGGER.error("execute update failure", e);
+//            LOGGER.error("execute update failure", e);
+            throw e;
+        } finally {
+            if(conn.getAutoCommit()){
+                closeConnection(dataSourceName);
+            }
+        }
+        return rows;
+    }
+    
+    public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
+        String dataSourceName = DataSourceHelper.getDefaultDataSourceName();
+        return executeUpdate(sql, params, paramTypes, dataSourceName);
+    }
+
+    /**
+     * 执行更新语句 （包括 update、delete）
+     * @throws SQLException 
+     */
+    public static int executeUpdate(String sql, Object[] params, Class<?>[] paramTypes, String dataSourceName) throws SQLException {
+        int rows = 0;
+        Connection conn = getConnection(dataSourceName);
+        try {
+        	SqlExecutor se =  getPrepareStatement(dataSourceName,conn, sql, params, paramTypes, false);
+        	rows = se.readyExecuteStatement().executeUpdate();
+        	se.close();
+        } catch (SQLException e) {
+//            LOGGER.error("execute update failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -474,7 +499,7 @@ public final class DataBaseHelper implements Helper{
         	generatedKey = se.getGeneratedKeys();
 			se.close();
         } catch (SQLException e) {
-            LOGGER.error("execute insert failure", e);
+//            LOGGER.error("execute insert failure", e);
             throw e;
         } finally {
             if(conn.getAutoCommit()){
@@ -644,7 +669,7 @@ public final class DataBaseHelper implements Helper{
         	}
         	CONNECTION_HOLDER.set(connMap);
         } catch (SQLException e){
-            LOGGER.error("begin transaction failure",e);
+//            LOGGER.error("begin transaction failure",e);
             throw e;
         }
 //        t = System.currentTimeMillis();
@@ -659,11 +684,11 @@ public final class DataBaseHelper implements Helper{
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
     	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
         if(connMap != null && connMap.size() > 0){
-        	String errorDataSourceName = null;
+//        	String errorDataSourceName = null;
             try {
             	for(String dataSourceName:connMap.keySet()){
             		if(dsMap.get(dataSourceName).tns()){
-            			errorDataSourceName = dataSourceName;
+//            			errorDataSourceName = dataSourceName;
             			Connection conn = connMap.get(dataSourceName);
             			if(!conn.getAutoCommit()){
             				conn.commit();
@@ -671,7 +696,7 @@ public final class DataBaseHelper implements Helper{
             		}
             	}
             } catch (SQLException e){
-                LOGGER.error("commit transaction of dataSource["+errorDataSourceName+"] failure",e);
+//                LOGGER.error("commit transaction of dataSource["+errorDataSourceName+"] failure",e);
                 throw e;
             }finally {
             	for(String dataSourceName:connMap.keySet()){
@@ -692,17 +717,17 @@ public final class DataBaseHelper implements Helper{
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
     	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
         if(connMap != null && connMap.size() > 0){
-        	String errorDataSourceName = null;
+//        	String errorDataSourceName = null;
             try {
             	for(String dataSourceName:connMap.keySet()){
             		if(dsMap.get(dataSourceName).tns()){
-            			errorDataSourceName = dataSourceName;
+//            			errorDataSourceName = dataSourceName;
                 		Connection conn = connMap.get(dataSourceName);
     	            	conn.rollback();
             		}
             	}
             } catch (SQLException e){
-                LOGGER.error("rollback transaction of dataSource["+errorDataSourceName+"] failure",e);
+//                LOGGER.error("rollback transaction of dataSource["+errorDataSourceName+"] failure",e);
                 throw new RuntimeException(e);
             } finally {
                 try {
