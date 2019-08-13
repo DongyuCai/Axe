@@ -30,6 +30,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ import org.axe.util.CollectionUtil;
 import org.axe.util.JsonUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.RequestUtil;
+import org.axe.util.StringUtil;
 
 /**
  * Axe 请求参数设值到Controller的filter
@@ -94,6 +96,7 @@ public class AxeRequestParamSetFilter implements Filter {
     	//按顺序来，塞值
     	List<Object> parameterValueList = new ArrayList<>();
     	List<String> requiredParameterError = new ArrayList<>();
+    	List<String> compileParameterError = new ArrayList<>();
     	for(int i=0;i<parameterTypes.length;i++){
     		Object parameterValue = null;
     		do{
@@ -128,8 +131,18 @@ public class AxeRequestParamSetFilter implements Filter {
 					
 					//检测是否必填
 					if(requestParam.required() && parameterValue ==  null){
-    					requiredParameterError.add(fieldName);
+    					requiredParameterError.add(StringUtil.isEmpty(requestParam.desc())?fieldName:requestParam.desc());
     				}
+					
+					//检查是否满足校验
+					if(parameterValue != null && StringUtil.isNotEmpty(requestParam.compile())){
+						Pattern compile = Pattern.compile(requestParam.compile());
+						Matcher matcher = compile.matcher(String.valueOf(parameterValue));
+						if(!matcher.find()){
+							compileParameterError.add(StringUtil.isEmpty(requestParam.desc())?fieldName:requestParam.desc());
+						}
+					}
+					
 					break;
     			}else if(requestEntity != null){
 					if(CollectionUtil.isNotEmpty(param.getBodyParamMap())){
@@ -215,6 +228,9 @@ public class AxeRequestParamSetFilter implements Filter {
     	if(CollectionUtil.isNotEmpty(requiredParameterError)){
 			throw new RestException("必填参数"+requiredParameterError.toString()+"未获取到值");
 		}
+    	if(CollectionUtil.isNotEmpty(compileParameterError)){
+    		throw new RestException("参数"+compileParameterError.toString()+"格式错误");
+    	}
     	param.setActionParamList(parameterValueList);
     }
 	

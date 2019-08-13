@@ -49,4 +49,9 @@ public @interface RequestParam {
 	 * 是否必填
 	 */
 	boolean required() default false;
+	
+	/**
+	 * 正则校验
+	 */
+	String compile() default "";
 }
