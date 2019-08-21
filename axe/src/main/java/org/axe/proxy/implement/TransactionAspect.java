@@ -141,7 +141,7 @@ public class TransactionAspect extends AspectProxy {
 					try {
 						DataBaseHelper.executeUpdate(task.getUpdateGtTableRecordSql(), new Object[]{}, new Class<?>[]{}, task.getDataSourceName());
 					} catch (Exception e) {
-						//如果是重复键异常，则不做处理，这种情况
+						//如果是表重复异常，则不做处理，这种情况
 						if(e != null && e.getMessage().toUpperCase().contains("DUPLICATE")){
 							//不做处理
 						}else{

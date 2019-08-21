@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.axe.annotation.persistence.Comment;
 import org.axe.annotation.persistence.Id;
+import org.axe.annotation.persistence.JustInsert;
 import org.axe.annotation.persistence.Table;
 import org.axe.annotation.persistence.Unique;
 import org.axe.bean.persistence.EntityFieldMethod;
@@ -160,6 +161,10 @@ public final class TableHelper implements Helper{
 					
 				}
 				
+				if(field.isAnnotationPresent(JustInsert.class)){
+					//只在saveEntity的时候做新增，后续不做update，要修改只能通过@Sql去修改
+					columnSchema.setJustInsert(true);
+				}
 				
 				// 如果KEYWORDS中包含此字段名，并且字段名通过驼峰->下划线转换后，与原来不一致，那就不行
 				if (CommonSqlUtil.checkIsSqlKeyword(sqlKeyword,columnSchema.getFieldName().toUpperCase())) {

@@ -75,8 +75,8 @@ public class CommonSqlUtil {
 		List<Object> paramsColumns = new ArrayList<>();
 		List<Object> paramsWhere = new ArrayList<>();
 		for (ColumnSchema columnSchema : mappingColumnList) {
-			if (!columnSchema.getPrimary()) {
-				// #没有@Id注解的字段作为修改内容
+			if (!columnSchema.getPrimary() && !columnSchema.getJustInsert()) {
+				// #没有@Id注解且不是只做新增的字段作为修改内容
 				columns.append(columnSchema.getColumnName()).append("=?, ");
 				paramsColumns.add(ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod()));
 			} else {

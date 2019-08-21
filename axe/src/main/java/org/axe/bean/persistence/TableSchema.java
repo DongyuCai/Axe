@@ -49,6 +49,9 @@ public class TableSchema {
 		private boolean primaryKeyAutoIncrement=false;
 		//是否唯一
 		private boolean unique=false;
+		//是否只能新增，要修改只可以通过@Sql去修改
+		private boolean justInsert=false;
+		
 		
 		//字段结构
 		private EntityFieldMethod columnSchema;
@@ -94,6 +97,12 @@ public class TableSchema {
 		}
 		public void setUnique(boolean isUnique) {
 			this.unique = isUnique;
+		}
+		public boolean getJustInsert() {
+			return justInsert;
+		}
+		public void setJustInsert(boolean justInser) {
+			this.justInsert = justInser;
 		}
 		public EntityFieldMethod getColumnSchema() {
 			return columnSchema;

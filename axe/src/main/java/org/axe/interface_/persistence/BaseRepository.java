@@ -51,7 +51,8 @@ public interface BaseRepository {
 	
 	/**
 	 * 保存entity
-	 * 这是个 INSERT ... ON DUPLICATE KEY UPDATE 操作
+	 * 这是个 INSERT ... ON DUPLICATE KEY UPDATE 操作，
+	 * *2019年改为通过@Id主键判断，如果主键都有值，执行update，否则执行insert，报错与否业由务控制和数据库自身校验。
 	 * 如果entity有主键，并且主键已存在，执行update
 	 * TODO(OK):返回Entity，并且是查询出来值塞满的，包括Id
 	 */

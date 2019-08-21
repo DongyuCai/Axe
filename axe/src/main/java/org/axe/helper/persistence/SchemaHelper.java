@@ -107,7 +107,7 @@ public class SchemaHelper implements Helper{
 		try {
 			DataBaseHelper.executeUpdate(sqlAry, new Object[]{}, new Class<?>[]{}, tableSchema.getDataSourceName());
 		} catch (Exception e) {
-			//如果是重复键异常，则不做处理，这种情况
+			//如果是表重复，则不做处理，这种情况
 			if(e != null && e.getMessage().toUpperCase().contains("DUPLICATE")){
 				//不做处理
 			}else{
