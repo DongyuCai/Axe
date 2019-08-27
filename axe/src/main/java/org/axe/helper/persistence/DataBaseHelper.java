@@ -221,7 +221,18 @@ public final class DataBaseHelper implements Helper{
 						ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 					} catch (SQLException e) {
 						if(e.getMessage().contains("Column '"+columnName+"' not found")){
-							//字段不存在情况可以不处理
+							//字段不存在情况再次尝试 原驼峰字段名，能否取到值
+							try {
+								Object setMethodArg = CastUtil.castType(table.getObject(fieldName),field.getType());
+								ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+							} catch (SQLException e1) {
+								if(e1.getMessage().contains("Column '"+fieldName+"' not found")){
+									//字段不存在情况可以不处理
+								}else{
+									//其他异常抛出
+									throw e1;
+								}
+							}
 						}else{
 							//其他异常抛出
 							throw e;
@@ -271,7 +282,18 @@ public final class DataBaseHelper implements Helper{
 						ReflectionUtil.invokeMethod(entity, method, setMethodArg);
 					} catch (SQLException e) {
 						if(e.getMessage().contains("Column '"+columnName+"' not found")){
-							//字段不存在情况可以不处理
+							//字段不存在情况再次尝试 原驼峰字段名，能否取到值
+							try {
+								Object setMethodArg = CastUtil.castType(table.getObject(fieldName),field.getType());
+								ReflectionUtil.invokeMethod(entity, method, setMethodArg);
+							} catch (SQLException e1) {
+								if(e1.getMessage().contains("Column '"+fieldName+"' not found")){
+									//字段不存在情况可以不处理
+								}else{
+									//其他异常抛出
+									throw e1;
+								}
+							}
 						}else{
 							//其他异常抛出
 							throw e;
