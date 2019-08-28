@@ -26,8 +26,10 @@ package org.axe.home.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.axe.bean.mvc.ExceptionHolder;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.ResultHolder;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.mvc.Interceptor;
 
@@ -44,5 +46,9 @@ public class HomeInterceptor implements Interceptor{
 			Handler handler) {
 		return AXE_HOME;
 	}
+
+	@Override
+	public void doEnd(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler,
+			ResultHolder resultHolder, ExceptionHolder exceptionHolder) {}
 
 }

@@ -28,9 +28,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.axe.bean.mvc.ExceptionHolder;
 import org.axe.bean.mvc.FormParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
+import org.axe.bean.mvc.ResultHolder;
 import org.axe.bean.mvc.View;
 import org.axe.exception.RedirectorInterrupt;
 import org.axe.helper.base.ConfigHelper;
@@ -75,5 +77,9 @@ public class SignInInterceptor implements Interceptor{
 		
 		throw new RedirectorInterrupt(new View("/axe/sign-in"));
 	}
+
+	@Override
+	public void doEnd(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler,
+			ResultHolder resultHolder, ExceptionHolder exceptionHolder) {}
 
 }

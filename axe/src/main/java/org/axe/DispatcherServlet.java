@@ -114,6 +114,7 @@ public class DispatcherServlet extends HttpServlet{
     	String contentType = ContentType.APPLICATION_JSON.CONTENT_TYPE;
     	String characterEncoding = CharacterEncoding.UTF_8.CHARACTER_ENCODING;
     	Stack<Filter> doEndFilterStack = null;
+    	Stack<Interceptor> doEndInterceptorStack = null;
     	Integer RESPONSE_IS_USED = 0;
     	Param param = null;
     	Handler handler = null;
@@ -161,6 +162,11 @@ public class DispatcherServlet extends HttpServlet{
                 boolean doInterceptorSuccess = true;
                 if(CollectionUtil.isNotEmpty(interceptorList)){
                 	for(Interceptor interceptor:interceptorList){
+                		//被执行的Interceptor，都添加到end任务里
+                		if(doEndInterceptorStack == null){
+                			doEndInterceptorStack = new Stack<>();
+                		}
+                		doEndInterceptorStack.push(interceptor);
                 		doInterceptorSuccess = interceptor.doInterceptor(request, response, param, handler);
                 		if(!doInterceptorSuccess) break;
                 	}
@@ -189,6 +195,15 @@ public class DispatcherServlet extends HttpServlet{
 					LOGGER.error("filter doEnd failed",endEx);
 				}
 			}
+			//##6.执行Filter链各个节点的收尾工作
+			while(CollectionUtil.isNotEmpty(doEndInterceptorStack)){
+				try {
+					doEndInterceptorStack.pop().doEnd(request, response, param, handler,resultHolder,exceptionHolder);
+				} catch (Exception endEx) {
+					LOGGER.error("filter doEnd failed",endEx);
+				}
+			}
+			
 			
 			if(exceptionHolder.getException() != null){
 				//##6.异常处理
