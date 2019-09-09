@@ -37,12 +37,16 @@ import org.axe.util.PropsUtil;
 public final class ConfigHelper implements Helper{
 
     private static Properties CONFIG_PROPS;
+    
+    public synchronized static void setConfigProps(Properties properties){
+    	CONFIG_PROPS = properties;
+    }
 
     @Override
-    public void init() throws Exception{
-    	synchronized (this) {
+    public synchronized void init() throws Exception{
+    	if(CONFIG_PROPS == null){
     		CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
-		}
+    	}
     }
     
     public static Properties getCONFIG_PROPS() {
