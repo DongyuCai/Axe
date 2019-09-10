@@ -22,7 +22,7 @@
  * SOFTWARE.
  */ 
 
-$.submitForm = function(formId,url,headers,successCallback,errorCallback){
+$.submitForm = function(formId,url,headers,successCallback,errorCallback,completeCallback){
     $(formId).ajaxSubmit({
         url:url,
         timeout:10000,
@@ -40,11 +40,16 @@ $.submitForm = function(formId,url,headers,successCallback,errorCallback){
             if(errorCallback){
                 errorCallback(XMLHttpRequest, textStatus, errorThrown);
             }
+        },
+        complete:function(XMLHttpRequest,textStatus){
+            if(completeCallback){
+                completeCallback(XMLHttpRequest, textStatus);
+            }
         }
     });
 };
 
-$.get = function (url,data,headers,successCallback,errorCallback){
+$.get = function (url,data,headers,successCallback,errorCallback,completeCallback){
     $.ajax({
         url:url,
         type:"GET",
@@ -60,7 +65,9 @@ $.get = function (url,data,headers,successCallback,errorCallback){
         success:function(data){
             if(successCallback){
                 try{
-                    data = JSON.parse(data);
+                    if(isNaN(data)){
+                        data = JSON.parse(data);
+                    }
                 }catch(e){};
                 successCallback(data);
             }
@@ -69,12 +76,17 @@ $.get = function (url,data,headers,successCallback,errorCallback){
             if(errorCallback){
                 errorCallback(XMLHttpRequest, textStatus, errorThrown);
             }
+        },
+        complete:function(XMLHttpRequest,textStatus){
+            if(completeCallback){
+                completeCallback(XMLHttpRequest, textStatus);
+            }
         }
     });
 };
 
 
-$.post = function(url,data,headers,successCallback,errorCallback){
+$.post = function(url,data,headers,successCallback,errorCallback,completeCallback){
     $.ajax({
         url:url,
         type:"POST",
@@ -91,7 +103,9 @@ $.post = function(url,data,headers,successCallback,errorCallback){
         success:function(data){
             if(successCallback){
                 try{
-                    data = JSON.parse(data);
+                    if(isNaN(data)){
+                        data = JSON.parse(data);
+                    }
                 }catch(e){};
                 successCallback(data);
             }
@@ -100,11 +114,16 @@ $.post = function(url,data,headers,successCallback,errorCallback){
             if(errorCallback){
                 errorCallback(XMLHttpRequest, textStatus, errorThrown);
             }
+        },
+        complete:function(XMLHttpRequest,textStatus){
+            if(completeCallback){
+                completeCallback(XMLHttpRequest, textStatus);
+            }
         }
     });
 };
 
-$.put = function(url,data,headers,successCallback,errorCallback){
+$.put = function(url,data,headers,successCallback,errorCallback,completeCallback){
     $.ajax({
         url:url,
         type:"PUT",
@@ -120,7 +139,9 @@ $.put = function(url,data,headers,successCallback,errorCallback){
         success:function(data){
             if(successCallback){
                 try{
-                    data = JSON.parse(data);
+                    if(isNaN(data)){
+                        data = JSON.parse(data);
+                    }
                 }catch(e){};
                 successCallback(data);
             }
@@ -129,11 +150,16 @@ $.put = function(url,data,headers,successCallback,errorCallback){
             if(errorCallback){
                 errorCallback(XMLHttpRequest, textStatus, errorThrown);
             }
+        },
+        complete:function(XMLHttpRequest,textStatus){
+            if(completeCallback){
+                completeCallback(XMLHttpRequest, textStatus);
+            }
         }
     });
 };
 
-$.delete = function(url,data,headers,successCallback,errorCallback){
+$.del = function(url,data,headers,successCallback,errorCallback,completeCallback){
     $.ajax({
         url:url,
         type:"DELETE",
@@ -148,7 +174,9 @@ $.delete = function(url,data,headers,successCallback,errorCallback){
         success:function(data){
             if(successCallback){
                 try{
-                    data = JSON.parse(data);
+                    if(isNaN(data)){
+                        data = JSON.parse(data);
+                    }
                 }catch(e){};
                 successCallback(data);
             }
@@ -156,6 +184,11 @@ $.delete = function(url,data,headers,successCallback,errorCallback){
         error:function(XMLHttpRequest, textStatus, errorThrown){
             if(errorCallback){
                 errorCallback(XMLHttpRequest, textStatus, errorThrown);
+            }
+        },
+        complete:function(XMLHttpRequest,textStatus){
+            if(completeCallback){
+                completeCallback(XMLHttpRequest, textStatus);
             }
         }
     });
