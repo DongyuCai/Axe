@@ -450,14 +450,14 @@ public class CommonSqlUtil {
 				int paramIndex = CastUtil.castInteger(getFlagNumber) - 1;
 
 				Object param = params[paramIndex];
-				if (String.class.isAssignableFrom(param.getClass())) {
+//				if (String.class.isAssignableFrom(param.getClass())) {
 					// 如果参数是字符串
-					String append = (String) param;
-					sql = sql.replaceFirst(command, append);
-				} else {
-					throw new RuntimeException(
-							"invalid sql[" + sql + "] ,paramType of command[#" + getFlagNumber + "] must be String.class");
-				}
+//					String append = (String) param;
+					sql = sql.replaceFirst(command, param.toString());
+//				} else {
+//					throw new RuntimeException(
+//							"invalid sql[" + sql + "] ,paramType of command[#" + getFlagNumber + "] must be String.class");
+//				}
 			}
 		}
 		return sql;

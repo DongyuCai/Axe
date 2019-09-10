@@ -198,9 +198,10 @@ public final class MySqlUtil {
 
 		// #唯一键约束
 		if (CollectionUtil.isNotEmpty(uniqueColumnList)) {
-			createTableSqlBufer.append(",");
-
-			createTableSqlBufer.append("UNIQUE KEY ").append(tableName).append("_uq (").append(tableSchema.getUniqueColumns()).append(")");
+			for(ColumnSchema cs:uniqueColumnList){
+				createTableSqlBufer.append(",");
+				createTableSqlBufer.append("UNIQUE KEY ").append(tableName).append("_uq_").append(cs.getColumnName()).append(" (").append(cs.getColumnName()).append(")");
+			}
 		}
 
 		Properties configProps = ConfigHelper.getCONFIG_PROPS();
