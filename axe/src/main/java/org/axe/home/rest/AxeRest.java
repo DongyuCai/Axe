@@ -103,6 +103,7 @@ LOGGER.error("home error",e);
 }
 
 private void printFile(HttpServletResponse response, String path, ContentType contentType, String token) {
+token = token == null?"":token;
 BufferedReader reader = null;
 try {
 InputStream in = this.getClass().getClassLoader().getResourceAsStream(path);
