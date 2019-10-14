@@ -29,6 +29,11 @@ package org.axe.interface_.mvc;
  */
 public interface Listener {
 
+	/**
+	 * 启动顺序
+	 */
+	public int index();
+	
 	public void init() throws Exception;
 	
 }
