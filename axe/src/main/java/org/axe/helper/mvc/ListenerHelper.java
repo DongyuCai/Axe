@@ -70,6 +70,10 @@ public final class ListenerHelper implements Helper{
 	}
 
 	@Override
-	public void onStartUp() throws Exception {}
+	public void onStartUp() throws Exception {
+		for(Listener listener:LISTENER_LIST){
+			listener.init();
+		}
+	}
 
 }
