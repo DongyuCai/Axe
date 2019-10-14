@@ -23,7 +23,7 @@
  */
 package org.axe.helper.mvc;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,13 +44,26 @@ public final class ListenerHelper implements Helper{
 	@Override
 	public void init() throws Exception {
 		synchronized (this) {
-			LISTENER_LIST = new ArrayList<>();
+			LISTENER_LIST = new LinkedList<>();
 			Set<Class<?>> classSet = ClassHelper.getClassSetBySuper(Listener.class);
 			if(CollectionUtil.isNotEmpty(classSet)){
 				for(Class<?> listenerClass:classSet){
 					Listener listener = ReflectionUtil.newInstance(listenerClass);
-					listener.init();
-					LISTENER_LIST.add(listener);
+					if(LISTENER_LIST.size() == 0){
+						LISTENER_LIST.add(listener);
+					}else{
+						int i=0;
+						for(;i<LISTENER_LIST.size();i++){
+							if(listener.index()<LISTENER_LIST.get(i).index()){
+								break;
+							}
+						}
+						if(i<LISTENER_LIST.size()){
+							LISTENER_LIST.add(i,listener);
+						}else{
+							LISTENER_LIST.add(listener);
+						}
+					}
 				}
 			}
 		}
