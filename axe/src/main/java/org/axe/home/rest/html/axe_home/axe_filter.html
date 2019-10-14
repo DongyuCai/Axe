@@ -38,8 +38,6 @@ public void filter(@RequestParam("token")String token, HttpServletRequest reques
 					<td align="left">&nbsp;</td>
 					<td align="left"><b>Level</b></td>
 					<td align="left"><b>Class</b></td>
-					<td align="left"><b>Mapping</b></td>
-					<td align="left"><b>NotMapping</b></td>
 				</tr>
 				<java>
 				int id=1;
@@ -49,16 +47,6 @@ public void filter(@RequestParam("token")String token, HttpServletRequest reques
 					<td align="left">"+(id++)+"</td>
 					<td align="left">"+filter.setLevel()+"</td>
 					<td align="left">"+filter.getClass()+"</td>
-					<java>
-						Pattern mappingPattern = filter.setMapping();
-						String mappingRegex = mappingPattern == null?"":mappingPattern.toString();
-					</java>
-					<td align="left">"+mappingRegex+"</td>
-					<java>
-						Pattern notMappingPattern = filter.setNotMapping();
-						String notMappingRegex = notMappingPattern==null?"":notMappingPattern.toString();
-					</java>
-					<td align="left">"+notMappingRegex+"</td>
 				</tr>
 				<java>
 				}

@@ -24,7 +24,6 @@
 package org.axe.interface_implement.mvc;
 
 import java.io.UnsupportedEncodingException;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,8 +34,12 @@ import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.ResultHolder;
 import org.axe.exception.RestException;
 import org.axe.interface_.mvc.Filter;
-
-public abstract class CharSetFilter implements Filter {
+/**
+ * 默认字符集过滤器
+ * 抽象类，需要被继承后才能使用
+ * @author CiDongyu
+ */
+public abstract class Utf8CharSetFilter implements Filter {
 
 	@Override
 	public void init() {
@@ -47,7 +50,7 @@ public abstract class CharSetFilter implements Filter {
 	public int setLevel() {
 		return -1;
 	}
-
+/*
 	@Override
 	public Pattern setMapping() {
 		return Pattern.compile("^.*$");
@@ -56,6 +59,12 @@ public abstract class CharSetFilter implements Filter {
 	@Override
 	public Pattern setNotMapping() {
 		return null;
+	}
+*/
+
+	@Override
+	public boolean mapping(String requestMethod, String mappingPath) {
+		return true;//匹配所有
 	}
 
 	@Override

@@ -23,8 +23,6 @@
  */
 package org.axe.interface_implement.mvc;
 
-import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +34,11 @@ import org.axe.bean.mvc.ResultHolder;
 import org.axe.exception.RestException;
 import org.axe.interface_.mvc.Filter;
 
+/**
+ * Header过滤器
+ * 抽象类，需要继承并实现doFilter方法才可使用
+ * @author CaiAdongyu
+ */
 public abstract class HeaderFilter implements Filter {
 
 	@Override
@@ -47,7 +50,7 @@ public abstract class HeaderFilter implements Filter {
 	public int setLevel() {
 		return 1;
 	}
-
+/*
 	@Override
 	public Pattern setMapping() {
 		return Pattern.compile("^.*$");
@@ -57,7 +60,13 @@ public abstract class HeaderFilter implements Filter {
 	public Pattern setNotMapping() {
 		return null;
 	}
+*/
 
+	@Override
+	public boolean mapping(String requestMethod, String mappingPath) {
+		return true;//匹配所有
+	}
+	
 	@Override
 	public final boolean doFilter(HttpServletRequest request, HttpServletResponse response, Param param, Handler handler)
 			throws RestException {

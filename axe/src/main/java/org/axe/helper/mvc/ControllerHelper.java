@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 import org.axe.annotation.ioc.Controller;
 import org.axe.annotation.mvc.FilterFuckOff;
@@ -154,7 +153,7 @@ public final class ControllerHelper implements Helper{
     			for(Filter filter:FilterHelper.getSortedFilterList()){
     				//#判断，此filter是否不可排除
     				UnFuckOff unFuckOff = filter.getClass().getAnnotation(UnFuckOff.class);
-    				
+    				/*
     				//#首先判断是否匹配mappingPath
     				if(filter.setMapping() == null){
 						//throw new RuntimeException("invalid filter["+filter.getClass()+"] setMapping is null");
@@ -166,6 +165,11 @@ public final class ControllerHelper implements Helper{
     				if(filter.setNotMapping() != null){
     					Matcher notMappingPathMatcher = filter.setNotMapping().matcher(requestMethod+":"+mappingPath);
     					if(notMappingPathMatcher.find()) continue;
+    				}
+    				*/
+    				//判断是否mapping匹配
+    				if(!filter.mapping(requestMethod, mappingPath)){
+    					continue;
     				}
     				
 					//#其次，说明匹配上了，判断controller是否排除了这个Filter

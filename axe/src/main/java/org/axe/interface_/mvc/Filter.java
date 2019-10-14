@@ -23,8 +23,6 @@
  */
 package org.axe.interface_.mvc;
 
-import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,15 +49,24 @@ public interface Filter {
 	 * 层级 执行顺序从小到大
 	 */
 	public int setLevel();
+	
 	/**
 	 * 匹配mappingPath方法的正则
 	 */
-	public Pattern setMapping();
+//	public Pattern setMapping();
 	
 	/**
 	 * 不需要匹配mappingPath方法的正则
 	 */
-	public Pattern setNotMapping();
+//	public Pattern setNotMapping();
+	
+	/**
+	 * 是否匹配此Request
+	 */
+	/**
+	 * 匹配mappingPath方法的正则
+	 */
+	public boolean mapping(String requestMethod, String mappingPath);
 
 	/**
 	 * 执行过滤
