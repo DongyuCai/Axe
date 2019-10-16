@@ -204,7 +204,20 @@ public final class TableHelper implements Helper{
 	 * 返回所有@Table标注的Entity类
 	 */
 	public static TableSchema getTableSchema(Object entity) {
-		return getTableSchema(entity.getClass());
+		//循环获取super类类型，直到获取到Table类
+		Class<? extends Object> tableClass = entity.getClass();
+		TableSchema tableSchema = getTableSchema(tableClass);
+		while(true){
+			if(tableSchema != null){
+				break;
+			}
+			tableClass = tableClass.getSuperclass();
+			tableSchema = getTableSchema(tableClass);
+		};
+		if(tableSchema == null){
+			throw new RuntimeException(entity.getClass().getName() + " is not a table entity class,no @Table annotation is found on it or it super class set");
+		}
+		return tableSchema;
 	}
 	
 	/**
