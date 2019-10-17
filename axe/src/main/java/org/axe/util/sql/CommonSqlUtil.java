@@ -79,10 +79,13 @@ public class CommonSqlUtil {
 				// #没有@Id注解且不是只做新增的字段作为修改内容
 				columns.append(columnSchema.getColumnName()).append("=?, ");
 				paramsColumns.add(ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod()));
-			} else {
+				continue;
+			}
+			if(columnSchema.getPrimary()){
 				// #有@Id的字段作为主键，用来当修改条件
 				where.append(" and ").append(columnSchema.getColumnName()).append("=?");
 				paramsWhere.add(ReflectionUtil.invokeMethod(entity, columnSchema.getColumnSchema().getMethod()));
+				continue;
 			}
 		}
 		columns.replace(columns.lastIndexOf(", "), columns.length(), " ");
