@@ -513,7 +513,7 @@ public class DaoAspect implements Proxy {
 	 * 插入检测，只在insert和save两个操作下需要
 	 */
 	private void insertDataShardingTableCheck(Object entity,String dataSourceName) throws Exception{
-		TableSchema tableSchema = TableHelper.getTableSchema(entity);
+		TableSchema tableSchema = TableHelper.getCachedTableSchema(entity);
 		
 		//只有需要分片的，才处理
 		if(tableSchema.getSharding()){
@@ -594,7 +594,7 @@ public class DaoAspect implements Proxy {
 	 * delete暂时不做检测，一旦表已经被关闭插入，那么就不打开了
 	 */
 	private void shardingTableStatusCheck(Object entity,String dataSourceName) throws Exception{
-		TableSchema tableSchema = TableHelper.getTableSchema(entity);
+		TableSchema tableSchema = TableHelper.getCachedTableSchema(entity);
 		
 		//只有需要分片的，才处理
 		if(tableSchema.getSharding()){

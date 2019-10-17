@@ -189,30 +189,30 @@ public final class TableHelper implements Helper{
 	/**
 	 * 返回所有@Table标注的Entity类
 	 */
-	public static Map<String, TableSchema> getEntityTableMap() {
+	public static Map<String, TableSchema> getEntityTableSchemaCachedMap() {
 		return ENTITY_TABLE_MAP;
 	}
 
 	/**
 	 * 返回所有@Table标注的Entity类
 	 */
-	public static TableSchema getTableSchema(Class<?> entityClass) {
+	public static TableSchema getCachedTableSchema(Class<?> entityClass) {
 		return ENTITY_TABLE_MAP.get(entityClass.getSimpleName());
 	}
 
 	/**
 	 * 返回所有@Table标注的Entity类
 	 */
-	public static TableSchema getTableSchema(Object entity) {
+	public static TableSchema getCachedTableSchema(Object entity) {
 		//循环获取super类类型，直到获取到Table类
 		Class<? extends Object> tableClass = entity.getClass();
-		TableSchema tableSchema = getTableSchema(tableClass);
+		TableSchema tableSchema = getCachedTableSchema(tableClass);
 		while(true){
 			if(tableSchema != null){
 				break;
 			}
 			tableClass = tableClass.getSuperclass();
-			tableSchema = getTableSchema(tableClass);
+			tableSchema = getCachedTableSchema(tableClass);
 		};
 		if(tableSchema == null){
 			throw new RuntimeException(entity.getClass().getName() + " is not a table entity class,no @Table annotation is found on it or it super class set");
@@ -236,19 +236,30 @@ public final class TableHelper implements Helper{
 	 * 这个方法兼顾了分表
 	 */
 	public static String getRealTableName(Object entity) {
-		Class<?> entityClass = entity.getClass();
-		if(TableNameEditor.class.isAssignableFrom(entityClass)){
+		//循环获取super类类型，直到获取到Table类
+		Class<? extends Object> tableClass = entity.getClass();
+		while(true){
+			if(tableClass.isAnnotationPresent(Table.class)){
+				break;
+			}
+			tableClass = tableClass.getSuperclass();
+		};
+		if(!tableClass.isAnnotationPresent(Table.class)){
+			throw new RuntimeException(entity.getClass().getName() + " is not a table entity class,no @Table annotation is found on it or it super class set");
+		}
+		
+		
+		if(TableNameEditor.class.isAssignableFrom(tableClass)){
 			//如果是可修改表名的接口实现类
 			try {
 				TableNameEditor tne = (TableNameEditor)entity;
 				return tne.realTableName();
 			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
+				throw new RuntimeException(e);
 			}
 		}else{
 			//如果只是普通的表实体类，就用类解析表名
-			return getTableName(entityClass);
+			return getTableName(tableClass);
 		}
 	}
 	

@@ -190,7 +190,7 @@ public final class DataBaseHelper implements Helper{
     }
     
     public static <T> List<T> queryEntityList(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-    	   String dataSourceName = TableHelper.getTableSchema(entityClass).getDataSourceName();
+    	   String dataSourceName = TableHelper.getCachedTableSchema(entityClass).getDataSourceName();
     	   return queryEntityList(entityClass, sql, params, paramTypes, dataSourceName);
     }
     
@@ -255,7 +255,7 @@ public final class DataBaseHelper implements Helper{
     }
 
 	public static <T> T queryEntity(final Class<T> entityClass, String sql, Object[] params, Class<?>[] paramTypes) throws SQLException {
-        String dataSourceName = TableHelper.getTableSchema(entityClass).getDataSourceName();
+        String dataSourceName = TableHelper.getCachedTableSchema(entityClass).getDataSourceName();
         return queryEntity(entityClass, sql, params, paramTypes, dataSourceName);
 	}
 	
@@ -533,7 +533,7 @@ public final class DataBaseHelper implements Helper{
 
 
     public static <T> T insertEntity(T entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
+    	String dataSourceName = TableHelper.getCachedTableSchema(entity).getDataSourceName();
     	return insertEntity(entity, dataSourceName);
     }
     
@@ -561,7 +561,7 @@ public final class DataBaseHelper implements Helper{
     			generatedKey = queryPrimitive(OracleUtil.getGenerateIdSql(entity), new Object[0], new Class<?>[0],dataSourceName);
     		}
     		if(generatedKey != null){
-    			List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+    			List<ColumnSchema> mappingColumnList = TableHelper.getCachedTableSchema(entity).getMappingColumnList();
     			for(ColumnSchema columnSchema : mappingColumnList){
     				if(columnSchema.getPrimary() && columnSchema.getPrimaryKeyAutoIncrement()){
     					Method method = columnSchema.getColumnSchema().getMethod();
@@ -582,7 +582,7 @@ public final class DataBaseHelper implements Helper{
     
 
     public static int updateEntity(Object entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
+    	String dataSourceName = TableHelper.getCachedTableSchema(entity).getDataSourceName();
     	return updateEntity(entity, dataSourceName);
     }
 
@@ -599,7 +599,7 @@ public final class DataBaseHelper implements Helper{
     
 
     public static <T> T insertOnDuplicateKeyEntity(T entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
+    	String dataSourceName = TableHelper.getCachedTableSchema(entity).getDataSourceName();
     	return insertOnDuplicateKeyEntity(entity, dataSourceName);
     }
     
@@ -611,7 +611,7 @@ public final class DataBaseHelper implements Helper{
     	if(entity == null)
     		throw new RuntimeException("insertOnDuplicateKeyEntity failure, insertOnDuplicateKeyEntity param is null!");
         
-    	List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+    	List<ColumnSchema> mappingColumnList = TableHelper.getCachedTableSchema(entity).getMappingColumnList();
     	boolean findId = false;
     	boolean idValueIsOk = true;
 		for (ColumnSchema columnSchema:mappingColumnList) {
@@ -637,7 +637,7 @@ public final class DataBaseHelper implements Helper{
     }
 
     public static int deleteEntity(Object entity) throws SQLException {
-    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
+    	String dataSourceName = TableHelper.getCachedTableSchema(entity).getDataSourceName();
     	return deleteEntity(entity,dataSourceName);
     }
 
@@ -654,7 +654,7 @@ public final class DataBaseHelper implements Helper{
     
 
 	public static <T> T getEntity(T entity) throws SQLException{
-    	String dataSourceName = TableHelper.getTableSchema(entity).getDataSourceName();
+    	String dataSourceName = TableHelper.getCachedTableSchema(entity).getDataSourceName();
 		return getEntity(entity, dataSourceName);
 	}
     

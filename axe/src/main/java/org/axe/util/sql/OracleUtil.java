@@ -103,7 +103,7 @@ public final class OracleUtil {
 	}
 	//给DaoAspect在做分片检测、动态建表时候用，此时已经有entity了
 	public static List<String> getTableCreateSql(String dataSourceName, Object entity) throws Exception {
-		return getTableCreateSql(dataSourceName, TableHelper.getRealTableName(entity), TableHelper.getTableSchema(entity));
+		return getTableCreateSql(dataSourceName, TableHelper.getRealTableName(entity), TableHelper.getCachedTableSchema(entity));
 	}
 	
 	private static List<String> getTableCreateSql(String dataSourceName,String tableName, TableSchema tableSchema) {
@@ -276,7 +276,7 @@ public final class OracleUtil {
 	public static SqlPackage getInsertSqlPackage(Object entity) {
 		String tableName = TableHelper.getRealTableName(entity);
 		String sql = "INSERT INTO " + tableName;
-		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+		List<ColumnSchema> mappingColumnList = TableHelper.getCachedTableSchema(entity).getMappingColumnList();
 		StringBuilder columns = new StringBuilder("(");
 		StringBuilder values = new StringBuilder("(");
 		List<Object> params = new ArrayList<>();

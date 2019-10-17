@@ -133,7 +133,7 @@ public class TableExportUtil {
 	}
 	
 	public static List<Table> exportTableList(){
-		Map<String, TableSchema> map = TableHelper.getEntityTableMap();
+		Map<String, TableSchema> map = TableHelper.getEntityTableSchemaCachedMap();
 		List<Table> list = new ArrayList<>();
 		for(String key:map.keySet()){
 			TableSchema ts = map.get(key);

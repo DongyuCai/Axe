@@ -66,7 +66,7 @@ public class CommonSqlUtil {
 	public static SqlPackage getUpdateSqlPackage(Object entity) {
 		StringBuilder sqlBuffer = new StringBuilder();
 		sqlBuffer.append("UPDATE ").append(TableHelper.getRealTableName(entity)).append(" SET ");
-		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+		List<ColumnSchema> mappingColumnList = TableHelper.getCachedTableSchema(entity).getMappingColumnList();
 		// #会做修改的字段
 		StringBuilder columns = new StringBuilder();
 		// #修改的条件
@@ -99,7 +99,7 @@ public class CommonSqlUtil {
 	public static SqlPackage getDeleteSqlPackage(Object entity) {
 		StringBuilder sqlBuffer = new StringBuilder();
 		sqlBuffer.append("DELETE FROM ").append(TableHelper.getRealTableName(entity));
-		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+		List<ColumnSchema> mappingColumnList = TableHelper.getCachedTableSchema(entity).getMappingColumnList();
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 		// #占位符的值
@@ -130,7 +130,7 @@ public class CommonSqlUtil {
 	public static SqlPackage getSelectByIdSqlPackage(Object entity) {
 		StringBuilder sqlBuffer = new StringBuilder();
 		sqlBuffer.append("SELECT * FROM ").append(TableHelper.getRealTableName(entity));
-		List<ColumnSchema> mappingColumnList = TableHelper.getTableSchema(entity).getMappingColumnList();
+		List<ColumnSchema> mappingColumnList = TableHelper.getCachedTableSchema(entity).getMappingColumnList();
 		// #修改的条件
 		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 		// #占位符的值
@@ -159,7 +159,7 @@ public class CommonSqlUtil {
 	}
 	
 	public static Map<String, TableSchema> matcherEntityTableMap(String sql) {
-		Map<String, TableSchema> entityTableMap = TableHelper.getEntityTableMap();
+		Map<String, TableSchema> entityTableMap = TableHelper.getEntityTableSchemaCachedMap();
 		String sqlClean = sql.replaceAll("[,><=!\\+\\-\\*/\\(\\)]", " ");
 		String[] sqlWords = sqlClean.split(" ");
 //		LOGGER.debug("sqlWords : " + Arrays.toString(sqlWords));

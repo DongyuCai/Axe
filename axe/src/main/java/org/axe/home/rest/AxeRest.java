@@ -559,7 +559,7 @@ html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/action?token="+tok
 html.append("<td align=\"left\">Service x"+serviceSize+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/tns?token="+token+"\">Tns point </a> x"+tnsPointCount+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/dao?token="+token+"\">Dao</a> x"+daoSize+"</td>");
-html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/table?s=index.html&token="+token+"\" target=\"blank\">Table</a> x"+TableHelper.getEntityTableMap().size()+"</td>");
+html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/table?s=index.html&token="+token+"\" target=\"blank\">Table</a> x"+TableHelper.getEntityTableSchemaCachedMap().size()+"</td>");
 html.append("<td align=\"left\"><a href=\""+contextPath+"/axe/dataSource?token="+token+"\">DataSource</a> x"+DataSourceHelper.getDataSourceAll().size()+"</td>");
 html.append("</tr>");
 html.append("</table>");
