@@ -368,12 +368,18 @@ public class DaoAspect implements Proxy {
 				sqlBuf.append("(").append(tmpSql).append(")");
 			}
 			sqlBuf.append(") t_").append(StringUtil.getRandomString(6));
-			
-			if(StringUtil.isNotEmpty(tailAfterUnion)){
-				sqlBuf.append(" ").append(tailAfterUnion);
-			}
 		}else{
-			sqlBuf.append(sqlList.get(0));
+			//如果出现headAfterUnion或者tailAfterUnion，都要把中间sql包起来
+			if(StringUtil.isNotEmpty(headAfterUnion) || StringUtil.isNotEmpty(tailAfterUnion)){
+				sqlBuf.append("SELECT * FROM (");
+				sqlBuf.append(sqlList.get(0));
+				sqlBuf.append(") t_").append(StringUtil.getRandomString(6));
+			}else{
+				sqlBuf.append(sqlList.get(0));
+			}
+		}
+		if(StringUtil.isNotEmpty(tailAfterUnion)){
+			sqlBuf.append(" ").append(tailAfterUnion);
 		}
 		return sqlBuf.toString();//select情况下的最终sql，多条会合并成1条
 	}
