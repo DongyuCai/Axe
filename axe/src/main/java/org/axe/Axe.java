@@ -23,7 +23,10 @@
  */
 package org.axe;
 
+import java.util.Properties;
+
 import org.axe.helper.HelperLoader;
+import org.axe.helper.base.ConfigHelper;
 
 /**
  * Axe启动入口类
@@ -31,6 +34,11 @@ import org.axe.helper.HelperLoader;
  */
 public class Axe {
 
+	public static void initWithoutConfigFile(Properties configInitProperties) throws Exception{
+		ConfigHelper.setConfigProps(configInitProperties);//预设代码配置，这样就不需要axe.properties配置文件了
+		HelperLoader.init();
+	}
+	
 	public static void init() throws Exception{
 		HelperLoader.init();
 	}

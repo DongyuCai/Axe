@@ -47,7 +47,7 @@ public class SchemaHelper implements Helper{
 
 	@Override
 	public void onStartUp() throws Exception {
-		//在框架的Helper都初始化后，同步表结构，（现阶段不会开发此功能，为了支持多数据源，借鉴了Rose框架）
+		//在框架的Helper都初始化后，同步表结构，（为了支持多数据源，借鉴了Rose框架）
 		Map<String, TableSchema> ENTITY_TABLE_MAP = TableHelper.getEntityTableSchemaCachedMap();
 		//默认按@Table里的来
 		boolean tnsBegin = false;

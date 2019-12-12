@@ -130,7 +130,7 @@ public final class ConfigHelper implements Helper{
      */
     public static String getJdbcDatasource() {
     	//默认使用axe提供的dbcp数据源
-    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, "axe-datasource-dbcp");
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, null);
     }
 
     /**

@@ -65,19 +65,21 @@ public final class DataSourceHelper implements Helper{
 			
 			DATA_SOURCE = new HashMap<>();
 			String jdbcDatasource = ConfigHelper.getJdbcDatasource();
-			String[] split = jdbcDatasource.split(",");
-			
-			for(String dataSourceNameConfig:split){
-				//默认数据源取得是配置数据源列表中的第一个
-				if(StringUtil.isNotEmpty(dataSourceNameConfig)){
-					if(DEFAULT_DATASOURCE_NAME == null){
-						DEFAULT_DATASOURCE_NAME = dataSourceNameConfig;
-					}
-					if(dataSourceFactoryClassMap.containsKey(dataSourceNameConfig)){
-						BaseDataSource dataSource = ReflectionUtil.newInstance(dataSourceFactoryClassMap.get(dataSourceNameConfig));
-						DATA_SOURCE.put(dataSourceNameConfig, dataSource);
-					}else{
-						throw new Exception("can not find DataSource:"+dataSourceNameConfig);
+			if(StringUtil.isNotEmpty(jdbcDatasource)){
+				String[] split = jdbcDatasource.split(",");
+				
+				for(String dataSourceNameConfig:split){
+					//默认数据源取得是配置数据源列表中的第一个
+					if(StringUtil.isNotEmpty(dataSourceNameConfig)){
+						if(DEFAULT_DATASOURCE_NAME == null){
+							DEFAULT_DATASOURCE_NAME = dataSourceNameConfig;
+						}
+						if(dataSourceFactoryClassMap.containsKey(dataSourceNameConfig)){
+							BaseDataSource dataSource = ReflectionUtil.newInstance(dataSourceFactoryClassMap.get(dataSourceNameConfig));
+							DATA_SOURCE.put(dataSourceNameConfig, dataSource);
+						}else{
+							throw new Exception("can not find DataSource:"+dataSourceNameConfig);
+						}
 					}
 				}
 			}
