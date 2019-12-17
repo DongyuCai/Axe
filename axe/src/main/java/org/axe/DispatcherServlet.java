@@ -92,14 +92,22 @@ public class DispatcherServlet extends HttpServlet{
 			        if(StringUtil.isNotEmpty(appJspPath)){
 			        	appJspPath = appJspPath.endsWith("/") ? appJspPath : appJspPath+"/";
 			        	ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
-			        	jspServlet.addMapping(appJspPath+"*");
+			        	if(jspServlet != null){
+			        		jspServlet.addMapping(appJspPath+"*");
+			        	}else{
+			        		LOGGER.error("unsupport jsp application! servletContext.getServletRegistration(\"jsp\") is null !");
+			        	}
 			        }
 			        //注册处理静态资源的默认Servlet
 			        String appAssetPath = ConfigHelper.getAppAssetPath();
 			        if(StringUtil.isNotEmpty(appAssetPath)){
 			        	appAssetPath = appAssetPath.endsWith("/") ? appAssetPath : appAssetPath+"/";
 			        	ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
-			        	defaultServlet.addMapping(appAssetPath+"*");
+			        	if(defaultServlet != null){
+			        		defaultServlet.addMapping(appAssetPath+"*");
+			        	}else{
+			        		LOGGER.error("unsupport static asset! servletContext.getServletRegistration(\"default\") is null !");
+			        	}
 			        }
 				} catch (Exception e) {
 					e.printStackTrace();
