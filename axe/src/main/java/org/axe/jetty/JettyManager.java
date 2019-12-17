@@ -13,18 +13,18 @@ public class JettyManager {
 	/**
 	 * 不带参数的启动，默认启动jetty
 	 */
-	public static void startJetty(){
-		startJetty("/", null);
+	public static void startJetty(int serverPort){
+		startJetty(serverPort, "/", null);
 	}
 	
 	/**
 	 * 带参数启动jetty
 	 * @param filterList 过滤器的链
 	 */
-	public static void startJetty(String contextPath,List<JettyServletFilter> filterList){
+	public static void startJetty(int serverPort, String contextPath, List<JettyServletFilter> filterList){
 		try {
         	//启动jetty
-        	Server server = new Server(80);
+        	Server server = new Server(serverPort);
             ServletContextHandler context = new ServletContextHandler();
             //设置上下文地址
             context.setContextPath(contextPath);
@@ -45,6 +45,8 @@ public class JettyManager {
             //启动
             server.start(); 
             server.join();
+            
+    		System.out.println(">>>>>>>>>\t Jetty server started success! \t<<<<<<<<<<");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
