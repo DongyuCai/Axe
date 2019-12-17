@@ -11,9 +11,9 @@ import org.eclipse.jetty.servlet.ServletHolder;
 public class JettyManager {
 	
 	/**
-	 * 
+	 * 不带参数的启动，默认启动jetty
 	 */
-	public void startJetty(){
+	public static void startJetty(){
 		startJetty("/", null);
 	}
 	
@@ -21,7 +21,7 @@ public class JettyManager {
 	 * 带参数启动jetty
 	 * @param filterList 过滤器的链
 	 */
-	public void startJetty(String contextPath,List<JettyServletFilter> filterList){
+	public static void startJetty(String contextPath,List<JettyServletFilter> filterList){
 		try {
         	//启动jetty
         	Server server = new Server(80);
