@@ -66,9 +66,9 @@ public final class FilterHelper implements Helper {
 							if (filter.setLevel() < filter_.setLevel()) {
 								filterSortedList.add(index, filter);
 								break;
-							} else if (filter.setLevel() == filter_.setLevel()){
+							}/* else if (filter.setLevel() == filter_.setLevel()){
 								throw new Exception("find the same level "+filter.setLevel()+" Filter: "+filterClass+" === "+filter_.getClass());
-							} else {
+							} */else {
 								index++;
 							}
 						}
