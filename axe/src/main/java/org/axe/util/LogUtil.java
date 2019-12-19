@@ -33,15 +33,15 @@ public final class LogUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(LogUtil.class);
 	
 	public static void error(Throwable error){
-		LOGGER.error("[ERROR]"+error.getMessage(), error);
+		LOGGER.error("Axe [ERROR]"+error.getMessage(), error);
 	}
 	
 	public static void error(String error){
-		LOGGER.error("[ERROR]"+error);
+		LOGGER.error("Axe [ERROR]"+error);
 	}
 	
 	public static void log(String msg){
-		LOGGER.error("[MSG]"+msg);
+		LOGGER.error("Axe [MSG]"+msg);
 	}
 	
 }
