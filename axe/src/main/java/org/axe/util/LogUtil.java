@@ -23,80 +23,25 @@
  */
 package org.axe.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 日志工具
  * @author CaiDongyu
  */
 public final class LogUtil {
-	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-	
-	private static PrintStream logStream = null;
-	static{
-		try {
-			logStream = new PrintStream(new FileOutputStream(new File("axe_log.txt")), true);
-		} catch (Exception e) {
-			error(e);
-			logStream = System.out;
-		}
-	}
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogUtil.class);
 	
 	public static void error(Throwable error){
-		try {
-			String now = sdf.format(new Date());
-			//控制台输出
-			System.out.println(now+" - [ERROR] "+error.getMessage());
-			error.printStackTrace();
-			
-			//准备记录到文件
-			PrintStream defaultOut = System.out;//先保留原先输出
-			System.setOut(logStream);//替换到文件输出
-			
-			System.out.println(now+" - [ERROR] "+error.getMessage());
-			error.printStackTrace();
-			
-			//替换会原先输出
-			System.setOut(defaultOut);
-		} catch (Exception e) {}
+		LOGGER.error(error.getMessage(), error);
 	}
 	
 	public static void error(String error){
-		try {
-			String now = sdf.format(new Date());
-			//控制台输出
-			System.out.println(now+" - [ERROR] "+error);
-			
-			//准备记录到文件
-			PrintStream defaultOut = System.out;//先保留原先输出
-			System.setOut(logStream);//替换到文件输出
-			
-			System.out.println(now+" - [ERROR] "+error);
-			
-			//替换会原先输出
-			System.setOut(defaultOut);
-		} catch (Exception e) {}
+		LOGGER.error(" - [MSG]"+error);
 	}
 	
 	public static void log(String msg){
-		try {
-			String now = sdf.format(new Date());
-			//控制台输出
-			System.out.println(now+" - "+msg);
-			
-			//准备记录到文件
-			PrintStream defaultOut = System.out;//先保留原先输出
-			System.setOut(logStream);//替换到文件输出
-			
-			System.out.println(now+" - "+msg);
-			
-			//替换会原先输出
-			System.setOut(defaultOut);
-		} catch (Exception e) {}
-
+		LOGGER.error(" - [MSG]"+msg);
 	}
 	
 }

@@ -73,7 +73,13 @@
             <artifactId>javax.mail</artifactId>
             <version>1.5.2</version>
         </dependency>
-
+		<!-- log4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+		
         <!-- ######################### 支持ajax请求返回json ################################# -->
         <!-- Jackson -->
         <dependency>
