@@ -44,7 +44,7 @@ import org.axe.util.MD5Util;
 import org.axe.util.StringUtil;
 
 @Service
-public final class HomeService {
+public class HomeService {
 	private String privateToken = null;
 
 	public String saveAxeProperties(Param param){
