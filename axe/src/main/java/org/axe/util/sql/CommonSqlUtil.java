@@ -488,16 +488,16 @@ public final class CommonSqlUtil {
 		}
 	}
 
-	public static void main(String[] args) {
-		/*
+	/*public static void main(String[] args) {
+		
 		 * String sql = "select * from Test where a=b #1 #3 #12 #11"; Object[]
 		 * params =
 		 * {"***","***","333","***","***","***","***","***","***","***","***",
 		 * "==="}; sql = convertSqlAppendCommand(sql, params);
 		 * System.out.println(sql);
-		 */
+		 
 
 		String sql = "select a,b,c from table1";
 		System.out.println(convertSqlCount(sql));
-	}
+	}*/
 }

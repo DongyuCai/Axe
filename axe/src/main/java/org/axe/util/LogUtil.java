@@ -23,6 +23,8 @@
  */
 package org.axe.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,62 +33,69 @@ import java.util.Date;
  * @author CaiDongyu
  */
 public final class LogUtil {
-	private static PrintStream sqlLogOut = null;
 	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+	
+	private static PrintStream logStream = null;
 	static{
 		try {
-			sqlLogOut = new PrintStream("sql_log.txt");
+			logStream = new PrintStream(new FileOutputStream(new File("axe_log.txt")), true);
 		} catch (Exception e) {
 			error(e);
-			sqlLogOut = System.out;//Default
+			logStream = System.out;
 		}
 	}
 	
 	public static void error(Throwable error){
-		String now = sdf.format(new Date());
-		//控制台输出
-		System.out.println(now+" - [ERROR] "+error.getMessage());
-		error.printStackTrace();
-		
-		//准备记录到文件
-		PrintStream defaultOut = System.out;//先保留原先输出
-		System.setOut(sqlLogOut);//替换到文件输出
-		
-		System.out.println(now+" - [ERROR] "+error.getMessage());
-		error.printStackTrace();
-		
-		//替换会原先输出
-		System.setOut(defaultOut);
+		try {
+			String now = sdf.format(new Date());
+			//控制台输出
+			System.out.println(now+" - [ERROR] "+error.getMessage());
+			error.printStackTrace();
+			
+			//准备记录到文件
+			PrintStream defaultOut = System.out;//先保留原先输出
+			System.setOut(logStream);//替换到文件输出
+			
+			System.out.println(now+" - [ERROR] "+error.getMessage());
+			error.printStackTrace();
+			
+			//替换会原先输出
+			System.setOut(defaultOut);
+		} catch (Exception e) {}
 	}
 	
 	public static void error(String error){
-		String now = sdf.format(new Date());
-		//控制台输出
-		System.out.println(now+" - [ERROR] "+error);
-		
-		//准备记录到文件
-		PrintStream defaultOut = System.out;//先保留原先输出
-		System.setOut(sqlLogOut);//替换到文件输出
-		
-		System.out.println(now+" - [ERROR] "+error);
-		
-		//替换会原先输出
-		System.setOut(defaultOut);
+		try {
+			String now = sdf.format(new Date());
+			//控制台输出
+			System.out.println(now+" - [ERROR] "+error);
+			
+			//准备记录到文件
+			PrintStream defaultOut = System.out;//先保留原先输出
+			System.setOut(logStream);//替换到文件输出
+			
+			System.out.println(now+" - [ERROR] "+error);
+			
+			//替换会原先输出
+			System.setOut(defaultOut);
+		} catch (Exception e) {}
 	}
 	
 	public static void log(String msg){
-		String now = sdf.format(new Date());
-		//控制台输出
-		System.out.println(now+" - "+msg);
-		
-		//准备记录到文件
-		PrintStream defaultOut = System.out;//先保留原先输出
-		System.setOut(sqlLogOut);//替换到文件输出
-		
-		System.out.println(now+" - "+msg);
-		
-		//替换会原先输出
-		System.setOut(defaultOut);
+		try {
+			String now = sdf.format(new Date());
+			//控制台输出
+			System.out.println(now+" - "+msg);
+			
+			//准备记录到文件
+			PrintStream defaultOut = System.out;//先保留原先输出
+			System.setOut(logStream);//替换到文件输出
+			
+			System.out.println(now+" - "+msg);
+			
+			//替换会原先输出
+			System.setOut(defaultOut);
+		} catch (Exception e) {}
 
 	}
 	

@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMultipart;
  * @author 原作者以无法查实
  */
 public final class SimpleMailSender {
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		// 这个类主要是设置邮件
 		MailSenderInfo mailInfo = new MailSenderInfo();
 		mailInfo.setMailServerHost("smtp.163.com");
@@ -36,7 +36,7 @@ public final class SimpleMailSender {
 //		SimpleMailSender.sendTextMail(mailInfo);// 发送文体格式
 		boolean success = SimpleMailSender.sendHtmlMail(mailInfo);// 发送html格式
 		System.out.println(success);
-	}
+	}*/
 
 	/**
 	 * 以文本格式发送邮件

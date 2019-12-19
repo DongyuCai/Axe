@@ -45,6 +45,7 @@ import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.SchemaHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.interface_.base.Helper;
+import org.axe.util.LogUtil;
 
 /**
  * 加载并初始化 Helper 类
@@ -112,8 +113,8 @@ public final class HelperLoader {
 		//装载的类日志分析
         URL url = Axe.class.getClassLoader().getResource("");
 		String path = url==null?"null":url.getPath();
-		System.out.println(">>>>>>>>>\t Axe started success! \t<<<<<<<<<<");
-        System.out.println(">>>>>>>>>\t Home is \"/axe\"  \t<<<<<<<<<<");
-        System.out.println(">>>>>>>>>\t Class path is "+path);
+		LogUtil.log(">>>>>>>>>\t Axe started success! \t<<<<<<<<<<");
+		LogUtil.log(">>>>>>>>>\t Home is \"/axe\"  \t<<<<<<<<<<");
+		LogUtil.log(">>>>>>>>>\t Class path is "+path);
     }
 }

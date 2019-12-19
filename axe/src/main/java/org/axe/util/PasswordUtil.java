@@ -29,9 +29,9 @@ package org.axe.util;
  */
 public final class PasswordUtil {
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		System.out.println(getPassword("axe_caidongyu", 16));
-	}
+	}*/
 	
 	/**
 	 * 比如aol邮箱密码

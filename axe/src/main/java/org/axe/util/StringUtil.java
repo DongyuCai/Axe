@@ -209,9 +209,9 @@ public final class StringUtil {
 		return sb.toString();
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		// System.out.println(camelToUnderline("SetAbC1d"));
 		// System.out.println(underlineToCamel("set_ab_c1d"));
 		System.out.println(getRandomString(8));
-	}
+	}*/
 }

@@ -28,13 +28,13 @@ package org.axe.util;
  * @author CaiDongyu on 2016年6月2日 上午9:51:01.
  */
 public final class MathUtil {
-	
+	/*
 	public static void main(String[] args) {
 //		int[] ary = fibonacciAry(1, 10);
 //		System.out.println(Arrays.toString(ary));
 		System.out.println(fibonacci(360));
 	}
-
+*/
 	/**
 	 * 获得斐波那契数组
 	 * @param start 起始位(包含起始位)，第一位是1

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.axe.DispatcherServlet;
 import org.axe.util.CollectionUtil;
+import org.axe.util.LogUtil;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -46,7 +47,7 @@ public final class JettyManager {
             server.start(); 
             server.join();
             
-    		System.out.println(">>>>>>>>>\t Jetty server started success! \t<<<<<<<<<<");
+            LogUtil.log(">>>>>>>>>\t Jetty server started success! \t<<<<<<<<<<");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
