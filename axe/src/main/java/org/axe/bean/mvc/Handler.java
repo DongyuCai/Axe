@@ -36,7 +36,7 @@ import org.axe.interface_.mvc.Interceptor;
  * 封装 Action 信息
  * @author CaiDongyu on 2016/4/11.
  */
-public class Handler {
+public final class Handler {
 
 	/**
 	 * 接受请求的类型

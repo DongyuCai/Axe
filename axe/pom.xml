@@ -82,15 +82,6 @@
             <version>2.9.7</version>
         </dependency>
 
-
-        <!-- ######################### 日志 ################################# -->
-        <!-- slf4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.7</version>
-        </dependency>
-
         <!-- ######################### java web ################################# -->
         <!-- Servlet -->
         <dependency>

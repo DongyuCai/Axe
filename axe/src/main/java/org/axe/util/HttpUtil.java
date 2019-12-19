@@ -36,17 +36,12 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 import org.axe.constant.CharacterEncoding;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Http 帮助类
  * @author CaiDongyu on 2016年6月14日 上午11:26:32.
  */
 public final class HttpUtil {
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
-
-
 	public static String sendGet(String url) throws Exception {
 		return sendGet(url, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
@@ -80,7 +75,7 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			LOGGER.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
+			LogUtil.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输入流
@@ -90,7 +85,7 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (Exception e2) {
-				LOGGER.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
 			}
 		}
 		return result;
@@ -120,7 +115,7 @@ public final class HttpUtil {
 	        bos.close();    
 	        return bos.toByteArray();  
 		} catch (Exception e) {
-			LOGGER.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
+			LogUtil.error("发送GET请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输入流
@@ -130,7 +125,7 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (Exception e2) {
-				LOGGER.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
 			}
 		}
 	}
@@ -180,7 +175,7 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			LOGGER.error("发送POST请求出现异常！"+e.getMessage()+"["+url+"]");
+			LogUtil.error("发送POST请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流
@@ -193,7 +188,7 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (IOException ex) {
-				LOGGER.error("发送POST请求 关闭输出流、输入流出现异常！"+ex.getMessage()+"["+url+"]");
+				LogUtil.error("发送POST请求 关闭输出流、输入流出现异常！"+ex.getMessage()+"["+url+"]");
 			}
 		}
 		return result;
@@ -227,7 +222,7 @@ public final class HttpUtil {
 						buffer.append(URLEncoder.encode(entry.getValue(), charset));
 					}
 				} catch (UnsupportedEncodingException e) {
-					LOGGER.error("http error",e);
+					LogUtil.error(e);
 				}
 			}
 		}
@@ -260,7 +255,7 @@ public final class HttpUtil {
 				result += line;
 			}
 		} catch (Exception e) {
-			LOGGER.error("发送POST请求出现异常！"+e.getMessage()+"["+url+"]");
+			LogUtil.error("发送POST请求出现异常！"+e.getMessage()+"["+url+"]");
 			throw e;
 		}
 		// 使用finally块来关闭输出流、输入流
@@ -273,7 +268,7 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (IOException ex) {
-				LOGGER.error("发送POST请求 关闭输出流、输入流出现异常！"+ex.getMessage()+"["+url+"]");
+				LogUtil.error("发送POST请求 关闭输出流、输入流出现异常！"+ex.getMessage()+"["+url+"]");
 			}
 		}
 		buffer.setLength(0);

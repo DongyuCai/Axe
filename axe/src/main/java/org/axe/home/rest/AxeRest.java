@@ -72,19 +72,16 @@ import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.ApiExportUtil;
 import org.axe.util.ApiExportUtil.Level_1;
 import org.axe.util.CollectionUtil;
+import org.axe.util.LogUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.axe.util.TableExportUtil;
 import org.axe.util.TableExportUtil.Table;
 
 @FilterFuckOff
 @Interceptor({HomeInterceptor.class, SignInInterceptor.class})
 @Controller(basePath = "/axe")
-public class AxeRest {
-private static final Logger LOGGER = LoggerFactory.getLogger(AxeRest.class);
-
+public final class AxeRest {
 @Autowired
 private HomeService homeService;
 
@@ -97,7 +94,7 @@ writer.write(html);
 //writer.flush();
 //writer.close();
 } catch (Exception e) {
-LOGGER.error("home error",e);
+LogUtil.error(e);
 }
 }
 
@@ -121,7 +118,7 @@ line = reader.readLine();
 // writer.close();
 }
 } catch (Exception e) {
-LOGGER.error("home error", e);
+LogUtil.error(e);
 } finally {
 try {
 if (reader != null) {

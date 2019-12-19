@@ -29,7 +29,7 @@ import java.io.InputStream;
  * 文件上传
  * @author CaiDongyu on 2016/4/25.
  */
-public class FileParam {
+public final class FileParam {
     private String fieldName;//文件上传表单的字段名
     private String fileName;
     private long fileSize;

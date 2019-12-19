@@ -19,7 +19,7 @@ import javax.mail.internet.MimeMultipart;
  * 简单邮件（不带附件的邮件）发送器
  * @author 原作者以无法查实
  */
-public class SimpleMailSender {
+public final class SimpleMailSender {
 	public static void main(String[] args) {
 		// 这个类主要是设置邮件
 		MailSenderInfo mailInfo = new MailSenderInfo();

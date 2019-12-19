@@ -6,7 +6,7 @@ package org.axe.util.mail;
  */
 import java.util.Properties;
 
-public class MailSenderInfo {
+public final class MailSenderInfo {
 
 	// 发送邮件的服务器的IP和端口
 	private String mailServerHost;

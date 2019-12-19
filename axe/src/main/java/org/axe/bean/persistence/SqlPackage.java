@@ -27,7 +27,7 @@ package org.axe.bean.persistence;
  * Sql 执行需要的 元素包
  * @author CaiDongyu on 2016/5/6.
  */
-public class SqlPackage {
+public final class SqlPackage {
 	/**
 	 * sql语句
 	 */

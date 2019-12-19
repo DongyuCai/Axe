@@ -34,8 +34,7 @@ import org.axe.annotation.persistence.Tns;
 import org.axe.bean.persistence.ShardingTableCreateTask;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.proxy.base.AspectProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.axe.util.LogUtil;
 
 /**
  * 事务代理
@@ -44,9 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author CaiDongyu on 2016/4/19.
  */
 @Aspect(Service.class)
-public class TransactionAspect extends AspectProxy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionAspect.class);
-
+public final class TransactionAspect extends AspectProxy {
     private static final ThreadLocal<String> TNS_POINT_FLAG_HOLDER = new ThreadLocal<>();
     private static final ThreadLocal<String> SHARDING_TABLE_CREATE_TASK_POINT_FLAG_HOLDER = new ThreadLocal<>();
     private static final ThreadLocal<Set<ShardingTableCreateTask>> SHARDING_TABLE_CREATE_TASK_HOLDER = new ThreadLocal<>();
@@ -81,7 +78,7 @@ public class TransactionAspect extends AspectProxy {
         if(tnsPointFlag == null && method.isAnnotationPresent(Tns.class)){
             DataBaseHelper.beginTransaction();
             TNS_POINT_FLAG_HOLDER.set(methodPoint);
-            LOGGER.debug("begin transaction on point:"+methodPoint);
+//            LogUtil.log("begin transaction on point:"+methodPoint);
         }
         
         //分片表的创建机制，在进入第一层事务切面的时候，会添加这个分片表set，供后续Dao切面使用
@@ -89,7 +86,7 @@ public class TransactionAspect extends AspectProxy {
         if(shardingTableCreateTaskPointFlag == null){
         	SHARDING_TABLE_CREATE_TASK_POINT_FLAG_HOLDER.set(methodPoint);
         	SHARDING_TABLE_CREATE_TASK_HOLDER.set(new HashSet<ShardingTableCreateTask>());
-            LOGGER.debug("init sharding table create task set:"+methodPoint);
+//        	LogUtil.log("init sharding table create task set:"+methodPoint);
         }
         
     }
@@ -103,7 +100,7 @@ public class TransactionAspect extends AspectProxy {
     	if(tnsPointFlag != null && tnsPointFlag.equals(methodPoint) && method.isAnnotationPresent(Tns.class)){
         	DataBaseHelper.commitTransaction();
         	TNS_POINT_FLAG_HOLDER.remove();
-        	LOGGER.debug("commit transaction on point:"+methodPoint);
+//        	LogUtil.log("commit transaction on point:"+methodPoint);
         }
     	
     	//执行并清空掉分片数据表创建任务
@@ -119,7 +116,7 @@ public class TransactionAspect extends AspectProxy {
     	if(tnsPointFlag != null && tnsPointFlag.equals(methodPoint) && method.isAnnotationPresent(Tns.class)){
     		 DataBaseHelper.rollbackTransaction();
              TNS_POINT_FLAG_HOLDER.remove();
-             LOGGER.debug("rollback transaction on point:"+methodPoint);
+//             LogUtil.log("rollback transaction on point:"+methodPoint);
     	}
     	
     	//执行并清空掉分片数据表创建任务
@@ -150,14 +147,15 @@ public class TransactionAspect extends AspectProxy {
 					}
 					
     			} catch (SQLException e) {
-	                LOGGER.error("do sharding table ["+task.getTableName()+"]["+task.getShardingFlag()+"] create task failure",e);
+	                LogUtil.error("do sharding table ["+task.getTableName()+"]["+task.getShardingFlag()+"] create task failure");
+	                LogUtil.error(e);
 	                throw new RuntimeException(e);
 				}
     		}
     		
     		SHARDING_TABLE_CREATE_TASK_POINT_FLAG_HOLDER.remove();
     		SHARDING_TABLE_CREATE_TASK_HOLDER.remove();
-        	LOGGER.debug("clean sharding table create task set on point:"+methodPoint);
+//        	LogUtil.log("clean sharding table create task set on point:"+methodPoint);
         }
     }
     

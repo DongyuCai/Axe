@@ -10,7 +10,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
 /**
  * java.lang.String=>java.sql.Timestamp
  */
-public class String2SqlTimestampConvert implements BaseTypeConvert{
+public final class String2SqlTimestampConvert implements BaseTypeConvert{
 
 	public Timestamp convert(Object arg,Object ...args){
 		String str = (String)arg;

@@ -67,7 +67,7 @@ import org.axe.util.sql.OracleUtil;
  * @author CaiDongyu on 2016/4/19.
  */
 @Aspect(Dao.class)
-public class DaoAspect implements Proxy {
+public final class DaoAspect implements Proxy {
 
 	@Override
 	public Object doProxy(ProxyChain proxyChain) throws Throwable {

@@ -29,7 +29,7 @@ package org.axe.bean.persistence;
  * 所以包装一下条目和自增主键
  * @author CaiDongyu on 2016年5月16日 上午9:52:22.
  */
-public class InsertResult {
+public final class InsertResult {
 
 	private int effectedRows;
 	private Object generatedKey;

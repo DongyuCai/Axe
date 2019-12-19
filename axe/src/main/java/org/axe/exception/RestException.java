@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  * 异常类
  * @author CaiDongyu on 2016/4/8.
  */
-public class RestException extends RuntimeException implements HttpServletResponse{
+public final class RestException extends RuntimeException implements HttpServletResponse{
 	private static final long serialVersionUID = 1L;
 	
 	/**

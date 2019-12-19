@@ -26,7 +26,7 @@ package org.axe.bean.mvc;
 /**
  * 返回结果的包装、持有类，普通对象，只是用来set get返回结果
  */
-public class ResultHolder {
+public final class ResultHolder {
 
 	private Object result;
 

@@ -39,15 +39,12 @@ import org.axe.helper.base.ConfigHelper;
 import org.axe.util.CollectionUtil;
 import org.axe.util.FileUtil;
 import org.axe.util.IpUtil;
+import org.axe.util.LogUtil;
 import org.axe.util.MD5Util;
 import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
-public class HomeService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(HomeService.class);
-	
+public final class HomeService {
 	private String privateToken = null;
 
 	public String saveAxeProperties(Param param){
@@ -107,7 +104,7 @@ public class HomeService {
 			
 			writer.close();
 		} catch (Exception e) {
-			LOGGER.error("home error",e);
+			LogUtil.error(e);
 		}
 		return configFile.getAbsolutePath();
 	}

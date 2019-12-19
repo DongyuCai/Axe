@@ -23,9 +23,6 @@
  */
 package org.axe.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -41,9 +38,6 @@ import java.util.jar.JarFile;
  * @author CaiDongyu on 2016/4/8.
  */
 public final class ClassUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassUtil.class);
-
 
     /**
      * 获取类加载器
@@ -62,10 +56,10 @@ public final class ClassUtil {
         try {
             cls = Class.forName(className, isInitialized, getClassLoader());
         } catch (ClassNotFoundException e) {
-            LOGGER.error("load class failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         } catch (Error e){
-            LOGGER.error("load class failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
         return cls;
@@ -113,7 +107,7 @@ public final class ClassUtil {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("get class set failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
         return classSet;

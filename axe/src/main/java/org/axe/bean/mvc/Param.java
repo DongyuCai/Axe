@@ -35,7 +35,7 @@ import org.axe.util.StringUtil;
  * 请求参数对象
  * @author CaiDongyu on 2016/4/11.
  */
-public class Param {
+public final class Param {
 	/**
 	 * 原始的请求时候的url
 	 */

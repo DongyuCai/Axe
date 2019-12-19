@@ -41,7 +41,7 @@ import org.axe.home.service.HomeService;
 import org.axe.interface_.mvc.Interceptor;
 import org.axe.util.CollectionUtil;
 
-public class SignInInterceptor implements Interceptor{
+public final class SignInInterceptor implements Interceptor{
 	
 	private boolean AXE_SIGN_IN = false;
 	

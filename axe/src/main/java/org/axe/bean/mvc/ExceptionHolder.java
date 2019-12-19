@@ -26,7 +26,7 @@ package org.axe.bean.mvc;
 /**
  * 异常的包装、持有类，普通对象，只是用来set get异常
  */
-public class ExceptionHolder {
+public final class ExceptionHolder {
 
 	private Exception exception;
 

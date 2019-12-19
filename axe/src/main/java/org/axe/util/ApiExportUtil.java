@@ -53,7 +53,7 @@ import org.axe.interface_implement.mvc.HeaderFilter;
  * Rest接口导出工具类
  * @author CaiDongyu on 2018年2月3日 上午10:00:55.
  */
-public class ApiExportUtil {
+public final class ApiExportUtil {
 
 	private ApiExportUtil() {}
 	

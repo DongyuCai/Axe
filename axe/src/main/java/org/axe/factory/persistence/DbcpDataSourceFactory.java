@@ -30,13 +30,11 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.axe.annotation.persistence.DataSource;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.persistence.BaseDataSource;
+import org.axe.util.LogUtil;
 import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @DataSource("axe-datasource-dbcp")
-public class DbcpDataSourceFactory implements BaseDataSource{
-	Logger LOGGER = LoggerFactory.getLogger(DbcpDataSourceFactory.class);
+public final class DbcpDataSourceFactory implements BaseDataSource{
 	
     //#数据库
     private final String DRIVER;
@@ -71,11 +69,11 @@ public class DbcpDataSourceFactory implements BaseDataSource{
         	DATA_SOURCE.setUsername(USERNAME);
         	DATA_SOURCE.setPassword(PASSWORD);
         } catch (Exception e) {
-            LOGGER.error("jdbc driver : " + DRIVER);
-            LOGGER.error("jdbc url : " + URL);
-            LOGGER.error("jdbc username : " + USERNAME);
-            LOGGER.error("jdbc password : " + PASSWORD);
-            LOGGER.error("load jdbc driver failure", e);
+            LogUtil.error("jdbc driver : " + DRIVER);
+            LogUtil.error("jdbc url : " + URL);
+            LogUtil.error("jdbc username : " + USERNAME);
+            LogUtil.error("jdbc password : " + PASSWORD);
+            LogUtil.error(e);
         }
         
 	}

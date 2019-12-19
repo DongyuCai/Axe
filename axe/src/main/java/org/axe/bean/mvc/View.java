@@ -30,7 +30,7 @@ import java.util.Map;
  * Handler处理结果，返回如果是jsp
  * @author CaiDongyu on 2016/4/11.
  */
-public class View {
+public final class View {
     /**
      * 视图路径
      */

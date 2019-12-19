@@ -41,7 +41,7 @@ import org.axe.util.sql.OracleUtil;
  * @author CaiDongyu
  * 数据库Schema 助手类
  */
-public class SchemaHelper implements Helper{
+public final class SchemaHelper implements Helper{
 	@Override
 	public void init() throws Exception {}
 
@@ -79,7 +79,7 @@ public class SchemaHelper implements Helper{
 		}
 	}
 	
-	public void createTable(TableSchema tableSchema) throws SQLException{
+	public static void createTable(TableSchema tableSchema) throws SQLException{
 		List<String> createDataTableSqlList = new ArrayList<>();
 		if(DataSourceHelper.isMySql(tableSchema.getDataSourceName())){
 			if(tableSchema.getSharding()){

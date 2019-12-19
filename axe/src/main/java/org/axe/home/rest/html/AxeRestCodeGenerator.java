@@ -29,7 +29,7 @@ import java.io.FileWriter;
 
 import org.axe.util.Html2JavaUtil;
 
-public class AxeRestCodeGenerator {
+public final class AxeRestCodeGenerator {
 
 	public static void main(String[] args) {
 		//开始

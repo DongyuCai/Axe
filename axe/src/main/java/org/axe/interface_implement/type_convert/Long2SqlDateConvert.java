@@ -7,7 +7,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
 /**
  * java.lang.Long=>java.sql.Date
  */
-public class Long2SqlDateConvert implements BaseTypeConvert{
+public final class Long2SqlDateConvert implements BaseTypeConvert{
 
 	public Date convert(Object arg,Object ...args){
 		return new Date((Long)arg);

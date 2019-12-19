@@ -31,16 +31,12 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 文件操作 工具类
  * @author CaiDongyu on 2016/4/25.
  */
 public final class FileUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
-
     private FileUtil() {}
     
 	/**
@@ -122,7 +118,7 @@ public final class FileUtil {
                 FileUtils.forceMkdir(parentDir);
             }
         }catch (Exception e){
-            LOGGER.error("create file failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
         return file;
@@ -143,7 +139,7 @@ public final class FileUtil {
             file = new File(filePath);
             return file;
         }catch (Exception e){
-            LOGGER.error("create file failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
     }

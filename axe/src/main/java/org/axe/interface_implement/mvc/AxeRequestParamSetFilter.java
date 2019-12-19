@@ -58,7 +58,7 @@ import org.axe.util.StringUtil;
  * 所以如果想在解析参数之前来执行一些操作，可以把自己定义的Filter层级设置为小于1
  * 层级大于1的自定义Filter，都在此之后执行
  */
-public class AxeRequestParamSetFilter implements Filter {
+public final class AxeRequestParamSetFilter implements Filter {
 
 	@Override
 	public void init() {

@@ -35,7 +35,7 @@ import net.sf.cglib.proxy.MethodProxy;
  * 代理链
  * @author CaiDongyu on 2016/4/11.
  */
-public class ProxyChain {
+public final class ProxyChain {
 
     private final Class<?> targetClass;
     private final Object targetObject;

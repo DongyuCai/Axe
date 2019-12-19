@@ -28,7 +28,7 @@ package org.axe.bean.mvc;
  * handler
  * @author CaiDongyu on 2016/4/11.
  */
-public class Data {
+public final class Data {
     /**
      * 模型数据
      */

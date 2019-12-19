@@ -40,6 +40,7 @@ import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.persistence.TableHelper;
 import org.axe.util.CastUtil;
 import org.axe.util.CollectionUtil;
+import org.axe.util.LogUtil;
 import org.axe.util.PropsUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
@@ -48,9 +49,7 @@ import org.axe.util.StringUtil;
  * 统一的Sql解析处理工具，从SqlHelper中迁移过来
  * @author CaiDongyu 2018/5/29
  */
-public class CommonSqlUtil {
-//	private static final Logger LOGGER = LoggerFactory.getLogger(CommonSqlUtil.class);
-
+public final class CommonSqlUtil {
 	private CommonSqlUtil() {}
 	
 	public static String getShardingGtTableRecordSql(TableSchema tableSchema,int shardingFlag){
@@ -480,10 +479,10 @@ public class CommonSqlUtil {
 		Properties configProps = ConfigHelper.getCONFIG_PROPS();
 		boolean showSql = PropsUtil.getBoolean(configProps,ConfigConstant.JDBC_DATASOURCE + "." + dataSourceName + "." + ConfigConstant.JDBC_SHOW_SQL);
 		if (showSql) {
-			System.out.println(sp.getSql());
+			LogUtil.log(sp.getSql());
 			if (sp.getParams() != null) {
 				for (int i = 0; i < sp.getParams().length; i++) {
-					System.out.println("arg" + (i + 1) + ":" + sp.getParams()[i]);
+					LogUtil.log("arg" + (i + 1) + ":" + sp.getParams()[i]);
 				}
 			}
 		}

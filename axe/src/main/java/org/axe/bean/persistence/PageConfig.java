@@ -28,7 +28,7 @@ package org.axe.bean.persistence;
  * pageConfig必须放在@Sql注解的Dao方法的最后一个参数位置
  * @author CaiDongyu on 2016年5月9日 下午2:00:00.
  */
-public class PageConfig {
+public final class PageConfig {
 
 	/**
 	 * 当前页码

@@ -41,7 +41,7 @@ import org.axe.util.AjaxRequestUtil;
  * 所以如果想在解析参数之前来执行一些操作，可以把自己定义的Filter层级设置为小于0
  * 层级大于0的自定义Filter，都在此之后执行
  */
-public class AxeRequestParamAnalyzeFilter implements Filter {
+public final class AxeRequestParamAnalyzeFilter implements Filter {
 
 	@Override
 	public void init() {
@@ -78,18 +78,18 @@ public class AxeRequestParamAnalyzeFilter implements Filter {
 	}
 	
 	private void analyzeRequestParam(HttpServletRequest request, Param param, Handler handler){
-		if(FormRequestHelper.isMultipart(request)){
-            //如果是文件上传
-            FormRequestHelper.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
-        }else{
-            //如果不是
-            try {
+		try {
+			if(FormRequestHelper.isMultipart(request)){
+	            //如果是文件上传
+	            FormRequestHelper.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
+	        }else{
+	            //如果不是
 				AjaxRequestUtil.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RestException(RestException.SC_INTERNAL_SERVER_ERROR,e.getMessage());
-			}
-        }
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RestException(RestException.SC_INTERNAL_SERVER_ERROR,e.getMessage());
+		}
 	}
 	
 

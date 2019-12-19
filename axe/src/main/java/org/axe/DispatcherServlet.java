@@ -57,11 +57,10 @@ import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
 import org.axe.util.CollectionUtil;
 import org.axe.util.JsonUtil;
+import org.axe.util.LogUtil;
 import org.axe.util.ReflectionUtil;
 import org.axe.util.RequestUtil;
 import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 请求转发器
@@ -72,7 +71,6 @@ import org.slf4j.LoggerFactory;
 public class DispatcherServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 	private static Boolean AXE_INITED = false;
 	
 	@Override
@@ -95,7 +93,7 @@ public class DispatcherServlet extends HttpServlet{
 			        	if(jspServlet != null){
 			        		jspServlet.addMapping(appJspPath+"*");
 			        	}else{
-			        		LOGGER.error("unsupport jsp application! servletContext.getServletRegistration(\"jsp\") is null !");
+			        		LogUtil.error("unsupport jsp application! servletContext.getServletRegistration(\"jsp\") is null !");
 			        	}
 			        }
 			        //注册处理静态资源的默认Servlet
@@ -106,7 +104,7 @@ public class DispatcherServlet extends HttpServlet{
 			        	if(defaultServlet != null){
 			        		defaultServlet.addMapping(appAssetPath+"*");
 			        	}else{
-			        		LOGGER.error("unsupport static asset! servletContext.getServletRegistration(\"default\") is null !");
+			        		LogUtil.error("unsupport static asset! servletContext.getServletRegistration(\"default\") is null !");
 			        	}
 			        }
 				} catch (Exception e) {
@@ -193,14 +191,15 @@ public class DispatcherServlet extends HttpServlet{
 			exceptionHolder.setException(e);
 		} finally {
 			if(RESPONSE_IS_USED>0){
-				LOGGER.error("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
+				LogUtil.error("RESPONSE_IS_USED:"+RESPONSE_IS_USED);
 			}
 			//##5.执行Filter链各个节点的收尾工作
 			while(CollectionUtil.isNotEmpty(doEndFilterStack)){
 				try {
 					doEndFilterStack.pop().doEnd(request, response, param, handler,resultHolder,exceptionHolder);
 				} catch (Exception endEx) {
-					LOGGER.error("filter doEnd failed",endEx);
+					LogUtil.error("filter doEnd failed");
+					LogUtil.error(endEx);
 				}
 			}
 			//##6.执行Filter链各个节点的收尾工作
@@ -208,7 +207,8 @@ public class DispatcherServlet extends HttpServlet{
 				try {
 					doEndInterceptorStack.pop().doEnd(request, response, param, handler,resultHolder,exceptionHolder);
 				} catch (Exception endEx) {
-					LOGGER.error("filter doEnd failed",endEx);
+					LogUtil.error("filter doEnd failed");
+					LogUtil.error(endEx);
 				}
 			}
 			
@@ -221,7 +221,8 @@ public class DispatcherServlet extends HttpServlet{
 						RedirectorInterrupt e = (RedirectorInterrupt)(exceptionHolder.getException()); 
 						handleViewResult(e.getView(),request,response,RESPONSE_IS_USED);
 					} catch (Exception e1) {
-						LOGGER.error("RedirectorInterrupt handle error",e1);
+						LogUtil.error("RedirectorInterrupt handle error");
+						LogUtil.error(e1);
 					}
 				}else if(exceptionHolder.getException() instanceof RestException){
 					try {
@@ -229,11 +230,13 @@ public class DispatcherServlet extends HttpServlet{
 						//需要返回前台信息的异常
 						writeError(e.getStatus(), e.getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
 					} catch (Exception e1) {
-						LOGGER.error("RestException handle error",e1);
+						LogUtil.error("RestException handle error");
+						LogUtil.error(e1);
 					}
 				}else{
 					//其他情况就是Exception 500
-					LOGGER.error("server error",exceptionHolder.getException());
+					LogUtil.error("server error");
+					LogUtil.error(exceptionHolder.getException());
 					//500
 					writeError(RestException.SC_INTERNAL_SERVER_ERROR, "500 server error,"+exceptionHolder.getException().getMessage(), response, RESPONSE_IS_USED, contentType, characterEncoding);
 					
@@ -241,7 +244,8 @@ public class DispatcherServlet extends HttpServlet{
 			    		//邮件通知
 						MailHelper.errorMail(exceptionHolder.getException());
 					} catch (Exception e1) {
-						LOGGER.error("mail error",e1);
+						LogUtil.error("mail error");
+						LogUtil.error(e1);
 					}
 				}
 			}else{
@@ -257,12 +261,14 @@ public class DispatcherServlet extends HttpServlet{
                 			handleDataResult(data,response,handler,RESPONSE_IS_USED);
                 		}
 					} catch (Exception e2) {
-						LOGGER.error("handle result error",e2);
+						LogUtil.error("handle result error");
+						LogUtil.error(e2);
 						try {
 				    		//邮件通知
 							MailHelper.errorMail(e2);
 						} catch (Exception e1) {
-							LOGGER.error("mail error",e1);
+							LogUtil.error("mail error");
+							LogUtil.error(e1);
 						}
 					}
             	}
@@ -283,7 +289,8 @@ public class DispatcherServlet extends HttpServlet{
 //    			writer.flush();
 //    			writer.close();
     		} catch (Exception e) {
-    			LOGGER.error("server error",e);
+				LogUtil.error("server error");
+				LogUtil.error(e);
     		}
     	}
     }

@@ -10,7 +10,7 @@ import org.axe.util.sql.CommonSqlUtil;
  * Sql 执行类，包装了PrepareStatement
  * @author CaiDongyu on 2019/2/13.
  */
-public class SqlExecutor {
+public final class SqlExecutor {
 
 	private String dataSourceName;
 	private SqlPackage sp;

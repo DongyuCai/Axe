@@ -7,7 +7,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
 /**
  * java.math.BigDecimal=>java.lang.Integer
  */
-public class BigDecimal2IntegerConvert implements BaseTypeConvert{
+public final class BigDecimal2IntegerConvert implements BaseTypeConvert{
 
 	@Override
 	public Object convert(Object object,Object ...args) {

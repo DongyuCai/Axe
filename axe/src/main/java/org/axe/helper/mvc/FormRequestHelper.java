@@ -45,19 +45,16 @@ import org.axe.bean.mvc.Param;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.util.CollectionUtil;
 import org.axe.util.FileUtil;
+import org.axe.util.LogUtil;
 import org.axe.util.RequestUtil;
 import org.axe.util.StreamUtil;
 import org.axe.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 表单提交请求 助手类
  * @author CaiDongyu on 2016/4/25.
  */
 public final class FormRequestHelper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FormRequestHelper.class);
-
     /**
      * Apache Commons FileUpload 提供的 Servlet 文件上传对象
      */
@@ -84,7 +81,7 @@ public final class FormRequestHelper {
     /**
      * 创建请求对象
      */
-    public static void initParam(Param param,HttpServletRequest request,String requestPath,String mappingPath){
+    public static void initParam(Param param,HttpServletRequest request,String requestPath,String mappingPath)throws Exception{
         List<FormParam> formParamList = new ArrayList<>();
         List<FileParam> fileParamList = new ArrayList<>();
         try {
@@ -116,8 +113,8 @@ public final class FormRequestHelper {
             //解析url请求参数
             formParamList.addAll(RequestUtil.parseParameter(request,requestPath,mappingPath));
         }catch (Exception e){
-            LOGGER.error("create param failed",e);
-            throw new RuntimeException(e);
+            LogUtil.error(e);
+            throw e;
         }
         param.init(null,formParamList,fileParamList,null);
     }
@@ -135,7 +132,7 @@ public final class FormRequestHelper {
                 StreamUtil.copyStream(inputStream,outputStream);
             }
         } catch (Exception e){
-            LOGGER.error("upload file failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
     }
@@ -151,7 +148,7 @@ public final class FormRequestHelper {
                 }
             }
         } catch (Exception e){
-            LOGGER.error("upload file failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
     }

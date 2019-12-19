@@ -27,7 +27,7 @@ package org.axe.bean.mvc;
  * 描述请求头字段
  * @author CaiDongyu on 2018/4/28.
  */
-public class Header {
+public final class Header {
 	
 	private String name;
 	

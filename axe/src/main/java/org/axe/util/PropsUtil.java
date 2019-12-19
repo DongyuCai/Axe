@@ -26,16 +26,11 @@ package org.axe.util;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 配置文件工具类
  * @author CaiDongyu on 2016/4/8.
  */
 public final class PropsUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropsUtil.class);
 
     private PropsUtil() {}
     
@@ -51,13 +46,13 @@ public final class PropsUtil {
                 props.load(is);
             }
         } catch (Exception e) {
-            LOGGER.error("load properties file [" + fileName + "] failure", e);
+            LogUtil.error(e);
         } finally {
             if (is != null) {
                 try {
                     is.close();
                 } catch (Exception e) {
-                    LOGGER.error("close input stream failure ", e);
+                    LogUtil.error(e);
                 }
             }
         }

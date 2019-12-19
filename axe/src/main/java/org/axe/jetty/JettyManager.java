@@ -8,7 +8,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-public class JettyManager {
+public final class JettyManager {
 	
 	/**
 	 * 不带参数的启动，默认启动jetty

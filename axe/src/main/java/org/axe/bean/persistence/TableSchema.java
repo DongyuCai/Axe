@@ -29,7 +29,7 @@ import java.util.List;
  * 封装 Dao Entity类的结构描述
  * @author CaiDongyu on 2019/8/5.
  */
-public class TableSchema {
+public final class TableSchema {
 	
 	//字段结构
 	public static final class ColumnSchema{

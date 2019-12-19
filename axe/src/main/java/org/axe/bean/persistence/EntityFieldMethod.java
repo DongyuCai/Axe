@@ -30,7 +30,7 @@ import java.lang.reflect.Method;
  * 封装 Dao Entity类的字段和Get Set方法
  * @author CaiDongyu on 2016/5/5.
  */
-public class EntityFieldMethod {
+public final class EntityFieldMethod {
 	private Field field;
 	private Method method;
 	public EntityFieldMethod(Field field, Method method) {

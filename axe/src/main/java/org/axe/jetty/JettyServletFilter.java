@@ -6,7 +6,7 @@ import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.servlet.FilterHolder;
 
-public class JettyServletFilter {
+public final class JettyServletFilter {
 	
 	private FilterHolder holder;
 	private String pathSpec;

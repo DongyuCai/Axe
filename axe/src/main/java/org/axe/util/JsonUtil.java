@@ -23,9 +23,6 @@
  */
 package org.axe.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,8 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author CaiDongyu on 2016/4/11.
  */
 public final class JsonUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtil.class);
-    
     private JsonUtil() {}
     
     /**
@@ -47,7 +42,7 @@ public final class JsonUtil {
         	ObjectMapper OBJECT_MAPPER = new ObjectMapper();
             json = OBJECT_MAPPER.writeValueAsString(obj);
         } catch (Exception e){
-            LOGGER.error("convert POJO to JSON failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
         return json;
@@ -71,7 +66,7 @@ public final class JsonUtil {
             	pojo = OBJECT_MAPPER.readValue(json,type);
             }
         } catch (Exception e){
-            LOGGER.error("convert JSON to POJO failure",e);
+            LogUtil.error(e);
             throw new RuntimeException(e);
         }
         return pojo;

@@ -7,7 +7,7 @@ import org.axe.interface_.type_convert.BaseTypeConvert;
 /**
  * java.math.BigInteger=>java.lang.Long
  */
-public class BigInteger2LongConvert implements BaseTypeConvert{
+public final class BigInteger2LongConvert implements BaseTypeConvert{
 
 	public Long convert(Object arg,Object ...args){
 		return ((BigInteger)arg).longValue();

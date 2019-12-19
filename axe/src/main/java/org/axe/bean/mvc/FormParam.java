@@ -27,7 +27,7 @@ package org.axe.bean.mvc;
  * 表单参数
  * @author CaiDongyu on 2016/4/25.
  */
-public class FormParam {
+public final class FormParam {
     private String fieldName;
     private String fieldValue;
 

@@ -33,7 +33,7 @@ import org.axe.bean.mvc.ResultHolder;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.mvc.Interceptor;
 
-public class HomeInterceptor implements Interceptor{
+public final class HomeInterceptor implements Interceptor{
 	
 	private boolean AXE_HOME = false;
 	@Override

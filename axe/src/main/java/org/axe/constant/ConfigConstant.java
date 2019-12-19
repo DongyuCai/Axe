@@ -27,33 +27,33 @@ package org.axe.constant;
  * 框架配置的相关常量
  * @author CaiDongyu on 2016/4/8.
  */
-public interface ConfigConstant {
+public final class ConfigConstant {
     //#axe配置文件名称
-	String CONFIG_FILE = "axe.properties";
+	public static final String CONFIG_FILE = "axe.properties";
     
     //#系统参数配置
-	String AXE_HOME = "axe.home";
-	String AXE_EMAIL = "axe.email";
-	String AXE_SIGN_IN = "axe.signin";
-	String AXE_SIGN_IN_TOKEN = "axe.signin.token";
-	String AXE_CLASSHELPER_KEEP = "axe.classhelper.keep";
+	public static final String AXE_HOME = "axe.home";
+	public static final String AXE_EMAIL = "axe.email";
+	public static final String AXE_SIGN_IN = "axe.signin";
+	public static final String AXE_SIGN_IN_TOKEN = "axe.signin.token";
+	public static final String AXE_CLASSHELPER_KEEP = "axe.classhelper.keep";
 	
     //#持久层配置
-    String JDBC_DRIVER = "jdbc.driver";
-    String JDBC_URL = "jdbc.url";
-    String JDBC_USERNAME = "jdbc.username";
-    String JDBC_PASSWORD = "jdbc.password";
-    String JDBC_DATASOURCE = "jdbc.datasource";
+	public static final String JDBC_DRIVER = "jdbc.driver";
+	public static final String JDBC_URL = "jdbc.url";
+	public static final String JDBC_USERNAME = "jdbc.username";
+	public static final String JDBC_PASSWORD = "jdbc.password";
+	public static final String JDBC_DATASOURCE = "jdbc.datasource";
     //这个部分是jdbc配置的子项，需要JDBC_DATASOURCE+dataSourceName+以下名称配置{
-    String JDBC_AUTO_CREATE_TABLE = "auto_create_table";
-    String JDBC_SHOW_SQL = "show_sql";
-    String JDBC_CHARACTER = "character";
-    String JDBC_COLLATE = "collate";
+	public static final String JDBC_AUTO_CREATE_TABLE = "auto_create_table";
+	public static final String JDBC_SHOW_SQL = "show_sql";
+	public static final String JDBC_CHARACTER = "character";
+	public static final String JDBC_COLLATE = "collate";
     //}
     
     //#项目基本配置
-    String APP_BASE_PACKAGE = "app.base_package";
-    String APP_JSP_PATH = "app.jsp_path";
-    String APP_ASSET_PATH = "app.asset_path";
-    String APP_UPLOAD_LIMIT = "app.upload_limit";
+	public static final String APP_BASE_PACKAGE = "app.base_package";
+	public static final String APP_JSP_PATH = "app.jsp_path";
+	public static final String APP_ASSET_PATH = "app.asset_path";
+	public static final String APP_UPLOAD_LIMIT = "app.upload_limit";
 }

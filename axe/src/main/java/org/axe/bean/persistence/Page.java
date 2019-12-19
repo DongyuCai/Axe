@@ -29,7 +29,7 @@ import java.util.List;
  * Dao BaseRepostory 分页参数包 
  * @author CaiDongyu on 2016年5月9日 下午1:54:11.
  */
-public class Page<T> {
+public final class Page<T> {
 	/**
 	 * 记录
 	 */

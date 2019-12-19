@@ -26,7 +26,7 @@ package org.axe.bean.persistence;
 /**
  * 分片表的新增分片任务
  */
-public class ShardingTableCreateTask {
+public final class ShardingTableCreateTask {
 	/*public static void main(String[] args) {
 		Set<ShardingTableCreateTask> set = new HashSet<>();
 		ShardingTableCreateTask task1 = new ShardingTableCreateTask();

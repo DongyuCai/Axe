@@ -47,16 +47,12 @@ import org.axe.annotation.mvc.RequestParam;
 import org.axe.bean.mvc.FileParam;
 import org.axe.bean.mvc.FormParam;
 import org.axe.bean.mvc.Param;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 请求处理 工具类
  * @author CaiDongyu on 2016/4/26.
  */
 public final class RequestUtil {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtil.class);
-	
 	private RequestUtil() {}
 	
 	/**
@@ -683,7 +679,7 @@ public final class RequestUtil {
 				
 			}
 		} catch (Exception e) {
-			LOGGER.error("request analyze error",e);
+			LogUtil.error(e);
 		}
 		return parameterValue;
 	}
