@@ -21,7 +21,10 @@ public List<Level_1> api_test_api_list(
 	HttpServletRequest request, HttpServletResponse response) {
 	try {
 		String path = request.getContextPath();
-		String baseDomain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+		String baseDomain = request.getScheme() + "://" + request.getServerName();
+		if(request.getServerPort() != 80){
+			baseDomain = baseDomain + ":" + request.getServerPort();
+		}
 		String basePath = baseDomain + path;
 		List<Level_1> list = ApiExportUtil.asApiTest(basePath);
 		return list;
