@@ -77,6 +77,7 @@ import org.axe.util.ReflectionUtil;
 import org.axe.util.StringUtil;
 import org.axe.util.TableExportUtil;
 import org.axe.util.TableExportUtil.Table;
+import org.axe.util.RequestUtil;
 
 @FilterFuckOff
 @Interceptor({HomeInterceptor.class, SignInInterceptor.class})
@@ -1217,13 +1218,7 @@ public List<Level_1> api_test_api_list(
 @RequestParam("token")String token,
 HttpServletRequest request, HttpServletResponse response) {
 try {
-String path = request.getContextPath();
-String baseDomain = request.getScheme() + "://" + request.getServerName();
-if(request.getServerPort() != 80){
-baseDomain = baseDomain + ":" + request.getServerPort();
-}
-String basePath = baseDomain + path;
-List<Level_1> list = ApiExportUtil.asApiTest(basePath);
+List<Level_1> list = ApiExportUtil.asApiTest(RequestUtil.getBasePath(request));
 return list;
 } catch (Exception e) {
 e.printStackTrace();

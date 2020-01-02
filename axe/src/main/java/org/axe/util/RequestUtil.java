@@ -168,12 +168,13 @@ public final class RequestUtil {
     	return request.getMethod().toUpperCase();
     }
     
-    //TODO(OK):获取准确的server请求路径
-    //jetty下request.getServletPath();可以直接使用
-    //tomcat 8.0 下不好使,需要改变策略
+    /**
+     * 获取请求路径URI
+     */
     public static String getRequestPath(HttpServletRequest request){
-    	String requestPath = request.getServletPath();
-    	if(StringUtil.isEmpty(requestPath)){
+    	//TODO(OK):获取准确的server请求路径
+    	String requestPath = request.getServletPath();//jetty下request.getServletPath();可以直接使用
+    	if(StringUtil.isEmpty(requestPath)){//tomcat 8.0 下不好使,需要改变策略
     		requestPath = request.getRequestURI();
     		if(requestPath.contains("?")){
     			requestPath = requestPath.substring(0,requestPath.indexOf("?"));
@@ -684,4 +685,16 @@ public final class RequestUtil {
 		return parameterValue;
 	}
     
+    /**
+     * 获取请求链接的公共开头部分
+     */
+    public static String getBasePath(HttpServletRequest request){
+    	String path = request.getContextPath();
+    	String baseDomain = request.getScheme() + "://" + request.getServerName();
+    	if(request.getServerPort() != 80){
+    	baseDomain = baseDomain + ":" + request.getServerPort();
+    	}
+    	String basePath = baseDomain + path;
+    	return basePath;
+    }
 }
