@@ -168,12 +168,6 @@ public final class ClassHelper implements Helper{
         return classSet;
     }
     
-    public static void release(){
-    	if(!ConfigHelper.getAxeClassHelperKeep()){
-    		CLASS_SET.clear();
-    	}
-    }
-
 	@Override
 	public void onStartUp() throws Exception {}
 }

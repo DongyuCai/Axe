@@ -33,7 +33,15 @@ public enum ContentType {
 	APPLICATION_HTML("text/html; charset=utf-8"),
 	APPLICATION_CSS("text/css"),
 	APPLICATION_JS("application/x-javascript"),
-	IMAGE_ICON("image/x-icon");
+	IMAGE_ICON("image/x-icon"),
+	IMAGE_JPEG("image/jpeg"),
+	IMAGE_PNG("image/png"),
+	IMAGE_GIF("image/gif"),
+	FONT_WOFF2("font/woff2"),
+	FONT_WOFF("font/woff"),
+	FONT_TTF("font/ttf"),
+	FONT_SVG("text/xml"),
+	FONT_EOT("font/eot");
 	
 	public String CONTENT_TYPE;
 

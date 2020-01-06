@@ -25,10 +25,13 @@ package org.axe.helper.mvc;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.axe.bean.mvc.Handler;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Filter;
@@ -41,12 +44,16 @@ import org.axe.util.ReflectionUtil;
  * CaiDongYu on 2016/4/9.
  */
 public final class FilterHelper implements Helper {
-	private static List<Filter> FILTER_LIST;// 保证顺序
-
+	private static final List<Filter> FILTER_LIST = new ArrayList<>();// 保证顺序
+	
+	private static final Map<Filter,List<Handler>> ACTION_SIZE_MAP = new HashMap<>();
+	public static Map<Filter,List<Handler>> getActionSizeMap(){
+		return ACTION_SIZE_MAP;
+	}
+	
 	@Override
 	public void init() throws Exception{
 		synchronized (this) {
-			FILTER_LIST = new ArrayList<>();
 			Set<Class<?>> filterClassSet = ClassHelper.getClassSetBySuper(Filter.class);
 			List<Filter> filterSortedList = new LinkedList<>();
 			if (CollectionUtil.isNotEmpty(filterClassSet)) {

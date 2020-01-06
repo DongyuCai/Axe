@@ -39,6 +39,7 @@ import org.axe.annotation.mvc.FilterFuckOff;
 import org.axe.annotation.mvc.Request;
 import org.axe.annotation.mvc.UnFuckOff;
 import org.axe.bean.mvc.Handler;
+import org.axe.helper.base.ConfigHelper;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Filter;
@@ -286,11 +287,31 @@ public final class ControllerHelper implements Helper{
     					}
     				}
     			}
-    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass,controllerDesc, actionMethod,actionDesc,filterList,interceptorList);
+    			Handler handler = new Handler(ACTION_LIST.size(), requestMethod,mappingPath,controllerClass,controllerDesc, actionMethod,actionDesc,filterList,interceptorList);
     			//构建树
     			node.put(nodeName, handler);
     			//存根到ACTIN_LIST
     			ACTION_LIST.add(handler);
+    			
+    			if(ConfigHelper.getAxeHome()){
+    				//循环handler 里的filter 和interceptor，Axe home展示用
+        			for(Filter filter:handler.getFilterList()){
+        				List<Handler> actionList = FilterHelper.getActionSizeMap().get(filter);
+        				if(actionList == null){
+        					actionList = new ArrayList<>();
+        					FilterHelper.getActionSizeMap().put(filter, actionList);
+        				}
+        				actionList.add(handler);
+        			}
+        			for(Interceptor interceptor:handler.getInterceptorList()){
+        				List<Handler> actionList = InterceptorHelper.getActionSizeMap().get(interceptor);
+        				if(actionList == null){
+        					actionList = new ArrayList<>();
+        					InterceptorHelper.getActionSizeMap().put(interceptor, actionList);
+        				}
+        				actionList.add(handler);
+        			}
+    			}
     		}else{
     			Handler handler = (Handler)node.get(nodeName);
     			throw new RuntimeException("find the same action: "+actionMethod.toGenericString()+" === "+handler.getActionMethod().toGenericString());

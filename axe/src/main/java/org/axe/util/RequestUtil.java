@@ -57,9 +57,10 @@ public final class RequestUtil {
 	
 	/**
 	 * 允许接受的字符串种类
-	 * 字母、数字、下划线、$
+	 * 字母、数字、下划线、$、中划线、点
 	 */
-	private static final String REG_WORD = "A-Za-z0-9_\\$";
+//	private static final String REG_WORD = "A-Za-z0-9_\\$";
+	private static final String REG_WORD = "A-Za-z0-9_\\$\\-\\.";// 2020/1/4 改
 	
 	/**
 	 * 检查action url是否合法
@@ -70,7 +71,7 @@ public final class RequestUtil {
 	 */
 	public static boolean checkMappingPath(String path){
 		do{
-			Pattern reg = Pattern.compile("^["+REG_WORD+"\\{\\}/\\-\\.]*$");
+			Pattern reg = Pattern.compile("^["+REG_WORD+"\\{\\}/]*$");
 			Matcher matcher = reg.matcher(path);
 			if(!matcher.find()) return false;
 			

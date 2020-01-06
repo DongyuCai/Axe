@@ -24,9 +24,11 @@
 package org.axe.helper.mvc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.axe.bean.mvc.Handler;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Interceptor;
@@ -40,6 +42,11 @@ import org.axe.util.ReflectionUtil;
 public final class InterceptorHelper implements Helper{
 
 	private static Map<Class<? extends Interceptor>,Interceptor> INTERCEPTOR_MAP;//不保证顺序
+
+	private static final Map<Interceptor,List<Handler>> ACTION_SIZE_MAP = new HashMap<>();
+	public static Map<Interceptor,List<Handler>> getActionSizeMap(){
+		return ACTION_SIZE_MAP;
+	}
 	
 	@Override
 	public void init() throws Exception{

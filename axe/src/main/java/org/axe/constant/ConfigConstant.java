@@ -34,9 +34,6 @@ public final class ConfigConstant {
     //#系统参数配置
 	public static final String AXE_HOME = "axe.home";
 	public static final String AXE_EMAIL = "axe.email";
-	public static final String AXE_SIGN_IN = "axe.signin";
-	public static final String AXE_SIGN_IN_TOKEN = "axe.signin.token";
-	public static final String AXE_CLASSHELPER_KEEP = "axe.classhelper.keep";
 	
     //#持久层配置
 	public static final String JDBC_DRIVER = "jdbc.driver";

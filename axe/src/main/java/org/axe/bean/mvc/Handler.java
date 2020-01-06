@@ -75,11 +75,15 @@ public final class Handler {
      */
     private Method actionMethod;
 
-
     /**
      * action的描述
      */
     private String actionDesc;
+    
+    /**
+     * action在ControllerHelper.actionList里的下标位置
+     */
+    private int actionIndex;
     
     public class ActionParam{
     	private Class<?> paramType;
@@ -114,8 +118,9 @@ public final class Handler {
 
     
     
-    public Handler(String requestMethod, String mappingPath, 
+    public Handler(int actionIndex,String requestMethod, String mappingPath, 
 			Class<?> controllerClass, String controllerDesc, Method actionMethod, String actionDesc, List<Filter> filterList, List<Interceptor> interceptorList) {
+    	this.actionIndex = actionIndex;
 		this.requestMethod = requestMethod;
 		this.mappingPath = mappingPath;
 		this.mappingPathDesc = controllerDesc+"."+actionDesc;
@@ -199,4 +204,9 @@ public final class Handler {
     public String getCharacterEncoding() {
 		return characterEncoding;
 	}
+
+	public int getActionIndex() {
+		return actionIndex;
+	}
+
 }

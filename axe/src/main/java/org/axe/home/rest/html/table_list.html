@@ -28,11 +28,11 @@ SOFTWARE.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>Axe Table</title>
+    <title>Axe</title>
 
     <!-- Bootstrap -->
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="table?s=lib/doc.min.css&token={{token}}" rel="stylesheet">
+    <link href="lib/bootstrap.min.css" rel="stylesheet">
+    <link href="lib/doc.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -46,8 +46,7 @@ SOFTWARE.
 	    <div id="main_div">
 	    	<div class="col-md-12">
 		    	<div style="margin-top: 15px;" class="jumbotron">
-				  <h1>Axe Table</h1>
-				  <p>所有的持久层对象的定义&nbsp;<span class="badge" nc-text="{{tableList.length}}"></span></p>
+				  <h1>Table List <small nc-text="x{{tableList.length}}"></small></h1>
 				  <p>
 				  	<a onclick="showAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button" onclick="">全部展开</a>
 				  	<a onclick="hideAllTableDetail()" class="btn btn-primary btn-lg" href="javascript:void(0)" role="button">全部收起</a>
@@ -60,8 +59,8 @@ SOFTWARE.
 	    	<div nc-for="row in tableList" class="{{row.columnList?'col-md-12':'col-md-4'}}">
 	    		<div class="panel panel-default">
 				  <div class="panel-heading" style="height:65px;padding-left: 0px;">
-				  	<h4 class="col-md-10" nc-text="{{row.name}} <small>{{row.packageName}} {{row.comment}}</small>"></h4>
-				  	<div class="col-md-2" onclick="showTableDetail({{row.$index}})" style="text-align:right;cursor: pointer;padding-top: 10px;" ><span nc-class="{{row.columnList?'glyphicon glyphicon-chevron-up':'glyphicon glyphicon-chevron-down'}}"></span></div>
+				  	<h4 class="col-md-10" nc-text="{{row.name}} <small>{{row.packageName}} {{row.comment}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  	<div class="col-md-2" onclick="showTableDetail({{row.$index}})" style="text-align:right;cursor: pointer;padding-top: 10px;" ><b><span style="" nc-text="{{row.columnList?'-':'+'}}"></span></b></div>
 				  </div>
 				  <table nc-if="row.columnList && row.columnList.length>0" class="table table-hover" >
 				 	<tbody>
@@ -84,14 +83,14 @@ SOFTWARE.
   	</div>
   	
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="table?s=lib/jquery.min.js&token={{token}}"></script>
-    <script src="table?s=lib/jquery.form.min.js&token={{token}}"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/jquery.form.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
     <!-- nice mvvm -->
-    <script src="table?s=lib/nice-mvvm.js&token={{token}}"></script>
+    <script src="lib/nice-mvvm.js"></script>
     <!-- ajax -->
-    <script src="table?s=lib/nice-ajax.js&token={{token}}"></script>
+    <script src="lib/nice-ajax.js"></script>
 
     <script>
       'use strict';
@@ -118,7 +117,7 @@ SOFTWARE.
       //初始化数据
       //加载api列表，作为左侧菜单树
       var tableList = [];
-      $.get("table/table_list?token={{token}}",null,null,function(data){
+      $.get("table_list",null,null,function(data){
 		tableList = data;
 		$scope_main.tableList = [];
 		for(var i=0;i<data.length;i++){

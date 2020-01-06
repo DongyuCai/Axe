@@ -1,0 +1,115 @@
+<!--
+MIT License
+
+Copyright (c) 2017 CaiDongyu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<!DOCTYPE html >
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+<title>Axe</title>
+
+<!-- Bootstrap -->
+<link href="lib/bootstrap.min.css" rel="stylesheet">
+<link href="lib/doc.min.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<div class="container">
+		<div id="main_div">
+			<div class="col-md-12">
+				<div style="margin-top: 15px;" class="jumbotron">
+					<h1>Interceptor Action List <small nc-text="x{{actionAry.length}}"></small></h1>
+					<h4 nc-text="{{interceptor.class}}"></h4>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Title</th>
+							<th>RM</th>
+							<th>MP</th>
+							<th>Class</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr nc-for="row in actionAry">
+							<th nc-text="{{row.$index+1}}"></th>
+							<td nc-text="{{row.title}}"></td>
+							<td nc-text="{{row.requestMethod}}"></td>
+							<td nc-text="{{row.mappingPath}}"></td>
+							<td nc-text="{{row.class}}"></td>
+							<td nc-text="{{row.action}}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/jquery.form.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="lib/bootstrap.min.js"></script>
+	<!-- nice mvvm -->
+	<script src="lib/nice-mvvm.js"></script>
+	<!-- ajax -->
+	<script src="lib/nice-ajax.js"></script>
+	
+	<script>
+		'use strict';
+		//=====================内容区域=======================//
+
+		var MVVM_MAIN;
+		function initMain() {
+			MVVM_MAIN = $NICE_MVVM("main_div");
+			var $scope = MVVM_MAIN.$scope;
+
+			$scope.actionAry = [];//filter列表
+			$scope.interceptor = new Object();
+
+			MVVM_MAIN.$init();
+
+			return $scope;
+		}
+
+		var $scope = initMain();
+
+		$.get("interceptor_action_list?class=${class}", null, null, function(data) {
+			$scope.actionAry = data.interceptorList;
+			$scope.interceptor = data.interceptor;
+		});
+	</script>
+</body>
+</html>

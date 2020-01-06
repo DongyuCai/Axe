@@ -1,7 +1,0 @@
-<java>
-@Request(path = "/controller-{basePathHashCode}/action", method = RequestMethod.GET)
-public void action(@RequestParam("token")String token, @RequestParam("basePathHashCode") String basePathHashCode, HttpServletRequest request,
-		HttpServletResponse response) {
-	this.action(token, request, response, basePathHashCode);
-}
-</java>

@@ -1,0 +1,279 @@
+<!--
+MIT License
+
+Copyright (c) 2017 CaiDongyu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<!DOCTYPE html >
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+<title>Action</title>
+
+<!-- Bootstrap -->
+<link href="lib/bootstrap.min.css" rel="stylesheet">
+<link href="lib/doc.min.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<div class="col-md-12">
+		<div id="main_div">
+			<div class="col-md-12">
+				<!--名字 -->
+				<h4 style="margin-top: 15px;">
+					{{action.controllerTitle}}#{{action.requestTitle}} <small
+						nc-text="{{action.controllerClassName}}#{{action.requestMethodName}}"></small>
+				</h4>
+				<h5 nc-if="action.filterList && action.filterList.length > 0"
+					style="margin-top: 5px;">
+					Filter (sorted)<br />
+					<small nc-for="filter in action.filterList"><span
+						nc-text="{{filter}}"></span><br /></small>
+				</h5>
+				<h5
+					nc-if="action.interceptorList && action.interceptorList.length > 0"
+					style="margin-top: 5px;">
+					Interceptor (unsorted) <br />
+					<small nc-for="interceptor in action.interceptorList"><span
+						nc-text="{{interceptor}}"></span><br /></small>
+				</h5>
+
+				<!--url区域 -->
+				<h5 style="margin-top: 5px; margin-bottom: 5px;">
+					URL <small><span nc-text="{{action.url}}"></span></small>
+				</h5>
+				<div class="input-group">
+					<div class="input-group-addon">{{action.method}}</div>
+					<input type="text" class="form-control" nc-value="action.sendUrl">
+					<span class="input-group-btn">
+						<button class="btn btn-info" type="button"
+							onclick="{{sendMethod}}()">Send</button>
+					</span>
+				</div>
+				<div nc-if="action.url.indexOf('{') >= 0">
+					<span class="text-danger">url param is required!</span>
+				</div>
+
+				<!--Header -->
+				<div class="col-md-12"
+					style="padding-left: 0px; padding-right: 0px; padding-top: 15px;">
+					<div class="panel panel-default">
+						<div class="panel-heading">Header</div>
+						<table class="table">
+							<tr nc-for="header in action.headerList">
+								<td>
+									<div class="col-md-4">
+										<input nc-if="header.editable" type="text"
+											class="form-control" placeholder="headerName"
+											nc-value="header.name"></input> <input
+											nc-if="!header.editable" type="text" class="form-control"
+											readonly="true" nc-value="header.name"></input>
+									</div>
+									<div class="col-md-1"
+										style="padding-top: 6px; text-align: center;">=</div>
+									<div class="col-md-4">
+										<input type="text" class="form-control"
+											nc-value="header.value" placeholder="headerValue"></input>
+									</div>
+									<div class="col-md-1"
+										style="padding-top: 6px; text-align: center;"></div>
+									<div class="col-md-1"
+										style="padding-right: 0px; text-align: right;">
+										<button nc-if="header.editable" class="btn btn-default"
+											onclick="delHeader({{header.$index}})">×</button>
+									</div>
+									<div class="col-md-1">
+										<button class="btn btn-default"
+											onclick="addHeader({{header.$index}})">+</button>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<!--Reuest Param -->
+				<div class="col-md-12"
+					style="padding-left: 0px; padding-right: 0px;">
+					<hr style="margin-top: 0px;"></hr>
+					<div class="panel panel-default">
+						<div class="panel-heading">Reuest Parameter Body</div>
+						<div class="panel-body">
+							<pre style="height: 200px;" class="col-md-6">{{action.requestParamBodyFormat_str}}</pre>
+							<textarea id="request_requestParamBody_str"
+								style="resize: none; overflow: auto; height: 200px;"
+								class="col-md-6"></textarea>
+						</div>
+					</div>
+				</div>
+
+				<!--Response -->
+				<div class="col-md-12"
+					style="padding-left: 0px; padding-right: 0px;">
+					<hr style="margin-top: 0px;"></hr>
+					<div class="input-group" style="margin-top: 15px;">
+						<div class="input-group-addon">Response</div>
+						<input type="text" class="form-control" nc-value="action.sendUrl">
+						<span class="input-group-btn">
+							<button class="btn btn-info" type="button"
+								onclick="{{sendMethod}}(prompt('set request times','1'))">Again</button>
+						</span>
+					</div>
+					<div nc-if="action.response || action.response+'#' == '0#'"
+						class="panel panel-default">
+						<div class="panel-body">
+							<pre nc-text="{{action.response}}"></pre>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/jquery.form.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="lib/bootstrap.min.js"></script>
+	<!-- nice mvvm -->
+	<script src="lib/nice-mvvm.js"></script>
+	<!-- ajax -->
+	<script src="lib/nice-ajax.js"></script>
+	
+	<script>
+		'use strict';
+		//=====================内容区域=======================//
+
+		var MVVM_MAIN;
+		function initMain() {
+			MVVM_MAIN = $NICE_MVVM("main_div");
+			var $scope = MVVM_MAIN.$scope;
+
+			$scope.action = [];
+			$scope.sendMethod = 'sendAjaxRequest';//默认是普通请求，如果有文件参数，那就是sendFormRequest
+
+			MVVM_MAIN.$init();
+
+			return $scope;
+		}
+
+		var $scope = initMain();
+		$.get("action?actionIndex=${actionIndex}", null, null, function(data) {
+			$scope.action = data;
+			$scope.action['sendUrl'] = data.url;
+			
+			if(!$scope.action.requestParamBodyFormat_str){
+				$scope.action.requestParamBodyFormat_str = JSON.stringify($scope.action.requestParamBodyFormat,null,2);
+	        }
+	        if(!$scope.action.requestParamBody_str){
+		        $scope.action.requestParamBody_str = JSON.stringify($scope.action.requestParamBody,null,2);
+	        }
+	        $("#request_requestParamBody_str").text($scope.action.requestParamBody_str);
+	        $("#request_requestParamBody_str").val($scope.action.requestParamBody_str);
+	        if($scope.action.headerList.length <= 0){
+	        	$scope.action.headerList.push({
+	            editable:true
+	          });
+	        }
+		});
+
+		function delHeader(index){
+		  $scope.action.headerList.splice(index,1);
+		  if($scope.action.headerList.length <= 0){
+		    $scope.action.headerList.push({
+		      editable:true
+		    });
+		  }
+		}
+
+		function addHeader(index){
+		  $scope.action.headerList.splice(index+1,0,{
+		    headerName:'',
+		    headerValue:'',
+		    editable:true
+		  });
+		}
+		
+		function sendAjaxRequest(repeatNum){
+	        $scope.action['response'] = '';
+		
+	        $scope.action.requestParamBody_str = $("#request_requestParamBody_str").val();
+	        var data = JSON.parse($scope.action.requestParamBody_str);
+	        var url = $scope.action['sendUrl'];
+	        
+	        var headers = {};
+	        for(var i=0;i<$scope.action.headerList.length;i++){
+	          var header = $scope.action.headerList[i];
+	          if(header.value || header.value+"#" == '0#'){
+	            headers[header.name] = header.value;
+	          }
+	        }
+
+	        repeatNum = isNaN(repeatNum)?1:repeatNum;
+	        for(var i=0;i<repeatNum;i++){
+				if($scope.action.method == 'POST'){
+			       $.post(url,data,headers,successCallback,errorCallback);
+			    }else if($scope.action.method == 'DELETE'){
+			       $.delete(url,data,headers,successCallback,errorCallback);
+			    }else if($scope.action.method == 'PUT'){
+			       $.put(url,data,headers,successCallback,errorCallback);
+			    }else if($scope.action.method == 'GET'){
+			       $.get(url,data,headers,successCallback,errorCallback);
+			    }
+	        }
+	        
+	      }
+
+	      function successCallback(result){
+	        $scope.action['response'] = JSON.stringify(result,null,2);
+	      }
+
+	      function errorCallback(XMLHttpRequest, textStatus, errorThrown){
+	        //有些接口，没有返回值，ajax json会报错
+	        var response = XMLHttpRequest.responseText;
+	        if(response || response+'#' == '0#'){
+	          if(XMLHttpRequest.status == 200){
+	            $scope.action['response'] = "<span class='text-success'>"+response+"</span>";
+	          }else{
+	            $scope.action['response'] = "<span class='text-danger'>Http status "+XMLHttpRequest.status+" : "+response+"</span>";
+	          }
+	        }else{
+	          if(errorThrown.message){
+	            $scope.action['response'] = "<span class='text-danger'>Http status "+XMLHttpRequest.status+" : "+errorThrown.message+"</span>";
+	              console.log(errorThrown);
+	          }else{
+	            $scope.action['response'] = "<span class='text-danger'>Http status "+XMLHttpRequest.status+" : 连接失败</span>";
+	          }
+	        }
+	      }
+	</script>
+</body>
+</html>

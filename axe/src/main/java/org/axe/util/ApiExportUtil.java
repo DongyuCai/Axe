@@ -25,7 +25,6 @@ package org.axe.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
 import org.axe.bean.mvc.Header;
 import org.axe.bean.persistence.EntityFieldMethod;
-import org.axe.helper.mvc.ControllerHelper;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
 import org.axe.interface_implement.mvc.HeaderFilter;
@@ -57,40 +55,7 @@ public final class ApiExportUtil {
 
 	private ApiExportUtil() {}
 	
-	public final static class Level_1{
-		private int index;
-		private String title;
-		private String controllerClassName;
-		private List<Level_2> requestList;
-		
-		public String getTitle() {
-			return title;
-		}
-		public void setTitle(String title) {
-			this.title = title;
-		}
-		public int getIndex() {
-			return index;
-		}
-		public void setIndex(int index) {
-			this.index = index;
-		}
-		public List<Level_2> getRequestList() {
-			return requestList;
-		}
-		public void setRequestList(List<Level_2> requestList) {
-			this.requestList = requestList;
-		}
-		public String getControllerClassName() {
-			return controllerClassName;
-		}
-		public void setControllerClassName(String controllerClassName) {
-			this.controllerClassName = controllerClassName;
-		}
-		
-	}
-	
-	public final static class Level_2{
+	public final static class Action{
 		private int index;
 		private String controllerTitle;
 		private String controllerClassName;
@@ -179,192 +144,152 @@ public final class ApiExportUtil {
 		
 	}
 	
-	public static List<Level_1> asApiTest(String basePath){
+	public static Action getAction(String basePath,Handler handler){
 		StringBuilder requestParamFormatBuf = new StringBuilder();
-		
-		
-		List<Level_1> list = new ArrayList<>();
-		Map<String,Integer> map = new HashMap<>();//存下标
-		//获取Controller 到 action的关系表
-		List<Handler> handlerList = ControllerHelper.getActionList();
-		for(Handler handler:handlerList){
-			Class<?> controllerClass = handler.getControllerClass();
-			//没有title不要
-			String controllerTitle = handler.getControllerDesc();
-			if(StringUtil.isEmpty(controllerTitle)) continue;
-			
-			//存第一级
-			Integer listIndex = map.get(controllerTitle);
-			Level_1 level_1 = null;
-			if(listIndex == null){
-				//新增一个
-				level_1 = new Level_1();
-				list.add(level_1);
-				listIndex = list.size()-1;
-				level_1.setIndex(listIndex);
-				level_1.setTitle(controllerTitle);
-				level_1.setControllerClassName(controllerClass.getName());
-				map.put(controllerTitle, listIndex);
-			}else{
-				level_1 = list.get(listIndex);
+		Action action = new Action();
+		//类名称
+		action.setIndex(handler.getActionIndex());
+		action.setControllerTitle(handler.getControllerDesc());
+		action.setControllerClassName(handler.getControllerClass().getName());
+		//方法名称
+		action.setRequestTitle(handler.getActionDesc());
+		action.setRequestMethodName(handler.getActionMethod().getName());
+		//url
+		action.setUrl(basePath+handler.getMappingPath());
+		//POST DELETE PUT GET
+		action.setMethod(handler.getRequestMethod());
+		//filter 名字列表
+		List<Filter> filterList = handler.getFilterList();
+		if(CollectionUtil.isNotEmpty(filterList)){
+			List<String> filterNameList = new ArrayList<>();
+			String blank = "&nbsp;&nbsp;";
+			for(Filter filter:filterList){
+				filterNameList.add(blank+filter.setLevel()+"&nbsp;&nbsp;"+filter.getClass().getName());
+				blank = blank+"&nbsp;&nbsp;";
 			}
-
-			//存第二级
-			List<Level_2> requestList = level_1.getRequestList();
-			if(requestList == null){
-				requestList = new ArrayList<>();
-				level_1.setRequestList(requestList);
+			action.setFilterList(filterNameList);
+		}
+		//interceptor 名字列表
+		List<Interceptor> interceptorList = handler.getInterceptorList();
+		if(CollectionUtil.isNotEmpty(interceptorList)){
+			List<String> interceptorNameList = new ArrayList<>();
+			String blank = "&nbsp;&nbsp;";
+			for(Interceptor interceptor:interceptorList){
+				interceptorNameList.add(blank+"&nbsp;&nbsp;"+interceptor.getClass().getName());
+				blank = blank+"&nbsp;&nbsp;";
 			}
-			Method actionMethod = handler.getActionMethod();
-			String requestTitle = handler.getActionDesc();
-			if(StringUtil.isEmpty(requestTitle)) continue;//如果action没有标题，也不要
-			
-			Level_2 level_2 = new Level_2();
-			requestList.add(level_2);
-			//类名称
-			level_2.setIndex(requestList.size()-1);
-			level_2.setControllerTitle(controllerTitle);
-			level_2.setControllerClassName(level_1.getControllerClassName());
-			//方法名称
-			level_2.setRequestTitle(requestTitle);
-			level_2.setRequestMethodName(actionMethod.getName());
-			//url
-			level_2.setUrl(basePath+handler.getMappingPath());
-			//POST DELETE PUT GET
-			level_2.setMethod(handler.getRequestMethod());
-			//filter 名字列表
-			List<Filter> filterList = handler.getFilterList();
-			if(CollectionUtil.isNotEmpty(filterList)){
-				List<String> filterNameList = new ArrayList<>();
-				String blank = "&nbsp;&nbsp;";
-				for(Filter filter:filterList){
-					filterNameList.add(blank+filter.setLevel()+"&nbsp;&nbsp;"+filter.getClass().getName());
-					blank = blank+"&nbsp;&nbsp;";
-				}
-				level_2.setFilterList(filterNameList);
-			}
-			//interceptor 名字列表
-			List<Interceptor> interceptorList = handler.getInterceptorList();
-			if(CollectionUtil.isNotEmpty(interceptorList)){
-				List<String> interceptorNameList = new ArrayList<>();
-				String blank = "&nbsp;&nbsp;";
-				for(Interceptor interceptor:interceptorList){
-					interceptorNameList.add(blank+"&nbsp;&nbsp;"+interceptor.getClass().getName());
-					blank = blank+"&nbsp;&nbsp;";
-				}
-				level_2.setInterceptorList(interceptorNameList);
-			}
-			//header
-			List<Header> headerList = new ArrayList<>();
-			level_2.setHeaderList(headerList);
-			if(CollectionUtil.isNotEmpty(filterList)){
-				//找下有没有HeaderFilter
-				for(Filter filter:filterList){
-					if(HeaderFilter.class.isAssignableFrom(filter.getClass())){
-						Header[] headers = ((HeaderFilter)filter).headers();
-						if(headers != null){
-							for(Header header:headers){
-								if(header != null){
-									headerList.add(header);
-								}
+			action.setInterceptorList(interceptorNameList);
+		}
+		//header
+		List<Header> headerList = new ArrayList<>();
+		action.setHeaderList(headerList);
+		if(CollectionUtil.isNotEmpty(filterList)){
+			//找下有没有HeaderFilter
+			for(Filter filter:filterList){
+				if(HeaderFilter.class.isAssignableFrom(filter.getClass())){
+					Header[] headers = ((HeaderFilter)filter).headers();
+					if(headers != null){
+						for(Header header:headers){
+							if(header != null){
+								headerList.add(header);
 							}
-						}
-					}
-				}
-			}
-			
-			//request param
-			Map<String,Object> requestParamBody = new HashMap<>();
-			Map<String,Object> requestParamBodyFormat = new HashMap<>();
-			level_2.setRequestParamBody(requestParamBody);
-			level_2.setRequestParamBodyFormat(requestParamBodyFormat);
-			List<ActionParam> actionParamList = handler.getActionParamList();
-			if(CollectionUtil.isNotEmpty(actionParamList)){
-				for(ActionParam ap:actionParamList){
-					Annotation[] annotations = ap.getAnnotations();
-					if(annotations != null){
-						RequestParam rp = null;
-						RequestEntity re = null;
-						Default def = null;
-						for(Annotation annotation:annotations){
-							if(annotation instanceof RequestParam){
-								rp = (RequestParam)annotation;
-							}else if(annotation instanceof RequestEntity){
-								re = (RequestEntity)annotation;
-							}else if(annotation instanceof Default){
-								def = (Default)annotation;
-							}
-						}
-						
-						if(rp != null){
-							//如果RequestParam存在，但是url里不包含此参数，那么需要加入到Param里
-							//url包含的参数，是不需要放到requestParamList里的
-							String name = rp.value();
-							String required = "否";
-							String type = ap.getParamType().getSimpleName();
-							String defaultValue = null;
-							String desc = null;
-							if(rp.required() || handler.getMappingPath().contains("{"+rp.value()+"}")){
-								//有required注解，或者url中包含，都可以算必填
-								required = "是";
-							}
-							if(def != null && def.value() != null && def.value().length > 0){
-								defaultValue = def.value()[0];
-							}
-							if(StringUtil.isNotEmpty(rp.desc())){
-								desc = rp.desc();
-							}
-							
-							requestParamFormatBuf.setLength(0);
-							if(StringUtil.isNotEmpty(required)){
-								requestParamFormatBuf.append("[").append("必填：").append(required).append("]");
-							}
-							if(StringUtil.isNotEmpty(type)){
-								requestParamFormatBuf.append("[").append("类型：").append(type).append("]");
-							}
-							if(StringUtil.isNotEmpty(defaultValue)){
-								requestParamFormatBuf.append("[").append("默认值：").append(defaultValue).append("]");
-							}
-							if(StringUtil.isNotEmpty(desc)){
-								requestParamFormatBuf.append("[").append("含义：").append(desc).append("]");
-							}
-							requestParamBody.put(name, defaultValue);
-							requestParamBodyFormat.put(name, requestParamFormatBuf.toString());
-							requestParamFormatBuf.setLength(0);
-						}else if(re != null){
-							Set<String> excludedFieldSet = new HashSet<>();
-							if(re.excludedFields() != null){
-								for(String excludedField:re.excludedFields()){
-									excludedFieldSet.add(excludedField);
-								}
-							}
-							Set<String> requiredFieldSet = new HashSet<>();
-							if(re.requiredFields() != null){
-								for(String requiredField:re.requiredFields()){
-									requiredFieldSet.add(requiredField);
-								}
-							}
-							Map<String,String> defValueMap = new HashMap<>();
-							if(def != null && def.value() != null && def.value().length > 0){
-								for(String defVal:def.value()){
-									String key = defVal.substring(0, defVal.indexOf(":"));
-									String value = "";
-									if(!defVal.endsWith(":")){
-										value = defVal.substring(defVal.indexOf(":")+1);
-									}
-									defValueMap.put(key, value);
-								}
-							}
-							
-							
-							Set<String> keyHistory = new HashSet<>();
-							askEachField("", requestParamBody, requestParamBodyFormat, ap.getParamType(), excludedFieldSet, requiredFieldSet, defValueMap, keyHistory, requestParamFormatBuf);
 						}
 					}
 				}
 			}
 		}
-		return list;
+		
+		//request param
+		Map<String,Object> requestParamBody = new HashMap<>();
+		Map<String,Object> requestParamBodyFormat = new HashMap<>();
+		action.setRequestParamBody(requestParamBody);
+		action.setRequestParamBodyFormat(requestParamBodyFormat);
+		List<ActionParam> actionParamList = handler.getActionParamList();
+		if(CollectionUtil.isNotEmpty(actionParamList)){
+			for(ActionParam ap:actionParamList){
+				Annotation[] annotations = ap.getAnnotations();
+				if(annotations != null){
+					RequestParam rp = null;
+					RequestEntity re = null;
+					Default def = null;
+					for(Annotation annotation:annotations){
+						if(annotation instanceof RequestParam){
+							rp = (RequestParam)annotation;
+						}else if(annotation instanceof RequestEntity){
+							re = (RequestEntity)annotation;
+						}else if(annotation instanceof Default){
+							def = (Default)annotation;
+						}
+					}
+					
+					if(rp != null){
+						//如果RequestParam存在，但是url里不包含此参数，那么需要加入到Param里
+						//url包含的参数，是不需要放到requestParamList里的
+						String name = rp.value();
+						String required = "否";
+						String type = ap.getParamType().getSimpleName();
+						String defaultValue = null;
+						String desc = null;
+						if(rp.required() || handler.getMappingPath().contains("{"+rp.value()+"}")){
+							//有required注解，或者url中包含，都可以算必填
+							required = "是";
+						}
+						if(def != null && def.value() != null && def.value().length > 0){
+							defaultValue = def.value()[0];
+						}
+						if(StringUtil.isNotEmpty(rp.desc())){
+							desc = rp.desc();
+						}
+						
+						requestParamFormatBuf.setLength(0);
+						if(StringUtil.isNotEmpty(required)){
+							requestParamFormatBuf.append("[").append("必填：").append(required).append("]");
+						}
+						if(StringUtil.isNotEmpty(type)){
+							requestParamFormatBuf.append("[").append("类型：").append(type).append("]");
+						}
+						if(StringUtil.isNotEmpty(defaultValue)){
+							requestParamFormatBuf.append("[").append("默认值：").append(defaultValue).append("]");
+						}
+						if(StringUtil.isNotEmpty(desc)){
+							requestParamFormatBuf.append("[").append("含义：").append(desc).append("]");
+						}
+						requestParamBody.put(name, defaultValue);
+						requestParamBodyFormat.put(name, requestParamFormatBuf.toString());
+						requestParamFormatBuf.setLength(0);
+					}else if(re != null){
+						Set<String> excludedFieldSet = new HashSet<>();
+						if(re.excludedFields() != null){
+							for(String excludedField:re.excludedFields()){
+								excludedFieldSet.add(excludedField);
+							}
+						}
+						Set<String> requiredFieldSet = new HashSet<>();
+						if(re.requiredFields() != null){
+							for(String requiredField:re.requiredFields()){
+								requiredFieldSet.add(requiredField);
+							}
+						}
+						Map<String,String> defValueMap = new HashMap<>();
+						if(def != null && def.value() != null && def.value().length > 0){
+							for(String defVal:def.value()){
+								String key = defVal.substring(0, defVal.indexOf(":"));
+								String value = "";
+								if(!defVal.endsWith(":")){
+									value = defVal.substring(defVal.indexOf(":")+1);
+								}
+								defValueMap.put(key, value);
+							}
+						}
+						
+						
+						Set<String> keyHistory = new HashSet<>();
+						askEachField("", requestParamBody, requestParamBodyFormat, ap.getParamType(), excludedFieldSet, requiredFieldSet, defValueMap, keyHistory, requestParamFormatBuf);
+					}
+				}
+			}
+		}
+		return action;
 	}
 	
 	// 注意，如果是集合类型数据结构，那么只能是List和Map

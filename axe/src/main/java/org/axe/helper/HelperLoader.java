@@ -108,7 +108,14 @@ public final class HelperLoader {
         
         //释放ClassHelper占用的内存
         //TODO:(ok)目前来看，框架自身只有加载91个资源，并不很多
-        ClassHelper.release();
+        if(!ConfigHelper.getAxeHome()){
+    		ClassHelper.getClassSet().clear();
+    		FilterHelper.getSortedFilterList().clear();
+    		FilterHelper.getActionSizeMap().clear();
+    		InterceptorHelper.getInterceptorMap().clear();
+    		InterceptorHelper.getActionSizeMap().clear();
+    		ListenerHelper.getListenerList().clear();
+    	}
 		
 		//装载的类日志分析
         URL url = Axe.class.getClassLoader().getResource("");

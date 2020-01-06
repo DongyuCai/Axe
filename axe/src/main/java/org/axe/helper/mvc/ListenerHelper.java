@@ -76,4 +76,9 @@ public final class ListenerHelper implements Helper{
 		}
 	}
 
+	public static List<Listener> getListenerList() {
+		return LISTENER_LIST;
+	}
+
+
 }

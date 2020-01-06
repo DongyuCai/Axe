@@ -1,0 +1,162 @@
+<!--
+MIT License
+
+Copyright (c) 2017 CaiDongyu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<!DOCTYPE html >
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+<title>Axe</title>
+
+<!-- Bootstrap -->
+<link href="lib/bootstrap.min.css" rel="stylesheet">
+<link href="lib/doc.min.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<div class="container">
+		<div id="main_div">
+			<div class="col-md-12">
+				<div style="margin-top: 15px;" class="jumbotron">
+					<h1>Axe</h1>
+					<h4 nc-text="启动时间：{{status.startTime}}"></h4>
+					<h4 nc-text="已经运行：{{status.runTime}}"></h4>
+				</div>
+			</div>
+			
+			<a nc-if="status.filterSize>=0" class="col-md-3" href="filter_list.html">
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Filter <small>x{{status.filterSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</a>
+			<a nc-if="status.interceptorSize>=0" class="col-md-3" href="interceptor_list.html">
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Interceptor <small>x{{status.interceptorSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</a>
+			<a nc-if="status.controllerSize>=0" class="col-md-3" href="controller_list.html">
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Controller <small>x{{status.controllerSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</a>
+			<a nc-if="status.actionSize>=0" class="col-md-3" href="action_list.html">
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Action <small>x{{status.actionSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</a>
+			<div nc-if="status.serviceSize>=0" class="col-md-3" >
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Service <small>x{{status.serviceSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</div>
+			<div nc-if="status.componentSize>=0" class="col-md-3" >
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Component <small>x{{status.componentSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</div>
+			<div nc-if="status.tnsSize>=0" class="col-md-3" >
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Tns <small>x{{status.tnsSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</div>
+			<div nc-if="status.daoSize>=0" class="col-md-3" >
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Dao <small>x{{status.daoSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</div>
+			<a nc-if="status.tableSize>=0" class="col-md-3" href="table_list.html">
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Table <small>x{{status.tableSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</a>
+			<div nc-if="status.dataSourceSize>=0" class="col-md-3" >
+	    		<div class="panel panel-default">
+				  <div class="panel-heading" style="height:56px;padding-left: 0px;">
+				  	<h4 class="col-md-12" nc-text="Datasource <small>x{{status.dataSourceSize}}</small>" style="overflow: hidden;height: 40px;"></h4>
+				  </div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/jquery.form.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="lib/bootstrap.min.js"></script>
+	<!-- nice mvvm -->
+	<script src="lib/nice-mvvm.js"></script>
+	<!-- ajax -->
+	<script src="lib/nice-ajax.js"></script>
+	
+	<script>
+		'use strict';
+		//=====================内容区域=======================//
+
+		var MVVM_MAIN;
+		function initMain() {
+			MVVM_MAIN = $NICE_MVVM("main_div");
+			var $scope = MVVM_MAIN.$scope;
+
+			$scope.status = new Object();//系统状态数据
+
+			MVVM_MAIN.$init();
+
+			return $scope;
+		}
+
+		var $scope = initMain();
+
+		$.get("status", null, null, function(data) {
+			$scope.status = data;
+		});
+	</script>
+</body>
+</html>
