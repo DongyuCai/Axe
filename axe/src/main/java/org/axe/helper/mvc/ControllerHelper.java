@@ -44,6 +44,7 @@ import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
+import org.axe.util.ApiExportUtil.Action;
 import org.axe.util.ArrayUtil;
 import org.axe.util.CollectionUtil;
 import org.axe.util.ReflectionUtil;
@@ -122,6 +123,12 @@ public final class ControllerHelper implements Helper{
 					return o1.getMappingPath().compareTo(o2.getMappingPath());
 				}
 			});
+	        
+	        //整理下顺序
+	        int actionIndex = 0;
+	        for(Handler action:ACTION_LIST){
+	        	action.setActionIndex(actionIndex++);
+	        }
 		}
 	}
 
@@ -287,7 +294,7 @@ public final class ControllerHelper implements Helper{
     					}
     				}
     			}
-    			Handler handler = new Handler(ACTION_LIST.size(), requestMethod,mappingPath,controllerClass,controllerDesc, actionMethod,actionDesc,filterList,interceptorList);
+    			Handler handler = new Handler(requestMethod,mappingPath,controllerClass,controllerDesc, actionMethod,actionDesc,filterList,interceptorList);
     			//构建树
     			node.put(nodeName, handler);
     			//存根到ACTIN_LIST

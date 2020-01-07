@@ -118,9 +118,8 @@ public final class Handler {
 
     
     
-    public Handler(int actionIndex,String requestMethod, String mappingPath, 
+    public Handler(String requestMethod, String mappingPath, 
 			Class<?> controllerClass, String controllerDesc, Method actionMethod, String actionDesc, List<Filter> filterList, List<Interceptor> interceptorList) {
-    	this.actionIndex = actionIndex;
 		this.requestMethod = requestMethod;
 		this.mappingPath = mappingPath;
 		this.mappingPathDesc = controllerDesc+"."+actionDesc;
@@ -207,6 +206,10 @@ public final class Handler {
 
 	public int getActionIndex() {
 		return actionIndex;
+	}
+
+	public void setActionIndex(int actionIndex) {
+		this.actionIndex = actionIndex;
 	}
 
 }
