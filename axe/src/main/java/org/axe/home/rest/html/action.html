@@ -242,7 +242,7 @@ SOFTWARE.
 				if($scope.action.method == 'POST'){
 			       $.post(url,data,headers,successCallback,errorCallback);
 			    }else if($scope.action.method == 'DELETE'){
-			       $.delete(url,data,headers,successCallback,errorCallback);
+			       $.del(url,data,headers,successCallback,errorCallback);
 			    }else if($scope.action.method == 'PUT'){
 			       $.put(url,data,headers,successCallback,errorCallback);
 			    }else if($scope.action.method == 'GET'){
