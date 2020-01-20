@@ -154,9 +154,14 @@ SOFTWARE.
 
 		var $scope = initMain();
 
-		$.get("status", null, null, function(data) {
-			$scope.status = data;
-		});
+		function getStatus(){
+			$.get("status", null, null, function(data) {
+				$scope.status = data;
+			});
+		}
+		
+		//定时1秒刷新
+		MVVM_MAIN.$onflush(getStatus,1000,true,'getStatus');
 	</script>
 </body>
 </html>
