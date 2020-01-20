@@ -26,6 +26,9 @@ package org.axe.home.rest;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,14 +82,11 @@ import org.axe.util.TableExportUtil.Table;
 @Controller(basePath = "/axe")
 public final class AxeRest {
 
-	@Request(path="",method=RequestMethod.GET,desc="首页跳转")
-	public View index(){
+	@Request(path = "", method = RequestMethod.GET, desc = "首页跳转")
+	public View index() {
 		return new View("/axe/index.html");
 	}
-	
-	/**
-	 * 接口
-	 */
+
 	@Request(path = "/table_list", method = RequestMethod.GET, desc = "获取所有ORM实体")
 	public List<Table> table_table_list(@RequestParam("token") String token, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -141,19 +141,18 @@ public final class AxeRest {
 
 		return result;
 	}
-	
+
 	@Request(path = "/action", method = RequestMethod.GET, desc = "获取Action")
-	public Action action(
-			@RequestParam(value = "actionIndex", required=true, desc = "action位置下标") Integer actionIndex,
+	public Action action(@RequestParam(value = "actionIndex", required = true, desc = "action位置下标") Integer actionIndex,
 			HttpServletRequest request) {
 		Handler handler = ControllerHelper.getActionList().get(actionIndex);
-		if(handler != null){
+		if (handler != null) {
 			return ApiExportUtil.getAction(RequestUtil.getBasePath(request), handler);
-		}else{
+		} else {
 			return new Action();
 		}
 	}
-	
+
 	@Request(path = "/action_list", method = RequestMethod.GET, desc = "获取Action列表")
 	public List<Map<String, Object>> action_list(
 			@RequestParam(value = "class", desc = "Controller类名") String className) {
@@ -161,15 +160,15 @@ public final class AxeRest {
 
 		List<Handler> actionList = ControllerHelper.getActionList();
 		Map<String, List<Handler>> actionMap = new HashMap<>();
-		for (int i=0;i<actionList.size();i++) {
+		for (int i = 0; i < actionList.size(); i++) {
 			Handler action = actionList.get(i);
-			if(StringUtil.isNotEmpty(className)){
-				//如果有参数className
-				if(!action.getControllerClass().getName().equals(className)){
+			if (StringUtil.isNotEmpty(className)) {
+				// 如果有参数className
+				if (!action.getControllerClass().getName().equals(className)) {
 					continue;
 				}
 			}
-			
+
 			String mappingPath = action.getMappingPath();
 			List<Handler> handlerList = actionMap.get(mappingPath);
 			if (handlerList == null) {
@@ -215,20 +214,20 @@ public final class AxeRest {
 	}
 
 	@Request(path = "/filter_action_list", method = RequestMethod.GET, desc = "获取过滤器下的Action列表")
-	public Map<String,Object> filter_action_list(
+	public Map<String, Object> filter_action_list(
 			@RequestParam(value = "index", required = true, desc = "过滤器位置下标") Integer index) {
-		Map<String,Object> result = new HashMap<>();
-		
+		Map<String, Object> result = new HashMap<>();
+
 		List<Map<String, Object>> result_actionList = new ArrayList<>();
 		Filter filter = FilterHelper.getSortedFilterList().get(index);
-		if(filter == null){
+		if (filter == null) {
 			throw new RestException("下标越界");
 		}
-		Map<String,Object> result_filterMap = new HashMap<>();
+		Map<String, Object> result_filterMap = new HashMap<>();
 		result_filterMap.put("level", filter.setLevel());
 		result_filterMap.put("class", filter.getClass().getName());
 		result.put("filter", result_filterMap);
-		
+
 		List<Handler> actionList = FilterHelper.getActionSizeMap().get(filter);
 		Map<String, List<Handler>> actionMap = new HashMap<>();
 		for (Handler action : actionList) {
@@ -253,9 +252,9 @@ public final class AxeRest {
 				result_actionList.add(row);
 			}
 		}
-		
+
 		result.put("actionList", result_actionList);
-		
+
 		return result;
 	}
 
@@ -278,19 +277,18 @@ public final class AxeRest {
 	@Request(path = "/interceptor_action_list", method = RequestMethod.GET, desc = "获取拦截器下的Action列表")
 	public Map<String, Object> interceptor_action_list(
 			@RequestParam(value = "class", required = true, desc = "拦截器类名") String className) {
-		Map<String,Object> result = new HashMap<>();
-		
-		
+		Map<String, Object> result = new HashMap<>();
+
 		List<Map<String, Object>> result_interceptorList = new ArrayList<>();
 		Map<Class<? extends org.axe.interface_.mvc.Interceptor>, org.axe.interface_.mvc.Interceptor> interceptorMap = InterceptorHelper
 				.getInterceptorMap();
 		for (Class<? extends org.axe.interface_.mvc.Interceptor> type : interceptorMap.keySet()) {
 			if (type.getName().equals(className)) {
 				org.axe.interface_.mvc.Interceptor interceptor = interceptorMap.get(type);
-				Map<String,String> result_interceptorMap = new HashMap<>();
+				Map<String, String> result_interceptorMap = new HashMap<>();
 				result_interceptorMap.put("class", interceptor.getClass().getName());
 				result.put("interceptor", result_interceptorMap);
-				
+
 				List<Handler> actionList = InterceptorHelper.getActionSizeMap().get(interceptor);
 				Map<String, List<Handler>> actionMap = new HashMap<>();
 				for (Handler action : actionList) {
@@ -315,7 +313,7 @@ public final class AxeRest {
 						result_interceptorList.add(row);
 					}
 				}
-				
+
 				break;
 			}
 		}
@@ -357,6 +355,13 @@ public final class AxeRest {
 			}
 		}
 		result.put("runTime", runTime);
+
+		// 系统负载
+		MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+		MemoryUsage memoryUsage = memoryMXBean.getHeapMemoryUsage(); // 椎内存使用情况
+		int M = 1024*1024;
+		result.put("usedMemory", memoryUsage.getUsed()/M); // 已使用的内存
+		result.put("maxMemory", memoryUsage.getMax()/M); // 最大可用内存
 
 		// Filter数量
 		result.put("filterSize", FilterHelper.getSortedFilterList().size());
@@ -469,9 +474,9 @@ public final class AxeRest {
 					for (FormParam param : paramList) {
 						line = line.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
 					}
-					
-					//全部参数都替换后，如果还有没被替换的，则为空串
-					if(line.contains("${") && line.contains("}")){
+
+					// 全部参数都替换后，如果还有没被替换的，则为空串
+					if (line.contains("${") && line.contains("}")) {
 						line = line.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
 					}
 				}
