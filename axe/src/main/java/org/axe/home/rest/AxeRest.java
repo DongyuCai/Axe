@@ -327,7 +327,7 @@ public final class AxeRest {
 
 		// 启动时间
 		Date startupTime = FrameworkStatusHelper.getStartupTime();
-		result.put("startTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startupTime));
+		result.put("startTime", new SimpleDateFormat("MM-dd HH:mm:ss").format(startupTime));
 
 		// 已经运行时长
 		long runTimeSec = (System.currentTimeMillis() - startupTime.getTime()) / 1000;
@@ -338,19 +338,19 @@ public final class AxeRest {
 			long runTimeMin = runTimeSec / 60;
 			if (runTimeMin < 60) {
 				runTimeSec = runTimeSec - (runTimeMin * 60);
-				runTime = runTimeMin + "分" + runTimeSec + "秒";
+				runTime = runTimeMin + "分钟" + runTimeSec + "秒";
 			} else {
 				long runTimeHour = runTimeMin / 60;
 				if (runTimeHour < 24) {
 					runTimeMin = runTimeMin - runTimeHour * 60;
 					runTimeSec = runTimeSec - ((runTimeHour * 60) + runTimeMin) * 60;
-					runTime = runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+					runTime = runTimeHour + "小时" + runTimeMin + "分钟" + runTimeSec + "秒";
 				} else {
 					long runTimeDay = runTimeHour / 24;
 					runTimeHour = runTimeHour - (runTimeDay * 24);
 					runTimeMin = runTimeMin - ((runTimeDay * 24) + runTimeHour) * 60;
 					runTimeSec = runTimeSec - ((((runTimeDay * 24) + runTimeHour) * 60) + runTimeMin) * 60;
-					runTime = runTimeDay + "天" + runTimeHour + "时" + runTimeMin + "分" + runTimeSec + "秒";
+					runTime = runTimeDay + "天" + runTimeHour + "小时" + runTimeMin + "分钟" + runTimeSec + "秒";
 				}
 			}
 		}
