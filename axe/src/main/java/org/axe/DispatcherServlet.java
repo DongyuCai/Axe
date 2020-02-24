@@ -108,7 +108,7 @@ public class DispatcherServlet extends HttpServlet{
 			        	}
 			        }
 				} catch (Exception e) {
-					e.printStackTrace();
+					LogUtil.error(e);
 					System.exit(1);
 				}
 			}

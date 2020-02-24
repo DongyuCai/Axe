@@ -34,6 +34,7 @@ import org.axe.exception.RestException;
 import org.axe.helper.mvc.FormRequestHelper;
 import org.axe.interface_.mvc.Filter;
 import org.axe.util.AjaxRequestUtil;
+import org.axe.util.LogUtil;
 
 /**
  * Axe 请求参数解析Filter
@@ -87,7 +88,7 @@ public final class AxeRequestParamAnalyzeFilter implements Filter {
 				AjaxRequestUtil.initParam(param,request,param.getRequestPath(),handler.getMappingPath());
 	        }
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogUtil.error(e);
 			throw new RestException(RestException.SC_INTERNAL_SERVER_ERROR,e.getMessage());
 		}
 	}

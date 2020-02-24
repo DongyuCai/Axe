@@ -93,7 +93,7 @@ public final class AxeRest {
 		try {
 			return TableExportUtil.exportTableList();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogUtil.error(e);
 			throw new RestException(e.getMessage());
 		}
 	}

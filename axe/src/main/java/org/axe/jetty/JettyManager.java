@@ -49,7 +49,7 @@ public final class JettyManager {
             
             LogUtil.log(">>>>>>>>>\t Jetty server started success! \t<<<<<<<<<<");
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogUtil.error(e);
 			System.exit(1);
 		}
 	}

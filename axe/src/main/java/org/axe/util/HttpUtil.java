@@ -279,7 +279,7 @@ public final class HttpUtil {
 		try {
 			System.out.println(sendGet("http://192.168.11.116:8080/bigdata/iot-data/coy/A3E1FFE53F1145A3893C37D7AD10BD77/GBOX_SPD_S_T_S_F", "UTF-8"));
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogUtil.error(e);
 		};
 	}*/
 

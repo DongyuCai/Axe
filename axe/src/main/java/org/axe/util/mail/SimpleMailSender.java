@@ -15,6 +15,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.axe.util.LogUtil;
+
 /**
  * 简单邮件（不带附件的邮件）发送器
  * @author 原作者以无法查实
@@ -74,8 +76,8 @@ public final class SimpleMailSender {
 			// 发送邮件
 			Transport.send(mailMessage);
 			return true;
-		} catch (MessagingException ex) {
-			ex.printStackTrace();
+		} catch (MessagingException e) {
+			LogUtil.error(e);
 		}
 		return false;
 	}
@@ -123,8 +125,8 @@ public final class SimpleMailSender {
 			// 发送邮件
 			Transport.send(mailMessage);
 			return true;
-		} catch (MessagingException ex) {
-			ex.printStackTrace();
+		} catch (MessagingException e) {
+			LogUtil.error(e);
 		}
 		return false;
 	}

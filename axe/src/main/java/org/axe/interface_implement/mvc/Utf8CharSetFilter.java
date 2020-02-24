@@ -34,6 +34,7 @@ import org.axe.bean.mvc.Param;
 import org.axe.bean.mvc.ResultHolder;
 import org.axe.exception.RestException;
 import org.axe.interface_.mvc.Filter;
+import org.axe.util.LogUtil;
 /**
  * 默认字符集过滤器
  * 抽象类，需要被继承后才能使用
@@ -74,7 +75,7 @@ public abstract class Utf8CharSetFilter implements Filter {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LogUtil.error(e);
 		}
 		return true;
 	}

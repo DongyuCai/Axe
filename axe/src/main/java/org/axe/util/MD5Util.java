@@ -41,9 +41,8 @@ public class MD5Util {
             MessageDigest md = MessageDigest.getInstance("MD5");
             // md.digest() 该函数返回值为存放哈希值结果的byte数组
             resultString = byteToString(md.digest(strObj.getBytes()));
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
-            LogUtil.error(ex);
+        } catch (NoSuchAlgorithmException e) {
+			LogUtil.error(e);
         }
         return resultString;
     }
