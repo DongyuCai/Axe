@@ -124,7 +124,7 @@ public final class AxeRequestParamSetFilter implements Filter {
     			
     			//## 是否@RequestParam标注的
     			if(requestParam != null){
-    				String fieldName = requestParam.value();
+    				String fieldName = requestParam.name();
 					//TODO:除了文件数组、单文件比较特殊需要转换，其他的都按照自动类型匹配，这样不够智能
 					//而且，如果fieldMap和fileMap出现同名，则会导致参数混乱，不支持同名（虽然这种情况说明代码写的真操蛋！）
 					parameterValue = RequestUtil.getRequestParam(param,fieldName, parameterType);

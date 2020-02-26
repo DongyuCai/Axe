@@ -225,12 +225,12 @@ public final class ApiExportUtil {
 					if(rp != null){
 						//如果RequestParam存在，但是url里不包含此参数，那么需要加入到Param里
 						//url包含的参数，是不需要放到requestParamList里的
-						String name = rp.value();
+						String name = rp.name();
 						String required = "否";
 						String type = ap.getParamType().getSimpleName();
-						String defaultValue = null;
+						String defaultValue = "";
 						String desc = null;
-						if(rp.required() || handler.getMappingPath().contains("{"+rp.value()+"}")){
+						if(rp.required() || handler.getMappingPath().contains("{"+rp.name()+"}")){
 							//有required注解，或者url中包含，都可以算必填
 							required = "是";
 						}

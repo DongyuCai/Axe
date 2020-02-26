@@ -88,7 +88,7 @@ public final class AxeRest {
 	}
 
 	@Request(path = "/table_list", method = RequestMethod.GET, desc = "获取所有ORM实体")
-	public List<Table> table_table_list(@RequestParam("token") String token, HttpServletRequest request,
+	public List<Table> table_table_list(@RequestParam(name="token") String token, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
 			return TableExportUtil.exportTableList();
@@ -143,7 +143,7 @@ public final class AxeRest {
 	}
 
 	@Request(path = "/action", method = RequestMethod.GET, desc = "获取Action")
-	public Action action(@RequestParam(value = "actionIndex", required = true, desc = "action位置下标") Integer actionIndex,
+	public Action action(@RequestParam(name = "actionIndex", required = true, desc = "action位置下标") Integer actionIndex,
 			HttpServletRequest request) {
 		Handler handler = ControllerHelper.getActionList().get(actionIndex);
 		if (handler != null) {
@@ -155,7 +155,7 @@ public final class AxeRest {
 
 	@Request(path = "/action_list", method = RequestMethod.GET, desc = "获取Action列表")
 	public List<Map<String, Object>> action_list(
-			@RequestParam(value = "class", desc = "Controller类名") String className) {
+			@RequestParam(name = "class", desc = "Controller类名") String className) {
 		List<Map<String, Object>> result = new ArrayList<>();
 
 		List<Handler> actionList = ControllerHelper.getActionList();
@@ -215,7 +215,7 @@ public final class AxeRest {
 
 	@Request(path = "/filter_action_list", method = RequestMethod.GET, desc = "获取过滤器下的Action列表")
 	public Map<String, Object> filter_action_list(
-			@RequestParam(value = "index", required = true, desc = "过滤器位置下标") Integer index) {
+			@RequestParam(name = "index", required = true, desc = "过滤器位置下标") Integer index) {
 		Map<String, Object> result = new HashMap<>();
 
 		List<Map<String, Object>> result_actionList = new ArrayList<>();
@@ -276,7 +276,7 @@ public final class AxeRest {
 
 	@Request(path = "/interceptor_action_list", method = RequestMethod.GET, desc = "获取拦截器下的Action列表")
 	public Map<String, Object> interceptor_action_list(
-			@RequestParam(value = "class", required = true, desc = "拦截器类名") String className) {
+			@RequestParam(name = "class", required = true, desc = "拦截器类名") String className) {
 		Map<String, Object> result = new HashMap<>();
 
 		List<Map<String, Object>> result_interceptorList = new ArrayList<>();
@@ -412,13 +412,13 @@ public final class AxeRest {
 	 * 静态资源
 	 */
 	@Request(path = "/{static_resource}", method = RequestMethod.GET, desc = "目录：org/axe/home/rest/html/")
-	public void root(@RequestParam(value = "static_resource", required = true, desc = "静态资源+路径") String static_resource,
+	public void root(@RequestParam(name = "static_resource", required = true, desc = "静态资源+路径") String static_resource,
 			Param param, HttpServletRequest request, HttpServletResponse response) {
 		outputResource(response, "org/axe/home/rest/html/" + static_resource, param.getFormParamList());
 	}
 
 	@Request(path = "/lib/{static_resource}", method = RequestMethod.GET, desc = "目录：org/axe/home/rest/html/lib/")
-	public void lib(@RequestParam(value = "static_resource", required = true, desc = "静态资源+路径") String static_resource,
+	public void lib(@RequestParam(name = "static_resource", required = true, desc = "静态资源+路径") String static_resource,
 			Param param, HttpServletRequest request, HttpServletResponse response) {
 		outputResource(response, "org/axe/home/rest/html/lib/" + static_resource, param.getFormParamList());
 	}

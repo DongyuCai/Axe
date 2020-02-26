@@ -38,7 +38,7 @@ public @interface RequestParam {
 	/**
 	 * 参数字段名
 	 */
-	String value();
+	String name();
 	
 	/**
 	 * 描述
