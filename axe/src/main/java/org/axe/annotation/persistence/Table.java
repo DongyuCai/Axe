@@ -44,7 +44,7 @@ public @interface Table {
 	/**
 	 * 表名
 	 */
-	String value();
+	String tableName();
 	/**
 	 * 描述
 	 */

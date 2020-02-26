@@ -225,7 +225,7 @@ public final class TableHelper implements Helper{
 	 */
 	private static String getTableName(Class<?> entityClass) {
 		if (entityClass.isAnnotationPresent(Table.class)) {
-			return entityClass.getAnnotation(Table.class).value();
+			return entityClass.getAnnotation(Table.class).tableName();
 		}else{
 			throw new RuntimeException(entityClass.getName() + " is not a table entity class,no @Table annotation is found on it");
 		}

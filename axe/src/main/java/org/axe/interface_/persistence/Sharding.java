@@ -28,7 +28,7 @@ public abstract class Sharding implements TableNameEditor{
 		String realTableName = null;
 		Table table = this.getClass().getAnnotation(Table.class);
 		if(table != null){
-			realTableName = table.value()+"_sharding_"+shardingFlag;
+			realTableName = table.tableName()+"_sharding_"+shardingFlag;
 			return realTableName;
 		}else{
 			throw new Exception("no @Table annotation,so no real table name");
