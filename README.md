@@ -6,9 +6,9 @@
 
 ### RESTful 简单展示，更多使用细节请直接上手
 ```java
-@Controller(title="hello word",basePath="")
+@Controller(basePath="",desc="hello word")
 public class TestRest {
-
+	
 	@Request(title="hi",value="/hi",method=RequestMethod.GET)
 	public String hi(
 		@RequestParam(desc="说",value="say")String say	
@@ -21,13 +21,13 @@ public class TestRest {
 ### IOC 简单展示，更多使用细节请直接上手
 ```java
 @Service
-public class AreaOpenService {
+public class TestService {
 	
 	@Autowired
-	private AreaOpenDao areaOpenDao;
+	private TestDao testDao;
 
-	public List<AreaOpen> list(){
-		return areaOpenDao.list();
+	public List<TestTable> list(){
+		return testDao.list();
 	}
 	
 }
@@ -54,25 +54,11 @@ public class Test {
 
 ### 持久化 简单展示，更多使用细节请直接上手
 ```java
-@Dao(dataSource="api")
-public interface AreaOpenDao extends BaseRepository{
+@Dao
+public interface TestDao extends BaseRepository{//如果不需要saveEntity、deleteEntity等持久化对象操作方法，可以不继承BaseRespository
 
-	@Sql("select * from AreaOpen order by id")
-	public List<AreaOpen> list();
-	
-	@Sql("select count(1) from Area2Operator where operatorId=?1 and provinceName=?2 and cityName=?3 and countyName=?4")
-	public int count(long operatorId,
-			String provinceName,
-			String cityName,
-			String countyName);
-			
-	@Sql("select * from Area2Operator where 1=1 #1")
-	public Page<Area2Operator> page(
-			String append,
-			List<Long> operatorIdList,
-			String provinceName,
-			String cityName,
-			String countyName,
-			PageConfig pageConfig);
+	@Sql("select * from TestTable order by id")
+	public List<TestTable> list();
 }
+
 ```
