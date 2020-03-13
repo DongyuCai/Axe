@@ -5,7 +5,7 @@ import org.axe.annotation.mvc.Request;
 import org.axe.annotation.mvc.RequestParam;
 import org.axe.constant.RequestMethod;
 
-@Controller(basePath="",desc="HelloWord")
+@Controller(basePath="/hello_word",desc="HelloWord")
 public class TestRest {
 	
 	@Request(path="/first",method=RequestMethod.GET,desc="第一个接口")
