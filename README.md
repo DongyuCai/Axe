@@ -2,7 +2,7 @@
 
 ##### 需要 jdk 1.7及以上
 
-### [快速上手开始](https://github.com/DongyuCai/Axe/blob/18.5.29/GET_START.md)
+### [快速上手开始](https://github.com/DongyuCai/Axe/blob/19.8.6/GET_START.md)
 
 ### RESTful 简单展示，更多使用细节请直接上手
 ```java
