@@ -31,11 +31,11 @@ mvn archetype:generate -DgroupId=你的groupId -DartifactId=你的artifactId
 		</dependency>
 
 		<!-- ############################################################## -->
-		<!-- Axe 核心依赖 0.1是版本 .7是jdk7 -->
+		<!-- Axe 核心依赖 -->
 		<dependency>
 			<groupId>org.axe</groupId>
 			<artifactId>axe</artifactId>
-			<version>18.5.29</version>
+			<version>19.8.6</version>
 		</dependency>
 		<!-- Apache DBCP 数据源(这是默认数据源，可以自我指定数据源) -->
 		<dependency>
@@ -104,64 +104,51 @@ mvn clean eclipse:eclipse -Dwtpversion=1.0
 #------------------1.axe基础配置--------------------
 
 #框架扫描的包路径，多个路径用","号隔开
-app.base_package=com.test
+#配置的包路径粒度越细越好，但是越细的粒度不利于开发时候类和包的新增与变更
+app.base_package=com.axe
 
 #如果工程内有jsp或者其他view层的静态文件，这里需要指定这些文件的路径
 #	比如src/main/webapp下，有static文件夹里放的是静态css、图片、js等文件
 #	比如src/main/webapp下，有view文件夹里放的是jsp文件
-#app.asset_path=/static
-#app.jsp_path=/view
+app.asset_path=/static
+app.jsp_path=/view
 
 #文件上传大小限制
 #app.upload_limit=0
 
 #指定好邮箱，框架会将异常信息发送给这些邮箱，多个邮箱用","号分隔
-#axe.email=
+axe.email=1157656909@qq.com
 
-#是否可以访问axe后台
+#是否可以访问axe后台，false表示关闭/axe的访问，建议只在本地和测试环境打开
 axe.home=true
-
-#是否打开axe框架管理界面的登录
-#	true 进入axe框架管理界面需要登陆录
-#	false 进入axe框架管理界面不需要登陆录，生产环境建议true
-axe.signin=false
-
-#配合axe.signin，登录密钥，获取方式如下：
-#	String username = "axe";
-#	String password = "13776255717";
-#	String axe_signin_token = MD5Util.getMD5Code(username+":"+password);
-#axe.signin.token=804bd02e2548611fca83965b5f18f1d8
-
-#是否释放框架初始化完成后的，ClassHelper内的classSet集合是否保留
-#	建议false，不保留，减小内存占用
-axe.classhelper.keep=false
-
-#Captain功能队长地址
-#axe.captain.captain_host=http://localhost:8080x
-#我(组员)的地址
-#axe.captain.my_host=http://localhost:8090
 
 #------------------2.数据源配置--------------------
 #指定数据源
 #	可以指定多个，比如 jdbc.datasource=druid,api,united,pointsShop,aio,card
 #	axe-datasource-dbcp是axe框架提供的默认数据源
 #	可以使用自己的数据源，用法参考README里的数据源一节
+#   !如果不需要连接数据，则配置 jdbc.datasource= 即可，后续配置项需全部删除
+#jdbc.datasource=axe-datasource-dbcp
 jdbc.datasource=
+
 #是否自动建表
-jdbc.datasource.数据源名称.auto_create_table=true
+#jdbc.datasource.axe-datasource-dbcp.auto_create_table=true
+
 #是否打印sql语句
-jdbc.datasource.数据源名称.show_sql=false
+#jdbc.datasource.axe-datasource-dbcp.show_sql=true
+
 #数据库编码，支持emoji！MySql使用
-#jdbc.datasource.数据源名称.character=utf8mb4
+#jdbc.datasource.axe-datasource-dbcp.character=utf8mb4
+
 #数据库校验编码，支持emoji！MySql使用
-#jdbc.datasource.数据源名称.collate=utf8mb4_unicode_ci
+#jdbc.datasource.axe-datasource-dbcp.collate=utf8mb4_unicode_ci
 
 #如果使用axe-datasource-dbcp，需要在axe.properties里指定好jdbc的配置
 #	如果使用自己的数据源比如druid，则此段配置（从{到}）不需要，可以另外写配置文件。
 #	{
-#jdbc.username=root
-#jdbc.password=Ybsl_1234
-#jdbc.url=jdbc:mysql://192.168.199.45:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE
+#jdbc.username=
+#jdbc.password=
+#jdbc.url=jdbc:mysql://{{ip:port}}/{{databseName}}?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE
 #jdbc.driver=com.mysql.jdbc.Driver
 #	}
 
@@ -172,10 +159,10 @@ jdbc.datasource.数据源名称.show_sql=false
 axe推荐的风格是前后端分离，也就是view是前台的事情，后台服务只提供数据，只负责MVC中的Model和Controller。
 但是axe也支持完整的MVC，View层可以通过在Controller中返回的结果类型(View.class)来跳转，View.class对象的实例包含一个地址字符串，支持携带参数给jsp页面。
 ```java
-@Controller(title="这是一个Controller",basePath="/")
+@Controller(desc="这是一个Controller",basePath="")
 public class ToJspController{
 	
-	@Request(title="jsp页面跳转",value="/index.html",method=RequestMethod.GET)
+	@Request(desc="/jsp页面跳转",path="/index.html",method=RequestMethod.GET)
 	public View invite_wx(HttpServletRequest request,HttpServletResponse response){
 		View view = new View("/view/index.jsp").dispatcher();
 		//给JSP页面传递的参数
@@ -196,11 +183,11 @@ restful的具体定义这里不做解释了，axe对rest请求url中的参数支
 
 请看下面的POST接口，我们习惯POST方式表示新增，url中的名称表示资源，这是一个新增用户的接口
 ```java
-	@Request(value="/user",method=RequestMethod.POST)
+	@Request(path="/user",method=RequestMethod.POST)
     public String addUser(
 			//框架要求必须使用包装类型，使用int（类似）类型无法准确判断参数是否有值
-        	@RequestParam("age")Integer age,
-        	@RequestParam("name")String name){
+        	@RequestParam(name="age")Integer age,
+        	@RequestParam(name="name")String name){
     	....
 		return "success";
     }
