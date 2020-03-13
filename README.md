@@ -6,15 +6,17 @@
 
 ### RESTful 简单展示，更多使用细节请直接上手
 ```java
-@Controller(basePath="",desc="hello word")
+@Controller(basePath="",desc="HelloWord")
 public class TestRest {
 	
-	@Request(title="hi",value="/hi",method=RequestMethod.GET)
-	public String hi(
-		@RequestParam(desc="说",value="say")String say	
+	@Request(path="/first",method=RequestMethod.GET,desc="第一个接口")
+	public String first(
+		@RequestParam(name="name",required=true,desc="姓名")String name,
+		@RequestParam(name="age",desc="年龄")Integer age
 			){
-		return "u say:"+say;
+		return "姓名:"+name+" 年龄:"+(age == null?"不知道":age);
 	}
+	
 }
 ```
 
