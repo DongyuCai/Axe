@@ -21,19 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.axe.annotation.mvc;
+package org.axe.constant;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * 不可排除的过滤器
- * 注解用在过滤器上
- * 如果FilterFuckOff未指明排除此注解注释的Filter，则正常不排除，如果指明，则启动报错提示不可排除
- * @author CaiDongyu on 2018/11/1.
+ * 请求处理的上下文对象
+ * 生命周期在一次请求
+ * 这个上下文，是线程安全的
+ * 即便多次请求出现线程被复用，也不会有问题
+ * @author CaiDongyu 2020/3/21
  */
-@Target({ElementType.TYPE,ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface UnFuckOff {}
+public final class RequestContent {
+	private static ThreadLocal<Map<String, Object>> CONTENT = new ThreadLocal<>();
+
+	public synchronized static void setParam(String name,Object value){
+		Map<String, Object> map = CONTENT.get();
+		if(map == null){
+			map = new HashMap<>();
+		}
+		map.put(name, value);
+		CONTENT.set(map);
+	}
+
+    @SuppressWarnings("unchecked")
+	public synchronized static <T> T getParam(String name){
+		Map<String, Object> map = CONTENT.get();
+		if(map == null){
+			return null;
+		}
+		return (T)map.get(name);
+	}
+	
+    public synchronized static void clean(){
+    	CONTENT.remove();
+    }
+}

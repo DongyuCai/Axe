@@ -46,6 +46,7 @@ import org.axe.bean.mvc.ResultHolder;
 import org.axe.bean.mvc.View;
 import org.axe.constant.CharacterEncoding;
 import org.axe.constant.ContentType;
+import org.axe.constant.RequestContent;
 import org.axe.exception.RedirectorInterrupt;
 import org.axe.exception.RestException;
 import org.axe.helper.HelperLoader;
@@ -127,6 +128,9 @@ public class DispatcherServlet extends HttpServlet{
     	ResultHolder resultHolder = new ResultHolder();
     	ExceptionHolder exceptionHolder = new ExceptionHolder();
         try {
+    		//清理请求上下文，避免线程复用导致上下文中存在脏数据
+        	RequestContent.clean();
+        	
         	//获取请求方法与请求路径
             String requestMethod = RequestUtil.getRequestMethod(request);
             String requestPath = RequestUtil.getRequestPath(request);
@@ -273,7 +277,9 @@ public class DispatcherServlet extends HttpServlet{
 					}
             	}
 			}
-			
+
+    		//清理请求上下文
+        	RequestContent.clean();
 		}
     }
     
