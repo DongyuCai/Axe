@@ -91,18 +91,26 @@ public final class HttpUtil {
 	}
 	
 	public static String sendGet(String url) throws Exception {
-		return sendGet(url, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+		return sendGet(url, null, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+	}
+
+	public static String sendGet(String url,Map<String,String> headers) throws Exception {
+		return sendGet(url, headers, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+	}
+
+	public static String sendGet(String url,String responseCharset) throws Exception {
+		return sendGet(url, null, responseCharset);
 	}
 	
 	/**
 	 * 使用Get方式获取数据
 	 * 
 	 * @param url
-	 * @param charset
+	 * @param responseCharset
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String sendGet(String url, String charset) throws Exception {
+	public static String sendGet(String url,Map<String,String> headers, String responseCharset) throws Exception {
 		String result = "";
 		BufferedReader in = null;
 		try {
@@ -111,11 +119,17 @@ public final class HttpUtil {
 			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
 			conn.setRequestProperty("connection", "close");
+			if(headers != null){
+				for(String key:headers.keySet()){
+					conn.setRequestProperty(key, headers.get(key));
+				}
+			}
+			
 			conn.setRequestMethod("GET");
 			// 建立实际的连接
 			conn.connect();
 			// 定义 BufferedReader输入流来读取URL的响应
-			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), charset));
+			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), responseCharset));
 			String line;
 			while ((line = in.readLine()) != null) {
 				result += line;
