@@ -40,6 +40,7 @@ import org.axe.helper.mvc.FilterHelper;
 import org.axe.helper.mvc.FormRequestHelper;
 import org.axe.helper.mvc.InterceptorHelper;
 import org.axe.helper.mvc.ListenerHelper;
+import org.axe.helper.mvc.TimerHelper;
 import org.axe.helper.persistence.DataBaseHelper;
 import org.axe.helper.persistence.DataSourceHelper;
 import org.axe.helper.persistence.SchemaHelper;
@@ -84,6 +85,7 @@ public final class HelperLoader {
                 new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
                 new ListenerHelper(),//实例化所有ListenerHelper
                 new ControllerHelper(),//加载ACTION_MAP
+                new TimerHelper(),//加载所有定时器
                 
                 //*IOC组装
                 new IocHelper(),//组装所有@Autowired
