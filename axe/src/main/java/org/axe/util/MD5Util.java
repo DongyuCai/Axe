@@ -14,7 +14,7 @@ public class MD5Util {
     // 返回形式为数字跟字符串
     private static String byteToArrayString(byte bByte) {
         int iRet = bByte;
-        // System.out.println("iRet="+iRet);
+        // LogUtil.log("iRet="+iRet);
         if (iRet < 0) {
             iRet += 256;
         }
@@ -48,6 +48,6 @@ public class MD5Util {
     }
 
     /*public static void main(String[] args) {
-        System.out.println(MD5Util.getMD5Code("000"));
+        LogUtil.log(MD5Util.getMD5Code("000"));
     }*/
 }

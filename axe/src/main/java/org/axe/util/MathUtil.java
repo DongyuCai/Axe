@@ -31,8 +31,8 @@ public final class MathUtil {
 	/*
 	public static void main(String[] args) {
 //		int[] ary = fibonacciAry(1, 10);
-//		System.out.println(Arrays.toString(ary));
-		System.out.println(fibonacci(360));
+//		LogUtil.log(Arrays.toString(ary));
+		LogUtil.log(fibonacci(360));
 	}
 */
 	/**

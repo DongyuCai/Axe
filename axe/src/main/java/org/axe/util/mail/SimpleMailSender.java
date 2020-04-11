@@ -37,7 +37,7 @@ public final class SimpleMailSender {
 		// 这个类主要来发送邮件
 //		SimpleMailSender.sendTextMail(mailInfo);// 发送文体格式
 		boolean success = SimpleMailSender.sendHtmlMail(mailInfo);// 发送html格式
-		System.out.println(success);
+		LogUtil.log(success);
 	}*/
 
 	/**

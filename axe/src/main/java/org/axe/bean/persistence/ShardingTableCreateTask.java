@@ -38,8 +38,8 @@ public final class ShardingTableCreateTask {
 		set.add(task1);
 		set.add(task2);
 		for(ShardingTableCreateTask t:set){
-			System.out.println(t.getTableName());
-			System.out.println(t.getShardingFlag());
+			LogUtil.log(t.getTableName());
+			LogUtil.log(t.getShardingFlag());
 		}
 	}*/
 	

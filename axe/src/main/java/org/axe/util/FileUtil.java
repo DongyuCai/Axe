@@ -64,7 +64,7 @@ public final class FileUtil {
 		
 		File destFile = new File(destPath);
 		/*if (destFile.exists() && destFile.isFile()) { // 该路径下已经有一个同名文件
-			System.out.println("目标目录下已有同名文件!");
+			LogUtil.log("目标目录下已有同名文件!");
 			return false;
 		}*/
  

@@ -494,10 +494,10 @@ public final class CommonSqlUtil {
 		 * params =
 		 * {"***","***","333","***","***","***","***","***","***","***","***",
 		 * "==="}; sql = convertSqlAppendCommand(sql, params);
-		 * System.out.println(sql);
+		 * LogUtil.log(sql);
 		 
 
 		String sql = "select a,b,c from table1";
-		System.out.println(convertSqlCount(sql));
+		LogUtil.log(convertSqlCount(sql));
 	}*/
 }

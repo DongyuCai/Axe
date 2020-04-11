@@ -330,7 +330,7 @@ public final class HttpUtil {
 /*
 	public static void main(String[] args) {
 		try {
-			System.out.println(sendDelete("http://39.105.23.251:20001/open_api/del_card?cardNumber=0000000000000002"));
+			LogUtil.log(sendDelete("http://39.105.23.251:20001/open_api/del_card?cardNumber=0000000000000002"));
 		} catch (Exception e) {
 			LogUtil.error(e);
 		};
