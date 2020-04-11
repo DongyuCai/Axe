@@ -210,8 +210,8 @@ public final class StringUtil {
 	}
 
 	/*public static void main(String[] args) {
-		// System.out.println(camelToUnderline("SetAbC1d"));
-		// System.out.println(underlineToCamel("set_ab_c1d"));
-		System.out.println(getRandomString(8));
+		// LogUtil.log(camelToUnderline("SetAbC1d"));
+		// LogUtil.log(underlineToCamel("set_ab_c1d"));
+		LogUtil.log(getRandomString(8));
 	}*/
 }
