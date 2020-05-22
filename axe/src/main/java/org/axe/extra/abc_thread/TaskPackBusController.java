@@ -13,6 +13,7 @@ import org.axe.util.LogUtil;
  * 等待总线调度器，自动协商任务包与串行执行器池的协作
  * 如果当前池子繁忙（没有可用于此任务包的执行器）
  * 则此任务包会被插入到总线末端，等待下次询问
+ * 
  */
 @Component
 public final class TaskPackBusController extends Thread{

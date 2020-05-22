@@ -97,6 +97,9 @@ public final class TimerHelper implements Helper {
 								LogUtil.error(e);
 							}
 						}
+						try {
+							Thread.sleep(60000);//1分钟时定时器的最小周期
+						} catch (InterruptedException e) {}
 					}
 				};
 			}.start();
