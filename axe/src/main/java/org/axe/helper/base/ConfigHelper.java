@@ -23,10 +23,12 @@
  */
 package org.axe.helper.base;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.axe.constant.ConfigConstant;
 import org.axe.interface_.base.Helper;
+import org.axe.interface_.mvc.AfterConfigLoaded;
 import org.axe.util.PropsUtil;
 
 /**
@@ -37,6 +39,13 @@ import org.axe.util.PropsUtil;
 public final class ConfigHelper implements Helper{
 
     private static Properties CONFIG_PROPS;
+    private static List<AfterConfigLoaded> AFTER_CONFIG_LOADED_LIST;
+    
+    public static void addAfterConfigLoadedCallback(AfterConfigLoaded callback){
+    	synchronized (AFTER_CONFIG_LOADED_LIST) {
+    		AFTER_CONFIG_LOADED_LIST.add(callback);
+		}
+    }
     
     public synchronized static void setConfigProps(Properties properties){
     	CONFIG_PROPS = properties;
@@ -46,6 +55,11 @@ public final class ConfigHelper implements Helper{
     public synchronized void init() throws Exception{
     	if(CONFIG_PROPS == null){
     		CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
+    	}
+    	
+    	//加载完配置后，执行
+    	for(AfterConfigLoaded acl:AFTER_CONFIG_LOADED_LIST){
+    		acl.doSomething(CONFIG_PROPS);
     	}
     }
     
