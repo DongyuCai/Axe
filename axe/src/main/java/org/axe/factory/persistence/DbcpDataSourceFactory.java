@@ -68,6 +68,11 @@ public final class DbcpDataSourceFactory implements BaseDataSource{
         	DATA_SOURCE.setUrl(URL);
         	DATA_SOURCE.setUsername(USERNAME);
         	DATA_SOURCE.setPassword(PASSWORD);
+        	
+        	DATA_SOURCE.setMaxIdle(80);
+        	DATA_SOURCE.setMinIdle(80);
+        	DATA_SOURCE.setInitialSize(80);
+        	DATA_SOURCE.setMaxWaitMillis(500);
         } catch (Exception e) {
             LogUtil.error("jdbc driver : " + DRIVER);
             LogUtil.error("jdbc url : " + URL);

@@ -90,6 +90,8 @@ public final class DataBaseHelper implements Helper{
     public static Connection getConnection(String dataSourceName) throws SQLException {
         HashMap<String,Connection> connMap = CONNECTION_HOLDER.get();
         if (connMap == null || !connMap.containsKey(dataSourceName)) {
+        	//如果此次操作连接不存在，则需要获取连接
+        	//如果前面打开事物了，则这里会存在连接，不会再进来
             try {
             	Map<String, BaseDataSource> dsMap = DataSourceHelper.getDataSourceAll();
         		if(dsMap.containsKey(dataSourceName)){

@@ -98,7 +98,7 @@ public final class TimerHelper implements Helper {
 							}
 						}
 						try {
-							Thread.sleep(60000);//1分钟时定时器的最小周期
+							Thread.sleep(100);//100毫秒钟是定时器的最小周期
 						} catch (InterruptedException e) {}
 					}
 				};
