@@ -428,7 +428,7 @@ public final class AxeRest {
 	 * 
 	 * @throws Exception
 	 */
-	private void outputResource(HttpServletResponse response, String path, List<FormParam> paramList) {
+	public void outputResource(HttpServletResponse response, String path, List<FormParam> paramList) {
 		BufferedReader reader = null;
 		InputStream in = this.getClass().getClassLoader().getResourceAsStream(path);
 		if (in == null) {

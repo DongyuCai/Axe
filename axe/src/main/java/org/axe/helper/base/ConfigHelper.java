@@ -23,6 +23,7 @@
  */
 package org.axe.helper.base;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -39,7 +40,7 @@ import org.axe.util.PropsUtil;
 public final class ConfigHelper implements Helper{
 
     private static Properties CONFIG_PROPS;
-    private static List<AfterConfigLoaded> AFTER_CONFIG_LOADED_LIST;
+    private static List<AfterConfigLoaded> AFTER_CONFIG_LOADED_LIST = new ArrayList<>();
     
     public static void addAfterConfigLoadedCallback(AfterConfigLoaded callback){
     	synchronized (AFTER_CONFIG_LOADED_LIST) {

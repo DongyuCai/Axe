@@ -58,11 +58,11 @@ public final class TimerHelper implements Helper {
 					
 					Timer timer = ReflectionUtil.newInstance(timerClass);
 					
-					// 排序比较，按顺序插入到Filter链里
 					if(TIMER_MAP.containsKey(timer.name())){
 						throw new Exception("find the same timer name:"+timer.name()+" class:"+timer.getClass()+" === "+TIMER_MAP.get(timer.name()).getClass());
 					}
 					TIMER_MAP.put(timer.name(), timer);
+					BeanHelper.setBean(timerClass, timer);
 				}
 			}
 		}
