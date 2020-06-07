@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Listener;
@@ -49,6 +50,7 @@ public final class ListenerHelper implements Helper{
 			if(CollectionUtil.isNotEmpty(classSet)){
 				for(Class<?> listenerClass:classSet){
 					Listener listener = ReflectionUtil.newInstance(listenerClass);
+					BeanHelper.setBean(listenerClass, listener);
 					if(LISTENER_LIST.size() == 0){
 						LISTENER_LIST.add(listener);
 					}else{
