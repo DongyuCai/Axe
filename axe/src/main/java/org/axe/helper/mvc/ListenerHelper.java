@@ -50,7 +50,6 @@ public final class ListenerHelper implements Helper{
 			if(CollectionUtil.isNotEmpty(classSet)){
 				for(Class<?> listenerClass:classSet){
 					Listener listener = ReflectionUtil.newInstance(listenerClass);
-					BeanHelper.setBean(listenerClass, listener);
 					if(LISTENER_LIST.size() == 0){
 						LISTENER_LIST.add(listener);
 					}else{
@@ -75,6 +74,7 @@ public final class ListenerHelper implements Helper{
 	public void onStartUp() throws Exception {
 		for(Listener listener:LISTENER_LIST){
 			listener.init();
+			BeanHelper.setBean(listener.getClass(), listener);
 		}
 	}
 
