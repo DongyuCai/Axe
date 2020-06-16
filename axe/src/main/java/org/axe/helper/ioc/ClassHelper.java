@@ -34,10 +34,9 @@ import org.axe.constant.ConfigConstant;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.Listener;
+import org.axe.interface_.mvc.Timer;
 import org.axe.util.ClassUtil;
 import org.axe.util.StringUtil;
-
-import com.sun.glass.ui.Timer;
 
 /**
  * 类操作助手类
