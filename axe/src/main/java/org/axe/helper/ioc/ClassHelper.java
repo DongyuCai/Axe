@@ -33,8 +33,11 @@ import org.axe.annotation.ioc.Service;
 import org.axe.constant.ConfigConstant;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
+import org.axe.interface_.mvc.Listener;
 import org.axe.util.ClassUtil;
 import org.axe.util.StringUtil;
+
+import com.sun.glass.ui.Timer;
 
 /**
  * 类操作助手类
@@ -133,6 +136,14 @@ public final class ClassHelper implements Helper{
     		}
     		//#Service
     		if(cls.isAnnotationPresent(Service.class)){
+    			beanClassSet.add(cls);
+    		}
+    		//#Timer
+    		if(Timer.class.isAssignableFrom(cls)){
+    			beanClassSet.add(cls);
+    		}
+    		//#Listener
+    		if(Listener.class.isAssignableFrom(cls)){
     			beanClassSet.add(cls);
     		}
     	}
