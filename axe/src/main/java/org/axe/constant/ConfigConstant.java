@@ -41,6 +41,7 @@ public final class ConfigConstant {
 	public static final String JDBC_USERNAME = "jdbc.username";
 	public static final String JDBC_PASSWORD = "jdbc.password";
 	public static final String JDBC_DATASOURCE = "jdbc.datasource";
+	public static final String JDBC_CONNECTION_POOL_SIZE = "jdbc.connection_pool_size";
     //这个部分是jdbc配置的子项，需要JDBC_DATASOURCE+dataSourceName+以下名称配置{
 	public static final String JDBC_AUTO_CREATE_TABLE = "auto_create_table";
 	public static final String JDBC_SHOW_SQL = "show_sql";

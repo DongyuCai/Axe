@@ -23,6 +23,11 @@
  */
 package org.axe.util;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -34,7 +39,7 @@ public final class IpUtil {
 	/**
 	 * 获取真实的ip地址
 	 */
-	public static String getIpAddress(HttpServletRequest request) {
+	public static String getRequestIpAddress(HttpServletRequest request) {
 		// 获取请求主机IP地址,如果通过代理进来，则透过防火墙获取真实IP地址
 		String ip = request.getHeader("X-Forwarded-For");
 
@@ -73,5 +78,27 @@ public final class IpUtil {
 		ip = ip==null? "":ip;
 		
 		return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
+	}
+	
+	public static String getLocalHostIpAddress() {
+	    try {
+	      Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+	      InetAddress ip = null;
+	      while (allNetInterfaces.hasMoreElements()) {
+	        NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
+	        if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
+	          continue;
+	        } else {
+	          Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+	          while (addresses.hasMoreElements()) {
+	            ip = addresses.nextElement();
+	            if (ip != null && ip instanceof Inet4Address) {
+	              return ip.getHostAddress();
+	            }
+	          }
+	        }
+	      }
+	    } catch (Exception e) {}
+	    return "";
 	}
 }

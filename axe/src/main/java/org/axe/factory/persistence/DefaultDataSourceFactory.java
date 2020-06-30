@@ -24,31 +24,37 @@
 package org.axe.factory.persistence;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.axe.annotation.persistence.DataSource;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.persistence.BaseDataSource;
 import org.axe.util.LogUtil;
 import org.axe.util.StringUtil;
 
-@DataSource("axe-datasource-dbcp")
-public final class DbcpDataSourceFactory implements BaseDataSource{
+@DataSource("default-datasource")
+public final class DefaultDataSourceFactory implements BaseDataSource{
 	
     //#数据库
     private final String DRIVER;
     private final String URL;
     private final String USERNAME;
     private final String PASSWORD;
-    private BasicDataSource DATA_SOURCE;
+    private final Integer CONNECTION_POLL_SIZE;
+    
+    //数据源缓存
+    Map<Connection,Boolean> CONNECTION_POOL = new HashMap<>();
 	
-	public DbcpDataSourceFactory() {
+	public DefaultDataSourceFactory() {
         //#初始化jdbc配置
         DRIVER = setJdbcDriver();
         URL = setJdbcUrl();
         USERNAME = setJdbcUserName();
         PASSWORD = setJdbcPassword();
+        CONNECTION_POLL_SIZE = setJdbcConnectionPoolSize();
         
         do{
         	if(StringUtil.isEmpty(DRIVER)) break;
@@ -63,16 +69,7 @@ public final class DbcpDataSourceFactory implements BaseDataSource{
 	private void init() {
         
         try {
-            DATA_SOURCE = new BasicDataSource();
-        	DATA_SOURCE.setDriverClassName(DRIVER);
-        	DATA_SOURCE.setUrl(URL);
-        	DATA_SOURCE.setUsername(USERNAME);
-        	DATA_SOURCE.setPassword(PASSWORD);
-        	
-        	DATA_SOURCE.setMaxIdle(setJdbcConnectionPoolSize());
-        	DATA_SOURCE.setMinIdle(setJdbcConnectionPoolSize());
-        	DATA_SOURCE.setInitialSize(setJdbcConnectionPoolSize());
-        	DATA_SOURCE.setMaxWaitMillis(500);
+            Class.forName(DRIVER);
         } catch (Exception e) {
             LogUtil.error("jdbc driver : " + DRIVER);
             LogUtil.error("jdbc url : " + URL);
@@ -85,9 +82,53 @@ public final class DbcpDataSourceFactory implements BaseDataSource{
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return DATA_SOURCE.getConnection();
+		Connection con = null;
+		//查看是否有空闲连接
+		synchronized (CONNECTION_POOL) {
+			if(!CONNECTION_POOL.isEmpty()){
+				for(Connection one:CONNECTION_POOL.keySet()){
+					if(!CONNECTION_POOL.get(one)){
+						con = one;
+						CONNECTION_POOL.put(con, true);
+						LogUtil.log(Thread.currentThread().getName()+"-复用连接，当前pool size:"+CONNECTION_POOL.size());
+						break;
+					}
+				}
+			}
+		}
+		
+		if(con == null){
+			//如果缓存没有达到上限，则补充一个连接进去
+			synchronized (CONNECTION_POOL) {
+				if(CONNECTION_POOL.size() < CONNECTION_POLL_SIZE){
+					con = DriverManager.getConnection(URL,USERNAME,PASSWORD);
+					CONNECTION_POOL.put(con, true);
+					LogUtil.log(Thread.currentThread().getName()+"-打开连接，当前pool size:"+CONNECTION_POOL.size());
+				}
+			}
+		}
+		if(con == null){
+			LogUtil.log(Thread.currentThread().getName()+"-等待");
+			//说明缓存达到上限，不能再补充了
+			try {
+				Thread.sleep(20);//休息20ms后再次尝试获取缓存连接，有可能有新连接释放
+			} catch (Exception e) {}
+			return getConnection();
+		}else{
+			return con;
+		}
 	}
-
+	
+	@Override
+	public void closeConnection(Connection con) throws SQLException{
+		synchronized (CONNECTION_POOL) {
+			if(!CONNECTION_POOL.isEmpty()){
+				CONNECTION_POOL.put(con, false);
+				LogUtil.log(Thread.currentThread().getName()+"-关闭连接，当前pool size:"+CONNECTION_POOL.size());
+			}
+		}
+	}
+	
 	@Override
 	public String setJdbcDriver() {
 		return ConfigHelper.getJdbcDriver();
@@ -116,10 +157,5 @@ public final class DbcpDataSourceFactory implements BaseDataSource{
 	@Override
 	public boolean tns() {
 		return true;
-	}
-
-	@Override
-	public void closeConnection(Connection con) throws SQLException{
-		con.close();
 	}
 }

@@ -127,7 +127,7 @@ public final class DataBaseHelper implements Helper{
     			Connection con = connMap.get(dataSourceName);
     			if(con == null) break;
 				if(!con.isClosed()){
-					con.close();
+					DataSourceHelper.getDataSourceAll().get(dataSourceName).closeConnection(con);
 //					LOGGER.debug("release connection of dataSource["+dataSourceName+"]:"+con);
 				}
     		}while(false);

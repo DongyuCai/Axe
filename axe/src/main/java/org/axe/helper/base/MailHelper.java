@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.axe.interface_.base.Helper;
 import org.axe.util.CollectionUtil;
+import org.axe.util.IpUtil;
 import org.axe.util.StringUtil;
 import org.axe.util.mail.MailSenderInfo;
 import org.axe.util.mail.SimpleMailSender;
@@ -78,7 +79,7 @@ public final class MailHelper implements Helper{
 		
 		if(CollectionUtil.isNotEmpty(mailInfoList)){
 			for(MailSenderInfo mailInfo:mailInfoList){
-				mailInfo.setSubject("系统异常提醒");
+				mailInfo.setSubject("系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
 				mailInfo.setContent(exception);
 				SimpleMailSender.sendHtmlMail(mailInfo);
 			}

@@ -120,6 +120,14 @@ public final class ConfigHelper implements Helper{
     	//默认使用axe提供的dbcp数据源
     	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, null);
     }
+    
+    /**
+     * 获取 JDBC 连接池连接数量
+     * 默认100个
+     */
+    public static int getJdbcConnectionPoolSize() {
+        return PropsUtil.getInt(CONFIG_PROPS, ConfigConstant.JDBC_CONNECTION_POOL_SIZE, 100);
+    }
 
     /**
      * 指定框架扫描的包路径，多个路径使用“,”号分割

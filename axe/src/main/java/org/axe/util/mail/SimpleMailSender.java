@@ -125,9 +125,7 @@ public final class SimpleMailSender {
 			// 发送邮件
 			Transport.send(mailMessage);
 			return true;
-		} catch (MessagingException e) {
-			LogUtil.error(e);
-		}
+		} catch (MessagingException e) {}
 		return false;
 	}
 }

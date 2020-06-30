@@ -36,6 +36,7 @@ public interface BaseDataSource {
 
 	public Connection getConnection() throws SQLException ;
 	
+	public void closeConnection(Connection con) throws SQLException;
 	
 	public String setJdbcDriver();
 	
@@ -44,6 +45,8 @@ public interface BaseDataSource {
 	public String setJdbcUserName();
 	
 	public String setJdbcPassword();
+	
+	public int setJdbcConnectionPoolSize();
 	
 	public boolean tns();
 }
