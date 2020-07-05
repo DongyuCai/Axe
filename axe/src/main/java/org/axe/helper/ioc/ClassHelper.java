@@ -24,7 +24,9 @@
 package org.axe.helper.ioc;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.axe.annotation.ioc.Component;
@@ -33,6 +35,7 @@ import org.axe.annotation.ioc.Service;
 import org.axe.constant.ConfigConstant;
 import org.axe.helper.base.ConfigHelper;
 import org.axe.interface_.base.Helper;
+import org.axe.interface_.mvc.AfterClassLoaded;
 import org.axe.util.ClassUtil;
 import org.axe.util.StringUtil;
 
@@ -49,6 +52,14 @@ public final class ClassHelper implements Helper{
      * TODO:CLASS_SET占用的空间其实在框架初始化之后，就没用了。
      */
     private static Set<Class<?>> CLASS_SET;
+    
+    private static List<AfterClassLoaded> AFTER_CLASS_LOADED_LIST = new ArrayList<>();
+    
+    public static void addAfterClassLoadedCallback(AfterClassLoaded callback){
+    	synchronized (AFTER_CLASS_LOADED_LIST) {
+    		AFTER_CLASS_LOADED_LIST.add(callback);
+		}
+    }
     
     @Override
     public void init() throws Exception{
@@ -69,6 +80,11 @@ public final class ClassHelper implements Helper{
             }
             //增加axe框架包路径
             CLASS_SET.addAll(ClassUtil.getClassSet(axePackage));
+    	}
+    	
+    	//加载完配置后，执行
+    	for(AfterClassLoaded acl:AFTER_CLASS_LOADED_LIST){
+    		acl.doSomething(CLASS_SET);
     	}
     }
 
