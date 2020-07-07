@@ -145,11 +145,16 @@ public final class AxeRest {
 	@Request(path = "/action", method = RequestMethod.GET, desc = "获取Action")
 	public Action action(@RequestParam(name = "actionIndex", required = true, desc = "action位置下标") Integer actionIndex,
 			HttpServletRequest request) {
-		Handler handler = ControllerHelper.getActionList().get(actionIndex);
-		if (handler != null) {
-			return ApiExportUtil.getAction(RequestUtil.getBasePath(request), handler);
-		} else {
-			return new Action();
+		List<Handler> actionList = ControllerHelper.getActionList();
+		if(actionIndex<0 || actionIndex < actionList.size()){
+			Handler handler = ControllerHelper.getActionList().get(actionIndex);
+			if (handler != null) {
+				return ApiExportUtil.getAction(RequestUtil.getBasePath(request), handler);
+			} else {
+				return new Action();
+			}
+		}else{
+			throw new RestException(RestException.SC_NOT_FOUND,"资源不存在");
 		}
 	}
 
