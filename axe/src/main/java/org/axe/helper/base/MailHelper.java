@@ -45,12 +45,14 @@ import org.axe.util.mail.SimpleMailSender;
 public final class MailHelper implements Helper{
 
 	private static List<MailSenderInfo> mailInfoList;
+	private static String MAIL_TITLE = "";
 	
 	@Override
 	public void init() throws Exception{
 		synchronized (this) {
 			mailInfoList = new ArrayList<>();
 			String axeEmail = ConfigHelper.getAxeEmail();
+			MAIL_TITLE = ConfigHelper.getAxeEmailTitle();
 			if(StringUtil.isNotEmpty(axeEmail)){
 				String[] axeEmails = axeEmail.split(",");
 				for(String toAddress:axeEmails){
@@ -79,7 +81,7 @@ public final class MailHelper implements Helper{
 		
 		if(CollectionUtil.isNotEmpty(mailInfoList)){
 			for(MailSenderInfo mailInfo:mailInfoList){
-				mailInfo.setSubject("系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
+				mailInfo.setSubject(MAIL_TITLE+"系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
 				mailInfo.setContent(exception);
 				SimpleMailSender.sendHtmlMail(mailInfo);
 			}

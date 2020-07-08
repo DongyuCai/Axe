@@ -81,7 +81,15 @@ public final class ConfigHelper implements Helper{
      * 多个地址用“,”逗号分割
      */
     public static String getAxeEmail(){
-    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL, null);
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL);
+    }
+
+    /**
+     * 发送有件使用的抬头，这样便于区分应用
+     * 系统错误、密码找回等邮件的通知地址
+     */
+    public static String getAxeEmailTitle(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_TITLE);
     }
     
     /**
