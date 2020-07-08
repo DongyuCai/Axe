@@ -47,6 +47,16 @@ public final class MailHelper implements Helper{
 	private static List<MailSenderInfo> mailInfoList;
 	private static String MAIL_TITLE = "";
 	
+	/**
+	 * 留一个口子，可以在需要的时候动态修改邮件主题
+	 * @param mAIL_TITLE
+	 */
+	public static void setMAIL_TITLE(String mAIL_TITLE) {
+		synchronized (MAIL_TITLE) {
+			MAIL_TITLE = mAIL_TITLE;
+		}
+	}
+	
 	@Override
 	public void init() throws Exception{
 		synchronized (this) {
