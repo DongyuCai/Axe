@@ -23,11 +23,16 @@
  */
 package org.axe.helper.ioc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.axe.interface_.base.Helper;
+import org.axe.interface_.mvc.AfterBeanInited;
+import org.axe.interface_.mvc.AfterClassLoaded;
+import org.axe.interface_.mvc.AfterConfigLoaded;
 import org.axe.util.ReflectionUtil;
 
 /**
@@ -43,6 +48,14 @@ public final class BeanHelper implements Helper{
      * 定义 Bean 映射（用于存放 Bean 类与 Bean 实例的映射
      */
     private static Map<Class<?>,Object> BEAN_MAP;
+
+    private static List<AfterBeanInited> AFTER_BEAN_INITED_LIST = new ArrayList<>();
+    
+    public static void addAfterBeanInitedCallback(AfterBeanInited callback){
+    	synchronized (AFTER_BEAN_INITED_LIST) {
+    		AFTER_BEAN_INITED_LIST.add(callback);
+		}
+    }
     
     @Override
     public void init() throws Exception{
@@ -54,6 +67,11 @@ public final class BeanHelper implements Helper{
                 BEAN_MAP.put(beanClass, obj);
             }
 		}
+
+    	//加载完配置后，执行
+    	for(AfterBeanInited acl:AFTER_BEAN_INITED_LIST){
+    		acl.doSomething(BEAN_MAP);
+    	}
     }
 
     /**
