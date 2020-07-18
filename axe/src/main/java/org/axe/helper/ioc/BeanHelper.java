@@ -31,8 +31,6 @@ import java.util.Set;
 
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.mvc.AfterBeanInited;
-import org.axe.interface_.mvc.AfterClassLoaded;
-import org.axe.interface_.mvc.AfterConfigLoaded;
 import org.axe.util.ReflectionUtil;
 
 /**
