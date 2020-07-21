@@ -76,20 +76,52 @@ public final class ConfigHelper implements Helper{
     }
     
     /**
-     * 系统联系人邮箱地址
-     * 系统错误、密码找回等邮件的通知地址
-     * 多个地址用“,”逗号分割
+     * 是否开启axe的邮件通知
      */
-    public static String getAxeEmail(){
-    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL);
+    public static boolean getAxeEmailNotification(){
+    	return PropsUtil.getBoolean(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_NOTIFICATION);
+    }
+    
+    /**
+     * axe邮箱host地址
+     */
+    public static String getAxeEmailServerHost(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_SERVER_HOST);
+    }
+    
+    /**
+     * axe邮箱host端口
+     */
+    public static String getAxeEmailServerPort(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_SERVER_PORT);
     }
 
+    /**
+     * axe邮箱host的用户名，就是邮箱地址
+     */
+    public static String getAxeEmailServerUserName(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_SERVER_USER_NAME);
+    }
+    
+    /**
+     * axe邮箱host端口
+     */
+    public static String getAxeEmailServerPassword(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_SERVER_PASSWORD);
+    }
     /**
      * 发送有件使用的抬头，这样便于区分应用
      * 系统错误、密码找回等邮件的通知地址
      */
     public static String getAxeEmailTitle(){
     	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_TITLE);
+    }
+    
+    /**
+     * axe邮箱host端口
+     */
+    public static String getAxeEmailErrorAddressee(){
+    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_ERROR_ADDRESSEE);
     }
     
     /**

@@ -33,8 +33,13 @@ public final class ConfigConstant {
     
     //#系统参数配置
 	public static final String AXE_HOME = "axe.home";
-	public static final String AXE_EMAIL = "axe.email";
-	public static final String AXE_EMAIL_TITLE = "axe.email_title";
+	public static final String AXE_EMAIL_NOTIFICATION = "axe.email_notification";//是否打开axe邮箱通知，如果打开，下面的配置才生效
+	public static final String AXE_EMAIL_SERVER_HOST = "axe.email_server_host";//邮箱host地址
+	public static final String AXE_EMAIL_SERVER_PORT = "axe.email_server_port";//邮箱host端口
+	public static final String AXE_EMAIL_SERVER_USER_NAME = "axe.email_server_user_name";//邮箱host的用户名，就是邮箱地址
+	public static final String AXE_EMAIL_SERVER_PASSWORD = "axe.email_server_password";//邮箱host的密码
+	public static final String AXE_EMAIL_TITLE = "axe.email_title";//邮件的抬头，除了配置文件里以外，也可以在代码里运行时再修改
+	public static final String AXE_EMAIL_ERROR_ADDRESSEE = "axe.email_error_addressee";//系统异常的默认邮件接受地址，多个地址可以用英文逗号分隔
 	
     //#持久层配置
 	public static final String JDBC_DRIVER = "jdbc.driver";

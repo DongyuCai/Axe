@@ -31,6 +31,7 @@ import java.util.List;
 import org.axe.interface_.base.Helper;
 import org.axe.util.CollectionUtil;
 import org.axe.util.IpUtil;
+import org.axe.util.LogUtil;
 import org.axe.util.StringUtil;
 import org.axe.util.mail.MailSenderInfo;
 import org.axe.util.mail.SimpleMailSender;
@@ -44,56 +45,39 @@ import org.axe.util.mail.SimpleMailSender;
  */
 public final class MailHelper implements Helper{
 
-	private static List<MailSenderInfo> mailInfoList;
-	private static String MAIL_TITLE = "";
+	private static MailSenderInfo MAILINFO;
 	
-	/**
-	 * 留一个口子，可以在需要的时候动态修改邮件主题
-	 * @param mAIL_TITLE
-	 */
-	public static void setMAIL_TITLE(String mAIL_TITLE) {
-		synchronized (MAIL_TITLE) {
-			MAIL_TITLE = mAIL_TITLE;
-		}
+	public static MailSenderInfo getMAILINFO() {
+		return MAILINFO;
 	}
 	
 	@Override
 	public void init() throws Exception{
 		synchronized (this) {
-			mailInfoList = new ArrayList<>();
-			String axeEmail = ConfigHelper.getAxeEmail();
-			MAIL_TITLE = ConfigHelper.getAxeEmailTitle();
-			if(StringUtil.isNotEmpty(axeEmail)){
-				String[] axeEmails = axeEmail.split(",");
-				for(String toAddress:axeEmails){
-					if(StringUtil.isEmpty(toAddress)) continue;
-					
-					MailSenderInfo mailInfo = new MailSenderInfo();
-					// 这个类主要是设置邮件
-					mailInfo = new MailSenderInfo();
-					mailInfo.setMailServerHost("smtp.163.com");
-					mailInfo.setMailServerPort("25");
-					mailInfo.setValidate(true);
-					mailInfo.setUserName("axe_caidongyu@163.com");
-					mailInfo.setPassword("NiveaLlwifUAUUi1");// 您的邮箱密码
-					mailInfo.setFromAddress("axe_caidongyu@163.com");
-					mailInfo.setToAddress(toAddress);
-					mailInfoList.add(mailInfo);
-				}
+			if(ConfigHelper.getAxeEmailNotification()){
+				MAILINFO = new MailSenderInfo();
+				MAILINFO.setMailServerHost(ConfigHelper.getAxeEmailServerHost());
+				MAILINFO.setMailServerPort(ConfigHelper.getAxeEmailServerPort());
+				MAILINFO.setValidate(true);
+				MAILINFO.setUserName(ConfigHelper.getAxeEmailServerUserName());
+				MAILINFO.setPassword(ConfigHelper.getAxeEmailServerPassword());
+				MAILINFO.setFromAddress(ConfigHelper.getAxeEmailServerUserName());
 			}
 		}
 	}
 	
 	public static void errorMail(Exception e){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-		e.printStackTrace(new PrintStream(baos));  
-		String exception = baos.toString(); 
-		
-		if(CollectionUtil.isNotEmpty(mailInfoList)){
-			for(MailSenderInfo mailInfo:mailInfoList){
-				mailInfo.setSubject(MAIL_TITLE+"系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
-				mailInfo.setContent(exception);
-				SimpleMailSender.sendHtmlMail(mailInfo);
+		if(MAILINFO != null){
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+			e.printStackTrace(new PrintStream(baos));  
+			String exception = baos.toString();
+			MAILINFO.setSubject(ConfigHelper.getAxeEmailTitle()+"系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
+			MAILINFO.setContent(exception);
+			try {
+				String[] toAddress = ConfigHelper.getAxeEmailErrorAddressee().split(",");
+				SimpleMailSender.sendHtmlMail(MAILINFO,toAddress);
+			} catch (Exception e1) {
+				LogUtil.error(e1);
 			}
 		}
 	}
