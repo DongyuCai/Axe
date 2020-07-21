@@ -25,14 +25,10 @@ package org.axe.helper.base;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.axe.interface_.base.Helper;
-import org.axe.util.CollectionUtil;
 import org.axe.util.IpUtil;
 import org.axe.util.LogUtil;
-import org.axe.util.StringUtil;
 import org.axe.util.mail.MailSenderInfo;
 import org.axe.util.mail.SimpleMailSender;
 
