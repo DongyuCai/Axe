@@ -630,7 +630,7 @@ public final class RequestUtil {
 					}else if(ReflectionUtil.compareType(parameterClass, Boolean.class)){
 						//Boolean
 						for(int i=0;i<formParamList.size();i++){
-							Boolean value =  CastUtil.castBoolean(formParamList.get(i),null);
+							Boolean value =  CastUtil.castBoolean(formParamList.get(i).getFieldValue(),null);
 							parameterValue = value;
 						}
 					}else if(ReflectionUtil.compareType(parameterClass, Short.class)){
