@@ -9,17 +9,6 @@ public abstract class TaskPack {
 	//与executor的name对应
 	private String name;
 
-	//已经执行结束的taskPack，此值会是true，否则是false
-	private boolean release=true;
-	
-	boolean isRelease() {
-		return release;
-	}
-
-	synchronized void setRelease(boolean release) {
-		this.release = release;
-	}
-
 	public TaskPack(String name) {
 		this.name = name;
 	}

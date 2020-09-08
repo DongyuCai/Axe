@@ -38,9 +38,7 @@ public final class SerialExecutor extends Thread{
 			if(taskPack != null){
 				try {
 					taskPack.task(this);
-				} catch (Exception e) {}finally {
-					taskPack.setRelease(true);
-				}
+				} catch (Exception e) {}
 			}
 			try {
 				Thread.sleep(10);//TODO 这个休眠可以去掉

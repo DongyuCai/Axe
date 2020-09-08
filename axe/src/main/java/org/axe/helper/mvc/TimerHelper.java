@@ -25,6 +25,7 @@ package org.axe.helper.mvc;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,6 +78,8 @@ public final class TimerHelper implements Helper {
 		if(CollectionUtil.isNotEmpty(TIMER_MAP)){
 			//Timer的启动
 			new Thread("Timer-Watcher-Thread"){
+				private final Set<String> TIMER_IS_RUNNING = new HashSet<>();
+				
 				public void run() {
 					TaskPackBusController tpBusController = BeanHelper.getBean(TaskPackBusController.class);
 					tpBusController.start();
@@ -85,11 +88,18 @@ public final class TimerHelper implements Helper {
 							try {
 								if(!timer.canExecuteNow()){
 									continue;
+								}else{
+									if(TIMER_IS_RUNNING.contains(timer.name())){
+										continue;
+									}
 								}
-								TaskPack tp = new TaskPack(timer.name()) {
+								
+								TIMER_IS_RUNNING.add(timer.name());
+								TaskPack tp = new TaskPack("AxeTimer") {
 									@Override
 									public void task(SerialExecutor executor) {
 										timer.doSomething();
+										TIMER_IS_RUNNING.remove(timer.name());
 									}
 								};
 								tpBusController.addTaskPack(tp);

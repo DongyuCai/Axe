@@ -41,12 +41,8 @@ public final class TaskPackBusController extends Thread{
 	@Autowired
 	private SerialExecutorPool serialExecutorPool;
 
-	public void addTaskPack(TaskPack taskPack) throws Exception{
-		if(!taskPack.isRelease()){
-			throw new Exception("任务包"+taskPack.getName()+"不可用");
-		}
+	public void addTaskPack(TaskPack taskPack) {
 		synchronized (taskPackBus) {
-			taskPack.setRelease(false);
 			taskPackBus.add(taskPack);
 		}
 	}
@@ -64,7 +60,6 @@ public final class TaskPackBusController extends Thread{
 					//如果没取到执行器，说明池子现在繁忙，那就排到队尾等待
 					try {
 						//要先更改包状态，否则加不进去
-						pack.setRelease(true);
 						addTaskPack(pack);
 					} catch (Exception e) {
 						LogUtil.error(e);
