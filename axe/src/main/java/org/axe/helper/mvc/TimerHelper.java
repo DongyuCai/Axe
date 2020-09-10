@@ -95,11 +95,16 @@ public final class TimerHelper implements Helper {
 								}
 								
 								TIMER_IS_RUNNING.add(timer.name());
-								TaskPack tp = new TaskPack("AxeTimer") {
+								TaskPack tp = new TaskPack(timer.name()) {
 									@Override
 									public void task(SerialExecutor executor) {
-										timer.doSomething();
-										TIMER_IS_RUNNING.remove(timer.name());
+										try {
+											timer.doSomething();
+										} catch (Exception e) {
+											LogUtil.error(e);
+										}finally{
+											TIMER_IS_RUNNING.remove(timer.name());
+										}
 									}
 								};
 								tpBusController.addTaskPack(tp);
