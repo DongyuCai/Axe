@@ -89,6 +89,7 @@ public final class DataBaseHelper implements Helper{
      */
     public static Connection getConnection(String dataSourceName) throws SQLException {
         HashMap<String,Connection> connMap = CONNECTION_HOLDER.get();
+		//LogUtil.log("test>获取链接");
         if (connMap == null || !connMap.containsKey(dataSourceName)) {
         	//如果此次操作连接不存在，则需要获取连接
         	//如果前面打开事物了，则这里会存在连接，不会再进来
@@ -101,6 +102,7 @@ public final class DataBaseHelper implements Helper{
         				CONNECTION_HOLDER.set(connMap);
         			}
         			connMap.put(dataSourceName, connection);
+        			//LogUtil.log("test>新建链接");
         		}
             } catch (SQLException e) {
 //                LOGGER.error("get connection failure", e);
@@ -109,6 +111,7 @@ public final class DataBaseHelper implements Helper{
             
         }
         if(connMap != null && connMap.containsKey(dataSourceName)){
+			//LogUtil.log("test>获取成功");
         	return connMap.get(dataSourceName);
         }else{
         	throw new RuntimeException("connot find connection of dataSource:"+dataSourceName);
@@ -120,6 +123,7 @@ public final class DataBaseHelper implements Helper{
      * @throws SQLException 
      */
     public static void closeConnection(String dataSourceName) throws SQLException {
+		//LogUtil.log("test>关闭链接");
     	HashMap<String, Connection> connMap = CONNECTION_HOLDER.get();
     	try {
     		do{
@@ -128,6 +132,7 @@ public final class DataBaseHelper implements Helper{
     			if(con == null) break;
 				if(!con.isClosed()){
 					DataSourceHelper.getDataSourceAll().get(dataSourceName).closeConnection(con);
+					//LogUtil.log("test>关闭成功");
 //					LOGGER.debug("release connection of dataSource["+dataSourceName+"]:"+con);
 				}
     		}while(false);
@@ -144,6 +149,7 @@ public final class DataBaseHelper implements Helper{
 					}
 				}
 				if(isAllConClosed){
+					//LogUtil.log("test>全部链接已关闭");
 					CONNECTION_HOLDER.remove();
 //					LOGGER.debug("clean CONNECTION_HOLDER");
 				}
@@ -685,6 +691,7 @@ public final class DataBaseHelper implements Helper{
 //        		LogUtil.log("e2-"+dataSourceName+":"+t);
         		if(dataSource.tns()){
         			Connection conn = dataSource.getConnection();
+        			//LogUtil.log("test>新建链接");
         			conn.setAutoCommit(false);//设置成手动提交
         			connMap.put(dataSourceName, conn);
         		}

@@ -25,14 +25,13 @@ package org.axe.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
 
 import org.axe.constant.CharacterEncoding;
@@ -185,9 +184,10 @@ public final class HttpUtil {
 		}
 	}
 	
-	public static String sendPostUrl(String url, String param) throws Exception {
-		return sendPostUrl(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+	public static String sendPostXml(String url, String xml) throws Exception {
+		return sendPostXml(url, xml, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
+	
 	/**
 	 * POST请求，字符串形式数据
 	 * 
@@ -199,7 +199,7 @@ public final class HttpUtil {
 	 *            编码方式
 	 * @throws Exception 
 	 */
-	public static String sendPostUrl(String url, String param, String charset) throws Exception {
+	public static String sendPostXml(String url, String xml, String charset) throws Exception {
 
 		PrintWriter out = null;
 		BufferedReader in = null;
@@ -209,7 +209,7 @@ public final class HttpUtil {
 			// 打开和URL之间的连接
 			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
-			conn.setRequestProperty("connection", "close");
+			conn.setRequestProperty("connection", "Keep-Alive");
 			conn.setRequestMethod("POST");
 			// 发送POST请求必须设置如下两行
 			conn.setDoOutput(true);
@@ -217,7 +217,7 @@ public final class HttpUtil {
 			// 获取URLConnection对象对应的输出流
 			out = new PrintWriter(conn.getOutputStream());
 			// 发送请求参数
-			out.print(param);
+			out.print(xml);
 			// flush输出流的缓冲
 			out.flush();
 			// 定义BufferedReader输入流来读取URL的响应
@@ -245,6 +245,7 @@ public final class HttpUtil {
 		return result;
 	}
 
+	
 	public static String sendPost(String url, Map<String, String> param) throws Exception {
 		return sendPost(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
@@ -260,25 +261,7 @@ public final class HttpUtil {
 	 * @throws Exception 
 	 */
 	public static String sendPost(String url, Map<String, String> param, String charset) throws Exception {
-
-		StringBuilder buffer = new StringBuilder();
-		if (param != null && !param.isEmpty()) {
-			for (Map.Entry<String, String> entry : param.entrySet()) {
-				try {
-					if(buffer.length() > 0){
-						buffer.append("&");
-					}
-					buffer.append(entry.getKey()).append("=");
-					if(entry.getValue() != null){
-						buffer.append(URLEncoder.encode(entry.getValue(), charset));
-					}
-				} catch (UnsupportedEncodingException e) {
-					LogUtil.error(e);
-				}
-			}
-		}
-
-		PrintWriter out = null;
+		DataOutputStream out = null;
 		BufferedReader in = null;
 		String result = "";
 		try {
@@ -286,15 +269,16 @@ public final class HttpUtil {
 			// 打开和URL之间的连接
 			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
-			conn.setRequestProperty("connection", "close");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("Connection", "Keep-Alive");
 			conn.setRequestMethod("POST");
 			// 发送POST请求必须设置如下两行
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
 			// 获取URLConnection对象对应的输出流
-			out = new PrintWriter(conn.getOutputStream());
+			out = new DataOutputStream(conn.getOutputStream());
 			// 发送请求参数
-			out.print(buffer);
+			out.write(JsonUtil.toJson(param).getBytes(charset));
 			// flush输出流的缓冲
 			out.flush();
 			// 定义BufferedReader输入流来读取URL的响应
@@ -319,7 +303,6 @@ public final class HttpUtil {
 				LogUtil.error("发送POST请求 关闭输出流、输入流出现异常！"+e2.getMessage()+"["+url+"]");
 			}
 		}
-		buffer.setLength(0);
 		return result;
 	}
 /*

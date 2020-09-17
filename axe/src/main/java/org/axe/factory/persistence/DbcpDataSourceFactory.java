@@ -85,7 +85,21 @@ public final class DbcpDataSourceFactory implements BaseDataSource{
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return DATA_SOURCE.getConnection();
+		try {
+
+			Connection connection = DATA_SOURCE.getConnection();
+			return connection;
+		} catch (Exception e) {
+			if(e.getMessage().contains("Timeout")){
+				//获取链接超时了，等待前面的链接释放吧
+				try {
+					Thread.sleep(500);//等待500毫秒，等待一下
+				} catch (Exception e2) {}
+				return getConnection();
+			}else{
+				throw e;
+			}
+		}
 	}
 
 	@Override
