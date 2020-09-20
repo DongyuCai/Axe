@@ -196,27 +196,44 @@ restful的具体定义这里不做解释了，axe对rest请求url中的参数支
 
 ## 大表自动分片
 当我们的表数据量过大的时候，sql操作的耗时会急剧上升，成为系统瓶颈，这时我们需要做分库分表等一些优化，axe对此自带了分片功能。
+```java
+@Table(tableName="collection_box_raw_data_log",comment="回收箱原始数据上报日志")
+public class CollectionBoxRawDataLog extends Sharding{
 
-- 如果一张表是需要分片的，那么在框架启动时，自动创建的，不只有第一张数据表，还有他的分片管理表
+	@Comment("日志id")
+	@Id(idGenerateWay=IdGenerateWay.AUTO_INCREMENT)
+	private Long id;
+	
+	@Comment("关联回收箱的CollectionBox.id")
+	private long collectionBoxId;
+	...
+	
+	@Override
+	public int oneTableMaxCount() {
+		return 100000;//告诉系统这个大表的分表阀值，比如10万条分一张表
+	}
+}
+```
+
+> 如果一张表是需要分片的，那么在框架启动时，自动创建的，不只有第一张数据表，还有他的分片管理表
 
 ## 框架有哪些重要的组成
 
 ### Controller部分
-- Filter
-- CharSetFilter
-- HeaderFilter
-- Listener
-- RestException
-- RedirectorInterrupt
-- @Controller
-- @Filter
-- @FilterFuckOff
-- @UnFuckOff
-- @Interceptor
-- @Autowired
-- BeanHelper
-- @Request
-- @RequestParam
+- Filter	过滤器
+- CharSetFilter	框架提供的utf-8转码过滤器
+- HeaderFilter	框架提供的请求的header字段过滤器，可以实现这个抽象类来方便的获得请求头字段获取的功能
+- Listener	服务启动监听
+- RestException	rest层的异常
+- RedirectorInterrupt	重定向的中断
+- @Controller	用于标注controller
+- @FilterFuckOff	用于标注在controller的class上或者方法上，排除某些过滤器
+- @UnFuckOff	用于标注在过滤器类上，表示不可以被排除
+- @Interceptor	用于标注在controller的class上或者方法上，明确使用某些拦截器
+- @Autowired	用于在BeanHelper能够管理的所有实体内，注入BeanHelper托管的对象
+- BeanHelper	用于托管系统初始化后的实体对象
+- @Request	用于标注在Controller的方法上，代表一个资源处理方法
+- @RequestParam	
 - @RequestEntity
 - @Default
 - Param
@@ -247,35 +264,6 @@ restful的具体定义这里不做解释了，axe对rest请求url中的参数支
 - Page
 - PageConfig
 - Sharding
-
-
-## IOC怎么支持
-axe的ioc(依赖注入)功能由BeanHelper实现，所有的注入实例也可以从BeanHelper中获取(后面讲到)。axe提供了如下的注解来方便ioc的使用。
-
-- @Controller
-- @Service
-- @Dao
-- @Autowired  
-
-具体用法下面会慢慢介绍。
-
-## Controller Class
-略
-
-## Action Method
-目前支持POST、DELETE、PUT、GET四种。在其他场景下需要HEAD、OPTION等类型可以自行扩展。
-
-## Param
-略
-
-## FileParam
-略
-
-## Data
-略
-
-## View
-略
 
 ## Filter
 过滤器用以过滤请求，在过滤的过程中判断是否需要继续往下跳转直至Controller。
@@ -434,7 +422,7 @@ axe的事务，如果出现迭代调用开启事务，只会在最外层打开�
 | getBean     | T                    | 见注释                    |
 | setBean     |                      | 添加实例给BeanHelpler管理 |
 
->注.返回类型根据方法传入的参数类型来匹配。可以获取的Bean类型包括@Controller、@Component、@Service、@Dao
+> 注.返回类型根据方法传入的参数类型来匹配。可以获取的Bean类型包括@Controller、@Component、@Service、@Dao
 注解标注的类，注意@Dao是接口注解并且在框架启动阶段，@Dao注解的实例并不能从BeanHelper中获取到，需要等待框架启动完成才可获取到。
 
 ## Aspect Proxy
@@ -446,4 +434,79 @@ axe的事务，如果出现迭代调用开启事务，只会在最外层打开�
 #### end
 
 ## 框架启动顺序
+new ConfigHelper(),//基础配置初始化
+new FrameworkStatusHelper(),//框架基础信息初始化
+new ClassHelper(),//加载package下所有class到CLASS_SET
+new BeanHelper(),//实例化CLASS_SET里的类，放到BEAN_MAP里
+new AopHelper(),//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
+
+//*DAO
+new DataSourceHelper(),//加载DataSource配置
+new DataBaseHelper(),//初始化数据库配置
+new TableHelper(),//加载所有的@Table
+new SchemaHelper(),//初始化所有entity的表结构自建
+
+//*MVC
+new FilterHelper(),//实例化所有Filter链表，并按层级排好序
+new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
+new ListenerHelper(),//实例化所有ListenerHelper
+new ControllerHelper(),//加载ACTION_MAP
+new TimerHelper(),//加载所有定时器
+
+//*IOC组装
+new IocHelper(),//组装所有@Autowired
+
+//*邮件
+new MailHelper()//初始化邮件助手的配置
+
+> 因此，如果需要在代码级做配置修改，比如单元测试，使用临时的配置，加载部分代码，都可以实现，比如：
+```java
+public class Test {
+	public static void main(String[] args) {
+		try {
+			ClassHelper.addAfterClassLoadedCallback(new AfterClassLoaded() {
+				@Override
+				public void doSomething(Set<Class<?>> classSet) {
+					Set<Class<?>> classesRemove = new HashSet<>();
+					for(Class<?> cls:classSet){
+						if(Listener.class.isAssignableFrom(cls)){
+							classesRemove.add(cls);//去掉Listener加载
+						}
+						if(Timer.class.isAssignableFrom(cls)){
+							classesRemove.add(cls);//去掉Timer加载
+						}
+					}
+					classSet.removeAll(classesRemove);
+				}
+			});
+			ConfigHelper.addAfterConfigLoadedCallback(new AfterConfigLoaded() {
+				@Override
+				public void doSomething(Properties config) {
+					config.setProperty(ConfigConstant.APP_BASE_PACKAGE, "com.zhicheng.admin.dao,com.zhicheng.admin.entity,com.zhicheng.sdk,com.zhicheng.weimi");
+					config.setProperty(ConfigConstant.JDBC_CONNECTION_POOL_SIZE, "2");
+				}
+			});
+			Axe.init();
+			/*AdminDao dao = BeanHelper.getBean(AdminDao.class);
+			for(int i=0;i<4;i++){
+				new Thread(){
+					public void run() {
+						int countByRole = dao.countByRole("1");
+						System.out.println(countByRole);
+					};
+				}.start();
+			}
+			
+			Thread.sleep(100000);*/
+			
+			WeimiExchangeMachineRest rest = BeanHelper.getBean(WeimiExchangeMachineRest.class);
+			List<Map<String, String>> get_records = rest.get_records("2114");
+			System.out.println(JsonUtil.toJson(get_records));
+		} catch (Exception e) {
+			LogUtil.error(e);
+		}
+		System.exit(0);
+	}
+}
+```
 
