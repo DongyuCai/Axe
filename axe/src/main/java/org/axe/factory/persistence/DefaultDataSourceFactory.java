@@ -71,10 +71,6 @@ public final class DefaultDataSourceFactory implements BaseDataSource{
         try {
             Class.forName(DRIVER);
         } catch (Exception e) {
-            LogUtil.error("jdbc driver : " + DRIVER);
-            LogUtil.error("jdbc url : " + URL);
-            LogUtil.error("jdbc username : " + USERNAME);
-            LogUtil.error("jdbc password : " + PASSWORD);
             LogUtil.error(e);
         }
         

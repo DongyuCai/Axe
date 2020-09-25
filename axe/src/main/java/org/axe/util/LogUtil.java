@@ -36,10 +36,6 @@ public final class LogUtil {
 		LOGGER.error("Axe [ERROR]"+error.getMessage(), error);
 	}
 	
-	public static void error(String error){
-		LOGGER.error("Axe [ERROR]"+error);
-	}
-	
 	public static void log(String msg){
 		LOGGER.error("Axe [MSG]"+msg);
 	}

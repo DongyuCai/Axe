@@ -56,15 +56,15 @@ public final class ClassUtil {
         try {
             cls = Class.forName(className, isInitialized, getClassLoader());
         } catch (ClassNotFoundException e) {
-        	LogUtil.error(className);
+        	LogUtil.error(new Exception("load class error:"+className));
             LogUtil.error(e);
             throw new RuntimeException(e);
         } catch (Exception e){
-        	LogUtil.error(className);
+        	LogUtil.error(new Exception("load class error:"+className));
             LogUtil.error(e);
             throw new RuntimeException(e);
         } catch (Error e){
-        	LogUtil.error(className);
+        	LogUtil.error(new Exception("load class error:"+className));
             LogUtil.error(e);
             throw new RuntimeException(e);
         }

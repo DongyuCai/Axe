@@ -82,7 +82,8 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (Exception e2) {
-				LogUtil.error("发送DELETE请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url));
+				LogUtil.error(e2);
 			}
 		}
 		return result;
@@ -142,7 +143,8 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (Exception e2) {
-				LogUtil.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url));
+				LogUtil.error(e2);
 			}
 		}
 		return result;
@@ -179,7 +181,8 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (Exception e2) {
-				LogUtil.error("发送GET请求 关闭输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url));
+				LogUtil.error(e2);
 			}
 		}
 	}
@@ -239,7 +242,8 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (IOException e2) {
-				LogUtil.error("发送POST请求 关闭输出流、输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url+" 参数xml:"+xml));
+				LogUtil.error(e2);
 			}
 		}
 		return result;
@@ -300,7 +304,8 @@ public final class HttpUtil {
 					in.close();
 				}
 			} catch (IOException e2) {
-				LogUtil.error("发送POST请求 关闭输出流、输入流出现异常！"+e2.getMessage()+"["+url+"]");
+				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url+" 参数:"+JsonUtil.toJson(param)));
+				LogUtil.error(e2);
 			}
 		}
 		return result;

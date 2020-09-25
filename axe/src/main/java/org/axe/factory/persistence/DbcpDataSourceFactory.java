@@ -74,10 +74,6 @@ public final class DbcpDataSourceFactory implements BaseDataSource{
         	DATA_SOURCE.setInitialSize(setJdbcConnectionPoolSize());
         	DATA_SOURCE.setMaxWaitMillis(500);
         } catch (Exception e) {
-            LogUtil.error("jdbc driver : " + DRIVER);
-            LogUtil.error("jdbc url : " + URL);
-            LogUtil.error("jdbc username : " + USERNAME);
-            LogUtil.error("jdbc password : " + PASSWORD);
             LogUtil.error(e);
         }
         

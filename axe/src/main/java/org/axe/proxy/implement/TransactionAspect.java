@@ -147,7 +147,7 @@ public final class TransactionAspect extends AspectProxy {
 					}
 					
     			} catch (SQLException e) {
-	                LogUtil.error("do sharding table ["+task.getTableName()+"]["+task.getShardingFlag()+"] create task failure");
+	                LogUtil.error(new Exception("do sharding table ["+task.getTableName()+"]["+task.getShardingFlag()+"] create task failure"));
 	                LogUtil.error(e);
 	                throw new RuntimeException(e);
 				}
