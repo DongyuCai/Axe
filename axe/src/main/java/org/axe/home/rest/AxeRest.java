@@ -24,6 +24,8 @@
 package org.axe.home.rest;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
@@ -501,5 +503,77 @@ public final class AxeRest {
 			}
 		}
 	}
+	
+	/**
+	 * 静态资源输出
+	 * @throws Exception
+	 */
+	public void outputFile(HttpServletResponse response, String path, List<FormParam> paramList) {
+		BufferedReader reader = null;
+		File file = new File(path);
+		if (!file.exists()) {
+			throw new RestException(RestException.SC_NOT_FOUND, "");
+		}
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 
+			ContentType contentType = ContentType.APPLICATION_JSON;
+			String pathLower = path.toLowerCase();
+			if (pathLower.endsWith(".html")) {
+				contentType = ContentType.APPLICATION_HTML;
+			} else if (pathLower.endsWith(".js")) {
+				contentType = ContentType.APPLICATION_JS;
+			} else if (pathLower.endsWith(".css")) {
+				contentType = ContentType.APPLICATION_CSS;
+			} else if (pathLower.endsWith(".jpg") || pathLower.endsWith(".jpeg")) {
+				contentType = ContentType.IMAGE_JPEG;
+			} else if (pathLower.endsWith(".png")) {
+				contentType = ContentType.IMAGE_PNG;
+			} else if (pathLower.endsWith(".gif")) {
+				contentType = ContentType.IMAGE_GIF;
+			} else if (pathLower.endsWith(".ico")) {
+				contentType = ContentType.IMAGE_ICON;
+			} else if (pathLower.endsWith(".woff2")) {
+				contentType = ContentType.FONT_WOFF2;
+			} else if (pathLower.endsWith(".woff")) {
+				contentType = ContentType.FONT_WOFF;
+			} else if (pathLower.endsWith(".ttf")) {
+				contentType = ContentType.FONT_TTF;
+			} else if (pathLower.endsWith(".svg")) {
+				contentType = ContentType.FONT_SVG;
+			} else if (pathLower.endsWith(".eot")) {
+				contentType = ContentType.FONT_EOT;
+			}
+
+			response.setContentType(contentType.CONTENT_TYPE);
+			ServletOutputStream out = response.getOutputStream();
+			String line = reader.readLine();
+			while (line != null) {
+				if (CollectionUtil.isNotEmpty(paramList)) {
+					for (FormParam param : paramList) {
+						line = line.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
+					}
+
+					// 全部参数都替换后，如果还有没被替换的，则为空串
+					if (line.contains("${") && line.contains("}")) {
+						line = line.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
+					}
+				}
+				out.write((line + System.lineSeparator()).getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING));
+				line = reader.readLine();
+			}
+			// writer.flush();
+			// writer.close();
+		} catch (Exception e) {
+			LogUtil.error(e);
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
 }
