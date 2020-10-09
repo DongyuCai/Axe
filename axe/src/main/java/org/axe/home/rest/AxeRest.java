@@ -25,7 +25,7 @@ package org.axe.home.rest;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
@@ -509,13 +509,13 @@ public final class AxeRest {
 	 * @throws Exception
 	 */
 	public void outputFile(HttpServletResponse response, String path, List<FormParam> paramList) {
-		BufferedReader reader = null;
+		InputStream reader = null;
 		File file = new File(path);
 		if (!file.exists()) {
 			throw new RestException(RestException.SC_NOT_FOUND, "");
 		}
 		try {
-			reader = new BufferedReader(new FileReader(file));
+			reader = new FileInputStream(file);
 			response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 
 			ContentType contentType = ContentType.APPLICATION_JSON;
@@ -548,23 +548,25 @@ public final class AxeRest {
 
 			response.setContentType(contentType.CONTENT_TYPE);
 			ServletOutputStream out = response.getOutputStream();
-			String line = reader.readLine();
-			while (line != null) {
+			byte[] data = new byte[1024];
+			int len = reader.read(data);
+			while (len > 0) {
 				if (CollectionUtil.isNotEmpty(paramList)) {
+					String content = new String(data,CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+					
 					for (FormParam param : paramList) {
-						line = line.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
+						content = content.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
 					}
 
 					// 全部参数都替换后，如果还有没被替换的，则为空串
-					if (line.contains("${") && line.contains("}")) {
-						line = line.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
+					if (content.contains("${") && content.contains("}")) {
+						content = content.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
 					}
+					data = content.getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 				}
-				out.write((line + System.lineSeparator()).getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING));
-				line = reader.readLine();
+				out.write(data,0,len);
+				len = reader.read(data);
 			}
-			// writer.flush();
-			// writer.close();
 		} catch (Exception e) {
 			LogUtil.error(e);
 		} finally {
