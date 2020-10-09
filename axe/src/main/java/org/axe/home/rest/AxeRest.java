@@ -528,22 +528,31 @@ public final class AxeRest {
 				contentType = ContentType.APPLICATION_CSS;
 			} else if (pathLower.endsWith(".jpg") || pathLower.endsWith(".jpeg")) {
 				contentType = ContentType.IMAGE_JPEG;
+				paramList = null;//不支持参数替换
 			} else if (pathLower.endsWith(".png")) {
 				contentType = ContentType.IMAGE_PNG;
+				paramList = null;//不支持参数替换
 			} else if (pathLower.endsWith(".gif")) {
+				paramList = null;//不支持参数替换
 				contentType = ContentType.IMAGE_GIF;
 			} else if (pathLower.endsWith(".ico")) {
+				paramList = null;//不支持参数替换
 				contentType = ContentType.IMAGE_ICON;
 			} else if (pathLower.endsWith(".woff2")) {
 				contentType = ContentType.FONT_WOFF2;
+				paramList = null;//不支持参数替换
 			} else if (pathLower.endsWith(".woff")) {
 				contentType = ContentType.FONT_WOFF;
+				paramList = null;//不支持参数替换
 			} else if (pathLower.endsWith(".ttf")) {
 				contentType = ContentType.FONT_TTF;
+				paramList = null;//不支持参数替换
 			} else if (pathLower.endsWith(".svg")) {
 				contentType = ContentType.FONT_SVG;
+				paramList = null;//不支持参数替换
 			} else if (pathLower.endsWith(".eot")) {
 				contentType = ContentType.FONT_EOT;
+				paramList = null;//不支持参数替换
 			}
 
 			response.setContentType(contentType.CONTENT_TYPE);
