@@ -41,7 +41,8 @@ public enum ContentType {
 	FONT_WOFF("font/woff"),
 	FONT_TTF("font/ttf"),
 	FONT_SVG("text/xml"),
-	FONT_EOT("font/eot");
+	FONT_EOT("font/eot"),
+	VIDEO_MPEG4("video/mpeg4");
 	
 	public String CONTENT_TYPE;
 

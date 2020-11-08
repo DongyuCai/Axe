@@ -553,6 +553,9 @@ public final class AxeRest {
 			} else if (pathLower.endsWith(".eot")) {
 				contentType = ContentType.FONT_EOT;
 				paramList = null;//不支持参数替换
+			} else if (pathLower.endsWith(".mp4")) {
+				contentType = ContentType.VIDEO_MPEG4;
+				paramList = null;//不支持参数替换
 			}
 
 			response.setContentType(contentType.CONTENT_TYPE);
