@@ -564,7 +564,8 @@ public final class AxeRest {
 			int len = reader.read(data);
 			while (len > 0) {
 				if (CollectionUtil.isNotEmpty(paramList)) {
-					String content = new String(data,CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+					//TODO 这里的参数替换会存在截断的情况，隐藏bug
+					String content = new String(data,0,len,CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 					
 					for (FormParam param : paramList) {
 						content = content.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
@@ -575,6 +576,7 @@ public final class AxeRest {
 						content = content.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
 					}
 					data = content.getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+					len = data.length;
 				}
 				out.write(data,0,len);
 				len = reader.read(data);
