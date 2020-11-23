@@ -26,7 +26,6 @@ package org.axe.util;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -46,6 +45,11 @@ public final class HttpUtil {
 		return sendDelete(url, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
 	}
 	
+	
+	public static String sendDelete(String url, String charset) throws Exception {
+		return sendDelete(url, charset, null);
+	}
+	
 	/**
 	 * 使用Delete请求
 	 * 
@@ -54,17 +58,21 @@ public final class HttpUtil {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String sendDelete(String url, String charset) throws Exception {
+	public static String sendDelete(String url, String charset,Integer timeout) throws Exception {
 		String result = "";
 		BufferedReader in = null;
+		HttpURLConnection conn = null;
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
-			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
+			conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
 			conn.setRequestProperty("connection", "close");
 			conn.setRequestMethod("DELETE");
 			// 建立实际的连接
+			if(timeout != null){
+				conn.setConnectTimeout(timeout);
+			}
 			conn.connect();
 			// 定义 BufferedReader输入流来读取URL的响应
 			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), charset));
@@ -85,22 +93,34 @@ public final class HttpUtil {
 				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url));
 				LogUtil.error(e2);
 			}
+			try {
+				if (conn != null) {
+					conn.disconnect();
+				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭连接异常！url:"+url));
+				LogUtil.error(e2);
+			}
 		}
 		return result;
 	}
 	
-	public static String sendGet(String url) throws Exception {
-		return sendGet(url, null, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-	}
-
-	public static String sendGet(String url,Map<String,String> headers) throws Exception {
-		return sendGet(url, headers, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-	}
-
-	public static String sendGet(String url,String responseCharset) throws Exception {
-		return sendGet(url, null, responseCharset);
+	public static String sendGet(String url,int timeout) throws Exception {
+		return sendGet(url, null, CharacterEncoding.UTF_8.CHARACTER_ENCODING,timeout);
 	}
 	
+	public static String sendGet(String url) throws Exception {
+		return sendGet(url, null, CharacterEncoding.UTF_8.CHARACTER_ENCODING,null);
+	}
+	
+	public static String sendGet(String url,Map<String,String> headers,int timeout) throws Exception {
+		return sendGet(url, headers, CharacterEncoding.UTF_8.CHARACTER_ENCODING,timeout);
+	}
+	
+	public static String sendGet(String url,Map<String,String> headers) throws Exception {
+		return sendGet(url, headers, CharacterEncoding.UTF_8.CHARACTER_ENCODING,null);
+	}
+
 	/**
 	 * 使用Get方式获取数据
 	 * 
@@ -109,13 +129,14 @@ public final class HttpUtil {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String sendGet(String url,Map<String,String> headers, String responseCharset) throws Exception {
+	public static String sendGet(String url,Map<String,String> headers, String responseCharset,Integer timeout) throws Exception {
 		String result = "";
 		BufferedReader in = null;
+		HttpURLConnection conn = null;
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
-			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
+			conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
 			conn.setRequestProperty("connection", "close");
 			if(headers != null){
@@ -126,6 +147,9 @@ public final class HttpUtil {
 			
 			conn.setRequestMethod("GET");
 			// 建立实际的连接
+			if(timeout != null){
+				conn.setConnectTimeout(timeout);
+			}
 			conn.connect();
 			// 定义 BufferedReader输入流来读取URL的响应
 			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), responseCharset));
@@ -146,20 +170,36 @@ public final class HttpUtil {
 				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url));
 				LogUtil.error(e2);
 			}
+			try {
+				if (conn != null) {
+					conn.disconnect();
+				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭连接异常！url:"+url));
+				LogUtil.error(e2);
+			}
 		}
 		return result;
 	}
-
+	
 	public static byte[] downloadGet(String url) throws Exception {
+		return downloadGet(url, null);
+	}
+
+	public static byte[] downloadGet(String url,Integer timeout) throws Exception {
 		InputStream in = null;
+		HttpURLConnection conn = null;
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
-			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
+			conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
 			conn.setRequestProperty("connection", "close");
 			conn.setRequestMethod("GET");
 			// 建立实际的连接
+			if(timeout != null){
+				conn.setConnectTimeout(timeout);
+			}
 			conn.connect();
 			// 读取字节
 			in = conn.getInputStream();
@@ -184,11 +224,23 @@ public final class HttpUtil {
 				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url));
 				LogUtil.error(e2);
 			}
+			try {
+				if (conn != null) {
+					conn.disconnect();
+				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭连接异常！url:"+url));
+				LogUtil.error(e2);
+			}
 		}
 	}
 	
 	public static String sendPostXml(String url, String xml) throws Exception {
-		return sendPostXml(url, xml, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+		return sendPostXml(url, xml, CharacterEncoding.UTF_8.CHARACTER_ENCODING,null);
+	}
+	
+	public static String sendPostXml(String url, String xml, String charset) throws Exception {
+		return sendPostXml(url, xml, charset, null);
 	}
 	
 	/**
@@ -202,16 +254,20 @@ public final class HttpUtil {
 	 *            编码方式
 	 * @throws Exception 
 	 */
-	public static String sendPostXml(String url, String xml, String charset) throws Exception {
+	public static String sendPostXml(String url, String xml, String charset,Integer timeout) throws Exception {
 
 		PrintWriter out = null;
 		BufferedReader in = null;
+		HttpURLConnection conn = null;
 		String result = "";
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
-			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
+			conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
+			if(timeout != null){
+				conn.setConnectTimeout(timeout);
+			}
 			conn.setRequestProperty("connection", "Keep-Alive");
 			conn.setRequestMethod("POST");
 			// 发送POST请求必须设置如下两行
@@ -238,21 +294,38 @@ public final class HttpUtil {
 				if (out != null) {
 					out.close();
 				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭输出流出现异常！url:"+url+" 参数:"+xml));
+				LogUtil.error(e2);
+			}
+			try {
 				if (in != null) {
 					in.close();
 				}
-			} catch (IOException e2) {
-				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url+" 参数xml:"+xml));
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url+" 参数:"+xml));
+				LogUtil.error(e2);
+			}
+			try {
+				if (conn != null) {
+					conn.disconnect();
+				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭连接异常！url:"+url+" 参数:"+xml));
 				LogUtil.error(e2);
 			}
 		}
 		return result;
 	}
 
+	public static String sendPost(String url, Map<String, String> param,int timeout) throws Exception {
+		return sendPost(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING,timeout);
+	}
 	
 	public static String sendPost(String url, Map<String, String> param) throws Exception {
-		return sendPost(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+		return sendPost(url, param, CharacterEncoding.UTF_8.CHARACTER_ENCODING,null);
 	}
+	
 	/**
 	 * POST请求，Map形式数据
 	 * 
@@ -264,15 +337,19 @@ public final class HttpUtil {
 	 *            编码方式
 	 * @throws Exception 
 	 */
-	public static String sendPost(String url, Map<String, String> param, String charset) throws Exception {
+	public static String sendPost(String url, Map<String, String> param, String charset,Integer timeout) throws Exception {
 		DataOutputStream out = null;
 		BufferedReader in = null;
 		String result = "";
+		HttpURLConnection conn = null;
 		try {
 			URL realUrl = new URL(url);
 			// 打开和URL之间的连接
-			HttpURLConnection conn = (HttpURLConnection)(realUrl.openConnection());
+			conn = (HttpURLConnection)(realUrl.openConnection());
 			// 设置通用的请求属性
+			if(timeout != null){
+				conn.setConnectTimeout(timeout);
+			}
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestProperty("Connection", "Keep-Alive");
 			conn.setRequestMethod("POST");
@@ -300,11 +377,24 @@ public final class HttpUtil {
 				if (out != null) {
 					out.close();
 				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭输出流出现异常！url:"+url+" 参数:"+JsonUtil.toJson(param)));
+				LogUtil.error(e2);
+			}
+			try {
 				if (in != null) {
 					in.close();
 				}
-			} catch (IOException e2) {
+			} catch (Exception e2) {
 				LogUtil.error(new Exception("关闭输入流出现异常！url:"+url+" 参数:"+JsonUtil.toJson(param)));
+				LogUtil.error(e2);
+			}
+			try {
+				if (conn != null) {
+					conn.disconnect();
+				}
+			} catch (Exception e2) {
+				LogUtil.error(new Exception("关闭连接异常！url:"+url+" 参数:"+JsonUtil.toJson(param)));
 				LogUtil.error(e2);
 			}
 		}
