@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,6 +37,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class StringUtil {
 	private StringUtil() {
+	}
+	
+	public static boolean checkStr(String str,String reg){
+		Pattern pattern = Pattern.compile(reg);
+		Matcher matcher = pattern.matcher(str);
+		return matcher.find();
 	}
 	
 	public static String appendZero(String base,int returnLength){

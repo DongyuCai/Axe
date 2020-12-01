@@ -119,7 +119,7 @@ SOFTWARE.
 				</div>
 
 				<!--Reuest Param -->
-				<div class="col-md-12"
+				<div nc-if="action.requestParamBodyFormat_str != '{}'" class="col-md-12"
 					style="padding-left: 0px; padding-right: 0px;">
 					<hr style="margin-top: 0px;"></hr>
 					<div class="panel panel-default">
@@ -225,7 +225,9 @@ SOFTWARE.
 		function sendAjaxRequest(repeatNum){
 	        $scope.action['response'] = '';
 		
-	        $scope.action.requestParamBody_str = $("#request_requestParamBody_str").val();
+	        if($("#request_requestParamBody_str").length>0){
+	        	$scope.action.requestParamBody_str = $("#request_requestParamBody_str").val();
+	        }
 	        var data = JSON.parse($scope.action.requestParamBody_str);
 	        var url = $scope.action['sendUrl'];
 	        
