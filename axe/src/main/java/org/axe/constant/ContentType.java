@@ -42,7 +42,8 @@ public enum ContentType {
 	FONT_TTF("font/ttf"),
 	FONT_SVG("text/xml"),
 	FONT_EOT("font/eot"),
-	VIDEO_MPEG4("video/mpeg4");
+	VIDEO_MPEG4("video/mpeg4"),
+	ZIP_FILE("application/zip");
 	
 	public String CONTENT_TYPE;
 

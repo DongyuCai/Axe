@@ -436,65 +436,68 @@ public final class AxeRest {
 	 * @throws Exception
 	 */
 	public void outputResource(HttpServletResponse response, String path, List<FormParam> paramList) {
+		ContentType contentType = ContentType.APPLICATION_JSON;
+		String pathLower = path.toLowerCase();
+		if (pathLower.endsWith(".html")) {
+			contentType = ContentType.APPLICATION_HTML;
+		} else if (pathLower.endsWith(".js")) {
+			contentType = ContentType.APPLICATION_JS;
+		} else if (pathLower.endsWith(".css")) {
+			contentType = ContentType.APPLICATION_CSS;
+		}else{
+			//其他格式作为文件输出
+			outputFile(response, path, paramList);
+			return;
+		}
+		
 		BufferedReader reader = null;
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(path);
+		InputStream in = null;
+		try {
+			File file = new File(path);
+			if(file.exists()){
+				in = new FileInputStream(file);
+			}else{
+				in = this.getClass().getClassLoader().getResourceAsStream(path);
+			}
+		} catch (Exception e) {
+			try {
+				if(in != null){
+					in.close();
+					in = null;
+				}
+			} catch (Exception e2) {}
+		}
 		if (in == null) {
 			throw new RestException(RestException.SC_NOT_FOUND, "");
 		}
+		
 		try {
 			reader = new BufferedReader(new InputStreamReader(in));
 			response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-
-			ContentType contentType = ContentType.APPLICATION_JSON;
-			String pathLower = path.toLowerCase();
-			if (pathLower.endsWith(".html")) {
-				contentType = ContentType.APPLICATION_HTML;
-			} else if (pathLower.endsWith(".js")) {
-				contentType = ContentType.APPLICATION_JS;
-			} else if (pathLower.endsWith(".css")) {
-				contentType = ContentType.APPLICATION_CSS;
-			} else if (pathLower.endsWith(".jpg") || pathLower.endsWith(".jpeg")) {
-				contentType = ContentType.IMAGE_JPEG;
-			} else if (pathLower.endsWith(".png")) {
-				contentType = ContentType.IMAGE_PNG;
-			} else if (pathLower.endsWith(".gif")) {
-				contentType = ContentType.IMAGE_GIF;
-			} else if (pathLower.endsWith(".ico")) {
-				contentType = ContentType.IMAGE_ICON;
-			} else if (pathLower.endsWith(".woff2")) {
-				contentType = ContentType.FONT_WOFF2;
-			} else if (pathLower.endsWith(".woff")) {
-				contentType = ContentType.FONT_WOFF;
-			} else if (pathLower.endsWith(".ttf")) {
-				contentType = ContentType.FONT_TTF;
-			} else if (pathLower.endsWith(".svg")) {
-				contentType = ContentType.FONT_SVG;
-			} else if (pathLower.endsWith(".eot")) {
-				contentType = ContentType.FONT_EOT;
-			}
-
 			response.setContentType(contentType.CONTENT_TYPE);
 			ServletOutputStream out = response.getOutputStream();
 			String line = reader.readLine();
 			while (line != null) {
-				if (CollectionUtil.isNotEmpty(paramList)) {
-					for (FormParam param : paramList) {
-						line = line.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
-					}
+				try {
+					if (CollectionUtil.isNotEmpty(paramList)) {
+						for (FormParam param : paramList) {
+							line = line.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
+						}
 
-					// 全部参数都替换后，如果还有没被替换的，则为空串
-					if (line.contains("${") && line.contains("}")) {
-						line = line.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
+						// 全部参数都替换后，如果还有没被替换的，则为空串
+						if (line.contains("${") && line.contains("}")) {
+							line = line.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
+						}
 					}
+				} catch (Exception e) {
+					LogUtil.error(e);
 				}
 				out.write((line + System.lineSeparator()).getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING));
 				line = reader.readLine();
 			}
 			// writer.flush();
 			// writer.close();
-		} catch (Exception e) {
-			LogUtil.error(e);
-		} finally {
+		} catch (Exception e) {} finally {
 			try {
 				if (reader != null) {
 					reader.close();
@@ -508,82 +511,96 @@ public final class AxeRest {
 	 * 静态资源输出
 	 * @throws Exception
 	 */
-	public void outputFile(HttpServletResponse response, String path, List<FormParam> paramList) {
+	private void outputFile(HttpServletResponse response, String path, List<FormParam> paramList) {
+		ContentType contentType = ContentType.APPLICATION_JSON;
+		String pathLower = path.toLowerCase();
+		if (pathLower.endsWith(".jpg") || pathLower.endsWith(".jpeg")) {
+			contentType = ContentType.IMAGE_JPEG;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".png")) {
+			contentType = ContentType.IMAGE_PNG;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".gif")) {
+			paramList = null;//不支持参数替换
+			contentType = ContentType.IMAGE_GIF;
+		} else if (pathLower.endsWith(".ico")) {
+			paramList = null;//不支持参数替换
+			contentType = ContentType.IMAGE_ICON;
+		} else if (pathLower.endsWith(".woff2")) {
+			contentType = ContentType.FONT_WOFF2;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".woff")) {
+			contentType = ContentType.FONT_WOFF;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".ttf")) {
+			contentType = ContentType.FONT_TTF;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".svg")) {
+			contentType = ContentType.FONT_SVG;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".eot")) {
+			contentType = ContentType.FONT_EOT;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".mp4")) {
+			contentType = ContentType.VIDEO_MPEG4;
+			paramList = null;//不支持参数替换
+		} else if (pathLower.endsWith(".zip")){
+			contentType = ContentType.ZIP_FILE;
+			paramList = null;//不支持参数替换
+		} else{
+			throw new RestException("不支持的资源类型，无对应的contentType");
+		}
+		
+		
 		InputStream reader = null;
-		File file = new File(path);
-		if (!file.exists()) {
+		try {
+			File file = new File(path);
+			if(file.exists()){
+				reader = new FileInputStream(file);
+			}else{
+				reader = this.getClass().getClassLoader().getResourceAsStream(path);
+			}
+		} catch (Exception e) {
+			try {
+				if(reader != null){
+					reader.close();
+					reader = null;
+				}
+			} catch (Exception e2) {}
+		}
+		if (reader == null) {
 			throw new RestException(RestException.SC_NOT_FOUND, "");
 		}
 		try {
-			reader = new FileInputStream(file);
 			response.setCharacterEncoding(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-
-			ContentType contentType = ContentType.APPLICATION_JSON;
-			String pathLower = path.toLowerCase();
-			if (pathLower.endsWith(".html")) {
-				contentType = ContentType.APPLICATION_HTML;
-			} else if (pathLower.endsWith(".js")) {
-				contentType = ContentType.APPLICATION_JS;
-			} else if (pathLower.endsWith(".css")) {
-				contentType = ContentType.APPLICATION_CSS;
-			} else if (pathLower.endsWith(".jpg") || pathLower.endsWith(".jpeg")) {
-				contentType = ContentType.IMAGE_JPEG;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".png")) {
-				contentType = ContentType.IMAGE_PNG;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".gif")) {
-				paramList = null;//不支持参数替换
-				contentType = ContentType.IMAGE_GIF;
-			} else if (pathLower.endsWith(".ico")) {
-				paramList = null;//不支持参数替换
-				contentType = ContentType.IMAGE_ICON;
-			} else if (pathLower.endsWith(".woff2")) {
-				contentType = ContentType.FONT_WOFF2;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".woff")) {
-				contentType = ContentType.FONT_WOFF;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".ttf")) {
-				contentType = ContentType.FONT_TTF;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".svg")) {
-				contentType = ContentType.FONT_SVG;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".eot")) {
-				contentType = ContentType.FONT_EOT;
-				paramList = null;//不支持参数替换
-			} else if (pathLower.endsWith(".mp4")) {
-				contentType = ContentType.VIDEO_MPEG4;
-				paramList = null;//不支持参数替换
-			}
-
 			response.setContentType(contentType.CONTENT_TYPE);
 			ServletOutputStream out = response.getOutputStream();
 			byte[] data = new byte[1024];
 			int len = reader.read(data);
 			while (len > 0) {
-				if (CollectionUtil.isNotEmpty(paramList)) {
-					//TODO 这里的参数替换会存在截断的情况，隐藏bug
-					String content = new String(data,0,len,CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-					
-					for (FormParam param : paramList) {
-						content = content.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
-					}
+				try {
+					if (CollectionUtil.isNotEmpty(paramList)) {
+						//TODO 这里的参数替换会存在截断的情况，隐藏bug
+						String content = new String(data,0,len,CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+						
+						for (FormParam param : paramList) {
+							content = content.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
+						}
 
-					// 全部参数都替换后，如果还有没被替换的，则为空串
-					if (content.contains("${") && content.contains("}")) {
-						content = content.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
+						// 全部参数都替换后，如果还有没被替换的，则为空串
+						if (content.contains("${") && content.contains("}")) {
+							content = content.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
+						}
+						data = content.getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
+						len = data.length;
 					}
-					data = content.getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-					len = data.length;
+				} catch (Exception e) {
+					LogUtil.error(e);
 				}
 				out.write(data,0,len);
 				len = reader.read(data);
 			}
-		} catch (Exception e) {
-			LogUtil.error(e);
-		} finally {
+		} catch (Exception e) {} finally {
 			try {
 				if (reader != null) {
 					reader.close();

@@ -20,108 +20,65 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *//*
-package org.axe.helper.mvc;
+ */
+package org.axe.extra.timer;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.axe.extra.abc_thread.SerialExecutor;
-import org.axe.extra.abc_thread.TaskPack;
 import org.axe.extra.abc_thread.TaskPackBusController;
 import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
-import org.axe.interface_.mvc.Timer;
 import org.axe.util.CollectionUtil;
-import org.axe.util.LogUtil;
 import org.axe.util.ReflectionUtil;
 
-*//**
+/**
  * Timer 助手 ，类似BeanHelper管理加载所有bean一样，这里是托管Timer
  * 之所以和BeanHelper分开，因为BeanHelper托管了Controller和Service Timer不应该放一起 Created by
  * CaiDongYu on 2020/4/7.
- *//*
-public final class TimerHelper implements Helper {
-	private static final Map<String,Timer> TIMER_MAP = new HashMap<>();
+ */
+public final class TimerTaskHelper implements Helper {
+	private static final Map<String,TimerTask> TIMER_TASK_MAP = new HashMap<>();
 	
 	@Override
 	public void init() throws Exception{
 		synchronized (this) {
-			Set<Class<?>> timerClassSet = ClassHelper.getClassSetBySuper(Timer.class);
+			Set<Class<?>> timerClassSet = ClassHelper.getClassSetBySuper(TimerTask.class);
 				if (CollectionUtil.isNotEmpty(timerClassSet)) {
 				for (Class<?> timerClass : timerClassSet) {
 					boolean isAbstract = Modifier.isAbstract(timerClass.getModifiers());
 					if(isAbstract) continue;
 					
-					Timer timer = ReflectionUtil.newInstance(timerClass);
+					TimerTask timer = ReflectionUtil.newInstance(timerClass);
 					
-					if(TIMER_MAP.containsKey(timer.name())){
-						throw new Exception("find the same timer name:"+timer.name()+" class:"+timer.getClass()+" === "+TIMER_MAP.get(timer.name()).getClass());
+					if(TIMER_TASK_MAP.containsKey(timer.name())){
+						throw new Exception("find the same timer name:"+timer.name()+" class:"+timer.getClass()+" === "+TIMER_TASK_MAP.get(timer.name()).getClass());
 					}
-					TIMER_MAP.put(timer.name(), timer);
+					TIMER_TASK_MAP.put(timer.name(), timer);
 					BeanHelper.setBean(timerClass, timer);
 				}
 			}
 		}
 	}
 
-	public static Map<String,Timer> getTimers() {
-		return TIMER_MAP;
+	public static Map<String,TimerTask> getTimerTaskMap() {
+		return TIMER_TASK_MAP;
 	}
 
 	@Override
 	public void onStartUp() throws Exception {
-		if(CollectionUtil.isNotEmpty(TIMER_MAP)){
-			//Timer的启动
-			new Thread("Timer-Watcher-Thread"){
-				private final Set<String> TIMER_IS_RUNNING = new HashSet<>();
-				
-				public void run() {
-					TaskPackBusController tpBusController = BeanHelper.getBean(TaskPackBusController.class);
-					tpBusController.start();
-					while(true){
-						for(final Timer timer:TIMER_MAP.values()){
-							try {
-								if(!timer.canExecuteNow()){
-									continue;
-								}else{
-									if(TIMER_IS_RUNNING.contains(timer.name())){
-										continue;
-									}
-								}
-								
-								TIMER_IS_RUNNING.add(timer.name());
-								TaskPack tp = new TaskPack(timer.name()) {
-									@Override
-									public boolean task(SerialExecutor executor) {
-										try {
-											timer.doSomething();
-											return false;
-										} catch (Exception e) {
-											LogUtil.error(e);
-											return false;
-										}finally{
-											TIMER_IS_RUNNING.remove(timer.name());
-										}
-									}
-								};
-								tpBusController.addTaskPack(tp);
-							} catch (Exception e) {
-								LogUtil.error(e);
-							}
-						}
-						try {
-							Thread.sleep(100);//100毫秒钟是定时器的最小周期
-						} catch (InterruptedException e) {}
-					}
-				};
-			}.start();
+		//系统启动完成后，开始定时任务
+		if(CollectionUtil.isNotEmpty(TIMER_TASK_MAP)){
+			TaskPackBusController tpBusController = BeanHelper.getBean(TaskPackBusController.class);
+			tpBusController.start();
+			
+			for(TimerTask tt:TIMER_TASK_MAP.values()){
+				tpBusController.addTaskPack(tt);
+			}
 		}
 	}
 
 }
-*/

@@ -21,6 +21,6 @@ public abstract class TaskPack {
 		this.name = name;
 	}
 
-	public abstract void task(SerialExecutor executor);
+	public abstract boolean task(SerialExecutor executor);
 	
 }

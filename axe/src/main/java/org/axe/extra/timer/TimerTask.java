@@ -20,31 +20,55 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *//*
-package org.axe.interface_.mvc;
+ */
+package org.axe.extra.timer;
 
-*//**
+import org.axe.extra.abc_thread.SerialExecutor;
+import org.axe.extra.abc_thread.TaskPack;
+
+/**
  * 定时器接口
- * @author CaiDongYu on 2020/4/7.
- *//*
-public interface Timer {
+ * @author CaiDongYu on 2020/12/7.
+ */
+public abstract class TimerTask extends TaskPack{
+	//最后一次执行时间
+	private long lastExecuteTime;
 	
-	*//**
+	public TimerTask() {
+		super(null);
+		setName(name());
+	}
+
+	private TimerTask(String name) {
+		super(name);
+	}
+	
+	@Override
+	public boolean task(SerialExecutor executor) {
+		long currentTime = System.currentTimeMillis();
+		if(currentTime-lastExecuteTime>timeSec()*1000){
+			lastExecuteTime = currentTime;
+			try {
+				doSomething();
+			} catch (Exception e) {}
+		}
+		return true;//因为是定时任务，所以会循环执行
+	}
+	
+	/**
 	 * 定时器名称
 	 * @return
-	 *//*
-	public String name();
+	 */
+	public abstract String name();
 
-	*//**
-	 * 现在是否可以执行了
-	 * @return
-	 *//*
-	public boolean canExecuteNow();
+	/**
+	 * @定时秒数
+	 */
+	public abstract int timeSec();
 	
-	*//**
+	/**
 	 * 如果可以执行，那就做点什么
-	 *//*
-	public void doSomething();
+	 */
+	public abstract void doSomething();
 	
 }
-*/

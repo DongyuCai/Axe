@@ -34,11 +34,19 @@ public final class SerialExecutor extends Thread{
 		//执行器核心
 		//从队列获取并执行任务包
 		while(true){
-			TaskPack taskPack = taskPackQueue.poll();
+			TaskPack taskPack = null;
+			synchronized (taskPackQueue) {
+				taskPack = taskPackQueue.poll();
+			}
 			if(taskPack != null){
 				try {
-					taskPack.task(this);
-				} catch (Exception e) {}
+					boolean needAgain = taskPack.task(this);
+					if(needAgain){
+						addTaskPack(taskPack);
+					}
+				} catch (Throwable e) {
+					//任何运行时错误都吃掉
+				}
 			}
 			try {
 				Thread.sleep(10);//TODO 这个休眠可以去掉

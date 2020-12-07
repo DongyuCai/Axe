@@ -64,18 +64,41 @@ public final class MailHelper implements Helper{
 	
 	public static void errorMail(Exception e){
 		if(MAILINFO != null){
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-			e.printStackTrace(new PrintStream(baos));  
-			String exception = baos.toString();
-			MAILINFO.setSubject(ConfigHelper.getAxeEmailTitle()+"系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
-			MAILINFO.setContent(exception);
+			ByteArrayOutputStream baos = null;
 			try {
-				String[] toAddress = ConfigHelper.getAxeEmailErrorAddressee().split(",");
-				SimpleMailSender.sendHtmlMail(MAILINFO,toAddress);
+				baos = new ByteArrayOutputStream();
+				e.printStackTrace(new PrintStream(baos));  
+				String exception = baos.toString();
+				MAILINFO.setSubject(ConfigHelper.getAxeEmailTitle()+"系统异常提醒，IP："+IpUtil.getLocalHostIpAddress());
+				MAILINFO.setContent(exception);
+				try {
+					String[] toAddress = ConfigHelper.getAxeEmailErrorAddressee().split(",");
+					SimpleMailSender.sendHtmlMail(MAILINFO,toAddress);
+				} catch (Exception e1) {
+					LogUtil.error(e1);
+				}
+			} catch (Exception e2) {} finally {
+				try {
+					if(baos != null){
+						baos.close();
+					}
+				} catch (Exception e3) {}
+			}
+		}
+	}
+	
+	public static boolean sendMail(String email,String title,String content){
+		if(MAILINFO != null){
+			MAILINFO.setSubject(title);
+			MAILINFO.setContent(content);
+			try {
+				SimpleMailSender.sendHtmlMail(MAILINFO,email);
+				return true;
 			} catch (Exception e1) {
 				LogUtil.error(e1);
 			}
 		}
+		return false;
 	}
 
 	@Override
