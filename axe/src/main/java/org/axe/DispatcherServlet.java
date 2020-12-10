@@ -135,9 +135,9 @@ public class DispatcherServlet extends HttpServlet{
             String requestMethod = RequestUtil.getRequestMethod(request);
             String requestPath = RequestUtil.getRequestPath(request);
 
-            if(requestPath != null && requestPath.equals("/favicon.ico")){
+            /*if(requestPath != null && requestPath.equals("/favicon.ico")){
                 return;
-            }
+            }*/
             //获取 Action 处理器
             handler = ControllerHelper.getHandler(requestMethod,requestPath);
             if(handler != null){
