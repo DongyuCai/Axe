@@ -92,4 +92,12 @@ public final class CollectionUtil {
 		list.removeAll(ls2);
 		return list;
 	}
+	
+	public static <T> List<T> convertList(@SuppressWarnings("unchecked") T... ary){
+		List<T> list = new ArrayList<>();
+		for(T t:ary){
+			list.add(t);
+		}
+		return list;
+	}
 }
