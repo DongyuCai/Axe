@@ -440,13 +440,15 @@ public final class AxeRest {
 		String pathLower = path.toLowerCase();
 		if (pathLower.endsWith(".html")) {
 			contentType = ContentType.APPLICATION_HTML;
+		} else if (pathLower.endsWith(".txt")) {
+			contentType = ContentType.APPLICATION_TXT;
 		} else if (pathLower.endsWith(".js")) {
 			contentType = ContentType.APPLICATION_JS;
 		} else if (pathLower.endsWith(".css")) {
 			contentType = ContentType.APPLICATION_CSS;
 		}else{
 			//其他格式作为文件输出
-			outputFile(response, path, paramList);
+			outputFile(response, path);
 			return;
 		}
 		
@@ -511,42 +513,31 @@ public final class AxeRest {
 	 * 静态资源输出
 	 * @throws Exception
 	 */
-	private void outputFile(HttpServletResponse response, String path, List<FormParam> paramList) {
+	private void outputFile(HttpServletResponse response, String path) {
 		ContentType contentType = ContentType.APPLICATION_JSON;
 		String pathLower = path.toLowerCase();
 		if (pathLower.endsWith(".jpg") || pathLower.endsWith(".jpeg")) {
 			contentType = ContentType.IMAGE_JPEG;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".png")) {
 			contentType = ContentType.IMAGE_PNG;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".gif")) {
-			paramList = null;//不支持参数替换
 			contentType = ContentType.IMAGE_GIF;
 		} else if (pathLower.endsWith(".ico")) {
-			paramList = null;//不支持参数替换
 			contentType = ContentType.IMAGE_ICON;
 		} else if (pathLower.endsWith(".woff2")) {
 			contentType = ContentType.FONT_WOFF2;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".woff")) {
 			contentType = ContentType.FONT_WOFF;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".ttf")) {
 			contentType = ContentType.FONT_TTF;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".svg")) {
 			contentType = ContentType.FONT_SVG;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".eot")) {
 			contentType = ContentType.FONT_EOT;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".mp4")) {
 			contentType = ContentType.VIDEO_MPEG4;
-			paramList = null;//不支持参数替换
 		} else if (pathLower.endsWith(".zip")){
 			contentType = ContentType.ZIP_FILE;
-			paramList = null;//不支持参数替换
 		} else{
 			throw new RestException("不支持的资源类型，无对应的contentType");
 		}
@@ -578,25 +569,6 @@ public final class AxeRest {
 			byte[] data = new byte[1024];
 			int len = reader.read(data);
 			while (len > 0) {
-				try {
-					if (CollectionUtil.isNotEmpty(paramList)) {
-						//TODO 这里的参数替换会存在截断的情况，隐藏bug
-						String content = new String(data,0,len,CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-						
-						for (FormParam param : paramList) {
-							content = content.replaceAll("\\$\\{ *" + param.getFieldName() + " *\\}", param.getFieldValue());
-						}
-
-						// 全部参数都替换后，如果还有没被替换的，则为空串
-						if (content.contains("${") && content.contains("}")) {
-							content = content.replaceAll("\\$\\{ *[a-zA-Z0-9_]+ *\\}", "");
-						}
-						data = content.getBytes(CharacterEncoding.UTF_8.CHARACTER_ENCODING);
-						len = data.length;
-					}
-				} catch (Exception e) {
-					LogUtil.error(e);
-				}
 				out.write(data,0,len);
 				len = reader.read(data);
 			}
