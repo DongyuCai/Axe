@@ -442,6 +442,8 @@ public final class AxeRest {
 			contentType = ContentType.APPLICATION_HTML;
 		} else if (pathLower.endsWith(".txt")) {
 			contentType = ContentType.APPLICATION_TXT;
+		} else if (pathLower.endsWith(".xml")) {
+			contentType = ContentType.APPLICATION_XML;
 		} else if (pathLower.endsWith(".js")) {
 			contentType = ContentType.APPLICATION_JS;
 		} else if (pathLower.endsWith(".css")) {

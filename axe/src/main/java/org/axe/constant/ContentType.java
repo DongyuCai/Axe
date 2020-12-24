@@ -32,6 +32,7 @@ public enum ContentType {
 	APPLICATION_JSON("application/json"),
 	APPLICATION_HTML("text/html; charset=utf-8"),
 	APPLICATION_TXT("text/plain; charset=utf-8"),
+	APPLICATION_XML("text/xml; charset=utf-8"),
 	APPLICATION_CSS("text/css"),
 	APPLICATION_JS("application/x-javascript"),
 	IMAGE_ICON("image/x-icon"),
