@@ -32,7 +32,7 @@ import org.axe.extra.abc_thread.TaskPack;
  */
 public abstract class TimerTask extends TaskPack{
 	//最后一次执行时间
-	private long lastExecuteTime;
+	private long lastExecuteTime = 0;
 	
 	public TimerTask() {
 		super(null);
@@ -45,6 +45,9 @@ public abstract class TimerTask extends TaskPack{
 	
 	@Override
 	public boolean task(SerialExecutor executor) {
+		if(!doOnceAfterStartup() && lastExecuteTime == 0){
+			lastExecuteTime = System.currentTimeMillis();
+		}
 		long currentTime = System.currentTimeMillis();
 		if(currentTime-lastExecuteTime>timeSec()*1000){
 			lastExecuteTime = currentTime;
@@ -57,12 +60,11 @@ public abstract class TimerTask extends TaskPack{
 	
 	/**
 	 * 定时器名称
-	 * @return
 	 */
 	public abstract String name();
 
 	/**
-	 * @定时秒数
+	 * 定时秒数
 	 */
 	public abstract int timeSec();
 	
@@ -71,4 +73,10 @@ public abstract class TimerTask extends TaskPack{
 	 */
 	public abstract void doSomething();
 	
+	/**
+	 * 是否需要启动后立即执行1次
+	 */
+	public boolean doOnceAfterStartup(){
+		return false;
+	}
 }
