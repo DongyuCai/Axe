@@ -28,12 +28,13 @@ import org.axe.extra.abc_thread.TaskPack;
 
 /**
  * 定时器接口
+ * 
  * @author CaiDongYu on 2020/12/7.
  */
-public abstract class TimerTask extends TaskPack{
-	//最后一次执行时间
+public abstract class TimerTask extends TaskPack {
+	// 最后一次执行时间
 	private long lastExecuteTime = 0;
-	
+
 	public TimerTask() {
 		super(null);
 		setName(name());
@@ -42,22 +43,23 @@ public abstract class TimerTask extends TaskPack{
 	private TimerTask(String name) {
 		super(name);
 	}
-	
+
 	@Override
 	public boolean task(SerialExecutor executor) {
-		if(!doOnceAfterStartup() && lastExecuteTime == 0){
+		if (!doOnceAfterStartup() && lastExecuteTime == 0) {
 			lastExecuteTime = System.currentTimeMillis();
 		}
 		long currentTime = System.currentTimeMillis();
-		if(currentTime-lastExecuteTime>timeSec()*1000){
+		if (currentTime - lastExecuteTime > timeSec() * 1000) {
 			lastExecuteTime = currentTime;
 			try {
 				doSomething();
-			} catch (Exception e) {}
+			} catch (Exception e) {
+			}
 		}
-		return true;//因为是定时任务，所以会循环执行
+		return true;// 因为是定时任务，所以会循环执行
 	}
-	
+
 	/**
 	 * 定时器名称
 	 */
@@ -67,16 +69,17 @@ public abstract class TimerTask extends TaskPack{
 	 * 定时秒数
 	 */
 	public abstract int timeSec();
-	
+
 	/**
 	 * 如果可以执行，那就做点什么
 	 */
 	public abstract void doSomething();
-	
+
 	/**
 	 * 是否需要启动后立即执行1次
 	 */
-	public boolean doOnceAfterStartup(){
+	public boolean doOnceAfterStartup() {
 		return false;
 	}
+
 }
