@@ -50,8 +50,6 @@ import org.axe.annotation.mvc.FilterFuckOff;
 import org.axe.annotation.mvc.Interceptor;
 import org.axe.annotation.mvc.Request;
 import org.axe.annotation.mvc.RequestParam;
-import org.axe.annotation.persistence.Dao;
-import org.axe.annotation.persistence.Tns;
 import org.axe.bean.mvc.FormParam;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Param;
@@ -65,19 +63,14 @@ import org.axe.helper.ioc.ClassHelper;
 import org.axe.helper.mvc.ControllerHelper;
 import org.axe.helper.mvc.FilterHelper;
 import org.axe.helper.mvc.InterceptorHelper;
-import org.axe.helper.persistence.DataSourceHelper;
-import org.axe.helper.persistence.TableHelper;
 import org.axe.home.interceptor.HomeInterceptor;
 import org.axe.interface_.mvc.Filter;
 import org.axe.util.ApiExportUtil;
 import org.axe.util.ApiExportUtil.Action;
 import org.axe.util.CollectionUtil;
 import org.axe.util.LogUtil;
-import org.axe.util.ReflectionUtil;
 import org.axe.util.RequestUtil;
 import org.axe.util.StringUtil;
-import org.axe.util.TableExportUtil;
-import org.axe.util.TableExportUtil.Table;
 
 @FilterFuckOff
 @Interceptor({ HomeInterceptor.class })
@@ -87,17 +80,6 @@ public final class AxeRest {
 	@Request(path = "", method = RequestMethod.GET, desc = "首页跳转")
 	public View index() {
 		return new View("/axe/index.html");
-	}
-
-	@Request(path = "/table_list", method = RequestMethod.GET, desc = "获取所有ORM实体")
-	public List<Table> table_table_list(@RequestParam(name="token") String token, HttpServletRequest request,
-			HttpServletResponse response) {
-		try {
-			return TableExportUtil.exportTableList();
-		} catch (Exception e) {
-			LogUtil.error(e);
-			throw new RestException(e.getMessage());
-		}
 	}
 
 	@Request(path = "/controller_list", method = RequestMethod.GET, desc = "获取Controller列表")
@@ -389,28 +371,8 @@ public final class AxeRest {
 		int componentSize = ClassHelper.getComponentClassSet().size();
 		result.put("componentSize", componentSize);
 
-		// Tns数量
-		int tnsSize = 0;
-		for (Class<?> serviceClass : serviceClassSet) {
-			List<Method> methods = ReflectionUtil.getMethodByAnnotation(serviceClass, Tns.class);
-			if (CollectionUtil.isNotEmpty(methods)) {
-				tnsSize = tnsSize + methods.size();
-			}
-		}
-		result.put("tnsSize", tnsSize);
-
-		// Dao数量
-		int daoSize = ClassHelper.getClassSetByAnnotation(Dao.class).size();
-		result.put("daoSize", daoSize);
-
 		// Action数量
 		result.put("actionSize", ControllerHelper.getActionList().size());
-
-		// Table数量
-		result.put("tableSize", TableHelper.getEntityTableSchemaCachedMap().size());
-
-		// DataSource数量
-		result.put("dataSourceSize", DataSourceHelper.getDataSourceAll().size());
 
 		return result;
 	}

@@ -41,6 +41,7 @@ import org.axe.interface_implement.type_convert.SqlDate2DateConvert;
 import org.axe.interface_implement.type_convert.String2BigDecimalConvert;
 import org.axe.interface_implement.type_convert.String2DateConvert;
 import org.axe.interface_implement.type_convert.String2DoubleConvert;
+import org.axe.interface_implement.type_convert.String2FloatConvert;
 import org.axe.interface_implement.type_convert.String2IntegerConvert;
 import org.axe.interface_implement.type_convert.String2LongConvert;
 import org.axe.interface_implement.type_convert.String2SqlDateConvert;
@@ -70,6 +71,8 @@ public final class  CastUtil {
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.sql.Timestamp", new String2SqlTimestampConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Double", new String2DoubleConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>double", new String2DoubleConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Float", new String2FloatConvert());
+		TYPE_2_TYPE_MAP.put("java.lang.String=>float", new String2FloatConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Long", new String2LongConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>long", new String2LongConvert());
 		TYPE_2_TYPE_MAP.put("java.lang.String=>java.lang.Integer", new String2IntegerConvert());

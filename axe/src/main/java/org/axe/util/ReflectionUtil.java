@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.axe.bean.persistence.EntityFieldMethod;
+import org.axe.bean.pojo.EntityFieldMethod;
 import org.axe.exception.RedirectorInterrupt;
 import org.axe.exception.RestException;
 
@@ -47,7 +47,6 @@ import org.axe.exception.RestException;
 public final class ReflectionUtil {
 
 //    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtil.class);
-
     
     public static List<Method> getMethodByAnnotation(Class<?> cls,Class<? extends Annotation> annotationClass){
     	List<Method> result = new ArrayList<Method>();

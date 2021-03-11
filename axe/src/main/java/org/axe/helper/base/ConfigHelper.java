@@ -40,7 +40,7 @@ import org.axe.util.PropsUtil;
 public final class ConfigHelper implements Helper{
 
     private static Properties CONFIG_PROPS;
-    private static List<AfterConfigLoaded> AFTER_CONFIG_LOADED_LIST = new ArrayList<>();
+    private static final List<AfterConfigLoaded> AFTER_CONFIG_LOADED_LIST = new ArrayList<>();
     
     public static void addAfterConfigLoadedCallback(AfterConfigLoaded callback){
     	synchronized (AFTER_CONFIG_LOADED_LIST) {
@@ -124,51 +124,6 @@ public final class ConfigHelper implements Helper{
     	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.AXE_EMAIL_ERROR_ADDRESSEE);
     }
     
-    /**
-     * 获取 JDBC 驱动
-     */
-    public static String getJdbcDriver() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DRIVER, null);
-    }
-
-    /**
-     * 获取 JDBC URL
-     */
-    public static String getJdbcUrl() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_URL, null);
-    }
-
-    /**
-     * 获取 JDBC 用户名
-     */
-    public static String getJdbcUsername() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_USERNAME, null);
-    }
-    
-    /**
-     * 获取 JDBC 密码
-     */
-    public static String getJdbcPassword() {
-        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_PASSWORD, null);
-    }
-    
-    /**
-     * 获取 JDBC 数据源
-     * 多个值用“,”逗号分隔
-     */
-    public static String getJdbcDatasource() {
-    	//默认使用axe提供的dbcp数据源
-    	return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DATASOURCE, null);
-    }
-    
-    /**
-     * 获取 JDBC 连接池连接数量
-     * 默认100个
-     */
-    public static int getJdbcConnectionPoolSize() {
-        return PropsUtil.getInt(CONFIG_PROPS, ConfigConstant.JDBC_CONNECTION_POOL_SIZE, 100);
-    }
-
     /**
      * 指定框架扫描的包路径，多个路径使用“,”号分割
      */

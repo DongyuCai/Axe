@@ -23,7 +23,7 @@
  */
 package org.axe.interface_.proxy;
 
-import org.axe.proxy.base.ProxyChain;
+import org.axe.proxy.ProxyChain;
 
 /**
  * 代理借口

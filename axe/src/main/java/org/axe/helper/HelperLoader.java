@@ -24,6 +24,8 @@
 package org.axe.helper;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -41,11 +43,8 @@ import org.axe.helper.mvc.FilterHelper;
 import org.axe.helper.mvc.FormRequestHelper;
 import org.axe.helper.mvc.InterceptorHelper;
 import org.axe.helper.mvc.ListenerHelper;
-import org.axe.helper.persistence.DataBaseHelper;
-import org.axe.helper.persistence.DataSourceHelper;
-import org.axe.helper.persistence.SchemaHelper;
-import org.axe.helper.persistence.TableHelper;
 import org.axe.interface_.base.Helper;
+import org.axe.interface_.mvc.AfterHelperLoaded;
 import org.axe.util.LogUtil;
 
 /**
@@ -55,51 +54,55 @@ import org.axe.util.LogUtil;
 public final class HelperLoader {
 //	private static final Logger LOGGER = LoggerFactory.getLogger(HelperLoader.class);
 	
-	private static Helper[] helpers;
+	private static final List<Helper> HELPERS = new ArrayList<>();
+    private static final List<AfterHelperLoaded> AFTER_HELPER_LOADED_LIST = new ArrayList<>();
 	
-	public static void init() throws Exception{
+    public static void addAfterHelperLoadedCallback(AfterHelperLoaded callback){
+    	synchronized (AFTER_HELPER_LOADED_LIST) {
+    		AFTER_HELPER_LOADED_LIST.add(callback);
+		}
+    }
+    
+	public static synchronized void init() throws Exception{
         init(null);
     }
-    public static void init(ServletContext servletContext) throws Exception{
+    public static synchronized void init(ServletContext servletContext) throws Exception{
     	initHelpersAry();
+    	
+    	//加载Helpers置后，执行
+    	for(AfterHelperLoaded ahl:AFTER_HELPER_LOADED_LIST){
+    		ahl.doSomething(HELPERS);
+    	}
+    	
     	refresHelpers(servletContext);
     }
     
-    
     private static synchronized void initHelpersAry(){
-    	helpers = new Helper[]{
-    			new ConfigHelper(),//基础配置初始化
-        		new FrameworkStatusHelper(),//框架基础信息初始化
-                new ClassHelper(),//加载package下所有class到CLASS_SET
-                new BeanHelper(),//实例化CLASS_SET里的类，放到BEAN_MAP里
-                new AopHelper(),//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
+    	HELPERS.add(new ConfigHelper());//基础配置初始化
+    	HELPERS.add(new FrameworkStatusHelper());//框架基础信息初始化
+    	HELPERS.add(new ClassHelper());//加载package下所有class到CLASS_SET
+    	HELPERS.add(new BeanHelper());//实例化CLASS_SET里的类，放到BEAN_MAP里
+    	HELPERS.add(new AopHelper());//针对有代理的类，实例化代理并替换掉BEAN_MAP里class原本的实例
                 
-                //*DAO
-                new DataSourceHelper(),//加载DataSource配置
-                new DataBaseHelper(),//初始化数据库配置
-                new TableHelper(),//加载所有的@Table
-                new SchemaHelper(),//初始化所有entity的表结构自建
-                
-                //*MVC
-                new FilterHelper(),//实例化所有Filter链表，并按层级排好序
-                new InterceptorHelper(),//实例化所有Interceptor Map，interceptor没有顺序
-                new ListenerHelper(),//实例化所有ListenerHelper
-                new ControllerHelper(),//加载ACTION_MAP
-                new TimerTaskHelper(),//加载所有定时器
-                
-                //*IOC组装
-                new IocHelper(),//组装所有@Autowired
-                
-                //*邮件
-                new MailHelper()//初始化邮件助手的配置
-        };
+        //*MVC
+    	HELPERS.add(new FilterHelper());//实例化所有Filter链表，并按层级排好序
+    	HELPERS.add(new InterceptorHelper());//实例化所有Interceptor Map，interceptor没有顺序
+    	HELPERS.add(new ListenerHelper());//实例化所有ListenerHelper
+    	HELPERS.add(new ControllerHelper());//加载ACTION_MAP
+		HELPERS.add(new TimerTaskHelper());// 加载所有定时器
+
+		// *IOC组装
+		HELPERS.add(new IocHelper());// 组装所有@Autowired
+
+		// *邮件
+		HELPERS.add(new MailHelper());//初始化邮件助手的配置
     }
     
     public static synchronized void refresHelpers(ServletContext servletContext) throws Exception{
-    	for (Helper helper:helpers){
+    	for (Helper helper:HELPERS){
     		helper.init();
         }
-    	for (Helper helper:helpers){
+    	for (Helper helper:HELPERS){
     		helper.onStartUp();;
         }
     	

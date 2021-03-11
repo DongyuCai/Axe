@@ -41,20 +41,6 @@ public final class ConfigConstant {
 	public static final String AXE_EMAIL_TITLE = "axe.email_title";//邮件的抬头，除了配置文件里以外，也可以在代码里运行时再修改
 	public static final String AXE_EMAIL_ERROR_ADDRESSEE = "axe.email_error_addressee";//系统异常的默认邮件接受地址，多个地址可以用英文逗号分隔
 	
-    //#持久层配置
-	public static final String JDBC_DRIVER = "jdbc.driver";
-	public static final String JDBC_URL = "jdbc.url";
-	public static final String JDBC_USERNAME = "jdbc.username";
-	public static final String JDBC_PASSWORD = "jdbc.password";
-	public static final String JDBC_DATASOURCE = "jdbc.datasource";
-	public static final String JDBC_CONNECTION_POOL_SIZE = "jdbc.connection_pool_size";
-    //这个部分是jdbc配置的子项，需要JDBC_DATASOURCE+dataSourceName+以下名称配置{
-	public static final String JDBC_AUTO_CREATE_TABLE = "auto_create_table";
-	public static final String JDBC_SHOW_SQL = "show_sql";
-	public static final String JDBC_CHARACTER = "character";
-	public static final String JDBC_COLLATE = "collate";
-    //}
-    
     //#项目基本配置
 	public static final String APP_BASE_PACKAGE = "app.base_package";
 	public static final String APP_JSP_PATH = "app.jsp_path";

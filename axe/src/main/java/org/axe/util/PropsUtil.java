@@ -44,6 +44,8 @@ public final class PropsUtil {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             if (is != null) {
                 props.load(is);
+            }else{
+            	throw new Exception("can not find "+fileName);
             }
         } catch (Exception e) {
             LogUtil.error(e);

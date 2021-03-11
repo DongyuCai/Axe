@@ -36,7 +36,7 @@ import org.axe.helper.ioc.BeanHelper;
 import org.axe.helper.ioc.ClassHelper;
 import org.axe.interface_.base.Helper;
 import org.axe.interface_.proxy.Proxy;
-import org.axe.proxy.base.ProxyManger;
+import org.axe.proxy.ProxyManger;
 import org.axe.util.ReflectionUtil;
 
 /**

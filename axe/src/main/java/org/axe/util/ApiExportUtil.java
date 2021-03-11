@@ -34,15 +34,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.axe.annotation.common.ColumnDefine;
+import org.axe.annotation.common.Comment;
 import org.axe.annotation.mvc.Default;
 import org.axe.annotation.mvc.RequestEntity;
 import org.axe.annotation.mvc.RequestParam;
-import org.axe.annotation.persistence.ColumnDefine;
-import org.axe.annotation.persistence.Comment;
 import org.axe.bean.mvc.Handler;
 import org.axe.bean.mvc.Handler.ActionParam;
 import org.axe.bean.mvc.Header;
-import org.axe.bean.persistence.EntityFieldMethod;
+import org.axe.bean.pojo.EntityFieldMethod;
 import org.axe.interface_.mvc.Filter;
 import org.axe.interface_.mvc.Interceptor;
 import org.axe.interface_implement.mvc.HeaderFilter;

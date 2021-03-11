@@ -79,7 +79,8 @@ public final class ClassHelper implements Helper{
             	}
             }
             //增加axe框架包路径
-            CLASS_SET.addAll(ClassUtil.getClassSet(axePackage));
+            CLASS_SET.addAll(ClassUtil.getClassSet(axePackage+".home"));
+            CLASS_SET.addAll(ClassUtil.getClassSet(axePackage+".interface_implement"));
     	}
     	
     	//加载完配置后，执行
